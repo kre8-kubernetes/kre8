@@ -23,12 +23,13 @@ const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-
 
 //**.ENV Variables */
 const REGION = process.env.REGION;
-const ADRIANEKSSERVICEROLEARN = process.env.ADRIANEKSSERVICEROLEARN;
-const SECURITYGROUPIDS = process.env.ADRIANEKSSERVICEROLEARN;
+const SERVICEROLEARN = process.env.EKSSERVICEROLEARN;
+
 const SUBNETID1 = process.env.SUBNETID1;
 const SUBNETID2 = process.env.SUBNETID2;
 const SUBNETID3 = process.env.SUBNETID3;
 const SUBNETIDS = [SUBNETID1, SUBNETID2, SUBNETID3];
+const SECURITYGROUPIDS = process.env.SECURITYGROUPIDS;
 const PORT = process.env.PORT;
 
 //** --------- INITIALIZE IMPORTS --------- 
@@ -164,12 +165,17 @@ const stackParams = {
 try {
   const stack = await cloudformation.createStack(stackParams).promise();
 
+  //TODO: if "StackStatus":"CREATE_IN_PROGRESS" in returned form, keep asking
+
   const params = {
     StackName: stackName
   };
 
+  //TODO Subnet IDs do not come back in this request and we need them for Create Cluster step. Creation is still in progress when we get data back, so maybe subnet ids come back later...
   //Send a request to AWS to confirm stack creation and get data*/
   const describleStack = await cloudformation.describeStacks(params).promise();
+
+
 
   //**Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder*/
   let stringifiedReturnedData = JSON.stringify(describleStack.Stacks);
@@ -179,6 +185,50 @@ try {
   console.log(err);
 }
 })
+
+//** --------- CREATE AWS CLUSTER ------------------------------------- **//
+ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
+
+  //**Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
+  console.log("data: ", data);
+
+  //TODO: DO WE NEED TO MAKE THESE VARIBLES DYNAMIC
+  const clusterName = data.clusterName;
+
+  //data saved in .env file
+  const subnetIds = SUBNETIDS;
+  const securityGroupIds = SECURITYGROUPIDS;
+  const roleArn = SERVICEROLEARN;
+
+  const clusterParams = {
+    name: clusterName, 
+    resourcesVpcConfig: {
+      subnetIds: subnetIds,
+      securityGroupIds: [
+        securityGroupIds
+      ]
+    },
+    roleArn: roleArn, 
+  };
+
+  try {
+    //**Send cluster data to AWS via clusterParmas to create a cluster */
+    const cluster = await eks.createCluster(clusterParams).promise();
+
+    console.log("cluster data: ", JSON.stringify(cluster.cluster, null, 2));
+
+    const stringifiedReturnedData = JSON.stringify(cluster.cluster);
+    console.log("stringifiedReturnedData: ", stringifiedReturnedData);
+
+    fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedReturnedData);
+
+    //TODO add logic to check if "status":"CREATING", if so, rerun fstp.writeFile
+
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 
 
 //** ----------KUBECTL EVENTS WILL GO HERE ------------------------- **//

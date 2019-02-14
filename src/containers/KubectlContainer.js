@@ -84,19 +84,19 @@ class App extends Component {
   //CREATE POD HANDLER
   handleCreatePod(data) {
     console.log('handleCreatePod Clicked!!!');
-    ipcRenderer.send(events.CREATE_POD, {podName: "mvp"});
+    ipcRenderer.send(events.CREATE_POD, {podName: "hola"});
   }
 
   //CREATE DEPLOYMENT HANDLER
   handleCreateDeployment(data) {
     console.log('handleCreateDeployment Clicked!!!');
-    ipcRenderer.send(events.CREATE_DEPLOYMENT, {deploymentName: "my-deployment", label: "my-app", podName: "my-pod"});
+    ipcRenderer.send(events.CREATE_DEPLOYMENT, {deploymentName: "mi-amor", label: "como", podName: "estas"});
   }
 
   //CREATE SERVICE HANDLER
   handleCreateService(data) {
     console.log('handleCreateService Clicked!!!');
-    ipcRenderer.send(events.CREATE_SERVICE, {serviceName: "harmon-service", appName: "pandawhale-app"});
+    ipcRenderer.send(events.CREATE_SERVICE, {serviceName: "aqui", appName: "estoy"});
   }
 
   

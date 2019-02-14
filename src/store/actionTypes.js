@@ -4,3 +4,7 @@ export const SET_NEW_ROLE = 'SET_NEW_ROLE';
 
 // KUBECTL ACTION TYPES
 export const SET_NEW_POD = 'SET_NEW_POD';
+
+export const SET_NEW_DEPLOYMENT = 'SET_NEW_DEPLOYMENT';
+
+export const SET_NEW_SERVICE = 'SET_NEW_SERVICE';

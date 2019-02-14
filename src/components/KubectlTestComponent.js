@@ -6,6 +6,32 @@ import cube from '../assets/3d-cube.jpg'
 import sphere from '../assets/Blue_sphere.png'
 
 const KubectlTestComponent = props => {
+
+  const pods = props.pods.map(pod => {
+    return (
+      <div>
+        <img src={sphere} alt='Pod'/>
+      </div>
+    )
+  });
+
+  const deployments = props.deployments.map(deployment => {
+    return (
+      <div>
+        <img src={cube} alt='Deployment'/>
+      </div>
+    )
+  });
+
+  const services = props.services.map(service => {
+    return (
+      <div>
+        <img src={star} alt='Service'/>
+      </div>
+    )
+  });
+
+
   return (
     <div>
 
@@ -18,15 +44,16 @@ const KubectlTestComponent = props => {
       <form>
         Pod name:
         <br />
-        <input type="text" name="Pod name" />
+        <input id='pod_podName' value={props.pod_podName} onChange={props.handleChange} type="text" name="pod-name" />
+        {/* <input type="text" name="Pod name" /> */}
         <br />
         Container name:
         <br />
-        <input type="text" name="Container name" />
+        <input id='pod_containerName' value={props.pod_containerName} onChange={props.handleChange} type="text" name="Container name" />
         <br />
         Image:
         <br />
-        <input type="text" name="Image name" />
+        <input id='pod_imageName' value={props.pod_imageName} onChange={props.handleChange} type="text" name="Image name" />
         <br />
       </form>
       <br />
@@ -39,27 +66,27 @@ const KubectlTestComponent = props => {
       <form>
         Deployment name:
         <br />
-        <input type="text" name="Deployment name" />
+        <input id='deployment_deploymentName' value={props.deployment_deploymentName} onChange={props.handleChange} type="text" name="Deployment name" />
         <br />
         App name:
         <br />
-        <input type="text" name="App name" />
+        <input id='deployment_appName' value={props.deployment_appName} onChange={props.handleChange} type="text" name="App name" />
         <br />
         Container name:
         <br />
-        <input type="text" name="Container name" />
+        <input id='deployment_containerName' value={props.deployment_containerName} onChange={props.handleChange} type="text" name="Container name" />
         <br />
         Image:
         <br />
-        <input type="text" name="Image name" />
+        <input id='deployment_image' value={props.deployment_image} onChange={props.handleChange} type="text" name="Image name" />
         <br />
         Container Port:
         <br />
-        <input type="text" name="Container port" />
+        <input id='deployment_containerPort' value={props.deployment_containerPort} onChange={props.handleChange} type="text" name="Container port" />
         <br />
         Number of replicas:
         <br />
-        <input type="text" name="Replicas" />
+        <input id='deployment_replicas' value={props.deployment_replicas} onChange={props.handleChange} type="text" name="Replicas" />
         <br />
       </form>
       <br />
@@ -74,23 +101,19 @@ const KubectlTestComponent = props => {
       <form>
         Service name:
         <br />
-        <input type="text" name="Service name" />
+        <input id='service_name' value={props.service_name} onChange={props.handleChange} type="text" name="Service name" />
         <br />
         App name:
         <br />
-        <input type="text" name="App name" />
+        <input id='service_appName' value={props.service_appName} onChange={props.handleChange} type="text" name="App name" />
         <br />
-        Container name:
+        Port:
         <br />
-        <input type="text" name="Container name" />
+        <input id='service_port' value={props.service_port} onChange={props.handleChange} type="text" name="Port" />
         <br />
-        Image:
+        Target port:
         <br />
-        <input type="text" name="Image name" />
-        <br />
-        Number of replicas:
-        <br />
-        <input type="text" name="Replicas" />
+        <input id='service_targetPort' value={props.service_targetPort} onChange={props.handleChange} type="text" name="Target Port" />
         <br />
       </form>
       <br />
@@ -105,6 +128,12 @@ const KubectlTestComponent = props => {
         {/* <img src={star} alt="service" className="service"/>; */}
 
         {/* {props.serviceName} */}
+    <div>
+      {pods}
+      {deployments}
+      {services}
+    </div>
+
     </div>
   );
 };

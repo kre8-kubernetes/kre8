@@ -27,6 +27,9 @@ class App extends Component {
     this.handleCreateTechStack = this.handleCreateTechStack.bind(this);
     this.handleNewTechStack = this.handleNewTechStack.bind(this);
 
+    this.handleCreateCluster = this.handleCreateCluster.bind(this);
+    this.handleNewCluster = this.handleNewCluster.bind(this);
+
     this.emitInstallAuthenticator = this.emitInstallAuthenticator.bind(this);
     this.confirmInstallAuthenticator = this.confirmInstallAuthenticator.bind(this);
   }
@@ -35,14 +38,17 @@ class App extends Component {
   componentDidMount() {
     ipcRenderer.on(events.CONFIRM_IAM_AUTHENTICATOR_INSTALLED, this.confirmInstallAuthenticator)
     ipcRenderer.on(events.HANDLE_NEW_ROLE, this.handleNewRole)
-    ipcRenderer.on(events.HANDLE_TECH_STACK, this.handleNewTechStack)
+    ipcRenderer.on(events.HANDLE_NEW_TECH_STACK, this.handleNewTechStack)
+    ipcRenderer.on(events.HANDLE_NEW_CLUSTER, this.handleNewCluster)
+
   }
 
   // On component unmount, we will unsubscribe to listeners
   componentWillUnmount() {
     ipcRenderer.removeListener(events.CONFIRM_IAM_AUTHENTICATOR_INSTALLED, this.confirmInstallAuthenticator);
     ipcRenderer.removeListener(events.HANDLE_NEW_ROLE, this.handleNewRole);
-    ipcRenderer.removeListener(events.HANDLE_TECH_STACK, this.handleNewTechStack);
+    ipcRenderer.removeListener(events.HANDLE_NEW_TECH_STACK, this.handleNewTechStack);
+    ipcRenderer.removeListener(events.HANDLE_NEW_CLUSTER, this.handleNewCluster);
   }
 
   // Handlers to trigger events that will take place in the main thread
@@ -62,8 +68,8 @@ class App extends Component {
     console.log('handleCreateRole Clicked!!!');
     //TODO Dynamically intake data from form
     const awsIAMRoleData = {
-      roleName: 'BradenA',
-      description: 'SamG IAM Role'
+      roleName: 'Demo-Day-Role',
+      description: 'Demo-Day IAM Role'
     }
     ipcRenderer.send(events.CREATE_IAM_ROLE, awsIAMRoleData);
   }
@@ -76,18 +82,34 @@ class App extends Component {
 
   //** --------- CREATE TECH STACK --------------------------------- **//
   handleCreateTechStack(data) {
-    console.log('handleCreateRole Clicked!!!');
+    console.log('createTechStack Clicked!!!');
     //TODO Dynamically intake data from form
-    const awsIAMRoleData = {
-      stackName: 'carolyn-stack',
+    const awsTechStackData = {
+      stackName: 'demo-day-stack',
     }
-    ipcRenderer.send(events.CREATE_TECH_STACK, awsIAMRoleData);
+    ipcRenderer.send(events.CREATE_TECH_STACK, awsTechStackData);
   }
 
   handleNewTechStack(event, data) {
     console.log('incoming text:', data);
     //TODO: this.props.SOMETHING(data);
   }
+
+  //** --------- CREATE AWS CLUSTER ------------------------------------- **//
+  handleCreateCluster(data) {
+    console.log('handleCreateCluster Clicked!!!');
+    //TODO Dynamically intake data from form
+    const awsClusterData = {
+      clusterName: 'demo-day-cluster',
+    }
+    ipcRenderer.send(events.CREATE_CLUSTER, awsClusterData);
+  }
+
+  handleNewCluster(event, data) {
+    console.log('incoming data from cluster:', data);
+    //TODO: this.props.SOMETHING(data);
+  }
+
 
 
   render() {
@@ -98,6 +120,7 @@ class App extends Component {
           handleCreateRole={this.handleCreateRole}
           emitInstallAuthenticator={this.emitInstallAuthenticator}
           handleCreateTechStack={this.handleCreateTechStack}
+          handleCreateCluster={this.handleCreateCluster}
         />
       </div>
     );

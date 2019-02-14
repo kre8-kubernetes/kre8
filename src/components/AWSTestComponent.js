@@ -7,7 +7,7 @@ const AWSTestComponent = (props) => {
       <button onClick={props.emitInstallAuthenticator}>Install AWS IAM Authenticator</button>
       <button onClick={props.handleCreateRole}>Create IAM Role</button>
       <button onClick={props.handleCreateTechStack}>Create Tech Stack</button>
-
+      <button onClick={props.handleCreateCluster}>Create Cluster</button>
       <ul>
         <li>{props.roleName}</li>
       </ul>

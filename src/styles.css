@@ -83,9 +83,9 @@
       /* justify-content: center; */
       top: 50%;
       left: 47%;
-      padding: 50px;
+      padding: 20px;
       font-size: 30px;
-      font-family: myFirstFont;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       color: black;
       opacity: .3;
       border-radius: 5px;
@@ -99,7 +99,7 @@
 
 .header{
     position: absolute;
-    font-family: myFirstFont;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       /* justify-content: center; */
     color:black;
     top: 25%;
@@ -115,7 +115,7 @@
 
 @font-face{
     font-family: myFirstFont;
-    src: url('https://fonts.googleapis.com/css?family=Staatliches') 
+    src: url('https://fonts.googleapis.com/css?family=Ubuntu') 
 }
 
 /* .pod{

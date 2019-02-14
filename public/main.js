@@ -15,7 +15,7 @@ const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 
-//** --------- IMPORT DOCUMENTS --------- 
+//** --------- IMPORT DOCUMENTS ------------ 
 const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
 const stackTemplateWorkerNode = require(__dirname + '/sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
@@ -139,7 +139,7 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
   win.webContents.send(events.HANDLE_NEW_ROLE, roleName);
 })
 
-//** --------- CREATE AWS TECH STACK --------------------------------- **//
+//** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
 ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
 
 // Stringify imported stackTemplate doc to insert into stackParams obj

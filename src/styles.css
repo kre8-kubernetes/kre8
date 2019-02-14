@@ -108,6 +108,11 @@
 
 }
 
+/* .nav1{
+    position: relative;
+    left: 5%;
+} */
+
 @font-face{
     font-family: myFirstFont;
     src: url('https://fonts.googleapis.com/css?family=Staatliches') 

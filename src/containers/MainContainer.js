@@ -4,13 +4,18 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 
 import AWSContainer from './AWSContainer';
 import KubectlContainer from './KubectlContainer';
+import HomeContainer from './HomeContainer';
 
 const Main = (props) => {
   return (
     <div>
       <Switch>
-        <Route
+      <Route
           exact path='/'
+          component={HomeContainer}
+        />
+        <Route
+          exact path='/aws'
           component={AWSContainer}
         />
         <Route

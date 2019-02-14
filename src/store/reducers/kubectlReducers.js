@@ -1,25 +1,32 @@
 import * as types from '../actionTypes.js'
 
 const initialState = {
-  podName: '',
-  deploymentName: '',
-  serviceName: ''
+    // pod_podName: '',
+    // pod_containerName: '',
+    // pod_imageName: '',
+    pods: [],
+    deployments: [],
+    services: []
 };
 
 export default function kubectlReducers(state = initialState, action) {
+  let newState;
+
   switch (action.type) {
     case types.SET_NEW_POD:
-      return Object.assign({}, state, {
-        podName: action.payload
-      });
+      newState = state.slice();
+      newState.pods.push(action.payload);
+      return newState;
+
     case types.SET_NEW_DEPLOYMENT:
-      return Object.assign({}, state, {
-        deploymentName: action.payload
-      });
+      newState = state.slice();
+      newState.deployments.push(action.payload);
+      return newState;
+
     case types.SET_NEW_SERVICE:
-      return Object.assign({}, state, {
-        serviceName: action.payload
-      });
+      newState = state.slice();
+      newState.services.push(action.payload);
+      return newState;
   
     default:
     return state;

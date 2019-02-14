@@ -16,7 +16,10 @@ const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 
 //** --------- IMPORT DOCUMENTS --------- 
-const iamRolePolicyDocument = require(__dirname + '/sdkAssets/iamRoleTrustPolicy.json');
+const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
+const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
+const stackTemplateWorkerNode = require(__dirname + '/sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
+const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-cm.json');
 
 //**.ENV Variables */
 const REGION = process.env.REGION;
@@ -45,8 +48,10 @@ function createWindow () {
   win.on('closed', () => win = null)
 }
 
+//** ----------------------------------------------------------------- **//
 //** ----------------------- AWS SDK EVENTS -------------------------- **//
 //** ----------------------------------------------------------------- **//
+
 
 //** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ----------------- **//
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
@@ -71,7 +76,7 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
 //COPY AWS-IAM-AUTHENTICATOR FILE TO BIN FOLDER IN USER HOME DIRECTORY
 //APPEND PATH TO BASH_PROFILE FILE
 
-//** --------- CREATE AWS IAM ROLE FOR EKS ------------------------- **//
+//** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
    //TODO: Verify that we do not want to collect the the commented out optional inputs in the iamParams object
   const roleName = data.roleName;
@@ -88,25 +93,28 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     // Tags: [ { Key: req.body.key, Value: req.body.value } ]
   };
 
-  let stringifiedIamRoleDataFromForm;
-
   //Send IAM data to AWS via the iamParams object to create an IAM Role*/
   try {
     const role = await iam.createRole(iamParams).promise();
     //Collect the relevant IAM data returned from AWS and store in an object to stringify*/
+
+    console.log("role: ", JSON.stringify(role, null, 2));
+
     const iamRoleDataFromForm = {
-      roleName: role.RoleName,
-      createDate: role.RoleId,
-      roleID: role.RoleId,
-      arn: role.Arn,
-      createDate: role.CreateDate,
-      path: role.Path, 
+      roleName: role.Role.RoleName,
+      createDate: role.Role.RoleId,
+      roleID: role.Role.RoleId,
+      arn: role.Role.Arn,
+      createDate: role.Role.CreateDate,
+      path: role.Role.Path
     }
 
-    stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
-    console.log("stringifiedIamRoleDataFromForm: ", stringifiedIamRoleDataFromForm);
+    const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
+    
+    //Create a file from returned data with the title of the role name that the user selected and save in assets folder */
+    fsp.writeFile(__dirname + `/sdkAssets/private/${roleName}.json`, stringifiedIamRoleDataFromForm);
 
-    // SEND CLUSTER + SERVICE POLICIES TO AWS TO ATTCH TO IAM ROLE
+    //Send Cluster + Service Policies to AWS to attach to created IAM Role 
     const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
     const servicePolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
 
@@ -122,31 +130,58 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
     const attachClusterPolicy = await iam.attachRolePolicy(clusterPolicy).promise();
     const attachServicePolicy = await iam.attachRolePolicy(servicePolicy).promise();
-
-    //Create a file from returned data with the title of the role name that the user selected and save in assets folder */
-
-    
   
   } catch (err) {
     console.log(err);
   }
 
-//TODO not writing to file
-  fs.writeFile(__dirname + `/sdkAssets/private/${roleName}.json`, stringifiedIamRoleDataFromForm, (err) => {
-    if (err) console.log(err); 
-    else {
-      console.log("file created");
-    }   
-  });
-
   // Once role is created send back to renderer that the role is made
   win.webContents.send(events.HANDLE_NEW_ROLE, roleName);
 })
 
-//** --------- CREATE AWS IAM ROLE FOR EKS ------------------------- **//
+//** --------- CREATE AWS TECH STACK --------------------------------- **//
+ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
+
+// Stringify imported stackTemplate doc to insert into stackParams obj
+const stackTemplateStringified = JSON.stringify(stackTemplate);
+const stackName = data.stackName;
+
+//Collect the form data, input by user when creating stack, insert into stackParams object
+const stackParams = {
+  StackName: stackName,
+  DisableRollback: false,
+  EnableTerminationProtection: false,
+  Parameters: [
+    { ParameterKey: 'VpcBlock', ParameterValue: '192.168.0.0/16', },
+    { ParameterKey: 'Subnet01Block', ParameterValue: '192.168.64.0/18', },
+    { ParameterKey: 'Subnet02Block', ParameterValue: '192.168.128.0/18', },
+    { ParameterKey: 'Subnet03Block', ParameterValue: '192.168.192.0/18', }
+  ],
+  TemplateBody: stackTemplateStringified,
+};
+
+//Send Stack data to AWS via stackParams obj to create a Stack on AWS 
+try {
+  const stack = await cloudformation.createStack(stackParams).promise();
+
+  const params = {
+    StackName: stackName
+  };
+
+  //Send a request to AWS to confirm stack creation and get data*/
+  const describleStack = await cloudformation.describeStacks(params).promise();
+
+  //**Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder*/
+  let stringifiedReturnedData = JSON.stringify(describleStack.Stacks);
+
+  fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedReturnedData);
+} catch (err) {
+  console.log(err);
+}
+})
 
 
-//**---------------KUBECTL EVENTS WILL GO HERE---------------------------**//
+//** ----------KUBECTL EVENTS WILL GO HERE ------------------------- **//
 
 // KUBECTL EVENTS - CREATE POD (EXAMPLE)
 // ipcMain.on(events.CREATE_POD, (event, data) => {

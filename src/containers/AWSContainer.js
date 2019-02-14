@@ -23,27 +23,30 @@ class App extends Component {
     super(props);
     this.handleCreateRole = this.handleCreateRole.bind(this);
     this.handleNewRole = this.handleNewRole.bind(this);
+
+    this.handleCreateTechStack = this.handleCreateTechStack.bind(this);
+    this.handleNewTechStack = this.handleNewTechStack.bind(this);
+
     this.emitInstallAuthenticator = this.emitInstallAuthenticator.bind(this);
     this.confirmInstallAuthenticator = this.confirmInstallAuthenticator.bind(this);
   }
 
   // On component mount we will create listeners, so that the main thread can communicate when needed
   componentDidMount() {
-    ipcRenderer.on(events.HANDLE_NEW_ROLE, this.handleNewRole)
     ipcRenderer.on(events.CONFIRM_IAM_AUTHENTICATOR_INSTALLED, this.confirmInstallAuthenticator)
-
+    ipcRenderer.on(events.HANDLE_NEW_ROLE, this.handleNewRole)
+    ipcRenderer.on(events.HANDLE_TECH_STACK, this.handleNewTechStack)
   }
 
   // On component unmount, we will unsubscribe to listeners
   componentWillUnmount() {
-    ipcRenderer.removeListener(events.HANDLE_NEW_ROLE, this.handleNewRole);
     ipcRenderer.removeListener(events.CONFIRM_IAM_AUTHENTICATOR_INSTALLED, this.confirmInstallAuthenticator);
-    
+    ipcRenderer.removeListener(events.HANDLE_NEW_ROLE, this.handleNewRole);
+    ipcRenderer.removeListener(events.HANDLE_TECH_STACK, this.handleNewTechStack);
   }
 
   // Handlers to trigger events that will take place in the main thread
   
-
   //** ------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ---------- **//
   emitInstallAuthenticator(data) {
     console.log('authenticator installed!!!');
@@ -59,8 +62,8 @@ class App extends Component {
     console.log('handleCreateRole Clicked!!!');
     //TODO Dynamically intake data from form
     const awsIAMRoleData = {
-      roleName: 'take',
-      description: 'take IAM Role'
+      roleName: 'BradenA',
+      description: 'SamG IAM Role'
     }
     ipcRenderer.send(events.CREATE_IAM_ROLE, awsIAMRoleData);
   }
@@ -71,6 +74,22 @@ class App extends Component {
     this.props.setNewRole(data);
   }
 
+  //** --------- CREATE TECH STACK --------------------------------- **//
+  handleCreateTechStack(data) {
+    console.log('handleCreateRole Clicked!!!');
+    //TODO Dynamically intake data from form
+    const awsIAMRoleData = {
+      stackName: 'carolyn-stack',
+    }
+    ipcRenderer.send(events.CREATE_TECH_STACK, awsIAMRoleData);
+  }
+
+  handleNewTechStack(event, data) {
+    console.log('incoming text:', data);
+    //TODO: this.props.SOMETHING(data);
+  }
+
+
   render() {
     return (
       <div>
@@ -78,6 +97,7 @@ class App extends Component {
           roleName={this.props.roleName}
           handleCreateRole={this.handleCreateRole}
           emitInstallAuthenticator={this.emitInstallAuthenticator}
+          handleCreateTechStack={this.handleCreateTechStack}
         />
       </div>
     );

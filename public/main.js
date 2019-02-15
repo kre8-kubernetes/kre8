@@ -303,8 +303,8 @@ ipcMain.on(events.CREATE_POD, (event, data) => {
     spec: {
       containers: [
         {
-          name: "myapp-container",
-          image: "carolynharrold/dreams-repo",
+          name: `${data.containerName}`,
+          image: `${data.imageName}`,
           imagePullPolicy: "Always",
           env: [
             {
@@ -393,14 +393,14 @@ child.on("close", code => {
 
 //BUILD A SERVICE YAML
 ipcMain.on(events.CREATE_SERVICE, (event, data) => {
-  console.log("req.body:", data.body);
+  console.log("data:", data);
 
   //SERVICE YAML TEMPLATE
   const serviceYaml = {
     apiVersion: "v1",
     kind: "Service",
     metadata: {
-      name: `${data.serviceName}`
+      name: `${data.name}`
     },
     spec: {
       selector: {
@@ -409,8 +409,8 @@ ipcMain.on(events.CREATE_SERVICE, (event, data) => {
       ports: [
         {
           protocol: "TCP",
-          port: 80,
-          targetPort: 9376
+          port: `${data.port}`,
+          targetPort: `${data.targetPort}`
         }
       ]
     }
@@ -469,30 +469,30 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
     metadata: {
       name: `${data.deploymentName}`,
       labels: {
-        app: `${data.label}`
+        app: `${data.appName}`
       }
     },
     spec: {
-      replicas: 2,
+      replicas: `${data.replicas}`,
       selector: {
         matchLabels: {
-          app: `${data.label}`
+          app: `${data.appName}`
         }
       },
       template: {
         metadata: {
           labels: {
-            app: `${data.label}`
+            app: `${data.appName}`
           }
         },
         spec: {
           containers: [
             {
-              name: `${data.podName}`,
-              image: "carolynharrold/dreams-repo",
+              name: `${data.containerName}`,
+              image: `${data.image}`,
               ports: [
                 {
-                  containerPort: 80
+                  containerPort: `${data.containerPort}`
                 }
               ]
             }

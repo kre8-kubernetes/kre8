@@ -175,9 +175,7 @@ try {
   //Send a request to AWS to confirm stack creation and get data*/
   const describleStack = await cloudformation.describeStacks(params).promise();
 
-
-
-  //**Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder*/
+  //Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder
   let stringifiedReturnedData = JSON.stringify(describleStack.Stacks);
 
   fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedReturnedData);
@@ -189,7 +187,7 @@ try {
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
 ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
-  //**Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
+  //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
   console.log("data: ", data);
 
   //TODO: DO WE NEED TO MAKE THESE VARIBLES DYNAMIC
@@ -212,22 +210,58 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
   };
 
   try {
-    //**Send cluster data to AWS via clusterParmas to create a cluster */
+    //Send cluster data to AWS via clusterParmas to create a cluster */
     const cluster = await eks.createCluster(clusterParams).promise();
+    
+    const clusterParam = {
+      name: clusterName
+    };
 
-    console.log("cluster data: ", JSON.stringify(cluster.cluster, null, 2));
+    let stringifiedClusterData;
+    let parsedClusterData;
+    let status = "CREATING";
 
-    const stringifiedReturnedData = JSON.stringify(cluster.cluster);
-    console.log("stringifiedReturnedData: ", stringifiedReturnedData);
+    const getClusterData = async () => {
+      const clusterData = await eks.describeCluster(clusterParam).promise();
+      stringifiedClusterData = JSON.stringify(clusterData, null, 2);
+      parsedClusterData = JSON.parse(stringifiedClusterData);
+      status = parsedClusterData.cluster.status;
+    }
 
-    fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedReturnedData);
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        getClusterData();
+        resolve();
+      }, 1000 * 60 * 6);
+    })
+
+    await new Promise((resolve, reject) => {
+      const loop = () => {
+        if (status !== "ACTIVE") {
+          setTimeout(() => {
+            getClusterData();
+            loop();
+          }, 1000 * 30);
+        } else {
+          resolve();
+        }
+      } 
+      loop();  
+    })
+        
+    const writeFile = await fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedClusterData);
 
     //TODO add logic to check if "status":"CREATING", if so, rerun fstp.writeFile
 
   } catch (err) {
-    console.log(err);
+    console.log("err", err);
   }
 });
+
+//TODO No button should be used, should auto happen after last thing completes
+//**--------- GENERATE AND SAVE CONFIG FILE ON USER COMPUTER ---------------- **//
+
+
 
 
 

@@ -21,6 +21,14 @@ const mapDispatchToProps = dispatch => ({
 class App extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      createRole_roleName: '',
+      createRole_description: '',
+      createTechStack_stackName: '',
+      createCluster_clusterName: '',
+    }
+    this.handleChange = this.handleChange.bind(this);
+
     this.handleCreateRole = this.handleCreateRole.bind(this);
     this.handleNewRole = this.handleNewRole.bind(this);
 
@@ -34,13 +42,17 @@ class App extends Component {
     this.confirmInstallAuthenticator = this.confirmInstallAuthenticator.bind(this);
   }
 
+  handleChange(e) {
+    e.preventDefault();
+    this.setState({ [e.target.name]: e.target.value })
+  }
+
   // On component mount we will create listeners, so that the main thread can communicate when needed
   componentDidMount() {
     ipcRenderer.on(events.CONFIRM_IAM_AUTHENTICATOR_INSTALLED, this.confirmInstallAuthenticator)
     ipcRenderer.on(events.HANDLE_NEW_ROLE, this.handleNewRole)
     ipcRenderer.on(events.HANDLE_NEW_TECH_STACK, this.handleNewTechStack)
     ipcRenderer.on(events.HANDLE_NEW_CLUSTER, this.handleNewCluster)
-
   }
 
   // On component unmount, we will unsubscribe to listeners
@@ -68,8 +80,8 @@ class App extends Component {
     console.log('handleCreateRole Clicked!!!');
     //TODO Dynamically intake data from form
     const awsIAMRoleData = {
-      roleName: 'Demo-Day-Role',
-      description: 'Demo-Day IAM Role'
+      roleName: this.state.createRole_roleName,
+      description: this.state.createRole_description,
     }
     ipcRenderer.send(events.CREATE_IAM_ROLE, awsIAMRoleData);
   }
@@ -85,7 +97,7 @@ class App extends Component {
     console.log('createTechStack Clicked!!!');
     //TODO Dynamically intake data from form
     const awsTechStackData = {
-      stackName: 'demo-day-stack',
+      stackName: this.state.createTechStack_stackName,
     }
     ipcRenderer.send(events.CREATE_TECH_STACK, awsTechStackData);
   }
@@ -100,7 +112,7 @@ class App extends Component {
     console.log('handleCreateCluster Clicked!!!');
     //TODO Dynamically intake data from form
     const awsClusterData = {
-      clusterName: 'demo-day-cluster',
+      clusterName: this.state.createCluster_clusterName,
     }
     ipcRenderer.send(events.CREATE_CLUSTER, awsClusterData);
   }
@@ -110,14 +122,24 @@ class App extends Component {
     //TODO: this.props.SOMETHING(data);
   }
 
-
-
   render() {
+    const { 
+      createRole_roleName,
+      createRole_description,
+      createTechStack_stackName,
+      createCluster_clusterName,
+     } = this.state;
+
     return (
       <div>
         <AWSTestComponent
-          roleName={this.props.roleName}
-          handleCreateRole={this.handleCreateRole}
+          handleChange={this.handleChange}
+
+          createRole_roleName={createRole_roleName}
+          createRole_description={createRole_description}
+          createTechStack_stackName={createTechStack_stackName}
+          createCluster_clusterName={createCluster_clusterName}
+
           emitInstallAuthenticator={this.emitInstallAuthenticator}
           handleCreateTechStack={this.handleCreateTechStack}
           handleCreateCluster={this.handleCreateCluster}

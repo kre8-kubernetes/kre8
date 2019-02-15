@@ -175,9 +175,7 @@ try {
   //Send a request to AWS to confirm stack creation and get data*/
   const describleStack = await cloudformation.describeStacks(params).promise();
 
-
-
-  //**Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder*/
+  //Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder
   let stringifiedReturnedData = JSON.stringify(describleStack.Stacks);
 
   fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedReturnedData);
@@ -189,7 +187,7 @@ try {
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
 ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
-  //**Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
+  //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
   console.log("data: ", data);
 
   //TODO: DO WE NEED TO MAKE THESE VARIBLES DYNAMIC
@@ -212,7 +210,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
   };
 
   try {
-    //**Send cluster data to AWS via clusterParmas to create a cluster */
+    //Send cluster data to AWS via clusterParmas to create a cluster */
     const cluster = await eks.createCluster(clusterParams).promise();
     
     const clusterParam = {
@@ -229,8 +227,6 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
       parsedClusterData = JSON.parse(stringifiedClusterData);
       status = parsedClusterData.cluster.status;
     }
-    
-    // const delay = ms => new Promise(resolve => setTimeout(getClusterData, 1000 * 60 * 6));
 
     await new Promise((resolve, reject) => {
       setTimeout(() => {

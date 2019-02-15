@@ -214,20 +214,58 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
   try {
     //**Send cluster data to AWS via clusterParmas to create a cluster */
     const cluster = await eks.createCluster(clusterParams).promise();
+    
+    const clusterParam = {
+      name: clusterName
+    };
 
-    console.log("cluster data: ", JSON.stringify(cluster.cluster, null, 2));
+    let stringifiedClusterData;
+    let parsedClusterData;
+    let status = "CREATING";
 
-    const stringifiedReturnedData = JSON.stringify(cluster.cluster);
-    console.log("stringifiedReturnedData: ", stringifiedReturnedData);
+    const getClusterData = async () => {
+      const clusterData = await eks.describeCluster(clusterParam).promise();
+      stringifiedClusterData = JSON.stringify(clusterData, null, 2);
+      parsedClusterData = JSON.parse(stringifiedClusterData);
+      status = parsedClusterData.cluster.status;
+    }
+    
+    // const delay = ms => new Promise(resolve => setTimeout(getClusterData, 1000 * 60 * 6));
 
-    fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedReturnedData);
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        getClusterData();
+        resolve();
+      }, 1000 * 60 * 6);
+    })
+
+    await new Promise((resolve, reject) => {
+      const loop = () => {
+        if (status !== "ACTIVE") {
+          setTimeout(() => {
+            getClusterData();
+            loop();
+          }, 1000 * 30);
+        } else {
+          resolve();
+        }
+      } 
+      loop();  
+    })
+        
+    const writeFile = await fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedClusterData);
 
     //TODO add logic to check if "status":"CREATING", if so, rerun fstp.writeFile
 
   } catch (err) {
-    console.log(err);
+    console.log("err", err);
   }
 });
+
+//TODO No button should be used, should auto happen after last thing completes
+//**--------- GENERATE AND SAVE CONFIG FILE ON USER COMPUTER ---------------- **//
+
+
 
 
 

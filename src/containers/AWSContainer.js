@@ -85,7 +85,7 @@ class App extends Component {
     console.log('createTechStack Clicked!!!');
     //TODO Dynamically intake data from form
     const awsTechStackData = {
-      stackName: 'demo-day-stack',
+      stackName: 'demo-day-stack 1',
     }
     ipcRenderer.send(events.CREATE_TECH_STACK, awsTechStackData);
   }
@@ -100,7 +100,7 @@ class App extends Component {
     console.log('handleCreateCluster Clicked!!!');
     //TODO Dynamically intake data from form
     const awsClusterData = {
-      clusterName: 'demo-day-cluster',
+      clusterName: 'demo-day-cluster-24',
     }
     ipcRenderer.send(events.CREATE_CLUSTER, awsClusterData);
   }

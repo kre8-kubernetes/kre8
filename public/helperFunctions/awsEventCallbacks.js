@@ -1,5 +1,7 @@
 const awsHelperFunctions = require(__dirname + '/awsHelperFunctions'); 
-const awsParameters = require(__dirname + '/awsParameters'); 
+const awsParameters = require(__dirname + '/awsParameters');
+const kubectlConfigFunctions = require(__dirname + '/awsConfigureKubectlFunctions');
+
 
 const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
@@ -12,15 +14,6 @@ const fsp = require('fs').promises;
 
 //**.ENV Variables */
 const REGION = process.env.REGION;
-const SERVICEROLEARN = process.env.EKSSERVICEROLEARN;
-const ADRIANEKSSERVICEROLEARN = process.env.ADRIANEKSSERVICEROLEARN;
-
-
-const SUBNETID1 = process.env.SUBNETID1;
-const SUBNETID2 = process.env.SUBNETID2;
-const SUBNETID3 = process.env.SUBNETID3;
-const SUBNETIDS = [SUBNETID1, SUBNETID2, SUBNETID3];
-const SECURITYGROUPIDS = process.env.SECURITYGROUPIDS;
 
 //** --------- INITIALIZE IMPORTS --------- 
 const iam = new IAM()
@@ -76,25 +69,25 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
     console.log(err);
   }
 
+  return roleName;
 };
 
 //** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
 awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, stackTemplateStringified) => {
   const techStackParam = awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
 
-  //Send tech stack data to AWS to create stack 
   try {
+
+    //Send tech stack data to AWS to create stack 
     const stack = await cloudformation.createStack(techStackParam).promise();
 
-    const getStackDataParam = {
-      StackName: stackName
-    };
+    const getStackDataParam = { StackName: stackName };
 
     let stringifiedStackData;
     let parsedStackData;
     let stackStatus = "CREATE_IN_PROGRESS";
 
-    //TODO modularize functions
+    //TODO modularize function
     const getStackData = async () => {
       try {
         const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
@@ -115,13 +108,6 @@ awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, s
 
     const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
 
-    //Send a request to AWS to confirm stack creation and get data*/
-    //const describleStack = await cloudformation.describeStacks(params).promise();
-
-    //Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder
-    // let stringifiedReturnedData = JSON.stringify(describleStack.Stacks);
-
-    // fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedReturnedData);
   } catch (err) {
     console.log(err);
   }
@@ -132,89 +118,69 @@ awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, s
 
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
 
-awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (clusterName) => {
+awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (techStackName, roleArn, clusterName) => {
 
-  //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
-  let stackName = "real";
-  
-  const stackDataFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, 'utf-8');
-
-  // console.log("stackDataFileContents: ", stackDataFileContents);
+  const stackDataFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/STACK_${techStackName}.json`, 'utf-8');
 
   const parsedStackDataFileContents = JSON.parse(stackDataFileContents);
+  const subnetIds = parsedStackDataFileContents[0].Outputs[2].OutputValue;
+  const subnetArray = subnetIds.split(',');
+  const securityGroupIds = parsedStackDataFileContents[0].Outputs[0].OutputValue;
 
-  // console.log("parsedStackDataFileContents: ", parsedStackDataFileContents[0]);
-  // console.log("parsedStackDataFileContents Outputs: ", parsedStackDataFileContents[0].Outputs);
-  console.log("parsedStackDataFileContents Outputs 1: ", parsedStackDataFileContents[0].Outputs[1].OutputValue);
-  console.log("parsedStackDataFileContents Outputs 2: ", parsedStackDataFileContents[0].Outputs[2].OutputValue);
-  console.log("stackId: ", parsedStackDataFileContents[0].StackId);
-  
-  //Gather required data from Cluster File
-  const subnetIds = [parsedStackDataFileContents[0].Outputs[2].OutputValue];
-  const securityGroupIds = parsedStackDataFileContents[0].Outputs[1].OutputValue;
-  const roleArn = ADRIANEKSSERVICEROLEARN;
-  //parsedStackDataFileContents[0].StackId;
+  //TODO: Dynamically grab roleArn
+  //const roleArn = ?;
 
-  console.log("subnetIds: ", subnetIds);
-
-  const clusterParam = awsParameters.createClusterParam(clusterName, subnetIds, securityGroupIds, roleArn); 
+  const clusterParam = awsParameters.createClusterParam(clusterName, subnetArray, securityGroupIds, roleArn); 
 
   try {
     //Send cluster data to AWS via clusterParmas to create a cluster */
     const cluster = await eks.createCluster(clusterParam).promise();
     
-    const fetchClusterDataParam = {
-      name: clusterName
-    };
+    const fetchClusterDataParam = { name: clusterName };
 
     let parsedClusterData;
-    let status = "CREATING";
+    let stringifiedClusterData;
+    let clusterCreationStatus = "CREATING";
 
     const getClusterData = async () => {
       const clusterData = await eks.describeCluster(fetchClusterDataParam).promise();
-      const stringifiedClusterData = JSON.stringify(clusterData, null, 2);
+      stringifiedClusterData = JSON.stringify(clusterData, null, 2);
       parsedClusterData = JSON.parse(stringifiedClusterData);
-      status = parsedClusterData.cluster.status;
+      clusterCreationStatus = parsedClusterData.cluster.status;
+      console.log("status in getClusterData: ", clusterCreationStatus);
     }
 
-    await timeout(1000 * 60 * 6);
+    await awsHelperFunctions.timeout(1000 * 60 * 6);
     getClusterData();
 
-    while (status !== "ACTIVE") {
+    while (clusterCreationStatus !== "ACTIVE") {
       // wait 30 seconds
-      await timeout(1000 * 30)
+      await awsHelperFunctions.timeout(1000 * 30)
       getClusterData();
     }
-
-    // await new Promise((resolve, reject) => {
-    //   setTimeout(() => {
-    //     getClusterData();
-    //     resolve();
-    //   }, 1000 * 60 * 6);
-    // })
-
-    // await new Promise((resolve, reject) => {
-    //   const loop = () => {
-    //     if (status !== "ACTIVE") {
-    //       setTimeout(() => {
-    //         getClusterData();
-    //         loop();
-    //       }, 1000 * 30);
-    //     } else {
-    //       resolve();
-    //     }
-    //   } 
-    //   loop();  
-    // })
         
     const createClusterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/CLUSTER_${clusterName}.json`, stringifiedClusterData);
+
+    await kubectlConfigFunctions.createConfigFile(clusterName);
+    await kubectlConfigFunctions.configureKubectl(clusterName);
+    await kubectlConfigFunctions.createStackForWorkerNode(stackName, clusterName);
+
+
+
+
+
+
 
   } catch (err) {
     console.log("err", err);
   }
 
+
+
+
+
+
   return clusterName;
-
 };
 
 
@@ -224,38 +190,6 @@ awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (clusterName) =
 
 
 
-
-//**--------- GENERATE AND SAVE CONFIG FILE ON USER COMPUTER ------------- **//
-
-awsEventCallbacks.CREATE_CONFIG_FILE = (clusterName) => {
-
-  //Access data from cluster data file, saved as cluster name, in Assets and save in variables to pass to the AWSConfigFileData object*/
-
-  const clusterDataFileContents = fs.readFileSync(__dirname + `/sdkAssets/private/${clusterName}.js`, 'utf-8');
-
-  const parsedclusterDataFileContents = JSON.parse(clusterDataFileContents);
-  
-  //Gather required data from Cluster File
-  const serverEndpoint = parsedclusterDataFileContents.cluster.endpoint;
-  const clusterArn = parsedclusterDataFileContents.cluster.arn;
-  const certificateAuthorityData = parsedclusterDataFileContents.cluster.certificateAuthority.data;
-
-  const AWSClusterConfigFileData = awsParameters.createConfigParam(clusterName, serverEndpoint, certificateAuthorityData, clusterArn);
-  
-  //** Format data from the AWSClusterConfigFileData object into YAML to save in user's filesystem 
-  let stringifiedAWSClusterConfigFile = JSON.stringify(AWSClusterConfigFileData);
-  let parsedAWSClusterConfigFile = JSON.parse(stringifiedAWSClusterConfigFile);
-  let yamledAWSClusterConfigFile = YAML.stringify(parsedAWSClusterConfigFile, 6);
-  let regexCharToRemove = /(['])+/g;
-  let yamledAWSClusterConfigFileWithoutRegex = yamledAWSClusterConfigFile.replace(regexCharToRemove, "");
-
-  //check if user has a .kube file in their root directory, and if not, make one
-  awsHelperFunctions.checkFileSystemForDirectoryAndMkDir(kube);
-
-  //Save file in users .kube file
-  fs.writeFileSync(`/Users/carolynharrold/.kube/{clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
-
-};
 
 
 module.exports = awsEventCallbacks;

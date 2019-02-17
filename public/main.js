@@ -14,51 +14,46 @@ const fsp = require('fs').promises;
 
 const YAML = require('yamljs');
 
-//** --------- IMPORT SDK elements --------- 
+let iamRoleName, 
+let clusterName,
+let techStackName,
+
+//** --------- IMPORT AWS SDK ELEMENTS --------- 
 const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 
-//** --------- IMPORT DOCUMENTS ------------ 
+//** --------- IMPORT DOCUMENTS ---------------- 
 const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
-const stackTemplateWorkerNode = require(__dirname + '/sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
+//const stackTemplateWorkerNode = require(__dirname + '/sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
 const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-cm.json');
 
-//**.ENV Variables */
+//** --------- .ENV Variables -------------- 
 const REGION = process.env.REGION;
-const SERVICEROLEARN = process.env.EKSSERVICEROLEARN;
-
-const SUBNETID1 = process.env.SUBNETID1;
-const SUBNETID2 = process.env.SUBNETID2;
-const SUBNETID3 = process.env.SUBNETID3;
-const SUBNETIDS = [SUBNETID1, SUBNETID2, SUBNETID3];
-const SECURITYGROUPIDS = process.env.SECURITYGROUPIDS;
 const PORT = process.env.PORT;
 
-//** --------- INITIALIZE IMPORTS --------- 
+//** --------- INITIALIZE SDK IMPORTS ------ 
 const iam = new IAM()
 const eks = new EKS({ region: REGION});
 const cloudformation = new CloudFormation({ region: REGION});
 
-//** CREATE WINDOW OBJECT
+//** --------- CREATE WINDOW OBJECT --------
 let win;
 
-//** Function to create our application window, that will be invoked with app.on('ready')
+//Function to create our application window, that will be invoked with app.on('ready')
 function createWindow () {
   win = new BrowserWindow({width: 1200, height: 800});
-
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
-
   win.on('closed', () => win = null)
 }
 
-//** ----------------------------------------------------------------- **//
-//** ----------------------- AWS SDK EVENTS -------------------------- **//
-//** ----------------------------------------------------------------- **//
+//** -------------------------------------------------------------- **//
+//** ----------------------- AWS SDK EVENTS ----------------------- **//
+//** -------------------------------------------------------------- **//
 
 
-//** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ----------------- **//
+//** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS -------------- **//
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
   const child = spawn('curl', ['-o', 'aws-iam-authenticator', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator']);
     child.stdout.on('data', (data) => {
@@ -78,22 +73,22 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
 //COPY AWS-IAM-AUTHENTICATOR FILE TO BIN FOLDER IN USER HOME DIRECTORY
 //APPEND PATH TO BASH_PROFILE FILE
 
-//** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
+//** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------- **//
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
-  //data from user input + imported policy document
+  //Data from user input + imported policy document
   const roleName = data.roleName;
   const roleDescription = data.description;
   const iamRolePolicyDoc = iamRolePolicyDocument;
 
-  await awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs(roleName, roleDescription, iamRolePolicyDoc);
+  const iamRoleCreated = awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs(roleName, roleDescription, iamRolePolicyDoc);
 
-  //TODO send data to user by adding a return to the function
+  //TODO decide what to return to the the user
 
-  win.webContents.send(events.HANDLE_NEW_ROLE, roleName);
+  win.webContents.send(events.HANDLE_NEW_ROLE, iamRoleCreated);
 })
 
-//** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
+//** ------ CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ---- **//
 //Takes approx 1 - 1.5 mins to create stack and get data back from AWS
 ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
 
@@ -107,90 +102,29 @@ const createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataI
 win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
 })
 
-//** --------- CREATE AWS CLUSTER ------------------------------------- **//
+//** --------- CREATE AWS CLUSTER ---------------------------------- **//
 ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
 
+  //TODO, do not hardcode stackName or RoleArn
+  const techStackName = 'carolyn-testing-stack';
+  const roleArn = 'arn:aws:iam::961616458351:role/carolyn-testing';
   const clusterName = data.clusterName;
 
-  const createdCluster = awsEventCallbacks.createClusterAndSaveReturnedDataToFile(clusterName);
+  try {
+    const createdCluster = await awsEventCallbacks.createClusterAndSaveReturnedDataToFile(techStackName, roleArn, clusterName);
+  } catch (err) {
+    console.log(err);
+  }
 
-
-
-  // //TODO: MAKE THESE VARIBLES DYNAMIC
-  //   //READFILE
-
-  // //data saved in .env file
-  // const subnetIds = SUBNETIDS;
-  // const securityGroupIds = SECURITYGROUPIDS;
-  // const roleArn = SERVICEROLEARN;
-
-  // const clusterParams = {
-  //   name: clusterName, 
-  //   resourcesVpcConfig: {
-  //     subnetIds: subnetIds,
-  //     securityGroupIds: [
-  //       securityGroupIds
-  //     ]
-  //   },
-  //   roleArn: roleArn, 
-  // };
-
-  // try {
-  //   //Send cluster data to AWS via clusterParmas to create a cluster */
-  //   const cluster = await eks.createCluster(clusterParams).promise();
-    
-  //   const clusterParam = {
-  //     name: clusterName
-  //   };
-
-  //   let parsedClusterData;
-  //   let status = "CREATING";
-
-  //   const getClusterData = async () => {
-  //     const clusterData = await eks.describeCluster(clusterParam).promise();
-  //     const stringifiedClusterData = JSON.stringify(clusterData, null, 2);
-  //     parsedClusterData = JSON.parse(stringifiedClusterData);
-  //     status = parsedClusterData.cluster.status;
-  //   }
-
-  //   await new Promise((resolve, reject) => {
-  //     setTimeout(() => {
-  //       getClusterData();
-  //       resolve();
-  //     }, 1000 * 60 * 6);
-  //   })
-
-  //   await new Promise((resolve, reject) => {
-  //     const loop = () => {
-  //       if (status !== "ACTIVE") {
-  //         setTimeout(() => {
-  //           getClusterData();
-  //           loop();
-  //         }, 1000 * 30);
-  //       } else {
-  //         resolve();
-  //       }
-  //     } 
-  //     loop();  
-  //   })
-        
-  //   const createClusterFile = await fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedClusterData);
-
-
-  // } catch (err) {
-  //   console.log("err", err);
-  // }
-
-
-  win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
-
-
-
+  win.webContents.send(events.HANDLE_NEW_CLUSTER, clusterName);
 });
 
 //TODO No button should be used, should auto happen after last thing completes
+
+
+
 
 
 

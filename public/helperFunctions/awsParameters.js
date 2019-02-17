@@ -34,14 +34,13 @@ awsParameters.createClusterParam = (clusterName, subnetIds, securityGroupIds, ro
   const clusterParam = {
     name: clusterName, 
     resourcesVpcConfig: {
-      subnetIds: ['subnet-0575204e,subnet-d98da5a0,subnet-e6350fbc'],
+      subnetIds: subnetIds,
       securityGroupIds: [
         securityGroupIds
       ]
     },
     roleArn: roleArn, 
   }
-  console.log(clusterParam.resourcesVpcConfig.subnetIds);
   return clusterParam;
 }
 
@@ -118,5 +117,18 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
   }
   return AWSClusterConfigFileParam;
 }
+
+
+//** Parameter for CREATE_WORKER_NODE_TECH_STACK 
+awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocument) => {
+  const iamRoleParam = {
+    AssumeRolePolicyDocument: JSON.stringify(iamRolePolicyDocument),
+    RoleName: roleName,
+    Description: roleDescription,
+    Path: '/', 
+  };
+  return iamRoleParam;
+}
+
 
 module.exports = awsParameters;

@@ -13,6 +13,8 @@ const fsp = require('fs').promises;
 //**.ENV Variables */
 const REGION = process.env.REGION;
 const SERVICEROLEARN = process.env.EKSSERVICEROLEARN;
+const ADRIANEKSSERVICEROLEARN = process.env.ADRIANEKSSERVICEROLEARN;
+
 
 const SUBNETID1 = process.env.SUBNETID1;
 const SUBNETID2 = process.env.SUBNETID2;
@@ -24,7 +26,6 @@ const SECURITYGROUPIDS = process.env.SECURITYGROUPIDS;
 const iam = new IAM()
 const eks = new EKS({ region: REGION});
 const cloudformation = new CloudFormation({ region: REGION});
-
 
 const awsEventCallbacks = {};
 
@@ -50,7 +51,7 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
     const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
     
     //Create file named for IAM Role and save in assets folder */
-    fsp.writeFile(__dirname + `/../sdkAssets/private/${roleName}.json`, stringifiedIamRoleDataFromForm);
+    fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${roleName}.json`, stringifiedIamRoleDataFromForm);
 
     //Send Cluster + Service Policies to AWS to attach to created IAM Role 
     const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
@@ -78,7 +79,147 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
 };
 
 //** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
-awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (roleName, roleDescription, iamRolePolicyDoc) => {
+awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, stackTemplateStringified) => {
+  const techStackParam = awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
+
+  //Send tech stack data to AWS to create stack 
+  try {
+    const stack = await cloudformation.createStack(techStackParam).promise();
+
+    const getStackDataParam = {
+      StackName: stackName
+    };
+
+    let stringifiedStackData;
+    let parsedStackData;
+    let stackStatus = "CREATE_IN_PROGRESS";
+
+    //TODO modularize functions
+    const getStackData = async () => {
+      try {
+        const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
+        stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
+        parsedStackData = JSON.parse(stringifiedStackData);
+        stackStatus = parsedStackData[0].StackStatus;
+      } catch (err) {
+      }
+    }
+    
+    //check with AWS to see if the stack has been created, if so, move on. If not, keep checking until complete. Estimated to take 1 - 1.5 mins.
+    while (stackStatus !== "CREATE_COMPLETE") {
+      console.log("stackStatus in while loop: ", stackStatus);
+      // wait 30 seconds
+      await awsHelperFunctions.timeout(1000 * 30)
+      getStackData();
+    }
+
+    const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+
+    //Send a request to AWS to confirm stack creation and get data*/
+    //const describleStack = await cloudformation.describeStacks(params).promise();
+
+    //Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder
+    // let stringifiedReturnedData = JSON.stringify(describleStack.Stacks);
+
+    // fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedReturnedData);
+  } catch (err) {
+    console.log(err);
+  }
+
+  //TODO Decide what to return to user
+  return stackName;
+};
+
+//** --------- CREATE AWS CLUSTER ------------------------------------- **//
+
+awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (clusterName) => {
+
+  //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
+  let stackName = "real";
+  
+  const stackDataFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, 'utf-8');
+
+  // console.log("stackDataFileContents: ", stackDataFileContents);
+
+  const parsedStackDataFileContents = JSON.parse(stackDataFileContents);
+
+  // console.log("parsedStackDataFileContents: ", parsedStackDataFileContents[0]);
+  // console.log("parsedStackDataFileContents Outputs: ", parsedStackDataFileContents[0].Outputs);
+  console.log("parsedStackDataFileContents Outputs 1: ", parsedStackDataFileContents[0].Outputs[1].OutputValue);
+  console.log("parsedStackDataFileContents Outputs 2: ", parsedStackDataFileContents[0].Outputs[2].OutputValue);
+  console.log("stackId: ", parsedStackDataFileContents[0].StackId);
+  
+  //Gather required data from Cluster File
+  const subnetIds = [parsedStackDataFileContents[0].Outputs[2].OutputValue];
+  const securityGroupIds = parsedStackDataFileContents[0].Outputs[1].OutputValue;
+  const roleArn = ADRIANEKSSERVICEROLEARN;
+  //parsedStackDataFileContents[0].StackId;
+
+  console.log("subnetIds: ", subnetIds);
+
+  const clusterParam = awsParameters.createClusterParam(clusterName, subnetIds, securityGroupIds, roleArn); 
+
+  try {
+    //Send cluster data to AWS via clusterParmas to create a cluster */
+    const cluster = await eks.createCluster(clusterParam).promise();
+    
+    const fetchClusterDataParam = {
+      name: clusterName
+    };
+
+    let parsedClusterData;
+    let status = "CREATING";
+
+    const getClusterData = async () => {
+      const clusterData = await eks.describeCluster(fetchClusterDataParam).promise();
+      const stringifiedClusterData = JSON.stringify(clusterData, null, 2);
+      parsedClusterData = JSON.parse(stringifiedClusterData);
+      status = parsedClusterData.cluster.status;
+    }
+
+    await timeout(1000 * 60 * 6);
+    getClusterData();
+
+    while (status !== "ACTIVE") {
+      // wait 30 seconds
+      await timeout(1000 * 30)
+      getClusterData();
+    }
+
+    // await new Promise((resolve, reject) => {
+    //   setTimeout(() => {
+    //     getClusterData();
+    //     resolve();
+    //   }, 1000 * 60 * 6);
+    // })
+
+    // await new Promise((resolve, reject) => {
+    //   const loop = () => {
+    //     if (status !== "ACTIVE") {
+    //       setTimeout(() => {
+    //         getClusterData();
+    //         loop();
+    //       }, 1000 * 30);
+    //     } else {
+    //       resolve();
+    //     }
+    //   } 
+    //   loop();  
+    // })
+        
+    const createClusterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/CLUSTER_${clusterName}.json`, stringifiedClusterData);
+
+  } catch (err) {
+    console.log("err", err);
+  }
+
+  return clusterName;
+
+};
+
+
+
+
 
 
 

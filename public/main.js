@@ -94,76 +94,17 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 })
 
 //** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
-//Takes approx 1 minute - 1 minute, 30 seconds to create stack and get data back from AWS
+//Takes approx 1 - 1.5 mins to create stack and get data back from AWS
 ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
-
-  console.log("fired");
 
 // Stringify imported stackTemplate doc to insert into stackParams obj
 const stackTemplateStringified = JSON.stringify(stackTemplate);
 const stackName = data.stackName;
 
-//Collect the form data, input by user when creating stack, insert into stackParams object
-const stackParams = {
-  StackName: stackName,
-  DisableRollback: false,
-  EnableTerminationProtection: false,
-  Parameters: [
-    { ParameterKey: 'VpcBlock', ParameterValue: '192.168.0.0/16', },
-    { ParameterKey: 'Subnet01Block', ParameterValue: '192.168.64.0/18', },
-    { ParameterKey: 'Subnet02Block', ParameterValue: '192.168.128.0/18', },
-    { ParameterKey: 'Subnet03Block', ParameterValue: '192.168.192.0/18', }
-  ],
-  TemplateBody: stackTemplateStringified,
-};
+const createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataInFile(stackName, stackTemplateStringified);
 
-//Send Stack data to AWS via stackParams obj to create a Stack on AWS 
-try {
-  const stack = await cloudformation.createStack(stackParams).promise();
-
-  const params = {
-    StackName: stackName
-  };
-
-  let stringifiedStackData;
-  let parsedStackData;
-  let stackStatus = "CREATE_IN_PROGRESS";
-
-  //TODO modularize functions
-  const getStackData = async () => {
-    try {
-      const stackData = await cloudformation.describeStacks(params).promise();
-      stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
-      parsedStackData = JSON.parse(stringifiedStackData);
-      console.log(parsedStackData);
-      stackStatus = parsedStackData[0].StackStatus;
-      console.log("getting stack data status: ", stackStatus);
-    } catch (err) {
-      console.log("getStackDataFunction: ", err);
-    }
-  }
-  
-  //check with AWS to see if the stack has been created, if so, move on. If not, keep checking until complete. Estimated to take 1 - 1.5 mins.
-  while (stackStatus !== "CREATE_COMPLETE") {
-    console.log("stackStatus in while loop: ", stackStatus);
-    // wait 30 seconds
-    await awsHelperFunctions.timeout(1000 * 30)
-    getStackData();
-  }
-
-  console.log("about to create file: ", stringifiedStackData)
-  const createStackFile = fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedStackData);
-
-  //Send a request to AWS to confirm stack creation and get data*/
-  //const describleStack = await cloudformation.describeStacks(params).promise();
-
-  //Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder
-  // let stringifiedReturnedData = JSON.stringify(describleStack.Stacks);
-
-  // fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedReturnedData);
-} catch (err) {
-  console.log(err);
-}
+//TODO decide what to send back to user. Now juse sends stackName
+win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
 })
 
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
@@ -173,70 +114,80 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   const clusterName = data.clusterName;
 
-  //TODO: MAKE THESE VARIBLES DYNAMIC
-    //READFILE
+  const createdCluster = awsEventCallbacks.createClusterAndSaveReturnedDataToFile(clusterName);
 
-  //data saved in .env file
-  const subnetIds = SUBNETIDS;
-  const securityGroupIds = SECURITYGROUPIDS;
-  const roleArn = SERVICEROLEARN;
 
-  const clusterParams = {
-    name: clusterName, 
-    resourcesVpcConfig: {
-      subnetIds: subnetIds,
-      securityGroupIds: [
-        securityGroupIds
-      ]
-    },
-    roleArn: roleArn, 
-  };
 
-  try {
-    //Send cluster data to AWS via clusterParmas to create a cluster */
-    const cluster = await eks.createCluster(clusterParams).promise();
+  // //TODO: MAKE THESE VARIBLES DYNAMIC
+  //   //READFILE
+
+  // //data saved in .env file
+  // const subnetIds = SUBNETIDS;
+  // const securityGroupIds = SECURITYGROUPIDS;
+  // const roleArn = SERVICEROLEARN;
+
+  // const clusterParams = {
+  //   name: clusterName, 
+  //   resourcesVpcConfig: {
+  //     subnetIds: subnetIds,
+  //     securityGroupIds: [
+  //       securityGroupIds
+  //     ]
+  //   },
+  //   roleArn: roleArn, 
+  // };
+
+  // try {
+  //   //Send cluster data to AWS via clusterParmas to create a cluster */
+  //   const cluster = await eks.createCluster(clusterParams).promise();
     
-    const clusterParam = {
-      name: clusterName
-    };
+  //   const clusterParam = {
+  //     name: clusterName
+  //   };
 
-    let parsedClusterData;
-    let status = "CREATING";
+  //   let parsedClusterData;
+  //   let status = "CREATING";
 
-    const getClusterData = async () => {
-      const clusterData = await eks.describeCluster(clusterParam).promise();
-      const stringifiedClusterData = JSON.stringify(clusterData, null, 2);
-      parsedClusterData = JSON.parse(stringifiedClusterData);
-      status = parsedClusterData.cluster.status;
-    }
+  //   const getClusterData = async () => {
+  //     const clusterData = await eks.describeCluster(clusterParam).promise();
+  //     const stringifiedClusterData = JSON.stringify(clusterData, null, 2);
+  //     parsedClusterData = JSON.parse(stringifiedClusterData);
+  //     status = parsedClusterData.cluster.status;
+  //   }
 
-    await new Promise((resolve, reject) => {
-      setTimeout(() => {
-        getClusterData();
-        resolve();
-      }, 1000 * 60 * 6);
-    })
+  //   await new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       getClusterData();
+  //       resolve();
+  //     }, 1000 * 60 * 6);
+  //   })
 
-    await new Promise((resolve, reject) => {
-      const loop = () => {
-        if (status !== "ACTIVE") {
-          setTimeout(() => {
-            getClusterData();
-            loop();
-          }, 1000 * 30);
-        } else {
-          resolve();
-        }
-      } 
-      loop();  
-    })
+  //   await new Promise((resolve, reject) => {
+  //     const loop = () => {
+  //       if (status !== "ACTIVE") {
+  //         setTimeout(() => {
+  //           getClusterData();
+  //           loop();
+  //         }, 1000 * 30);
+  //       } else {
+  //         resolve();
+  //       }
+  //     } 
+  //     loop();  
+  //   })
         
-    const createClusterFile = await fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedClusterData);
+  //   const createClusterFile = await fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedClusterData);
 
 
-  } catch (err) {
-    console.log("err", err);
-  }
+  // } catch (err) {
+  //   console.log("err", err);
+  // }
+
+
+  win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
+
+
+
 });
 
 //TODO No button should be used, should auto happen after last thing completes

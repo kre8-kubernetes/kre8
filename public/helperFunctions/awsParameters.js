@@ -1,7 +1,6 @@
 const awsParameters = {};
 
 //** Parameter for CREATE_IAM_ROLE 
-
 awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocument) => {
   const iamRoleParam = {
     AssumeRolePolicyDocument: JSON.stringify(iamRolePolicyDocument),
@@ -13,6 +12,38 @@ awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocu
 }
 
 
+//** Parameter for CREATE_TECH_STACK 
+awsParameters.createTechStackParam = (stackName, stackTemplateStringified) => {
+  const techStackParam = {
+    StackName: stackName,
+    DisableRollback: false,
+    EnableTerminationProtection: false,
+    Parameters: [
+      { ParameterKey: 'VpcBlock', ParameterValue: '192.168.0.0/16', },
+      { ParameterKey: 'Subnet01Block', ParameterValue: '192.168.64.0/18', },
+      { ParameterKey: 'Subnet02Block', ParameterValue: '192.168.128.0/18', },
+      { ParameterKey: 'Subnet03Block', ParameterValue: '192.168.192.0/18', }
+    ],
+    TemplateBody: stackTemplateStringified,
+  };
+  return techStackParam;
+}
+
+//** Parameter for CREATE_CLUSTER 
+awsParameters.createClusterParam = (clusterName, subnetIds, securityGroupIds, roleArn) => {
+  const clusterParam = {
+    name: clusterName, 
+    resourcesVpcConfig: {
+      subnetIds: ['subnet-0575204e,subnet-d98da5a0,subnet-e6350fbc'],
+      securityGroupIds: [
+        securityGroupIds
+      ]
+    },
+    roleArn: roleArn, 
+  }
+  console.log(clusterParam.resourcesVpcConfig.subnetIds);
+  return clusterParam;
+}
 
 
 //** Parameter for CREATE_CONFIG_FILE 

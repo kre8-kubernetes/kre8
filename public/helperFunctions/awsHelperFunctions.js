@@ -9,17 +9,17 @@ awsHelperFunctions.timeout = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 } 
 
-// // Wait 6 minutes
-//     await timeout(1000 * 60 * 6)
-//     // run getClusterData()
-//     getClusterData();
-    
-//     // while the state is not active
-//     while (state !== "ACTIVE") {
-//       // wait 30 seconds
-//       await timeout(1000 * 30)
-//       getClusterData();
-//     }
+awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = (folderName) => {
+  if (fs.existsSync(process.env['HOME'] + `/.{folderName}`)) {
+  } else {
+    fs.mkdirSync(process.env['HOME'] + '/{folderName}'), (err) => {
+      if (err) console.log("mkdir error", folderName, err);
+    };  
+  };
+} 
+
+
+
 
 module.exports = awsHelperFunctions;
 

@@ -4,7 +4,9 @@ const isDev = require('electron-is-dev');
 require('dotenv').config();
 
 const events = require('../eventTypes.js')
-const awsHelperFunctions = require('./helperFunctions/awsHelperFunctions'); 
+const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
+const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
+const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
 
 const fs = require('fs');
 const { spawn } = require('child_process');
@@ -79,64 +81,15 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
-  console.log("Iam role create fired");
-
+  //data from user input + imported policy document
   const roleName = data.roleName;
-  const description = data.description;
+  const roleDescription = data.description;
+  const iamRolePolicyDoc = iamRolePolicyDocument;
 
-  //Take user input when creating IAM Role & insert into the iamParams object
-  const iamParams = {
-    AssumeRolePolicyDocument: JSON.stringify(iamRolePolicyDocument),
-    RoleName: roleName,
-    Description: description,
-    Path: '/', 
-  };
+  await awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs(roleName, roleDescription, iamRolePolicyDoc);
 
-  //Send IAM data to AWS via the iamParams object to create an IAM Role*/
-  try {
-    const role = await iam.createRole(iamParams).promise();
-    //Collect the relevant IAM data returned from AWS and store in an object to stringify*/
+  //TODO send data to user by adding a return to the function
 
-    const iamRoleDataFromForm = {
-      roleName: role.Role.RoleName,
-      createDate: role.Role.RoleId,
-      roleID: role.Role.RoleId,
-      arn: role.Role.Arn,
-      createDate: role.Role.CreateDate,
-      path: role.Role.Path
-    }
-
-    const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
-    
-    //Create a file from returned data with the title of the role name that the user selected and save in assets folder */
-
-    //TODO regular write file 
-    fsp.writeFile(__dirname + `/sdkAssets/private/${roleName}.json`, stringifiedIamRoleDataFromForm);
-
-    //Send Cluster + Service Policies to AWS to attach to created IAM Role 
-    const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
-    const servicePolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
-
-    const clusterPolicy = {
-      RoleName: roleName,
-      PolicyArn: clusterPolicyArn
-    }
-
-    const servicePolicy = {
-      RoleName: roleName,
-      PolicyArn: servicePolicyArn
-    }
-
-    await iam.attachRolePolicy(clusterPolicy).promise();
-    await iam.attachRolePolicy(servicePolicy).promise();
-
-    //TODO: PROMISE ALL INSTEAD
-  
-  } catch (err) {
-    console.log(err);
-  }
-
-  // Once role is created send back to renderer that the role is made
   win.webContents.send(events.HANDLE_NEW_ROLE, roleName);
 })
 

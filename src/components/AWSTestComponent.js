@@ -44,7 +44,7 @@ const AWSTestComponent = (props) => {
           <br />
         </form>
         <br />
-        <button className="buttons" onClick={props.handleCreateRole}>Create Tech Stack</button>
+        <button className="buttons" onClick={props.handleCreateTechStack}>Create Tech Stack</button>
       </div>
       {/* Create AWS Cluster */}
       <br />
@@ -57,7 +57,7 @@ const AWSTestComponent = (props) => {
           <br />
         </form>
         <br />
-        <button className="buttons" onClick={props.handleCreateRole}>Create Cluster</button>
+        <button className="buttons" onClick={props.handleCreateCluster}>Create Cluster</button>
       </div>
     </div>   
   )

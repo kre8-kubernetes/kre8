@@ -140,6 +140,7 @@ class App extends Component {
           createTechStack_stackName={createTechStack_stackName}
           createCluster_clusterName={createCluster_clusterName}
 
+          handleCreateRole={this.handleCreateRole}
           emitInstallAuthenticator={this.emitInstallAuthenticator}
           handleCreateTechStack={this.handleCreateTechStack}
           handleCreateCluster={this.handleCreateCluster}

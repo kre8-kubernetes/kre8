@@ -4,6 +4,8 @@ const isDev = require('electron-is-dev');
 require('dotenv').config();
 
 const events = require('../eventTypes.js')
+const awsHelperFunctions = require('./helperFunctions/awsHelperFunctions'); 
+
 const fs = require('fs');
 const { spawn } = require('child_process');
 const fsp = require('fs').promises;
@@ -37,7 +39,7 @@ const iam = new IAM()
 const eks = new EKS({ region: REGION});
 const cloudformation = new CloudFormation({ region: REGION});
 
-//** Create window object
+//** CREATE WINDOW OBJECT
 let win;
 
 //** Function to create our application window, that will be invoked with app.on('ready')
@@ -56,8 +58,6 @@ function createWindow () {
 
 //** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ----------------- **//
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
-  // TEST data should be 'CREATE_ROLE';
-  console.log('data from create iam role', data);
   const child = spawn('curl', ['-o', 'aws-iam-authenticator', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator']);
     child.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
@@ -68,7 +68,6 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
     child.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
       win.webContents.send(events.HANDLE_NEW_ROLE, 'New Role Name Here');
-
     });
 })
 
@@ -79,7 +78,9 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
-   //TODO: Verify that we do not want to collect the the commented out optional inputs in the iamParams object
+
+  console.log("Iam role create fired");
+
   const roleName = data.roleName;
   const description = data.description;
 
@@ -89,17 +90,12 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     RoleName: roleName,
     Description: description,
     Path: '/', 
-    // MaxSessionDuration: 100,
-    // PermissionsBoundary: req.body.permissionsBoundary,
-    // Tags: [ { Key: req.body.key, Value: req.body.value } ]
   };
 
   //Send IAM data to AWS via the iamParams object to create an IAM Role*/
   try {
     const role = await iam.createRole(iamParams).promise();
     //Collect the relevant IAM data returned from AWS and store in an object to stringify*/
-
-    console.log("role: ", JSON.stringify(role, null, 2));
 
     const iamRoleDataFromForm = {
       roleName: role.Role.RoleName,
@@ -113,6 +109,8 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
     
     //Create a file from returned data with the title of the role name that the user selected and save in assets folder */
+
+    //TODO regular write file 
     fsp.writeFile(__dirname + `/sdkAssets/private/${roleName}.json`, stringifiedIamRoleDataFromForm);
 
     //Send Cluster + Service Policies to AWS to attach to created IAM Role 
@@ -129,8 +127,10 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
       PolicyArn: servicePolicyArn
     }
 
-    const attachClusterPolicy = await iam.attachRolePolicy(clusterPolicy).promise();
-    const attachServicePolicy = await iam.attachRolePolicy(servicePolicy).promise();
+    await iam.attachRolePolicy(clusterPolicy).promise();
+    await iam.attachRolePolicy(servicePolicy).promise();
+
+    //TODO: PROMISE ALL INSTEAD
   
   } catch (err) {
     console.log(err);
@@ -141,7 +141,10 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 })
 
 //** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
+//Takes approx 1 minute - 1 minute, 30 seconds to create stack and get data back from AWS
 ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
+
+  console.log("fired");
 
 // Stringify imported stackTemplate doc to insert into stackParams obj
 const stackTemplateStringified = JSON.stringify(stackTemplate);
@@ -165,20 +168,46 @@ const stackParams = {
 try {
   const stack = await cloudformation.createStack(stackParams).promise();
 
-  //TODO: if "StackStatus":"CREATE_IN_PROGRESS" in returned form, keep asking
-
   const params = {
     StackName: stackName
   };
 
-  //TODO Subnet IDs do not come back in this request and we need them for Create Cluster step. Creation is still in progress when we get data back, so maybe subnet ids come back later...
+  let stringifiedStackData;
+  let parsedStackData;
+  let stackStatus = "CREATE_IN_PROGRESS";
+
+  //TODO modularize functions
+  const getStackData = async () => {
+    try {
+      const stackData = await cloudformation.describeStacks(params).promise();
+      stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
+      parsedStackData = JSON.parse(stringifiedStackData);
+      console.log(parsedStackData);
+      stackStatus = parsedStackData[0].StackStatus;
+      console.log("getting stack data status: ", stackStatus);
+    } catch (err) {
+      console.log("getStackDataFunction: ", err);
+    }
+  }
+  
+  //check with AWS to see if the stack has been created, if so, move on. If not, keep checking until complete. Estimated to take 1 - 1.5 mins.
+  while (stackStatus !== "CREATE_COMPLETE") {
+    console.log("stackStatus in while loop: ", stackStatus);
+    // wait 30 seconds
+    await awsHelperFunctions.timeout(1000 * 30)
+    getStackData();
+  }
+
+  console.log("about to create file: ", stringifiedStackData)
+  const createStackFile = fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedStackData);
+
   //Send a request to AWS to confirm stack creation and get data*/
-  const describleStack = await cloudformation.describeStacks(params).promise();
+  //const describleStack = await cloudformation.describeStacks(params).promise();
 
   //Stringify the data returned from AWS and save it in a file with the title of the stack name and save in the Assets folder
-  let stringifiedReturnedData = JSON.stringify(describleStack.Stacks);
+  // let stringifiedReturnedData = JSON.stringify(describleStack.Stacks);
 
-  fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedReturnedData);
+  // fsp.writeFile(__dirname + `/sdkAssets/private/${stackName}.json`, stringifiedReturnedData);
 } catch (err) {
   console.log(err);
 }
@@ -188,10 +217,11 @@ try {
 ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
-  console.log("data: ", data);
 
-  //TODO: DO WE NEED TO MAKE THESE VARIBLES DYNAMIC
   const clusterName = data.clusterName;
+
+  //TODO: MAKE THESE VARIBLES DYNAMIC
+    //READFILE
 
   //data saved in .env file
   const subnetIds = SUBNETIDS;
@@ -217,13 +247,12 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
       name: clusterName
     };
 
-    let stringifiedClusterData;
     let parsedClusterData;
     let status = "CREATING";
 
     const getClusterData = async () => {
       const clusterData = await eks.describeCluster(clusterParam).promise();
-      stringifiedClusterData = JSON.stringify(clusterData, null, 2);
+      const stringifiedClusterData = JSON.stringify(clusterData, null, 2);
       parsedClusterData = JSON.parse(stringifiedClusterData);
       status = parsedClusterData.cluster.status;
     }
@@ -249,9 +278,8 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
       loop();  
     })
         
-    const writeFile = await fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedClusterData);
+    const createClusterFile = await fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedClusterData);
 
-    //TODO add logic to check if "status":"CREATING", if so, rerun fstp.writeFile
 
   } catch (err) {
     console.log("err", err);
@@ -259,9 +287,6 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 });
 
 //TODO No button should be used, should auto happen after last thing completes
-//**--------- GENERATE AND SAVE CONFIG FILE ON USER COMPUTER ---------------- **//
-
-
 
 
 
@@ -279,6 +304,8 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 // })
 
 //**-----------POD-----------**//
+
+//TODO Modularize YAML creation
 
 //CREATE POD 
 ipcMain.on(events.CREATE_POD, (event, data) => {

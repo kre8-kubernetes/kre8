@@ -74,52 +74,23 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
 
 //** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
 awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, stackTemplateStringified) => {
-  const techStackParam = awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
 
+  const techStackParam = await awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
+  
   try {
-
-    //Send tech stack data to AWS to create stack 
-    const stack = await cloudformation.createStack(techStackParam).promise();
-
-    const getStackDataParam = { StackName: stackName };
-
-    let stringifiedStackData;
-    let parsedStackData;
-    let stackStatus = "CREATE_IN_PROGRESS";
-
-    //TODO modularize function
-    const getStackData = async () => {
-      try {
-        const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
-        stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
-        parsedStackData = JSON.parse(stringifiedStackData);
-        stackStatus = parsedStackData[0].StackStatus;
-      } catch (err) {
-      }
-    }
-    
-    //check with AWS to see if the stack has been created, if so, move on. If not, keep checking until complete. Estimated to take 1 - 1.5 mins.
-    while (stackStatus !== "CREATE_COMPLETE") {
-      console.log("stackStatus in while loop: ", stackStatus);
-      // wait 30 seconds
-      await awsHelperFunctions.timeout(1000 * 30)
-      getStackData();
-    }
-
-    const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
-
-  } catch (err) {
-    console.log(err);
+    const techStackCreated = await awsHelperFunctions.createTechStack(stackName, techStackParam); 
+  } catch (err) { 
+    console.log(err); 
   }
-
-  //TODO Decide what to return to user
-  return stackName;
 };
 
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
 
 awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (techStackName, roleArn, clusterName) => {
 
+  try {
+  
+  //Get data from tech stack file
   const stackDataFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/STACK_${techStackName}.json`, 'utf-8');
 
   const parsedStackDataFileContents = JSON.parse(stackDataFileContents);
@@ -127,69 +98,54 @@ awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (techStackName,
   const subnetArray = subnetIds.split(',');
   const securityGroupIds = parsedStackDataFileContents[0].Outputs[0].OutputValue;
 
-  //TODO: Dynamically grab roleArn
-  //const roleArn = ?;
+  //Use data to generate cluster parameter to send to AWS
+  const clusterParam = awsParameters.createClusterParam(clusterName, subnetArray, securityGroupIds, roleArn);
 
-  const clusterParam = awsParameters.createClusterParam(clusterName, subnetArray, securityGroupIds, roleArn); 
-
-  try {
-    //Send cluster data to AWS via clusterParmas to create a cluster */
-    const cluster = await eks.createCluster(clusterParam).promise();
+  //Send cluster data to AWS via clusterParmas to create a cluster 
+  const cluster = await eks.createCluster(clusterParam).promise();
     
-    const fetchClusterDataParam = { name: clusterName };
 
-    let parsedClusterData;
-    let stringifiedClusterData;
-    let clusterCreationStatus = "CREATING";
+  const fetchClusterDataParam = { name: clusterName };
 
-    const getClusterData = async () => {
-      const clusterData = await eks.describeCluster(fetchClusterDataParam).promise();
-      stringifiedClusterData = JSON.stringify(clusterData, null, 2);
-      parsedClusterData = JSON.parse(stringifiedClusterData);
-      clusterCreationStatus = parsedClusterData.cluster.status;
-      console.log("status in getClusterData: ", clusterCreationStatus);
-    }
+  let parsedClusterData;
+  let stringifiedClusterData;
+  let clusterCreationStatus = "CREATING";
 
-    await awsHelperFunctions.timeout(1000 * 60 * 6);
+  //Function to request cluster data from AWS and check cluster creation status
+  const getClusterData = async () => {
+    const clusterData = await eks.describeCluster(fetchClusterDataParam).promise();
+    stringifiedClusterData = JSON.stringify(clusterData, null, 2);
+    parsedClusterData = JSON.parse(stringifiedClusterData);
+    clusterCreationStatus = parsedClusterData.cluster.status;
+    console.log("status in getClusterData: ", clusterCreationStatus);
+  }
+  
+  //Timeout execution thread for 6 minutes to give AWS time to create cluster
+  await awsHelperFunctions.timeout(1000 * 60 * 6);
+  
+  //Ask Amazon for cluster data
+  getClusterData();
+
+  while (clusterCreationStatus !== "ACTIVE") {
+    //Timeout execution thread for 30 seconds before resending request to AWS for cluster data
+    await awsHelperFunctions.timeout(1000 * 30)
     getClusterData();
+  }
+  
+  //Once cluster is created, create a file holding the cluster data from AWS
+  const createClusterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/CLUSTER_${clusterName}.json`, stringifiedClusterData);
 
-    while (clusterCreationStatus !== "ACTIVE") {
-      // wait 30 seconds
-      await awsHelperFunctions.timeout(1000 * 30)
-      getClusterData();
-    }
-        
-    const createClusterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/CLUSTER_${clusterName}.json`, stringifiedClusterData);
-
-    await kubectlConfigFunctions.createConfigFile(clusterName);
-    await kubectlConfigFunctions.configureKubectl(clusterName);
-    await kubectlConfigFunctions.createStackForWorkerNode(stackName, clusterName);
-
-
-
-
-
-
+  await kubectlConfigFunctions.createConfigFile(clusterName);
+  await kubectlConfigFunctions.configureKubectl(clusterName);
+  await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds);
+  await kubectlConfigFunctions.inputNodeInstance(stackName);
 
   } catch (err) {
     console.log("err", err);
   }
 
-
-
-
-
-
   return clusterName;
 };
-
-
-
-
-
-
-
-
 
 
 module.exports = awsEventCallbacks;

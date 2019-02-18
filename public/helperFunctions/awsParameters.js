@@ -57,13 +57,6 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
             },
             "name": "kubernetes"
         },
-        {
-            "cluster": {
-                "certificate-authority-data": certificateAuthorityData,
-                "server": serverEndpoint
-            },
-            "name": clusterArn
-        }
     ],
     "contexts": [
         {
@@ -73,15 +66,8 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
             },
             "name": "aws"
         },
-        {
-            "context": {
-                "cluster": clusterArn,
-                "user": clusterArn
-            },
-            "name": clusterArn
-        }
     ],
-    "current-context": clusterArn,
+    "current-context": "aws",
     "kind": "Config",
     "preferences": {},
     "users": [
@@ -99,20 +85,6 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
                 }
             }
         },
-        {
-            "name": clusterArn,
-            "user": {
-                "exec": {
-                    "apiVersion": "client.authentication.k8s.io/v1alpha1",
-                    "args": [
-                        "token",
-                        "-i",
-                        clusterName
-                    ],
-                    "command": "aws-iam-authenticator"
-                }
-            }
-        }
     ]
   }
   return AWSClusterConfigFileParam;
@@ -120,15 +92,74 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
 
 
 //** Parameter for CREATE_WORKER_NODE_TECH_STACK 
-awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocument) => {
-  const iamRoleParam = {
-    AssumeRolePolicyDocument: JSON.stringify(iamRolePolicyDocument),
-    RoleName: roleName,
-    Description: roleDescription,
-    Path: '/', 
-  };
-  return iamRoleParam;
+
+  awsParameters.createWorkerNodeStackParam = (stackName, clusterName, subnetIds, stackTemplateStringified) => {
+
+    const keyName = `${clusterName}Key`;
+
+    const workerNodeStackParam = {
+      StackName: stackName,
+      Capabilities: [ "CAPABILITY_IAM" ],
+      DisableRollback: false,
+      EnableTerminationProtection: false,
+      Parameters: [
+        { "ParameterKey": "ClusterName", "ParameterValue": clusterName },
+        { "ParameterKey": "ClusterControlPlaneSecurityGroup", "ParameterValue": "sg-0c09b77bd2cdec0d7" },
+        { "ParameterKey": "NodeGroupName", "ParameterValue": "worker-node" },
+        { "ParameterKey": "NodeAutoScalingGroupMinSize", "ParameterValue": "1" },
+        { "ParameterKey": "NodeAutoScalingGroupDesiredCapacity", "ParameterValue": "3" },
+        { "ParameterKey": "NodeAutoScalingGroupMaxSize", "ParameterValue": "4" },
+        { "ParameterKey": "NodeInstanceType", "ParameterValue": "t3.nano" },
+        { "ParameterKey": "NodeImageId", "ParameterValue": "ami-081099ec932b99961" },
+        { "ParameterKey": "KeyName", "ParameterValue": keyName },
+        { "ParameterKey": "VpcId", "ParameterValue": "vpc-0815099f512fd6a3f" },
+        { "ParameterKey": "Subnets", "ParameterValue": subnetIds }
+      ],
+      TemplateBody: stackTemplateStringified,
+    }
+    return workerNodeStackParam;
+  }
+
+  //** Parameter for INPUT NODE INSTANCE 
+
+  awsParameters.createInputNodeInstance = (roleArn) => {
+
+    const inputNodeInstanceParam = {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": { "name": "aws-auth", "namespace": "kube-system" },
+      "data": {
+        "mapRoles": [ 
+          {
+            "rolearn": roleArn,
+            "username": "system:node:{{EC2PrivateDNSName}}",
+            "groups": ["system:bootstrappers", "system:nodes"]
+          } 
+        ]
+      }
+    }
+    return inputNodeInstanceParam;
 }
 
 
 module.exports = awsParameters;
+
+// "apiVersion": "v1",
+// "kind": "ConfigMap",
+// "metadata": {
+//   "name": "aws-auth",
+//   "namespace": "kube-system"
+// },
+// "data": {
+//   "mapRoles": [
+//     {
+//       "rolearn": "arn:aws:iam::961616458351:role/braden-test-worker-node-NodeInstanceRole-120VZFL0JBUUQ",
+//       "username": "system:node:{{EC2PrivateDNSName}}",
+//       "groups": [
+//         "system:bootstrappers",
+//         "system:nodes"
+//       ]
+//     }
+//   ]
+// }
+// }

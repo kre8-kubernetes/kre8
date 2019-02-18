@@ -10,7 +10,7 @@ const { spawn } = require('child_process');
 const fsp = require('fs').promises;
 
 //** --------- IMPORT DOCUMENTS ---------------- 
-const stackTemplateForWorkerNode = require(__dirname + '/sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
+const stackTemplateForWorkerNode = require(__dirname + '/../sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
 
 
 //**.ENV Variables */
@@ -27,16 +27,16 @@ const kubectlConfigFunctions = {};
 
 kubectlConfigFunctions.createConfigFile = (clusterName) => {
 
-  //Access data from cluster data file, saved as cluster name, in Assets and save in variables to pass to the AWSConfigFileData object*/
-
-  const clusterDataFileContents = fs.readFileSync(__dirname + `/sdkAssets/private/${clusterName}.js`, 'utf-8');
+  //Access data from cluster data file
+  const clusterDataFileContents = fs.readFileSync(__dirname + `/sdkAssets/private/${clusterName}.json`, 'utf-8');
   
-  //Gather required data from Cluster File
-  const parsedclusterDataFileContents = JSON.parse(clusterDataFileContents);
-  const serverEndpoint = parsedclusterDataFileContents.cluster.endpoint;
-  const clusterArn = parsedclusterDataFileContents.cluster.arn;
-  const certificateAuthorityData = parsedclusterDataFileContents.cluster.certificateAuthority.data;
+  //Gather required data 
+  const parsedClusterDataFileContents = JSON.parse(clusterDataFileContents);
+  const serverEndpoint = parsedClusterDataFileContents.cluster.endpoint;
+  const clusterArn = parsedClusterDataFileContents.cluster.arn;
+  const certificateAuthorityData = parsedClusterDataFileContents.cluster.certificateAuthority.data;
 
+  //Generate parameter with gathered data
   const AWSClusterConfigFileData = awsParameters.createConfigParam(clusterName, serverEndpoint, certificateAuthorityData, clusterArn);
   
   //Format data from the AWSClusterConfigFileData object into YAML to save in user's filesystem 
@@ -46,30 +46,29 @@ kubectlConfigFunctions.createConfigFile = (clusterName) => {
   let regexCharToRemove = /(['])+/g;
   let yamledAWSClusterConfigFileWithoutRegex = yamledAWSClusterConfigFile.replace(regexCharToRemove, "");
 
-  //check if user has a .kube file in their root directory, and if not, make one
+  //Check if user has a .kube file in root directory, if not, make one
   awsHelperFunctions.checkFileSystemForDirectoryAndMkDir(kube);
 
-  //Save file in users .kube file
-  fs.writeFileSync(`/Users/carolynharrold/.kube/{clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
+  //Save file in users .kube directory
+  fs.writeFileSync(`/Users/carolynharrold/.kube/config-{clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
 };
 
 //**--------- CONFIGURE KUBECTL WITH CONFIG FILE -------------------------- **//
 kubectlConfigFunctions.configureKubectl = async (clusterName) => {
 
   try {
+  //Insert filepath to Kube Config file into bash_profile, so kubectl knows where to look for cluster config info
+  const textToInsertIntoBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
 
-  //Insert filepath to Kube Config file into bash_profile, so kubectl knows where to look for cluster configuration information
-  const textToInsertIntoBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/${clusterName}`;
-  console.log(textToInsert);
+  console.log("textToInsertIntoBashProfile: ", textToInsertIntoBashProfile);
 
   const appendBashProfileFile = await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToInsertIntoBashProfile);
     
-    
-  //Reset bash_profile file
-  //TODO do we need to reset this or not?
+  
+  //TODO might need to reset bash profile
   // const resetBashProfile = spawnSync('source', [process.env['HOME'] + '/.bash_profile']);
     
-    //Test functionality — kubectl get svc */
+  //Test functionality — kubectl get svc */
   const child = spawn('kubectl', ['get svc']);
     child.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
@@ -87,74 +86,81 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
 
 }
 
-//** --------- CREATE / SELECT A SECOND AWS TECH STACK FOR WORKER NODE -------- **//
+//** --------- CREATE A SECOND AWS TECH STACK FOR WORKER NODE -------- **//
 
-kubectlConfigFunctions.createStackForWorkerNode = async (stackName, clusterName) => {
+kubectlConfigFunctions.createStackForWorkerNode = async (clusterName, subnetIds) => {
 
 
-  //** Stringify the saved stackTemplate document, imported at top of file to insert into stackParams object
+
+  const workerNodeStackName = `${clusterName}WorkerNodeStack`;
   const stackTemplateStringified = JSON.stringify(stackTemplateForWorkerNode);
 
-  // TODO: Verify that we do not want to collect the the commented out optional inputs in the iamParams object
+  const techStackParam = awsParameters.createWorkerNodeStackParam(workerNodeStackName, clusterName, subnetIds, stackTemplateStringified); 
 
-  //**Collect the form data, input by the user when creating a Stack, and insert into the stackParams object
-  const stackParams = {
+  try {
 
-
-    StackName: stackName,
-    Capabilities: [
-      "CAPABILITY_IAM"
-    ],
-    DisableRollback: false,
-    EnableTerminationProtection: false,
-    Parameters: [
-      //TODO: universalize name 
-      { "ParameterKey": "ClusterName", "ParameterValue": "carolyn-adrian-killer-cluster" },
-      { "ParameterKey": "ClusterControlPlaneSecurityGroup", "ParameterValue": "sg-0c09b77bd2cdec0d7" },
-      { "ParameterKey": "NodeGroupName", "ParameterValue": "worker-node"
-      },
-      { "ParameterKey": "NodeAutoScalingGroupMinSize", "ParameterValue": "1" },
-      { "ParameterKey": "NodeAutoScalingGroupDesiredCapacity", "ParameterValue": "3"
-      },
-      {
-        "ParameterKey": "NodeAutoScalingGroupMaxSize",
-        "ParameterValue": "4"
-      },
-      {
-        "ParameterKey": "NodeInstanceType",
-        "ParameterValue": "t3.nano"
-      },
-      {
-        "ParameterKey": "NodeImageId",
-        "ParameterValue": "ami-081099ec932b99961"
-      },
-      {
-        "ParameterKey": "KeyName",
-        "ParameterValue": "CarolynClusterKey"
-      },
-      {
-        "ParameterKey": "VpcId",
-        "ParameterValue": "vpc-0815099f512fd6a3f"
-      },
-      {
-        "ParameterKey": "Subnets",
-        "ParameterValue": SUBNETIDS
-      }
-    ],
-    TemplateBody: stackTemplateStringified,
-  };
-
-  console.log("stackParams: ", stackParams);
-
-  //**Send Stack data to AWS via the stackParams object to create a stack on AWS
-
-  cloudformation.createStack(stackParams, function(err, data) {
-    if (err) console.log(err, err.stack); 
-    else {
-      console.log(data);
-      next(); 
+    //Create a tech stack for worker node on AWS and save results to file in Assets Folder
+    const techStackCreated = await awsHelperFunctions.createTechStack(stackName, techStackParam); 
+    } catch (err) {
+      console.log(err);
     }
-        
-  });
+  
 }
+
+
+//** --------- INPUT NODE INSTANCE ROLE INTO THE was-auth-cm.yaml AND APPLY -- **//
+
+kubectlConfigFunctions.inputNodeInstance = async (stackName) => {
+
+  try {
+
+  //TODO read new worker stack file to get new roleArn
+  const workerNodeTechStackFile = await fs.readFileSync(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, 'utf-8');
+
+  
+  //Gather required data from workerNodeTechStackFile
+  const parsedWorkerNodeTechStackFile = JSON.parse(workerNodeTechStackFile);
+  const workerNodeTechStackRoleArn = parsedWorkerNodeTechStackFile.Stacks.StackId;
+
+  console.log("workerNodeTechStackRoleArn: ", workerNodeTechStackRoleArn);
+  
+  //Generate paramater
+  const paramToFile = awsParameters.createInputNodeInstance(workerNodeTechStackRoleArn);
+
+  const paramToFileStringified = JSON.stringify(paramToFile);
+
+  //Pass param to create aws-auth file
+  const authFileCreate = await fsp.writeFile(__dirname + `/sdkAssets/private/AUTH_FILE_${stackName}.json`, paramToFileStringified);
+
+
+  // const authFileCreated = await fs.readFileSync(__dirname + `/sdkAssets/private/AUTH_FILE_${stackName}.json`, 'utf-8');
+
+  // const authFileParsed = JSON.parse(authFileCreated);
+
+
+  // console.log("authFileParsed: ", authFileParsed);
+
+  const filePathToAuthFile = __dirname + `/sdkAssets/private/AUTH_FILE_${stackName}.json`;
+  
+  //Command Kubectl to configure by applying the Auth File
+  const child = spawn('kubectl', ['apply', '-f', filePathToAuthFile]);
+    child.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+      
+    })
+    child.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+    })
+    child.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+      next();
+    });
+  
+  } catch (err) {
+    console.log(err);
+  }
+
+  console.log("Kubectl configured");
+}
+
 

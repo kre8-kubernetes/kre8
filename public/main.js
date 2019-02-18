@@ -14,9 +14,9 @@ const fsp = require('fs').promises;
 
 const YAML = require('yamljs');
 
-let iamRoleName, 
-let clusterName,
-let techStackName,
+// let iamRoleName; 
+// let clusterName;
+// let techStackName;
 
 //** --------- IMPORT AWS SDK ELEMENTS --------- 
 const EKS = require('aws-sdk/clients/eks');

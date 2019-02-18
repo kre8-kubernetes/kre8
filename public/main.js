@@ -47,6 +47,13 @@ let win;
 //** Function to create our application window, that will be invoked with app.on('ready')
 function createWindow () {
   win = new BrowserWindow({width: 1200, height: 800});
+  
+  if (isDev) {
+  // adding react dev tools for developement
+    BrowserWindow.addDevToolsExtension(
+      path.join(process.env['HOME'], '/Library/Application Support/Google/Chrome/Profile 3/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.4.0_0')
+    )
+  }
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
 
@@ -189,6 +196,12 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
 
 });
+
+ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, (event, data) => {
+
+
+  win.webContents.send(events.HANDLE_NEW_NODES, 'Nodes were made from the main thread')
+})
 
 //TODO No button should be used, should auto happen after last thing completes
 

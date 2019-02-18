@@ -59,6 +59,13 @@ const AWSTestComponent = (props) => {
         <br />
         <button className="buttons" onClick={props.handleCreateCluster}>Create Cluster</button>
       </div>
+
+      <br />
+      <br />
+      <button onClick={props.handleConfigAndMakeNodes}>Configuring Kubectl and Making Worker Nodes</button>
+      <br />
+      <br />
+
     </div>   
   )
 }

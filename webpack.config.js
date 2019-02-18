@@ -53,6 +53,7 @@ module.exports = {
   devtool: 'cheap-source-map',
   devServer: {
     contentBase: OUTPUT_DIR,
+    historyApiFallback: true,
     stats: {
       colors: true,
       chunks: false,

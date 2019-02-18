@@ -93,9 +93,15 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
 
 //** Parameter for CREATE_WORKER_NODE_TECH_STACK 
 
-  awsParameters.createWorkerNodeStackParam = (stackName, clusterName, subnetIds, stackTemplateStringified) => {
+  awsParameters.createWorkerNodeStackParam = (stackName, clusterName, subnetIds, vpcId, ClusterControlPlaneSecurityGroup, stackTemplateStringified) => {
 
     const keyName = `${clusterName}Key`;
+
+
+    console.log("subnetIds: ", subnetIds)
+
+    //TODO dont hardcode subnet ids
+
 
     const workerNodeStackParam = {
       StackName: stackName,
@@ -104,7 +110,7 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
       EnableTerminationProtection: false,
       Parameters: [
         { "ParameterKey": "ClusterName", "ParameterValue": clusterName },
-        { "ParameterKey": "ClusterControlPlaneSecurityGroup", "ParameterValue": "sg-0c09b77bd2cdec0d7" },
+        { "ParameterKey": "ClusterControlPlaneSecurityGroup", "ParameterValue": ClusterControlPlaneSecurityGroup },
         { "ParameterKey": "NodeGroupName", "ParameterValue": "worker-node" },
         { "ParameterKey": "NodeAutoScalingGroupMinSize", "ParameterValue": "1" },
         { "ParameterKey": "NodeAutoScalingGroupDesiredCapacity", "ParameterValue": "3" },
@@ -112,8 +118,8 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
         { "ParameterKey": "NodeInstanceType", "ParameterValue": "t3.nano" },
         { "ParameterKey": "NodeImageId", "ParameterValue": "ami-081099ec932b99961" },
         { "ParameterKey": "KeyName", "ParameterValue": keyName },
-        { "ParameterKey": "VpcId", "ParameterValue": "vpc-0815099f512fd6a3f" },
-        { "ParameterKey": "Subnets", "ParameterValue": subnetIds }
+        { "ParameterKey": "VpcId", "ParameterValue": vpcId },
+        { "ParameterKey": "Subnets", "ParameterValue": "subnet-0051b552b152c8fd0,subnet-0a655b2ae656eaad0,subnet-056cddf44abbbf218" }
       ],
       TemplateBody: stackTemplateStringified,
     }
@@ -138,6 +144,7 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
         ]
       }
     }
+    console.log("exiting params");
     return inputNodeInstanceParam;
 }
 

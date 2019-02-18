@@ -30,12 +30,20 @@ awsHelperFunctions.timeout = (ms) => {
 //** -- Function to check the Filesystem for a specific directory --- 
 
 awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = (folderName) => {
-  if (fs.existsSync(process.env['HOME'] + `/.{folderName}`)) {
-  } else {
-    fs.mkdirSync(process.env['HOME'] + '/{folderName}'), (err) => {
+
+  console.log("folderName: ", folderName);
+
+  const fileExists = fs.existsSync(process.env['HOME'] + `/{folderName}`);
+
+  console.log("fileExists: ", fileExists);
+
+  if (fileExists) {
+    console.log("file doesnt exist");
+    fs.mkdirSync(process.env['HOME'] + `/${folderName}`), (err) => {
       if (err) console.log("mkdir error", folderName, err);
     };  
-  };
+  }
+  
 } 
 
 
@@ -72,7 +80,11 @@ awsHelperFunctions.createTechStack = async (stackName, techStackParam) => {
       getStackData();
     }
 
-    const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+    if (stackStatus === "CREATE_COMPLETE") {
+      const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+    } else {
+      console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
+    }
 
   } catch (err) {
     console.log(err);

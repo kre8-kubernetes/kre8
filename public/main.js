@@ -3,20 +3,19 @@ const path = require('path');
 const isDev = require('electron-is-dev');
 require('dotenv').config();
 
-const events = require('../eventTypes.js')
-const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
-const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
-const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
-
 const fs = require('fs');
 const { spawn } = require('child_process');
 const fsp = require('fs').promises;
 
 const YAML = require('yamljs');
 
-// let iamRoleName; 
-// let clusterName;
-// let techStackName;
+
+//** --------- IMPORT RESOURCE FILES --------- 
+const events = require('../eventTypes.js')
+const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
+const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
+const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
+const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
 
 //** --------- IMPORT AWS SDK ELEMENTS --------- 
 const EKS = require('aws-sdk/clients/eks');
@@ -32,6 +31,7 @@ const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-
 //** --------- .ENV Variables -------------- 
 const REGION = process.env.REGION;
 const PORT = process.env.PORT;
+const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 
 //** --------- INITIALIZE SDK IMPORTS ------ 
 const iam = new IAM()
@@ -47,9 +47,7 @@ function createWindow () {
   
   if (isDev) {
   // adding react dev tools for developement
-    BrowserWindow.addDevToolsExtension(
-      path.join(process.env['HOME'], '/Library/Application Support/Google/Chrome/Profile 3/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.4.0_0')
-    )
+    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH)
   }
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
@@ -59,6 +57,12 @@ function createWindow () {
 //** -------------------------------------------------------------- **//
 //** ----------------------- AWS SDK EVENTS ----------------------- **//
 //** -------------------------------------------------------------- **//
+
+
+//** --------- GLOBAL VARIABLES FOR SDK
+let iamRoleName = "Carolyn_Test"; 
+let techStackName = "CarolynTestStack";
+let clusterName;
 
 
 //** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS -------------- **//
@@ -85,7 +89,8 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
   //Data from user input + imported policy document
-  const roleName = data.roleName;
+  //const roleName = data.roleName;
+  iamRoleName = data.roleName;
   const roleDescription = data.description;
   const iamRolePolicyDoc = iamRolePolicyDocument;
 
@@ -100,14 +105,21 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 //Takes approx 1 - 1.5 mins to create stack and get data back from AWS
 ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
 
-// Stringify imported stackTemplate doc to insert into stackParams obj
-const stackTemplateStringified = JSON.stringify(stackTemplate);
-const stackName = data.stackName;
+  try {
+    const stackTemplateStringified = JSON.stringify(stackTemplate);
+    const techStackName = data.stackName;
 
-const createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataInFile(stackName, stackTemplateStringified);
+    console.log("iamRoleName: ", iamRoleName);
+    console.log("techStackName: ", techStackName)
 
-//TODO decide what to send back to user. Now juse sends stackName
-win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
+    const createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataInFile(techStackName, stackTemplateStringified);
+
+  } catch (err) {
+    console.log(err);
+  }
+
+  //TODO decide what to send back to user. Now juse sends stackName
+  win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
 })
 
 //** --------- CREATE AWS CLUSTER ---------------------------------- **//
@@ -116,12 +128,15 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
   //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
 
   //TODO, do not hardcode stackName or RoleArn
-  const techStackName = 'carolyn-testing-stack';
-  const roleArn = 'arn:aws:iam::961616458351:role/carolyn-testing';
-  const clusterName = data.clusterName;
+  //const techStackName = 'carolyn-testing-stack';
+  techStackName = "CarolynTestStack";
+  //iamRoleName = "Carolyn_Test"; 
+  //roleArn = 'arn:aws:iam::961616458351:role/carolyn-testing';
+  //const clusterName = data.clusterName;
+  clusterName = data.clusterName;
 
   try {
-    const createdCluster = await awsEventCallbacks.createClusterAndSaveReturnedDataToFile(techStackName, roleArn, clusterName);
+    const createdCluster = await awsEventCallbacks.createClusterAndSaveReturnedDataToFile(techStackName, iamRoleName, clusterName);
   } catch (err) {
     console.log(err);
   }
@@ -129,15 +144,31 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
   win.webContents.send(events.HANDLE_NEW_CLUSTER, clusterName);
 });
 
+
 //TODO No button should be used, should auto happen after last thing completes
 
+ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 
+  clusterName = "CarolynTestCluster";
+  stackName = "CarolynTestStack";
+  const subnetIds = [
+    "subnet-0051b552b152c8fd0",
+    "subnet-0a655b2ae656eaad0",
+    "subnet-056cddf44abbbf218"
+  ];
 
+  try {
+
+    await kubectlConfigFunctions.createConfigFile(clusterName);
+    await kubectlConfigFunctions.configureKubectl(clusterName);
+    await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds);
+    await kubectlConfigFunctions.inputNodeInstance(stackName, clusterName);
+  } catch (err) {
+    console.log(err);
+  }
 
   win.webContents.send(events.HANDLE_NEW_NODES, 'Nodes were made from the main thread')
 })
-
-//TODO No button should be used, should auto happen after last thing completes
 
 
 //** ----------KUBECTL EVENTS WILL GO HERE ------------------------- **//

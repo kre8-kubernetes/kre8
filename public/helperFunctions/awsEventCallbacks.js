@@ -2,7 +2,6 @@ const awsHelperFunctions = require(__dirname + '/awsHelperFunctions');
 const awsParameters = require(__dirname + '/awsParameters');
 const kubectlConfigFunctions = require(__dirname + '/kubectlConfigFunctions');
 
-
 const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
@@ -11,14 +10,13 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 const fsp = require('fs').promises;
 
-
 //**.ENV Variables */
 const REGION = process.env.REGION;
 
 //** --------- INITIALIZE IMPORTS --------- 
-const iam = new IAM()
+const iam = new IAM();
 const eks = new EKS({ region: REGION});
-const cloudformation = new CloudFormation({ region: REGION});
+const cloudformation = new CloudFormation({ region: REGION });
 
 const awsEventCallbacks = {};
 
@@ -43,25 +41,20 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
 
     const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
     
-    //Create file named for IAM Role and save in assets folder */
+    //Create file named for IAM Role and save in assets folder 
     fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${roleName}.json`, stringifiedIamRoleDataFromForm);
 
     //Send Cluster + Service Policies to AWS to attach to created IAM Role 
     const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
     const servicePolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
 
-    const clusterPolicy = {
-      RoleName: roleName,
-      PolicyArn: clusterPolicyArn
-    }
+    const clusterPolicyParam = { RoleName: roleName, PolicyArn: clusterPolicyArn }
+    const servicePolicyParam = { RoleName: roleName, PolicyArn: servicePolicyArn }
 
-    const servicePolicy = {
-      RoleName: roleName,
-      PolicyArn: servicePolicyArn
-    }
+    await Promise.all([iam.attachRolePolicy(clusterPolicyParam).promise(), iam.attachRolePolicy(servicePolicyParam).promise()])
 
-    await iam.attachRolePolicy(clusterPolicy).promise();
-    await iam.attachRolePolicy(servicePolicy).promise();
+    // await iam.attachRolePolicy(clusterPolicyParam).promise();
+    // await iam.attachRolePolicy(servicePolicyParam).promise();
 
     //TODO: BRADEN: PROMISE ALL INSTEAD
   
@@ -76,14 +69,49 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
 awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, stackTemplateStringified) => {
 
   try {
+    const techStackParam = await awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
 
-  const techStackParam = await awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
-  
-  const techStackCreated = await awsHelperFunctions.createTechStack(stackName, techStackParam); 
+    //Send tech stack data to AWS to create stack 
+    const stack = await cloudformation.createStack(techStackParam).promise();
+
+    const getStackDataParam = { StackName: stackName };
+
+    let stringifiedStackData;
+    let parsedStackData;
+    let stackStatus = "CREATE_IN_PROGRESS";
+
+    //TODO modularize function
+    const getStackData = async () => {
+      try {
+        const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
+        stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
+        parsedStackData = JSON.parse(stringifiedStackData);
+        stackStatus = parsedStackData[0].StackStatus;
+      } catch (err) {
+      }
+    }
+    
+    //check with AWS to see if the stack has been created, if so, move on. If not, keep checking until complete. Estimated to take 1 - 1.5 mins.
+
+    while (stackStatus === "CREATE_IN_PROGRESS") {
+      console.log("stackStatus in while loop: ", stackStatus);
+      // wait 30 seconds before rerunning function
+      await awsHelperFunctions.timeout(1000 * 30)
+      getStackData();
+    }
+
+    if (stackStatus === "CREATE_COMPLETE") {
+      const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+    } else {
+      console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
+    }
 
   } catch (err) { 
     console.log(err); 
   }
+
+  //TODO Decide what to return to user
+  return stackName;
 };
 
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
@@ -98,13 +126,11 @@ awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (techStackName,
 
 
     const parsedIamRoleFileContents = JSON.parse(iamRoleFileContents);
-
     console.log("parsedIamRoleFileContents: ", parsedIamRoleFileContents)
 
     const roleArn = parsedIamRoleFileContents.arn;
     console.log("roleArn: ", roleArn)
 
-  
     //Get data from tech stack file
     const stackDataFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/STACK_${techStackName}.json`, 'utf-8');
 
@@ -119,7 +145,6 @@ awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (techStackName,
     //Send cluster data to AWS via clusterParmas to create a cluster 
     const cluster = await eks.createCluster(clusterParam).promise();
       
-
     const fetchClusterDataParam = { name: clusterName };
 
     let parsedClusterData;
@@ -128,12 +153,17 @@ awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (techStackName,
 
     //Function to request cluster data from AWS and check cluster creation status
     const getClusterData = async () => {
-      const clusterData = await eks.describeCluster(fetchClusterDataParam).promise();
-      stringifiedClusterData = JSON.stringify(clusterData, null, 2);
-      parsedClusterData = JSON.parse(stringifiedClusterData);
-      clusterCreationStatus = parsedClusterData.cluster.status;
-      
-      console.log("status in getClusterData: ", clusterCreationStatus);
+
+      try {
+        const clusterData = await eks.describeCluster(fetchClusterDataParam).promise();
+        stringifiedClusterData = JSON.stringify(clusterData, null, 2);
+        parsedClusterData = JSON.parse(stringifiedClusterData);
+        clusterCreationStatus = parsedClusterData.cluster.status;
+        
+        console.log("status in getClusterData: ", clusterCreationStatus);
+      } catch (err) {
+        console.log(err);
+      }
     }
     
     //Timeout execution thread for 6 minutes to give AWS time to create cluster
@@ -157,33 +187,22 @@ awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (techStackName,
 
     console.log("parsedClusterFileContents: ", parsedClusterFileContents)
 
-    const clusterControlPlaneSecurityGroup = parsedClusterFileContents.cluster.resourcesVpcConfig.securityGroupId[0];
-    console.log("clusterControlPlaneSecurityGroup: ", clusterControlPlaneSecurityGroup)
+    // const securityGroupIds = parsedClusterFileContents.cluster.resourcesVpcConfig.securityGroupIds[0];
+    console.log("securityGroupIds: ", securityGroupIds)
     const vpcId = parsedClusterFileContents.cluster.resourcesVpcConfig.vpcId;
     console.log("vpcId: ", vpcId)
     
-    // const subnetIds = 
-    // parsedClusterFileContents.cluster.resourcesVpcConfig.subnetIds;
-    // console.log("subnetIds: ", subnetIds)
-    // const subnetIdsInCorrectFormat = subnetIds.reduce((acc, cv, index, array) => {
-    //   if (index !== array.length -1) {
-    //     acc += cv + ',';
-    //   } else {
-    //     acc += cv;
-    //   }
-    //   return acc;
-    // }, '');
-    // console.log("subnetIdsInCorrectFormat: ", subnetIdsInCorrectFormat);
-
     await kubectlConfigFunctions.createConfigFile(clusterName);
     await kubectlConfigFunctions.configureKubectl(clusterName);
-    await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds, vpcId, ClusterControlPlaneSecurityGroup);
-    await kubectlConfigFunctions.inputNodeInstance(stackName);
+    await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds, vpcId, securityGroupIds);
+
+    await kubectlConfigFunctions.inputNodeInstance(clusterName);
   
   } catch (err) {
     console.log("err", err);
   }
 
+  //TODO what to return to User
   return clusterName;
 };
 

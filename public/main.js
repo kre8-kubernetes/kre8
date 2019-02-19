@@ -32,6 +32,7 @@ const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-
 const REGION = process.env.REGION;
 const PORT = process.env.PORT;
 const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
+const SUBNET_IDS = process.env.SUBNET_IDS;
 
 //** --------- INITIALIZE SDK IMPORTS ------ 
 const iam = new IAM()
@@ -58,12 +59,7 @@ function createWindow () {
 //** ----------------------- AWS SDK EVENTS ----------------------- **//
 //** -------------------------------------------------------------- **//
 
-
-//** --------- GLOBAL VARIABLES FOR SDK
-let iamRoleName = "Carolyn_Test"; 
-let techStackName = "CarolynTestStack";
-let clusterName;
-
+//TODO have user decide their region...
 
 //** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS -------------- **//
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
@@ -85,16 +81,24 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
 //COPY AWS-IAM-AUTHENTICATOR FILE TO BIN FOLDER IN USER HOME DIRECTORY
 //APPEND PATH TO BASH_PROFILE FILE
 
+let iamRoleName;
+
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------- **//
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
-  //Data from user input + imported policy document
-  //const roleName = data.roleName;
-  iamRoleName = data.roleName;
-  const roleDescription = data.description;
-  const iamRolePolicyDoc = iamRolePolicyDocument;
+  let iamRoleCreated;
 
-  const iamRoleCreated = awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs(roleName, roleDescription, iamRolePolicyDoc);
+  try {
+    //Data from user input + imported policy document
+    //const roleName = data.roleName;
+    iamRoleName = data.roleName;
+    const iamRoleDescription = data.description;
+    const iamRolePolicyDoc = iamRolePolicyDocument;
+
+    iamRoleCreated = await awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
+  } catch (err) {
+    console.log(err);
+}
 
   //TODO decide what to return to the the user
 
@@ -105,14 +109,13 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 //Takes approx 1 - 1.5 mins to create stack and get data back from AWS
 ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
 
+  let createdStack;
+
   try {
     const stackTemplateStringified = JSON.stringify(stackTemplate);
     const techStackName = data.stackName;
 
-    console.log("iamRoleName: ", iamRoleName);
-    console.log("techStackName: ", techStackName)
-
-    const createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataInFile(techStackName, stackTemplateStringified);
+    createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataInFile(techStackName, stackTemplateStringified);
 
   } catch (err) {
     console.log(err);
@@ -129,40 +132,48 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   //TODO, do not hardcode stackName or RoleArn
   //const techStackName = 'carolyn-testing-stack';
-  techStackName = "CarolynTestStack";
-  //iamRoleName = "Carolyn_Test"; 
-  //roleArn = 'arn:aws:iam::961616458351:role/carolyn-testing';
-  //const clusterName = data.clusterName;
-  clusterName = data.clusterName;
+  techStackName = "cb2Stack";
+  iamRoleName = "CB2"; 
+  const clusterName = data.clusterName;
+  //clusterName = data.clusterName;
+
+  let createdCluster;
 
   try {
-    const createdCluster = await awsEventCallbacks.createClusterAndSaveReturnedDataToFile(techStackName, iamRoleName, clusterName);
+     createdCluster = await awsEventCallbacks.createClusterAndSaveReturnedDataToFile(techStackName, iamRoleName, clusterName);
   } catch (err) {
     console.log(err);
   }
 
-  win.webContents.send(events.HANDLE_NEW_CLUSTER, clusterName);
+  win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
 });
 
 
 //TODO No button should be used, should auto happen after last thing completes
 
-ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
+//** --------- TESTING BUTTON  ---------------------------------- **//
 
-  clusterName = "CarolynTestCluster";
-  stackName = "CarolynTestStack";
-  const subnetIds = [
-    "subnet-0051b552b152c8fd0",
-    "subnet-0a655b2ae656eaad0",
-    "subnet-056cddf44abbbf218"
-  ];
+
+ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
+  clusterName = "cb2Real";
+  stackName = "cb2Stack";
+
+  //TODO no need to copy
+  
+
+  const clusterFileContents = fs.readFileSync(__dirname + `/sdkAssets/private/CLUSTER_${clusterName}.json`, 'utf-8');
+  const parsedClusterFileContents = JSON.parse(clusterFileContents);
+  const vpcId = parsedClusterFileContents.cluster.resourcesVpcConfig.vpcId;
+  const securityGroupIds = parsedClusterFileContents.cluster.resourcesVpcConfig.securityGroupIds[0];
+  const subnetIds = SUBNET_IDS
+
 
   try {
 
-    await kubectlConfigFunctions.createConfigFile(clusterName);
-    await kubectlConfigFunctions.configureKubectl(clusterName);
-    await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds);
-    await kubectlConfigFunctions.inputNodeInstance(stackName, clusterName);
+    // await kubectlConfigFunctions.createConfigFile(clusterName);
+    // await kubectlConfigFunctions.configureKubectl(clusterName);
+   // await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds, vpcId, securityGroupIds);
+    await kubectlConfigFunctions.inputNodeInstance(clusterName);
   } catch (err) {
     console.log(err);
   }

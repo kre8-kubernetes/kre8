@@ -93,24 +93,18 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
 
 //** Parameter for CREATE_WORKER_NODE_TECH_STACK 
 
-  awsParameters.createWorkerNodeStackParam = (stackName, clusterName, subnetIds, vpcId, ClusterControlPlaneSecurityGroup, stackTemplateStringified) => {
+  awsParameters.createWorkerNodeStackParam = (workerNodeStackName, clusterName, subnetIds, vpcId, securityGroupIds, stackTemplateStringified, keyName) => {
 
-    const keyName = `${clusterName}Key`;
-
-
-    console.log("subnetIds: ", subnetIds)
-
-    //TODO dont hardcode subnet ids
-
+    console.log(securityGroupIds);
 
     const workerNodeStackParam = {
-      StackName: stackName,
+      StackName: workerNodeStackName,
       Capabilities: [ "CAPABILITY_IAM" ],
       DisableRollback: false,
       EnableTerminationProtection: false,
       Parameters: [
         { "ParameterKey": "ClusterName", "ParameterValue": clusterName },
-        { "ParameterKey": "ClusterControlPlaneSecurityGroup", "ParameterValue": ClusterControlPlaneSecurityGroup },
+        { "ParameterKey": "ClusterControlPlaneSecurityGroup", "ParameterValue": securityGroupIds },
         { "ParameterKey": "NodeGroupName", "ParameterValue": "worker-node" },
         { "ParameterKey": "NodeAutoScalingGroupMinSize", "ParameterValue": "1" },
         { "ParameterKey": "NodeAutoScalingGroupDesiredCapacity", "ParameterValue": "3" },
@@ -119,7 +113,7 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
         { "ParameterKey": "NodeImageId", "ParameterValue": "ami-081099ec932b99961" },
         { "ParameterKey": "KeyName", "ParameterValue": keyName },
         { "ParameterKey": "VpcId", "ParameterValue": vpcId },
-        { "ParameterKey": "Subnets", "ParameterValue": "subnet-0051b552b152c8fd0,subnet-0a655b2ae656eaad0,subnet-056cddf44abbbf218" }
+        { "ParameterKey": "Subnets", "ParameterValue": subnetIds }
       ],
       TemplateBody: stackTemplateStringified,
     }
@@ -150,23 +144,3 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
 
 
 module.exports = awsParameters;
-
-// "apiVersion": "v1",
-// "kind": "ConfigMap",
-// "metadata": {
-//   "name": "aws-auth",
-//   "namespace": "kube-system"
-// },
-// "data": {
-//   "mapRoles": [
-//     {
-//       "rolearn": "arn:aws:iam::961616458351:role/braden-test-worker-node-NodeInstanceRole-120VZFL0JBUUQ",
-//       "username": "system:node:{{EC2PrivateDNSName}}",
-//       "groups": [
-//         "system:bootstrappers",
-//         "system:nodes"
-//       ]
-//     }
-//   ]
-// }
-// }

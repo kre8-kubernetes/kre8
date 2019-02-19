@@ -2,6 +2,8 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 const fsp = require('fs').promises;
 
+const path = require('path');
+
 //** --------- .ENV Variables -------------- 
 const REGION = process.env.REGION;
 
@@ -30,21 +32,23 @@ awsHelperFunctions.timeout = (ms) => {
 //** -- Function to check the Filesystem for a specific directory --- 
 
 awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = (folderName) => {
-
-  console.log("folderName: ", folderName);
-
-  const fileExists = fs.existsSync(process.env['HOME'] + `/{folderName}`);
-
-  console.log("fileExists: ", fileExists);
-
-  if (fileExists) {
-    console.log("file doesnt exist");
+  const fileExists = fs.existsSync(process.env['HOME'] + `/${folderName}`);
+  if (!fileExists) {
     fs.mkdirSync(process.env['HOME'] + `/${folderName}`), (err) => {
       if (err) console.log("mkdir error", folderName, err);
-    };  
-  }
-  
-} 
+  };  
+}
+}
+
+// try {
+
+//   //Create a tech stack for worker node on AWS and save results to file in Assets Folder
+//   const techStackCreated = await awsHelperFunctions.createTechStack(workerNodeStackName, techStackParam); 
+//   } catch (err) {
+//     console.log(err);
+//   }
+
+// const techStackCreated = await awsHelperFunctions.createTechStack(stackName, techStackParam); 
 
 
 //** -- Function to Create a Tech Stack on AWS --- 
@@ -96,11 +100,6 @@ awsHelperFunctions.createTechStack = async (stackName, techStackParam) => {
 
 
 
-
-
-
-
-
 module.exports = awsHelperFunctions;
 
 
@@ -126,3 +125,18 @@ module.exports = awsHelperFunctions;
 //   }
 //   loop();
 // })
+
+
+
+ // const subnetIds = 
+    // parsedClusterFileContents.cluster.resourcesVpcConfig.subnetIds;
+    // console.log("subnetIds: ", subnetIds)
+    // const subnetIdsInCorrectFormat = subnetIds.reduce((acc, cv, index, array) => {
+    //   if (index !== array.length -1) {
+    //     acc += cv + ',';
+    //   } else {
+    //     acc += cv;
+    //   }
+    //   return acc;
+    // }, '');
+    // console.log("subnetIdsInCorrectFormat: ", subnetIdsInCorrectFormat);

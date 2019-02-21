@@ -40,34 +40,57 @@ awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = (folderName) => {
   }
 }
 
-//** -- Function to check AWS_MASTER file --- 
+//** -- Function to read and check AWS_MASTER file --- 
 
 awsHelperFunctions.checkAWSMasterFile = (key, value) => {
-  const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
 
-  const texttofind = `"${key}":"${value}"`
+  const fileExists = fs.existsSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`); 
 
-  console.log(texttofind);
-  console.log(awsMasterFileContents);
+  if (fileExists) {
+    console.log("file exists");
+    
+    const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
 
-  return awsMasterFileContents.includes(texttofind);
+    const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
+
+    if (parsedAWSMasterFileContents[key] === value) {
+      console.log("key already exists")
+      return true;
+    } else {
+      console.log("key did not exist")
+      return false;
+    }
+  } else {
+    const dataForFile = { [key]: value };
+    const stringifiedDataForFile = JSON.stringify(object);
+    const awsMasterFile = fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedDataForFile);
+
+    console.log("file did not exist. Created file and wrote initial data to file: ", stringifiedDataForFile);
+
+    return false;
+  }
 }
 
 //if checkAWSMasterFile returns false, append text
 awsHelperFunctions.appendAWSMasterFile = (data) => {
 
+  console.log("Data to append to file", typeof data, data);
+  
   const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
 
   const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
 
-  console.log(parsedAWSMasterFileContents);
+  for (let key in data) {
+    parsedAWSMasterFileContents[key] = data[key];
+  }
 
-  const updatedFile = parsedAWSMasterFileContents.data;
+  const stringifiedAWSMasterFileContents = JSON.stringify(parsedAWSMasterFileContents);
 
-  console.log(updatedFile);
+  const awsUpdatedMasterFile = fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedAWSMasterFileContents);
 
-  const appendMasterFile = fsp.appendFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, data);
+  console.log("data added to master file");
 
+  return parsedAWSMasterFileContents;
 }
 
 

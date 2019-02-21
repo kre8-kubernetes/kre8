@@ -23,11 +23,15 @@ const awsEventCallbacks = {};
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
 awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleName, roleDescription, iamRolePolicyDoc) => {
 
+  let awsMasterFile;
+
   try {
 
-    const key = "iamRoleName"
+    const key = "iamRoleName";
+    let awsMasterFile;
 
     if (!awsHelperFunctions.checkAWSMasterFile(key, roleName)) {
+
       const iamParams = awsParameters.createIAMRoleParam(roleName, roleDescription, iamRolePolicyDoc);
 
       //Send IAM data to AWS via the iamParams object to create an IAM Role*/
@@ -43,20 +47,21 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
       }
 
       const iamRoleDataforMasterFile = {
+        createDate: role.Role.CreateDate,
         iamRoleName: role.Role.RoleName,
         iamRoleArn: role.Role.Arn,
-        createDate: role.Role.CreateDate,
       }
 
-      const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
-      const stringifiedIamRoleDataforMasterFile = JSON.stringify(iamRoleDataforMasterFile);
-
+      const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm, null, 2);
+      // const stringifiedIamRoleDataforMasterFile = JSON.stringify(iamRoleDataforMasterFile);
       
       //Create file named for IAM Role and save in assets folder 
       fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${roleName}.json`, stringifiedIamRoleDataFromForm);
 
-      //Create file named for MASTER FILE and save in assets folder 
-      fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedIamRoleDataforMasterFile);
+      awsMasterFile = awsHelperFunctions.appendAWSMasterFile(iamRoleDataforMasterFile);
+
+      //TO: DELETE Create file named for MASTER FILE and save in assets folder 
+      // fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedIamRoleDataforMasterFile);
 
       //Send Cluster + Service Policies to AWS to attach to created IAM Role 
       const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
@@ -75,7 +80,7 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
     console.log(err);
   }
 
-  return roleName;
+  return awsMasterFile;
 };
 
 //** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
@@ -86,7 +91,6 @@ awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, s
     const key = "stackName";
 
     if (!awsHelperFunctions.checkAWSMasterFile(key, stackName)) {
-
 
       const techStackParam = await awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
 
@@ -124,20 +128,16 @@ awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, s
         const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
 
         
-        const StackDataForMasterFile = {
+        const stackDataForMasterFile = {
           stackName: parsedStackData[0].StackName,
           vpcId: parsedStackData[0].Outputs[1].OutputValue,
-          subnetIds: parsedStackData[0].Outputs[2].OutputValue,
+          subnetIdsString: parsedStackData[0].Outputs[2].OutputValue,
           securityGroupIds: parsedStackData[0].Outputs[0].OutputValue
         }
 
-        StackDataForMasterFile.subnetArray = StackDataForMasterFile.subnetIds.split(',');
+        stackDataForMasterFile.subnetIdsArray = stackDataForMasterFile.subnetIdsString.split(',');
 
-        console.log(StackDataForMasterFile);
-
-        const lineBreak = "\n";
-        awsHelperFunctions.appendAWSMasterFile(lineBreak);
-        awsHelperFunctions.appendAWSMasterFile(StackDataForMasterFile);
+        awsHelperFunctions.appendAWSMasterFile(stackDataForMasterFile);
 
       } else {
         console.log(`Error in creating stack. Stack Status = ${stackStatus}`)

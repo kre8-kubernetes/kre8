@@ -3,69 +3,65 @@ const path = require('path');
 const isDev = require('electron-is-dev');
 require('dotenv').config();
 
-const events = require('../eventTypes.js')
-const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
-const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
-const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
-
 const fs = require('fs');
 const { spawn } = require('child_process');
 const fsp = require('fs').promises;
 
 const YAML = require('yamljs');
 
-//** --------- IMPORT SDK elements --------- 
+
+//** --------- IMPORT RESOURCE FILES --------- 
+const events = require('../eventTypes.js')
+const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
+const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
+const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
+const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
+
+//** --------- IMPORT AWS SDK ELEMENTS --------- 
 const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 
-//** --------- IMPORT DOCUMENTS ------------ 
+//** --------- IMPORT DOCUMENTS ---------------- 
 const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
-const stackTemplateWorkerNode = require(__dirname + '/sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
+//const stackTemplateWorkerNode = require(__dirname + '/sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
 const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-cm.json');
 
-//**.ENV Variables */
+//** --------- .ENV Variables -------------- 
 const REGION = process.env.REGION;
-const SERVICEROLEARN = process.env.EKSSERVICEROLEARN;
-
-const SUBNETID1 = process.env.SUBNETID1;
-const SUBNETID2 = process.env.SUBNETID2;
-const SUBNETID3 = process.env.SUBNETID3;
-const SUBNETIDS = [SUBNETID1, SUBNETID2, SUBNETID3];
-const SECURITYGROUPIDS = process.env.SECURITYGROUPIDS;
 const PORT = process.env.PORT;
+const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
+const SUBNET_IDS = process.env.SUBNET_IDS;
 
-//** --------- INITIALIZE IMPORTS --------- 
+//** --------- INITIALIZE SDK IMPORTS ------ 
 const iam = new IAM()
 const eks = new EKS({ region: REGION});
 const cloudformation = new CloudFormation({ region: REGION});
 
-//** CREATE WINDOW OBJECT
+//** --------- CREATE WINDOW OBJECT --------
 let win;
 
-//** Function to create our application window, that will be invoked with app.on('ready')
+//Function to create our application window, that will be invoked with app.on('ready')
 function createWindow () {
   win = new BrowserWindow({width: 1200, height: 800});
   
   if (isDev) {
   // adding react dev tools for developement
-    BrowserWindow.addDevToolsExtension(
-      path.join(process.env['HOME'], '/Library/Application Support/Google/Chrome/Profile 3/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.4.0_0')
-    )
+    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH)
   }
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
-
   win.on('closed', () => win = null)
 }
 
-//** ----------------------------------------------------------------- **//
-//** ----------------------- AWS SDK EVENTS -------------------------- **//
-//** ----------------------------------------------------------------- **//
+//** -------------------------------------------------------------- **//
+//** ----------------------- AWS SDK EVENTS ----------------------- **//
+//** -------------------------------------------------------------- **//
 
+//TODO have user decide their region...
 
-//** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ----------------- **//
+//** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS -------------- **//
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
   const child = spawn('curl', ['-o', 'aws-iam-authenticator', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator']);
     child.stdout.on('data', (data) => {
@@ -85,126 +81,105 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
 //COPY AWS-IAM-AUTHENTICATOR FILE TO BIN FOLDER IN USER HOME DIRECTORY
 //APPEND PATH TO BASH_PROFILE FILE
 
-//** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
+let iamRoleName;
+
+//** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------- **//
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
-  //data from user input + imported policy document
-  const roleName = data.roleName;
-  const roleDescription = data.description;
-  const iamRolePolicyDoc = iamRolePolicyDocument;
+  let iamRoleCreated;
 
-  await awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs(roleName, roleDescription, iamRolePolicyDoc);
+  try {
+    //Data from user input + imported policy document
+    //const roleName = data.roleName;
+    iamRoleName = data.roleName;
+    const iamRoleDescription = data.description;
+    const iamRolePolicyDoc = iamRolePolicyDocument;
 
-  //TODO send data to user by adding a return to the function
+    iamRoleCreated = await awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
+  } catch (err) {
+    console.log(err);
+}
 
-  win.webContents.send(events.HANDLE_NEW_ROLE, roleName);
+  //TODO decide what to return to the the user
+
+  win.webContents.send(events.HANDLE_NEW_ROLE, iamRoleCreated);
 })
 
-//** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
+//** ------ CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ---- **//
 //Takes approx 1 - 1.5 mins to create stack and get data back from AWS
 ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
 
-// Stringify imported stackTemplate doc to insert into stackParams obj
-const stackTemplateStringified = JSON.stringify(stackTemplate);
-const stackName = data.stackName;
+  let createdStack;
 
-const createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataInFile(stackName, stackTemplateStringified);
+  try {
+    const stackTemplateStringified = JSON.stringify(stackTemplate);
+    const techStackName = data.stackName;
 
-//TODO decide what to send back to user. Now juse sends stackName
-win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
+    createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataInFile(techStackName, stackTemplateStringified);
+
+  } catch (err) {
+    console.log(err);
+  }
+
+  //TODO decide what to send back to user. Now juse sends stackName
+  win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
 })
 
-//** --------- CREATE AWS CLUSTER ------------------------------------- **//
+//** --------- CREATE AWS CLUSTER ---------------------------------- **//
 ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
 
+  //TODO, do not hardcode stackName or RoleArn
+  //const techStackName = 'carolyn-testing-stack';
+  techStackName = "cb2Stack";
+  iamRoleName = "CB2"; 
   const clusterName = data.clusterName;
+  //clusterName = data.clusterName;
 
-  const createdCluster = awsEventCallbacks.createClusterAndSaveReturnedDataToFile(clusterName);
+  let createdCluster;
 
-
-
-  // //TODO: MAKE THESE VARIBLES DYNAMIC
-  //   //READFILE
-
-  // //data saved in .env file
-  // const subnetIds = SUBNETIDS;
-  // const securityGroupIds = SECURITYGROUPIDS;
-  // const roleArn = SERVICEROLEARN;
-
-  // const clusterParams = {
-  //   name: clusterName, 
-  //   resourcesVpcConfig: {
-  //     subnetIds: subnetIds,
-  //     securityGroupIds: [
-  //       securityGroupIds
-  //     ]
-  //   },
-  //   roleArn: roleArn, 
-  // };
-
-  // try {
-  //   //Send cluster data to AWS via clusterParmas to create a cluster */
-  //   const cluster = await eks.createCluster(clusterParams).promise();
-    
-  //   const clusterParam = {
-  //     name: clusterName
-  //   };
-
-  //   let parsedClusterData;
-  //   let status = "CREATING";
-
-  //   const getClusterData = async () => {
-  //     const clusterData = await eks.describeCluster(clusterParam).promise();
-  //     const stringifiedClusterData = JSON.stringify(clusterData, null, 2);
-  //     parsedClusterData = JSON.parse(stringifiedClusterData);
-  //     status = parsedClusterData.cluster.status;
-  //   }
-
-  //   await new Promise((resolve, reject) => {
-  //     setTimeout(() => {
-  //       getClusterData();
-  //       resolve();
-  //     }, 1000 * 60 * 6);
-  //   })
-
-  //   await new Promise((resolve, reject) => {
-  //     const loop = () => {
-  //       if (status !== "ACTIVE") {
-  //         setTimeout(() => {
-  //           getClusterData();
-  //           loop();
-  //         }, 1000 * 30);
-  //       } else {
-  //         resolve();
-  //       }
-  //     } 
-  //     loop();  
-  //   })
-        
-  //   const createClusterFile = await fsp.writeFile(__dirname + `/sdkAssets/private/${clusterName}.json`, stringifiedClusterData);
-
-
-  // } catch (err) {
-  //   console.log("err", err);
-  // }
-
+  try {
+     createdCluster = await awsEventCallbacks.createClusterAndSaveReturnedDataToFile(techStackName, iamRoleName, clusterName);
+  } catch (err) {
+    console.log(err);
+  }
 
   win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
-
-
-
 });
 
-ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, (event, data) => {
-
-
-  win.webContents.send(events.HANDLE_NEW_NODES, 'Nodes were made from the main thread')
-})
 
 //TODO No button should be used, should auto happen after last thing completes
 
+//** --------- TESTING BUTTON  ---------------------------------- **//
+
+
+ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
+  clusterName = "cb2Real";
+  stackName = "cb2Stack";
+
+  //TODO no need to copy
+  
+
+  const clusterFileContents = fs.readFileSync(__dirname + `/sdkAssets/private/CLUSTER_${clusterName}.json`, 'utf-8');
+  const parsedClusterFileContents = JSON.parse(clusterFileContents);
+  const vpcId = parsedClusterFileContents.cluster.resourcesVpcConfig.vpcId;
+  const securityGroupIds = parsedClusterFileContents.cluster.resourcesVpcConfig.securityGroupIds[0];
+  const subnetIds = SUBNET_IDS
+
+
+  try {
+
+    // await kubectlConfigFunctions.createConfigFile(clusterName);
+    // await kubectlConfigFunctions.configureKubectl(clusterName);
+   // await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds, vpcId, securityGroupIds);
+    await kubectlConfigFunctions.inputNodeInstance(clusterName);
+  } catch (err) {
+    console.log(err);
+  }
+
+  win.webContents.send(events.HANDLE_NEW_NODES, 'Nodes were made from the main thread')
+})
 
 
 //** ----------KUBECTL EVENTS WILL GO HERE ------------------------- **//

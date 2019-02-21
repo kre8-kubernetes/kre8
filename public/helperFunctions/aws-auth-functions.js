@@ -13,7 +13,6 @@ sdkController.installIAMAuthenticator = (req, res, next) => {
     })
     child.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
-      next();
     });
   
 }
@@ -32,7 +31,6 @@ sdkController.enableIAMAuthenticator = (req, res, next) => {
     })
     child.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
-      next();
     });
   
 }
@@ -60,7 +58,6 @@ sdkController.copyToBinFolder = (req, res, next) => {
     })
     child.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
-      next();
     });
 }
 
@@ -73,7 +70,6 @@ fs.appendFile(process.env['HOME'] + '/.bash_profile', textToInsert, (err) => {
   if (err) console.log(err);
   else {
     console.log('Updated');
-    //next();
   }
 })
 

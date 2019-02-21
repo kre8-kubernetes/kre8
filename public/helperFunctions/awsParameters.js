@@ -34,14 +34,13 @@ awsParameters.createClusterParam = (clusterName, subnetIds, securityGroupIds, ro
   const clusterParam = {
     name: clusterName, 
     resourcesVpcConfig: {
-      subnetIds: ['subnet-0575204e,subnet-d98da5a0,subnet-e6350fbc'],
+      subnetIds: subnetIds,
       securityGroupIds: [
         securityGroupIds
       ]
     },
     roleArn: roleArn, 
   }
-  console.log(clusterParam.resourcesVpcConfig.subnetIds);
   return clusterParam;
 }
 
@@ -58,13 +57,6 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
             },
             "name": "kubernetes"
         },
-        {
-            "cluster": {
-                "certificate-authority-data": certificateAuthorityData,
-                "server": serverEndpoint
-            },
-            "name": clusterArn
-        }
     ],
     "contexts": [
         {
@@ -74,15 +66,8 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
             },
             "name": "aws"
         },
-        {
-            "context": {
-                "cluster": clusterArn,
-                "user": clusterArn
-            },
-            "name": clusterArn
-        }
     ],
-    "current-context": clusterArn,
+    "current-context": "aws",
     "kind": "Config",
     "preferences": {},
     "users": [
@@ -100,23 +85,62 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
                 }
             }
         },
-        {
-            "name": clusterArn,
-            "user": {
-                "exec": {
-                    "apiVersion": "client.authentication.k8s.io/v1alpha1",
-                    "args": [
-                        "token",
-                        "-i",
-                        clusterName
-                    ],
-                    "command": "aws-iam-authenticator"
-                }
-            }
-        }
     ]
   }
   return AWSClusterConfigFileParam;
 }
+
+
+//** Parameter for CREATE_WORKER_NODE_TECH_STACK 
+
+  awsParameters.createWorkerNodeStackParam = (workerNodeStackName, clusterName, subnetIds, vpcId, securityGroupIds, stackTemplateStringified, keyName) => {
+
+    console.log(securityGroupIds);
+
+    const workerNodeStackParam = {
+      StackName: workerNodeStackName,
+      Capabilities: [ "CAPABILITY_IAM" ],
+      DisableRollback: false,
+      EnableTerminationProtection: false,
+      Parameters: [
+        { "ParameterKey": "ClusterName", "ParameterValue": clusterName },
+        { "ParameterKey": "ClusterControlPlaneSecurityGroup", "ParameterValue": securityGroupIds },
+        { "ParameterKey": "NodeGroupName", "ParameterValue": "worker-node" },
+        { "ParameterKey": "NodeAutoScalingGroupMinSize", "ParameterValue": "1" },
+        { "ParameterKey": "NodeAutoScalingGroupDesiredCapacity", "ParameterValue": "3" },
+        { "ParameterKey": "NodeAutoScalingGroupMaxSize", "ParameterValue": "4" },
+        { "ParameterKey": "NodeInstanceType", "ParameterValue": "t3.nano" },
+        { "ParameterKey": "NodeImageId", "ParameterValue": "ami-081099ec932b99961" },
+        { "ParameterKey": "KeyName", "ParameterValue": keyName },
+        { "ParameterKey": "VpcId", "ParameterValue": vpcId },
+        { "ParameterKey": "Subnets", "ParameterValue": subnetIds }
+      ],
+      TemplateBody: stackTemplateStringified,
+    }
+    return workerNodeStackParam;
+  }
+
+  //** Parameter for INPUT NODE INSTANCE 
+
+  awsParameters.createInputNodeInstance = (roleArn) => {
+
+    const inputNodeInstanceParam = {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": { "name": "aws-auth", "namespace": "kube-system" },
+      "data": {
+        "mapRoles": [ 
+          {
+            "rolearn": roleArn,
+            "username": "system:node:{{EC2PrivateDNSName}}",
+            "groups": ["system:bootstrappers", "system:nodes"]
+          } 
+        ]
+      }
+    }
+    console.log("exiting params");
+    return inputNodeInstanceParam;
+}
+
 
 module.exports = awsParameters;

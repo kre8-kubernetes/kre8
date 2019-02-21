@@ -36,9 +36,53 @@ awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = (folderName) => {
   if (!fileExists) {
     fs.mkdirSync(process.env['HOME'] + `/${folderName}`), (err) => {
       if (err) console.log("mkdir error", folderName, err);
-  };  
+    };  
+  }
 }
+
+//** -- Function to check AWS_MASTER file --- 
+
+awsHelperFunctions.checkAWSMasterFile = (key, value) => {
+  const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+
+  const texttofind = `"${key}":"${value}"`
+
+  console.log(texttofind);
+  console.log(awsMasterFileContents);
+
+  return awsMasterFileContents.includes(texttofind);
 }
+
+//if checkAWSMasterFile returns false, append text
+awsHelperFunctions.appendAWSMasterFile = (data) => {
+
+  const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+
+  const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
+
+  console.log(parsedAWSMasterFileContents);
+
+  const updatedFile = parsedAWSMasterFileContents.data;
+
+  console.log(updatedFile);
+
+  const appendMasterFile = fsp.appendFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, data);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = awsHelperFunctions;
+
 
 // try {
 
@@ -50,57 +94,6 @@ awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = (folderName) => {
 
 // const techStackCreated = await awsHelperFunctions.createTechStack(stackName, techStackParam); 
 
-
-//** -- Function to Create a Tech Stack on AWS --- 
-awsHelperFunctions.createTechStack = async (stackName, techStackParam) => {
-
-  try {
-    //Send tech stack data to AWS to create stack 
-    const stack = await cloudformation.createStack(techStackParam).promise();
-
-    const getStackDataParam = { StackName: stackName };
-
-    let stringifiedStackData;
-    let parsedStackData;
-    let stackStatus = "CREATE_IN_PROGRESS";
-
-    //TODO modularize function
-    const getStackData = async () => {
-      try {
-        const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
-        stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
-        parsedStackData = JSON.parse(stringifiedStackData);
-        stackStatus = parsedStackData[0].StackStatus;
-      } catch (err) {
-      }
-    }
-    
-    //check with AWS to see if the stack has been created, if so, move on. If not, keep checking until complete. Estimated to take 1 - 1.5 mins.
-    //TODO option includes "CREATE COMPLETE" if successful and "ROLLBACK_COMPLETE" if unsuccessflr
-    while (stackStatus === "CREATE_IN_PROGRESS") {
-      console.log("stackStatus in while loop: ", stackStatus);
-      // wait 30 seconds before rerunning function
-      await awsHelperFunctions.timeout(1000 * 30)
-      getStackData();
-    }
-
-    if (stackStatus === "CREATE_COMPLETE") {
-      const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
-    } else {
-      console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
-    }
-
-  } catch (err) {
-    console.log(err);
-  }
-
-  //TODO Decide what to return to user
-  return stackName;
-}
-
-
-
-module.exports = awsHelperFunctions;
 
 
 

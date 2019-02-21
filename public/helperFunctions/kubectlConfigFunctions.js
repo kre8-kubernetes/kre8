@@ -146,10 +146,12 @@ kubectlConfigFunctions.createStackForWorkerNode = async (clusterName, subnetIds,
       getStackData();
     }
 
-
-
     if (stackStatus === "CREATE_COMPLETE") {
       const createStackFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${workerNodeStackName}.json`, stringifiedStackData);
+
+      awsHelperFunctions.appendAWSMasterFile(stringifiedStackData);
+
+
     } else {
       console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
     }

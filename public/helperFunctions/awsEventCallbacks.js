@@ -24,39 +24,52 @@ const awsEventCallbacks = {};
 awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleName, roleDescription, iamRolePolicyDoc) => {
 
   try {
-    const iamParams = awsParameters.createIAMRoleParam(roleName, roleDescription, iamRolePolicyDoc);
 
-    //Send IAM data to AWS via the iamParams object to create an IAM Role*/
-    const role = await iam.createRole(iamParams).promise();
+    const key = "iamRoleName"
 
-    //Collect the relevant IAM data returned from AWS
-    const iamRoleDataFromForm = {
-      roleName: role.Role.RoleName,
-      createDate: role.Role.RoleId,
-      roleID: role.Role.RoleId,
-      arn: role.Role.Arn,
-      createDate: role.Role.CreateDate,
-      path: role.Role.Path
+    if (!awsHelperFunctions.checkAWSMasterFile(key, roleName)) {
+      const iamParams = awsParameters.createIAMRoleParam(roleName, roleDescription, iamRolePolicyDoc);
+
+      //Send IAM data to AWS via the iamParams object to create an IAM Role*/
+      const role = await iam.createRole(iamParams).promise();
+
+      //Collect the relevant IAM data returned from AWS
+      const iamRoleDataFromForm = {
+        iamRoleName: role.Role.RoleName,
+        roleID: role.Role.RoleId,
+        iamRoleArn: role.Role.Arn,
+        createDate: role.Role.CreateDate,
+        path: role.Role.Path
+      }
+
+      const iamRoleDataforMasterFile = {
+        iamRoleName: role.Role.RoleName,
+        iamRoleArn: role.Role.Arn,
+        createDate: role.Role.CreateDate,
+      }
+
+      const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
+      const stringifiedIamRoleDataforMasterFile = JSON.stringify(iamRoleDataforMasterFile);
+
+      
+      //Create file named for IAM Role and save in assets folder 
+      fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${roleName}.json`, stringifiedIamRoleDataFromForm);
+
+      //Create file named for MASTER FILE and save in assets folder 
+      fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedIamRoleDataforMasterFile);
+
+      //Send Cluster + Service Policies to AWS to attach to created IAM Role 
+      const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
+      const servicePolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
+
+      const clusterPolicyParam = { RoleName: roleName, PolicyArn: clusterPolicyArn }
+      const servicePolicyParam = { RoleName: roleName, PolicyArn: servicePolicyArn }
+
+      await Promise.all([iam.attachRolePolicy(clusterPolicyParam).promise(), iam.attachRolePolicy(servicePolicyParam).promise()])
+
+    } else {
+      console.log("Text found in Master File, Role already exists");
     }
-
-    const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
-    
-    //Create file named for IAM Role and save in assets folder 
-    fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${roleName}.json`, stringifiedIamRoleDataFromForm);
-
-    //Send Cluster + Service Policies to AWS to attach to created IAM Role 
-    const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
-    const servicePolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
-
-    const clusterPolicyParam = { RoleName: roleName, PolicyArn: clusterPolicyArn }
-    const servicePolicyParam = { RoleName: roleName, PolicyArn: servicePolicyArn }
-
-    await Promise.all([iam.attachRolePolicy(clusterPolicyParam).promise(), iam.attachRolePolicy(servicePolicyParam).promise()])
-
-    // await iam.attachRolePolicy(clusterPolicyParam).promise();
-    // await iam.attachRolePolicy(servicePolicyParam).promise();
-
-    //TODO: BRADEN: PROMISE ALL INSTEAD
   
   } catch (err) {
     console.log(err);
@@ -69,41 +82,73 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
 awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, stackTemplateStringified) => {
 
   try {
-    const techStackParam = await awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
 
-    //Send tech stack data to AWS to create stack 
-    const stack = await cloudformation.createStack(techStackParam).promise();
+    const key = "stackName";
 
-    const getStackDataParam = { StackName: stackName };
+    if (!awsHelperFunctions.checkAWSMasterFile(key, stackName)) {
 
-    let stringifiedStackData;
-    let parsedStackData;
-    let stackStatus = "CREATE_IN_PROGRESS";
 
-    //TODO modularize function
-    const getStackData = async () => {
-      try {
-        const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
-        stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
-        parsedStackData = JSON.parse(stringifiedStackData);
-        stackStatus = parsedStackData[0].StackStatus;
-      } catch (err) {
+      const techStackParam = await awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
+
+      //Send tech stack data to AWS to create stack 
+      const stack = await cloudformation.createStack(techStackParam).promise();
+
+      const getStackDataParam = { StackName: stackName };
+
+      let stringifiedStackData;
+      let parsedStackData;
+      let stackStatus = "CREATE_IN_PROGRESS";
+
+      //TODO modularize function
+      const getStackData = async () => {
+        try {
+          const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
+          stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
+          parsedStackData = JSON.parse(stringifiedStackData);
+          stackStatus = parsedStackData[0].StackStatus;
+
+        } catch (err) {
+        }
       }
-    }
     
     //check with AWS to see if the stack has been created, if so, move on. If not, keep checking until complete. Estimated to take 1 - 1.5 mins.
 
-    while (stackStatus === "CREATE_IN_PROGRESS") {
-      console.log("stackStatus in while loop: ", stackStatus);
-      // wait 30 seconds before rerunning function
-      await awsHelperFunctions.timeout(1000 * 30)
-      getStackData();
-    }
+      while (stackStatus === "CREATE_IN_PROGRESS") {
+        console.log("stackStatus in while loop: ", stackStatus);
+        // wait 30 seconds before rerunning function
+        await awsHelperFunctions.timeout(1000 * 30)
+        getStackData();
+      }
 
-    if (stackStatus === "CREATE_COMPLETE") {
-      const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+      if (stackStatus === "CREATE_COMPLETE") {
+        const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+
+        
+        const StackDataForMasterFile = {
+          stackName: parsedStackData[0].StackName,
+          vpcId: parsedStackData[0].Outputs[1].OutputValue,
+          subnetIds: parsedStackData[0].Outputs[2].OutputValue,
+          securityGroupIds: parsedStackData[0].Outputs[0].OutputValue
+        }
+
+        StackDataForMasterFile.subnetArray = StackDataForMasterFile.subnetIds.split(',');
+
+        console.log(StackDataForMasterFile);
+
+        const lineBreak = "\n";
+        awsHelperFunctions.appendAWSMasterFile(lineBreak);
+        awsHelperFunctions.appendAWSMasterFile(StackDataForMasterFile);
+
+      } else {
+        console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
+      }
+
+    //TODO Read Master File, Append Master File
+
+    //let appendMasterFile = fsp.appendFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, textToAppendToBashProfile);
+
     } else {
-      console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
+      console.log("Stack already exists");
     }
 
   } catch (err) { 

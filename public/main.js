@@ -9,7 +9,6 @@ const fsp = require('fs').promises;
 
 const YAML = require('yamljs');
 
-
 //** --------- IMPORT RESOURCE FILES --------- 
 const events = require('../eventTypes.js')
 const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
@@ -25,14 +24,12 @@ const CloudFormation = require('aws-sdk/clients/cloudformation');
 //** --------- IMPORT DOCUMENTS ---------------- 
 const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
-//const stackTemplateWorkerNode = require(__dirname + '/sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
 const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-cm.json');
 
 //** --------- .ENV Variables -------------- 
 const REGION = process.env.REGION;
 const PORT = process.env.PORT;
 const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
-const SUBNET_IDS = process.env.SUBNET_IDS;
 
 //** --------- INITIALIZE SDK IMPORTS ------ 
 const iam = new IAM()
@@ -59,7 +56,7 @@ function createWindow () {
 //** ----------------------- AWS SDK EVENTS ----------------------- **//
 //** -------------------------------------------------------------- **//
 
-//TODO have user decide their region...
+//TODO BRADON: have user decide their region...
 
 //** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS -------------- **//
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
@@ -81,7 +78,6 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
 //COPY AWS-IAM-AUTHENTICATOR FILE TO BIN FOLDER IN USER HOME DIRECTORY
 //APPEND PATH TO BASH_PROFILE FILE
 
-let iamRoleName;
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------- **//
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
@@ -90,12 +86,12 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
   try {
     //Data from user input + imported policy document
-    //const roleName = data.roleName;
-    iamRoleName = data.roleName;
+    const iamRoleName = data.roleName;
     const iamRoleDescription = data.description;
     const iamRolePolicyDoc = iamRolePolicyDocument;
 
-    iamRoleCreated = await awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
+    //create 
+    iamRoleCreated = await awsEventCallbacks.createIAMRole(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
   } catch (err) {
     console.log(err);
 }
@@ -115,7 +111,7 @@ ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
     const stackTemplateStringified = JSON.stringify(stackTemplate);
     const techStackName = data.stackName;
 
-    createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataInFile(techStackName, stackTemplateStringified);
+    createdStack = await awsEventCallbacks.createTechStack(techStackName, stackTemplateStringified);
 
   } catch (err) {
     console.log(err);
@@ -129,18 +125,11 @@ ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
 ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
-
-  //TODO, do not hardcode stackName or RoleArn
-  //const techStackName = 'carolyn-testing-stack';
-  techStackName = "cb2Stack";
-  iamRoleName = "CB2"; 
   const clusterName = data.clusterName;
-  //clusterName = data.clusterName;
 
   let createdCluster;
-
   try {
-     createdCluster = await awsEventCallbacks.createClusterAndSaveReturnedDataToFile(techStackName, iamRoleName, clusterName);
+     createdCluster = await awsEventCallbacks.createCluster(clusterName);
   } catch (err) {
     console.log(err);
   }
@@ -155,28 +144,9 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
 
 ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
-  clusterName = "cb2Real";
-  stackName = "cb2Stack";
 
-  //TODO no need to copy
-  
+  //TODO Test .includes on bash profile
 
-  const clusterFileContents = fs.readFileSync(__dirname + `/sdkAssets/private/CLUSTER_${clusterName}.json`, 'utf-8');
-  const parsedClusterFileContents = JSON.parse(clusterFileContents);
-  const vpcId = parsedClusterFileContents.cluster.resourcesVpcConfig.vpcId;
-  const securityGroupIds = parsedClusterFileContents.cluster.resourcesVpcConfig.securityGroupIds[0];
-  const subnetIds = SUBNET_IDS
-
-
-  try {
-
-    // await kubectlConfigFunctions.createConfigFile(clusterName);
-    // await kubectlConfigFunctions.configureKubectl(clusterName);
-   // await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds, vpcId, securityGroupIds);
-    await kubectlConfigFunctions.inputNodeInstance(clusterName);
-  } catch (err) {
-    console.log(err);
-  }
 
   win.webContents.send(events.HANDLE_NEW_NODES, 'Nodes were made from the main thread')
 })
@@ -186,12 +156,6 @@ ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 
 // KUBECTL EVENTS - CREATE POD (EXAMPLE)
 // ipcMain.on(events.CREATE_POD, (event, data) => {
-//   // TEST data should be 'CREATE_ROLE';
-//   console.log('data from create a pod', data)
-//   // Perform logic to create the POD
-
-//   // Once role is created then we need to indicate back to the renderer process
-//   // that the role is made
 //   win.webContents.send(events.HANDLE_NEW_POD, 'New Pod Here');
 // })
 
@@ -235,40 +199,8 @@ ipcMain.on(events.CREATE_POD, (event, data) => {
 
   let stringifiedYaml = JSON.stringify(podYaml);
 
-//   //WRITE A NEW POD YAML FILE
-//   fs.writeFileSync(__dirname + `/yamlAssets/pods/${data.podName}.json`, stringifiedYaml);
-//   // fs.writeFile(
-//   //   __dirname + `./yamlAssets/pods/${data.podName}.json`,
-//   //   stringifiedYaml,
-//   //   function(err) {
-//   //     if (err) {
-//   //       return console.log(err);
-//   //     }
-//   //     console.log("You made a pod Yaml!!!!");
-//   //   }
-//   // );
 
-//   console.log("I made a Pod Yaml file!");
 
-//   const podYamlFile = fs.readFileSync(__dirname + `/yamlAssets/pods/${data.podName}.json`);
-
-//   //CREATE POD AND INSERT INTO AWS
-//   const child = spawn("kubectl", [
-//     "apply",
-//     "-f",
-//     podYamlFile
-//   ]);
-//   console.log("podCreator");
-//   child.stdout.on("data", data => {
-//     console.log(`stdout: ${data}`);
-//   });
-//   child.stderr.on("data", data => {
-//     console.log(`stderr: ${data}`);
-//   });
-//   child.on("close", code => {
-//     console.log(`child process exited with code ${code}`);
-//   });
-// });
 
 //WRITE A NEW POD YAML FILE
 fs.writeFile(
@@ -468,34 +400,3 @@ app.on('activate', () => {
   }
 });
 
-
-// const role = await iam.createRole(iamParams)
-  
-//   , (err, data) => {
-//     if (err) console.log(err);
-//     else { 
-//       //Collect the relevant IAM data returned from AWS and store in an object to stringify*/
-//       const iamRoleDataFromForm = {
-//         roleName: data.Role.RoleName,
-//         createDate: data.Role.RoleId,
-//         roleID: data.Role.RoleId,
-//         arn: data.Role.Arn,
-//         createDate: data.Role.CreateDate,
-//         path: data.Role.Path, 
-//       }
-
-//       let stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm);
-
-//       //Create a file from returned data with the title of the role name that the user selected and save in assets folder */
-//       fs.writeFile(__dirname + `/sdkAssets/private/${roleName}.json`, stringifiedIamRoleDataFromForm, (err) => {
-//         if (err) console.log(err); 
-//         else {
-//           console.log("file created");
-//         }   
-//       }); 
-//     };         
-//   }) 
-
-//   // Once role is created send back to renderer that the role is made
-//   win.webContents.send(events.HANDLE_NEW_ROLE, roleName);
-// })

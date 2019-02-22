@@ -49,11 +49,8 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
 
     if (fileExists) {
       console.log("file exists");
-      
       const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
-
       console.log("awsMasterFile check ", awsMasterFileContents);
-
       const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
 
       if (parsedAWSMasterFileContents[key] === value) {
@@ -107,57 +104,4 @@ awsHelperFunctions.appendAWSMasterFile = async (data) => {
   }
 }
 
-
-
 module.exports = awsHelperFunctions;
-
-
-// try {
-
-//   //Create a tech stack for worker node on AWS and save results to file in Assets Folder
-//   const techStackCreated = await awsHelperFunctions.createTechStack(workerNodeStackName, techStackParam); 
-//   } catch (err) {
-//     console.log(err);
-//   }
-
-// const techStackCreated = await awsHelperFunctions.createTechStack(stackName, techStackParam); 
-
-
-
-
-// await new Promise((resolve, reject) => {
-//   setTimeout(() => {
-//     getStackData();
-//     resolve();
-//   }, 1000 * 1 * 60);
-// })
-
-// //TODO look into setInterval, and conside while loop. Reaname functoin
-// await new Promise((resolve, reject) => {
-//   const loop = () => {
-//     if (stackStatus !== "CREATE_COMPLETE") {
-//       setTimeout(() => {
-//         getStackData();
-//         loop();
-//       }, 1000 * 30);
-//     } else {
-//       resolve();
-//     }
-//   }
-//   loop();
-// })
-
-
-
- // const subnetIds = 
-    // parsedClusterFileContents.cluster.resourcesVpcConfig.subnetIds;
-    // console.log("subnetIds: ", subnetIds)
-    // const subnetIdsInCorrectFormat = subnetIds.reduce((acc, cv, index, array) => {
-    //   if (index !== array.length -1) {
-    //     acc += cv + ',';
-    //   } else {
-    //     acc += cv;
-    //   }
-    //   return acc;
-    // }, '');
-    // console.log("subnetIdsInCorrectFormat: ", subnetIdsInCorrectFormat);

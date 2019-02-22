@@ -30,7 +30,6 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
     const key = "iamRoleName";
 
     //test to see if the role by this name already exists. If false, do this:
-
     const isIAMRoleNameInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, iamRoleName);
 
     console.log("isIAMRoleNameInMasterFile: ", isIAMRoleNameInMasterFile);
@@ -41,6 +40,7 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
 
       //Send IAM data to AWS via the iamParams object to create an IAM Role*/
       const role = await iam.createRole(iamParams).promise();
+      console.log("AWS ROLE DATA: ", role);
 
       //Collect the relevant IAM data returned from AWS
       const iamRoleDataFromForm = {
@@ -64,9 +64,6 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
       fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${iamRoleName}.json`, stringifiedIamRoleDataFromForm);
 
       awsMasterFile = awsHelperFunctions.appendAWSMasterFile(iamRoleDataforMasterFile);
-
-      //TO: DELETE Create file named for MASTER FILE and save in assets folder 
-      // fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedIamRoleDataforMasterFile);
 
       //Send Cluster + Service Policies to AWS to attach to created IAM Role 
       const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
@@ -114,21 +111,17 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
        // TODO, remove if below works: let stackStatus = "CREATE_IN_PROGRESS";
        let stackStatus = "CREATE_IN_PROGRESS";
 
-
-      //TODO modularize function
       const getStackData = async () => {
         try {
           const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
           stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
           parsedStackData = JSON.parse(stringifiedStackData);
           stackStatus = parsedStackData[0].StackStatus;
-
         } catch (err) {
         }
       }
     
     //check with AWS to see if the stack has been created, if so, move on. If not, keep checking until complete. Estimated to take 1 - 1.5 mins.
-
       while (stackStatus === "CREATE_IN_PROGRESS") {
         console.log("stackStatus in while loop: ", stackStatus);
         // wait 30 seconds before rerunning function
@@ -138,7 +131,6 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
 
       if (stackStatus === "CREATE_COMPLETE") {
         const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
-
         
         const stackDataForMasterFile = {
           stackName: parsedStackData[0].StackName,
@@ -146,10 +138,9 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
           subnetIdsString: parsedStackData[0].Outputs[2].OutputValue,
           securityGroupIds: parsedStackData[0].Outputs[0].OutputValue
         }
-
         stackDataForMasterFile.subnetIdsArray = stackDataForMasterFile.subnetIdsString.split(',');
 
-        awsHelperFunctions.appendAWSMasterFile(stackDataForMasterFile);
+        await awsHelperFunctions.appendAWSMasterFile(stackDataForMasterFile);
 
       } else {
         console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
@@ -172,6 +163,7 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
 awsEventCallbacks.createCluster = async (clusterName) => {
   
   console.log("ClusterCreating: ", clusterName);
+  //TODO, do we actually need to declare all of these here
   let parsedClusterData;
   let iamRoleArn;
   let subnetIdsString;
@@ -182,9 +174,8 @@ awsEventCallbacks.createCluster = async (clusterName) => {
   try {
 
     const key = "clusterName";
-
+    
     //Check if cluster has been created. If not:
-
     const isClusterInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, clusterName);
 
     console.log("isClusterInMasterFile: ", isClusterInMasterFile);

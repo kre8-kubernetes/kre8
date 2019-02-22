@@ -21,18 +21,23 @@ const cloudformation = new CloudFormation({ region: REGION });
 const awsEventCallbacks = {};
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
-awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleName, roleDescription, iamRolePolicyDoc) => {
+awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePolicyDoc) => {
 
   let awsMasterFile;
 
   try {
 
     const key = "iamRoleName";
-    let awsMasterFile;
 
-    if (!awsHelperFunctions.checkAWSMasterFile(key, roleName)) {
+    //test to see if the role by this name already exists. If false, do this:
 
-      const iamParams = awsParameters.createIAMRoleParam(roleName, roleDescription, iamRolePolicyDoc);
+    const isIAMRoleNameInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, iamRoleName);
+
+    console.log("isIAMRoleNameInMasterFile: ", isIAMRoleNameInMasterFile);
+
+    if (!isIAMRoleNameInMasterFile) {
+
+      const iamParams = awsParameters.createIAMRoleParam(iamRoleName, roleDescription, iamRolePolicyDoc);
 
       //Send IAM data to AWS via the iamParams object to create an IAM Role*/
       const role = await iam.createRole(iamParams).promise();
@@ -56,7 +61,7 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
       // const stringifiedIamRoleDataforMasterFile = JSON.stringify(iamRoleDataforMasterFile);
       
       //Create file named for IAM Role and save in assets folder 
-      fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${roleName}.json`, stringifiedIamRoleDataFromForm);
+      fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${iamRoleName}.json`, stringifiedIamRoleDataFromForm);
 
       awsMasterFile = awsHelperFunctions.appendAWSMasterFile(iamRoleDataforMasterFile);
 
@@ -67,13 +72,13 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
       const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
       const servicePolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
 
-      const clusterPolicyParam = { RoleName: roleName, PolicyArn: clusterPolicyArn }
-      const servicePolicyParam = { RoleName: roleName, PolicyArn: servicePolicyArn }
+      const clusterPolicyParam = { RoleName: iamRoleName, PolicyArn: clusterPolicyArn }
+      const servicePolicyParam = { RoleName: iamRoleName, PolicyArn: servicePolicyArn }
 
       await Promise.all([iam.attachRolePolicy(clusterPolicyParam).promise(), iam.attachRolePolicy(servicePolicyParam).promise()])
 
     } else {
-      console.log("Text found in Master File, Role already exists");
+      console.log("Returned True. Text found in Master File, Role already exists");
     }
   
   } catch (err) {
@@ -83,14 +88,20 @@ awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs = async (roleNam
   return awsMasterFile;
 };
 
-//** --------- CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ----- **//
-awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, stackTemplateStringified) => {
+//** --------- CREATE AWS TECH STACK ------------------------------------ **//
+awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) => {
+
+  let parsedStackData;
 
   try {
 
     const key = "stackName";
 
-    if (!awsHelperFunctions.checkAWSMasterFile(key, stackName)) {
+    const isTechStackInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, stackName);
+
+    console.log("isTechStackInMasterFile: ", isTechStackInMasterFile);
+
+    if (!isTechStackInMasterFile) {
 
       const techStackParam = await awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
 
@@ -100,8 +111,9 @@ awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, s
       const getStackDataParam = { StackName: stackName };
 
       let stringifiedStackData;
-      let parsedStackData;
-      let stackStatus = "CREATE_IN_PROGRESS";
+       // TODO, remove if below works: let stackStatus = "CREATE_IN_PROGRESS";
+       let stackStatus = "CREATE_IN_PROGRESS";
+
 
       //TODO modularize function
       const getStackData = async () => {
@@ -143,10 +155,6 @@ awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, s
         console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
       }
 
-    //TODO Read Master File, Append Master File
-
-    //let appendMasterFile = fsp.appendFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, textToAppendToBashProfile);
-
     } else {
       console.log("Stack already exists");
     }
@@ -156,99 +164,152 @@ awsEventCallbacks.createTechStackAndSaveReturnedDataInFile = async (stackName, s
   }
 
   //TODO Decide what to return to user
-  return stackName;
+  return parsedStackData;
 };
 
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
 
-awsEventCallbacks.createClusterAndSaveReturnedDataToFile = async (techStackName, iamRoleName, clusterName) => {
-
+awsEventCallbacks.createCluster = async (clusterName) => {
+  
   console.log("ClusterCreating: ", clusterName);
+  let parsedClusterData;
+  let iamRoleArn;
+  let subnetIdsString;
+  let subnetIdsArray;
+  let securityGroupIds;
+  let vpcId;
 
   try {
 
-    const iamRoleFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/IAM_ROLE_${iamRoleName}.json`, 'utf-8');
+    const key = "clusterName";
 
+    //Check if cluster has been created. If not:
 
-    const parsedIamRoleFileContents = JSON.parse(iamRoleFileContents);
-    console.log("parsedIamRoleFileContents: ", parsedIamRoleFileContents)
+    const isClusterInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, clusterName);
 
-    const roleArn = parsedIamRoleFileContents.arn;
-    console.log("roleArn: ", roleArn)
+    console.log("isClusterInMasterFile: ", isClusterInMasterFile);
 
-    //Get data from tech stack file
-    const stackDataFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/STACK_${techStackName}.json`, 'utf-8');
+    if (!isClusterInMasterFile) {
 
-    const parsedStackDataFileContents = JSON.parse(stackDataFileContents);
-    const subnetIds = parsedStackDataFileContents[0].Outputs[2].OutputValue;
-    const subnetArray = subnetIds.split(',');
-    const securityGroupIds = parsedStackDataFileContents[0].Outputs[0].OutputValue;
+      const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
 
-    //Use data to generate cluster parameter to send to AWS
-    const clusterParam = awsParameters.createClusterParam(clusterName, subnetArray, securityGroupIds, roleArn);
+      const parsedaAWSMasterFileData = JSON.parse(awsMasterFileData);
+      iamRoleArn = parsedaAWSMasterFileData.iamRoleArn;
+      subnetIdsString = parsedaAWSMasterFileData.subnetIdsString;
+      subnetIdsArray = parsedaAWSMasterFileData.subnetIdsArray;
+      securityGroupIds = parsedaAWSMasterFileData.securityGroupIds;
+      vpcId = parsedaAWSMasterFileData.vpcId;
 
-    //Send cluster data to AWS via clusterParmas to create a cluster 
-    const cluster = await eks.createCluster(clusterParam).promise();
-      
-    const fetchClusterDataParam = { name: clusterName };
+      const clusterParam = awsParameters.createClusterParam(clusterName, subnetIdsArray, securityGroupIds, iamRoleArn);
 
-    let parsedClusterData;
-    let stringifiedClusterData;
-    let clusterCreationStatus = "CREATING";
-
-    //Function to request cluster data from AWS and check cluster creation status
-    const getClusterData = async () => {
-
-      try {
-        const clusterData = await eks.describeCluster(fetchClusterDataParam).promise();
-        stringifiedClusterData = JSON.stringify(clusterData, null, 2);
-        parsedClusterData = JSON.parse(stringifiedClusterData);
-        clusterCreationStatus = parsedClusterData.cluster.status;
+      //Send cluster data to AWS via clusterParmas to create a cluster 
+      const cluster = await eks.createCluster(clusterParam).promise();
         
-        console.log("status in getClusterData: ", clusterCreationStatus);
-      } catch (err) {
-        console.log(err);
+      const getClusterDataParam = { name: clusterName };
+
+      let stringifiedClusterData;
+      let clusterCreationStatus = "CREATING";
+
+      //Request cluster data from AWS and check cluster creation status
+      const getClusterData = async () => {
+        try {
+          const clusterData = await eks.describeCluster(getClusterDataParam).promise();
+          stringifiedClusterData = JSON.stringify(clusterData, null, 2);
+          parsedClusterData = JSON.parse(stringifiedClusterData);
+          clusterCreationStatus = parsedClusterData.cluster.status;
+          
+          console.log("status in getClusterData: ", clusterCreationStatus);
+        } catch (err) {
+          console.log(err);
+        }
       }
-    }
-    
-    //Timeout execution thread for 6 minutes to give AWS time to create cluster
-    await awsHelperFunctions.timeout(1000 * 60 * 6);
-    
-    //Ask Amazon for cluster data
-    getClusterData();
-
-    while (clusterCreationStatus !== "ACTIVE") {
-      //Timeout execution thread for 30 seconds before resending request to AWS for cluster data
-      await awsHelperFunctions.timeout(1000 * 30)
+      
+      console.log("6 min settimeout starting");
+      //Timeout execution thread for 6 minutes to give AWS time to create cluster
+      await awsHelperFunctions.timeout(1000 * 60 * 6);
+      
+      //Ask Amazon for cluster data
       getClusterData();
+
+      while (clusterCreationStatus === "CREATING") {
+        //Timeout execution thread for 30 seconds before resending request to AWS for cluster data
+        await awsHelperFunctions.timeout(1000 * 30)
+        getClusterData();
+      }
+
+      //Once Cluster is creted:
+      if (clusterCreationStatus === "ACTIVE") {
+      
+        //Create a file holding the cluster data from AWS
+        const createClusterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/CLUSTER_${clusterName}.json`, stringifiedClusterData); 
+        console.log("parsedClusterData: ", parsedClusterData)
+
+        //Append relavant cluster data to AWS_MASTER_DATA file
+        clusterDataforMasterFile = {
+          clusterName: parsedClusterData.cluster.name,
+          clusterArn: parsedClusterData.cluster.arn,
+          serverEndPoint: parsedClusterData.cluster.endpoint,
+          certificateAuthorityData: parsedClusterData.cluster.certificateAuthority.data,
+        }
+        awsHelperFunctions.appendAWSMasterFile(clusterDataforMasterFile);
+      } else {
+        console.log(`Error in creating cluster. Cluster Status = ${clusterStatus}`);
+      }
+    } else {
+      console.log("Cluster already exists");
     }
-    
-    //Once cluster is created, create a file holding the cluster data from AWS
-    const createClusterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/CLUSTER_${clusterName}.json`, stringifiedClusterData);
 
-    const clusterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/CLUSTER_${clusterName}.json`, 'utf-8');
+    const isConfigFileStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile("ConfigFileStatus", "Created");
 
-    const parsedClusterFileContents = JSON.parse(clusterFileContents);
+    console.log("isConfigFileStatusInMasterFile: ", isConfigFileStatusInMasterFile);
 
-    console.log("parsedClusterFileContents: ", parsedClusterFileContents)
+    if (!isConfigFileStatusInMasterFile) {
+      await kubectlConfigFunctions.createConfigFile(clusterName);
+    } else {
+      console.log("Config file alreade created");
+    }
 
-    // const securityGroupIds = parsedClusterFileContents.cluster.resourcesVpcConfig.securityGroupIds[0];
-    console.log("securityGroupIds: ", securityGroupIds)
-    const vpcId = parsedClusterFileContents.cluster.resourcesVpcConfig.vpcId;
-    console.log("vpcId: ", vpcId)
-    
-    await kubectlConfigFunctions.createConfigFile(clusterName);
-    await kubectlConfigFunctions.configureKubectl(clusterName);
-    await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds, vpcId, securityGroupIds);
+    const isKubectlConfigStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile("KubectlConfigStatus", "Configured");
 
-    await kubectlConfigFunctions.inputNodeInstance(clusterName);
+    console.log("isKubectlConfigStatusInMasterFile: ", isKubectlConfigStatusInMasterFile);
+
+    if (!isKubectlConfigStatusInMasterFile) {
+      await kubectlConfigFunctions.configureKubectl(clusterName);
+    } else {
+      console.log("Kubectl already configured");
+    }
+
+    const workerNodeStackName = `${clusterName}WorkerNodeStack2`;
+    console.log("CHECKING WORKER NODE STATUS")
+
+    const isWorkerNodeInMasterFile = await awsHelperFunctions.checkAWSMasterFile("workerNodeStackName", workerNodeStackName);
+
+    console.log("isWorkerNodeInMasterFile: ", isWorkerNodeInMasterFile);
+
+    if (!isWorkerNodeInMasterFile) {
+      console.log("CREATING WORKE NODE")
+
+      await kubectlConfigFunctions.createStackForWorkerNode(workerNodeStackName, clusterName, subnetIdsString, vpcId, securityGroupIds);
+
+    } else {
+      console.log("Workernode stack already created")
+    }
+
+    const isNodeInstanceMasterFile = await awsHelperFunctions.checkAWSMasterFile("nodeInstance", "created");
+
+    console.log("isNodeInstanceMasterFile: ", isNodeInstanceMasterFile);
+
+    if (!isNodeInstanceMasterFile) {
+      await kubectlConfigFunctions.inputNodeInstance(workerNodeStackName, clusterName);
+    } else {
+      console.log("node instance already input");
+    }
   
   } catch (err) {
     console.log("err", err);
   }
-
   //TODO what to return to User
-  return clusterName;
+  return parsedClusterData;
 };
 
 

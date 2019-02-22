@@ -81,7 +81,6 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
 //COPY AWS-IAM-AUTHENTICATOR FILE TO BIN FOLDER IN USER HOME DIRECTORY
 //APPEND PATH TO BASH_PROFILE FILE
 
-let iamRoleName;
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------- **//
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
@@ -95,7 +94,7 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     const iamRoleDescription = data.description;
     const iamRolePolicyDoc = iamRolePolicyDocument;
 
-    iamRoleCreated = await awsEventCallbacks.createIAMRoleAndCreateFileAndAttachPolicyDocs(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
+    iamRoleCreated = await awsEventCallbacks.createIAMRole(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
   } catch (err) {
     console.log(err);
 }
@@ -115,7 +114,7 @@ ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
     const stackTemplateStringified = JSON.stringify(stackTemplate);
     const techStackName = data.stackName;
 
-    createdStack = await awsEventCallbacks.createTechStackAndSaveReturnedDataInFile(techStackName, stackTemplateStringified);
+    createdStack = await awsEventCallbacks.createTechStack(techStackName, stackTemplateStringified);
 
   } catch (err) {
     console.log(err);
@@ -132,15 +131,15 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   //TODO, do not hardcode stackName or RoleArn
   //const techStackName = 'carolyn-testing-stack';
-  techStackName = "cb2Stack";
-  iamRoleName = "CB2"; 
+  // techStackName = "cb2Stack";
+  // iamRoleName = "CB2"; 
   const clusterName = data.clusterName;
   //clusterName = data.clusterName;
 
   let createdCluster;
 
   try {
-     createdCluster = await awsEventCallbacks.createClusterAndSaveReturnedDataToFile(techStackName, iamRoleName, clusterName);
+     createdCluster = await awsEventCallbacks.createCluster(clusterName);
   } catch (err) {
     console.log(err);
   }
@@ -155,28 +154,9 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
 
 ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
-  clusterName = "cb2Real";
-  stackName = "cb2Stack";
-
-  //TODO no need to copy
   
 
-  const clusterFileContents = fs.readFileSync(__dirname + `/sdkAssets/private/CLUSTER_${clusterName}.json`, 'utf-8');
-  const parsedClusterFileContents = JSON.parse(clusterFileContents);
-  const vpcId = parsedClusterFileContents.cluster.resourcesVpcConfig.vpcId;
-  const securityGroupIds = parsedClusterFileContents.cluster.resourcesVpcConfig.securityGroupIds[0];
-  const subnetIds = SUBNET_IDS
-
-
-  try {
-
-    // await kubectlConfigFunctions.createConfigFile(clusterName);
-    // await kubectlConfigFunctions.configureKubectl(clusterName);
-   // await kubectlConfigFunctions.createStackForWorkerNode(clusterName, subnetIds, vpcId, securityGroupIds);
-    await kubectlConfigFunctions.inputNodeInstance(clusterName);
-  } catch (err) {
-    console.log(err);
-  }
+  
 
   win.webContents.send(events.HANDLE_NEW_NODES, 'Nodes were made from the main thread')
 })

@@ -1,3 +1,5 @@
+const fs = require('fs');
+const fsp = require('fs').promises;
 const awsParameters = {};
 
 //** Parameter for CREATE_IAM_ROLE 
@@ -10,7 +12,6 @@ awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocu
   };
   return iamRoleParam;
 }
-
 
 //** Parameter for CREATE_TECH_STACK 
 awsParameters.createTechStackParam = (stackName, stackTemplateStringified) => {
@@ -50,23 +51,11 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
   const AWSClusterConfigFileParam = {
     "apiVersion": "v1",
     "clusters": [
-        {
-            "cluster": {
-                "server": serverEndpoint,
-                "certificate-authority-data": certificateAuthorityData,
-            },
-            "name": "kubernetes"
-        },
+        { "cluster": { "server": serverEndpoint, "certificate-authority-data": certificateAuthorityData, },
+            "name": "kubernetes" },
     ],
-    "contexts": [
-        {
-            "context": {
-                "cluster": "kubernetes",
-                "user": "aws"
-            },
-            "name": "aws"
-        },
-    ],
+    "contexts": [ { "context": { "cluster": "kubernetes", "user": "aws" },
+            "name": "aws" }, ],
     "current-context": "aws",
     "kind": "Config",
     "preferences": {},
@@ -77,11 +66,7 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
                 "exec": {
                     "apiVersion": "client.authentication.k8s.io/v1alpha1",
                     "command": "aws-iam-authenticator",
-                    "args": [
-                        "token",
-                        "-i",
-                        clusterName
-                    ]
+                    "args": [ "token", "-i", clusterName ]
                 }
             }
         },
@@ -93,9 +78,19 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
 
 //** Parameter for CREATE_WORKER_NODE_TECH_STACK 
 
-  awsParameters.createWorkerNodeStackParam = (workerNodeStackName, clusterName, subnetIds, vpcId, securityGroupIds, stackTemplateStringified, keyName) => {
+  awsParameters.createWorkerNodeStackParam = (workerNodeStackName, stackTemplateforWorkerNodeStringified) => {
 
-    console.log(securityGroupIds);
+    console.log("CREATNG STACK PARAM");
+
+    const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+
+    const parsedaAWSMasterFileData = JSON.parse(awsMasterFileData);
+
+    const clusterName = parsedaAWSMasterFileData.clusterName;
+    const subnetIdsString = parsedaAWSMasterFileData.subnetIdsString;
+    const vpcId = parsedaAWSMasterFileData.vpcId;
+    const securityGroupIds = parsedaAWSMasterFileData.securityGroupIds;
+    const awsKeyValuePairValue = parsedaAWSMasterFileData.KeyName;
 
     const workerNodeStackParam = {
       StackName: workerNodeStackName,
@@ -111,11 +106,11 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
         { "ParameterKey": "NodeAutoScalingGroupMaxSize", "ParameterValue": "4" },
         { "ParameterKey": "NodeInstanceType", "ParameterValue": "t3.nano" },
         { "ParameterKey": "NodeImageId", "ParameterValue": "ami-081099ec932b99961" },
-        { "ParameterKey": "KeyName", "ParameterValue": keyName },
+        { "ParameterKey": "KeyName", "ParameterValue": awsKeyValuePairValue },
         { "ParameterKey": "VpcId", "ParameterValue": vpcId },
-        { "ParameterKey": "Subnets", "ParameterValue": subnetIds }
+        { "ParameterKey": "Subnets", "ParameterValue": subnetIdsString }
       ],
-      TemplateBody: stackTemplateStringified,
+      TemplateBody: stackTemplateforWorkerNodeStringified,
     }
     return workerNodeStackParam;
   }

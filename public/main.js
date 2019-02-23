@@ -58,19 +58,27 @@ function createWindow () {
 
 //TODO BRADON: have user decide their region...
 
+
+//** --------- FUNCTIONS TO EXECUTE ON DOWNLOAD ------------------ **//
+
+
 //** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS -------------- **//
-ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, (event, data) => {
-  const child = spawn('curl', ['-o', 'aws-iam-authenticator', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator']);
-    child.stdout.on('data', (data) => {
-      console.log(`stdout: ${data}`);
-    })
-    child.stderr.on('data', (data) => {
-      console.log(`stderr: ${data}`);
-    })
-    child.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-      win.webContents.send(events.HANDLE_NEW_ROLE, 'New Role Name Here');
-    });
+
+//TODO: Braden convert to on startup function perform once
+ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
+  
+  //TODO if statement, check for file first. 
+  try {
+    await onDownload.installIAMAuthenticator();
+    await onDownload.enableIAMAuthenticator();
+    await onDownload.copyToBinFolder();
+    await onDownload.appendToBashProfile;
+
+  } catch (err) {
+    console.log(err);
+  }
+
+  win.webContents.send(events.HANDLE_NEW_ROLE, 'New Role Name Here');
 })
 
 //TODO: ADD FUNCTIONS:
@@ -146,6 +154,13 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 
   //TODO Test .includes on bash profile
+     //read the bash profile
+      //stringify the contents
+      //check if teh file contains "KUBECONFIG"
+      //if not, proceed
+      //if so:
+        //
+
 
 
   win.webContents.send(events.HANDLE_NEW_NODES, 'Nodes were made from the main thread')

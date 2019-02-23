@@ -26,6 +26,9 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
   let awsMasterFile;
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('================  awsEventCallbacks.createIAMRole ===================')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
     const key = "iamRoleName";
 

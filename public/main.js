@@ -85,6 +85,9 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
   let iamRoleCreated;
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('============  ipcMain.on(events.CREATE_IAM_ROLE,... =================')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     //Data from user input + imported policy document
     const iamRoleName = data.roleName;
     const iamRoleDescription = data.description;
@@ -95,7 +98,6 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
   } catch (err) {
     console.log(err);
 }
-
   //TODO decide what to return to the the user
 
   win.webContents.send(events.HANDLE_NEW_ROLE, iamRoleCreated);

@@ -38,26 +38,33 @@ awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = (folderName) => {
   }
 }
 
-//** -- Function to read and check AWS_MASTER file --- 
+/** -- Function to read and check AWS_MASTER file ---
+ * This is a function that will check if the master file exists and if it does,
+ * then we will create that
+* @param {string} key keyname of the object property in question
+* @param {string} value the value of the property in question
+**/ 
 awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
 
   let valueToReturn;
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('=============  awsHelperFunctions.checkAWSMasterFile ================')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    const fileExists = fs.existsSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`); 
+    const fileExists = fs.existsSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`);
 
     if (fileExists) {
-      console.log("file exists");
       const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
-      console.log("awsMasterFile check ", awsMasterFileContents);
       const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
+      console.log("Master file exits and here are the contents:", parsedAWSMasterFileContents);
 
       if (parsedAWSMasterFileContents[key] === value) {
-        console.log("key already exists")
+        console.log("key already exists in the parsed master file")
         valueToReturn = true;
       } else {
-        console.log("key did not exist")
+        console.log("key did not exist in the parsed master file")
         valueToReturn = false;
       }
     } else {
@@ -81,6 +88,11 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
 awsHelperFunctions.appendAWSMasterFile = async (data) => {
 
   try {
+
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('============= awsHelperFunctions.appendAWSMasterFile ================')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+
     console.log("Data to append to file", typeof data, data);
     
     const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');

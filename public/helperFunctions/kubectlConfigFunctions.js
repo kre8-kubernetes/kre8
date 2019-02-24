@@ -81,12 +81,11 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
     if (process.env['KUBECONFIG'] !== undefined) {
-      const incomingKubeConfigPath = `${process.env['HOME']}/.kube/config-${clusterName}`
-      if (process.env['KUBECONFIG'].slice(1) !== incomingKubeConfigPath) {
+      if (!process.env['KUBECONFIG'].includes(clusterName)) {
         
         console.log("KUBECONFIG env var exists, but not the same");
 
-        process.env['KUBECONFIG'] = incomingKubeConfigPath;
+        process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
 
         let bashRead = await fsp.readFile(process.env['HOME'] + '/.bash_profile', 'utf-8')
 
@@ -95,15 +94,14 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
         await fsp.writeFile(process.env['HOME'] + '/.bash_profile', bashRead, 'utf-8');
 
         console.log('re-wrote .bash_profile to set KUBECONFIG env var to the new cluster config file')
-        // let textToAppendToBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
-        // let appendBashProfileFile = await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToAppendToBashProfile);
+
       } else {
         console.log("kubeconfig exists and is the same");
       }
     } else {
       console.log("if KUBECONFIG env var doesn't exist");
 
-      process.env['KUBECONFIG'] = incomingKubeConfigPath;
+      process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
 
       let textToAppendToBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
 
@@ -123,7 +121,8 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
     // const stringifiedDataForAWSMasterDataFile = JSON.stringify(dataForAWSMasterDataFile);
     await awsHelperFunctions.appendAWSMasterFile(dataForAWSMasterDataFile);
     
-    const masterFileRead = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+    //FIXME: Do we need this, we aren't doing anything with the read here.
+    const masterFileRead = fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
 
     console.log('Data from the masterFile', masterFileRead);
 
@@ -165,8 +164,6 @@ kubectlConfigFunctions.createStackForWorkerNode = async (workerNodeStackName, cl
     const stackTemplateforWorkerNodeStringified = JSON.stringify(stackTemplateForWorkerNode);
 
     const techStackParam = awsParameters.createWorkerNodeStackParam(workerNodeStackName, stackTemplateforWorkerNodeStringified);
-
-    console.log('params getting passed into cloudFormation to create a stack for the worker nodes', techStackParam);
 
     //Send tech stack data to AWS to create stack 
     const stack = await cloudformation.createStack(techStackParam).promise();
@@ -237,7 +234,7 @@ kubectlConfigFunctions.inputNodeInstance = async (workerNodeStackName, clusterNa
     //TODO read new worker stack file to get new roleArn
     //TODO should this be awaited?
 
-    const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+    const awsMasterFileData = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
   
     //Gather required data 
     const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);

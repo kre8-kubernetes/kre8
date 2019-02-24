@@ -223,7 +223,6 @@ kubectlConfigFunctions.inputNodeInstance = async (workerNodeStackName, clusterNa
     //TODO read new worker stack file to get new roleArn
     //TODO should this be awaited?
 
-    // const workerNodeTechStackFile = await fs.readFileSync(__dirname + `/../sdkAssets/private/STACK_${workerNodeStackName}.json`, 'utf-8');
 
     const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
   

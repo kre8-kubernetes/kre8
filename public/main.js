@@ -34,7 +34,7 @@ const PORT = process.env.PORT;
 const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 
 //** --------- INITIALIZE SDK IMPORTS ------ 
-const iam = new IAM();
+const iam = new IAM()
 const eks = new EKS({ region: REGION});
 const cloudformation = new CloudFormation({ region: REGION });
 
@@ -58,13 +58,8 @@ function createWindow () {
 //** ----------------------- AWS SDK EVENTS ----------------------- **//
 //** -------------------------------------------------------------- **//
 
-//TODO BRADON: have user decide their region...
-
 
 //** --------- FUNCTIONS TO EXECUTE ON DOWNLOAD ------------------ **//
-
-
-//** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS -------------- **//
 
 //TODO: Braden convert to on startup function perform once
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {

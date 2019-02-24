@@ -85,61 +85,62 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
 
 //** Parameter for CREATE_WORKER_NODE_TECH_STACK 
 
-  awsParameters.createWorkerNodeStackParam = (workerNodeStackName, stackTemplateforWorkerNodeStringified) => {
+awsParameters.createWorkerNodeStackParam = (workerNodeStackName, stackTemplateforWorkerNodeStringified) => {
 
-    console.log("CREATNG STACK PARAM");
+  console.log("CREATNG STACK PARAM");
 
-    const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+  const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+  const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
 
-    const parsedaAWSMasterFileData = JSON.parse(awsMasterFileData);
+  console.log('Here is the current master file data in createWorkerNodeStackParams: ', parsedAWSMasterFileData)
 
-    const clusterName = parsedaAWSMasterFileData.clusterName;
-    const subnetIdsString = parsedaAWSMasterFileData.subnetIdsString;
-    const vpcId = parsedaAWSMasterFileData.vpcId;
-    const securityGroupIds = parsedaAWSMasterFileData.securityGroupIds;
-    const awsKeyValuePairValue = parsedaAWSMasterFileData.KeyName;
+  const clusterName = parsedAWSMasterFileData.clusterName;
+  const subnetIdsString = parsedAWSMasterFileData.subnetIdsString;
+  const vpcId = parsedAWSMasterFileData.vpcId;
+  const securityGroupIds = parsedAWSMasterFileData.securityGroupIds;
+  const awsKeyValuePairValue = parsedAWSMasterFileData.KeyName;
 
-    const workerNodeStackParam = {
-      StackName: workerNodeStackName,
-      Capabilities: [ "CAPABILITY_IAM" ],
-      DisableRollback: false,
-      EnableTerminationProtection: false,
-      Parameters: [
-        { "ParameterKey": "ClusterName", "ParameterValue": clusterName },
-        { "ParameterKey": "ClusterControlPlaneSecurityGroup", "ParameterValue": securityGroupIds },
-        { "ParameterKey": "NodeGroupName", "ParameterValue": "worker-node" },
-        { "ParameterKey": "NodeAutoScalingGroupMinSize", "ParameterValue": "1" },
-        { "ParameterKey": "NodeAutoScalingGroupDesiredCapacity", "ParameterValue": "3" },
-        { "ParameterKey": "NodeAutoScalingGroupMaxSize", "ParameterValue": "4" },
-        { "ParameterKey": "NodeInstanceType", "ParameterValue": "t3.nano" },
-        { "ParameterKey": "NodeImageId", "ParameterValue": "ami-081099ec932b99961" },
-        { "ParameterKey": "KeyName", "ParameterValue": awsKeyValuePairValue },
-        { "ParameterKey": "VpcId", "ParameterValue": vpcId },
-        { "ParameterKey": "Subnets", "ParameterValue": subnetIdsString }
-      ],
-      TemplateBody: stackTemplateforWorkerNodeStringified,
+  const workerNodeStackParam = {
+    StackName: workerNodeStackName,
+    Capabilities: [ "CAPABILITY_IAM" ],
+    DisableRollback: false,
+    EnableTerminationProtection: false,
+    Parameters: [
+      { "ParameterKey": "ClusterName", "ParameterValue": clusterName },
+      { "ParameterKey": "ClusterControlPlaneSecurityGroup", "ParameterValue": securityGroupIds },
+      { "ParameterKey": "NodeGroupName", "ParameterValue": "worker-node" },
+      { "ParameterKey": "NodeAutoScalingGroupMinSize", "ParameterValue": "1" },
+      { "ParameterKey": "NodeAutoScalingGroupDesiredCapacity", "ParameterValue": "3" },
+      { "ParameterKey": "NodeAutoScalingGroupMaxSize", "ParameterValue": "4" },
+      { "ParameterKey": "NodeInstanceType", "ParameterValue": "t3.nano" },
+      { "ParameterKey": "NodeImageId", "ParameterValue": "ami-0c28139856aaf9c3b" },
+      { "ParameterKey": "KeyName", "ParameterValue": awsKeyValuePairValue },
+      { "ParameterKey": "VpcId", "ParameterValue": vpcId },
+      { "ParameterKey": "Subnets", "ParameterValue": subnetIdsString }
+    ],
+    TemplateBody: stackTemplateforWorkerNodeStringified,
+  }
+  return workerNodeStackParam;
+}
+
+//** Parameter for INPUT NODE INSTANCE 
+
+awsParameters.createInputNodeInstance = (roleArn) => {
+
+  const inputNodeInstanceParam = {
+    "apiVersion": "v1",
+    "kind": "ConfigMap",
+    "metadata": {
+        "name": "aws-auth",
+        "namespace": "kube-system"
+    },
+    "data": {
+        "mapRoles": "- "+roleArn+"\n  username: system:node:{{EC2PrivateDNSName}}\n  groups:\n    - system:bootstrappers\n    - system:nodes\n"
     }
-    return workerNodeStackParam;
-  }
+}
 
-  //** Parameter for INPUT NODE INSTANCE 
-
-  awsParameters.createInputNodeInstance = (roleArn) => {
-
-    const inputNodeInstanceParam = {
-      "apiVersion": "v1",
-      "kind": "ConfigMap",
-      "metadata": {
-          "name": "aws-auth",
-          "namespace": "kube-system"
-      },
-      "data": {
-          "mapRoles": "- "+roleArn+"\n  username: system:node:{{EC2PrivateDNSName}}\n  groups:\n    - system:bootstrappers\n    - system:nodes\n"
-      }
-  }
-
-    console.log("exiting params");
-    return inputNodeInstanceParam;
+  console.log("exiting params");
+  return inputNodeInstanceParam;
 }
 
 module.exports = awsParameters;

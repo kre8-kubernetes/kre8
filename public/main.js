@@ -145,7 +145,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   let createdCluster;
   try {
-     createdCluster = await awsEventCallbacks.createCluster(clusterName);
+    createdCluster = await awsEventCallbacks.createCluster(clusterName);
   } catch (err) {
     console.log('Error from CREATE_CLUSTER event listener in main.js:', err);
   }

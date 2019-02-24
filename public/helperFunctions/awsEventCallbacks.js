@@ -197,7 +197,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     console.log('=================  awsEventCallbacks.createCluster ==================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    // FIXME: should we move these master file property names to a constants page and require the object in?
+    // FIXME: write a file to hold the string of the master file property names
     const key = "clusterName";
     
     //Check if cluster has been created. If not:
@@ -274,7 +274,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     } else {
       console.log("Cluster already exists");
     }
-    // FIXME: write a master file property name file to pull these strings from
+    // FIXME: write a file to hold the string of the master file property names
     const isConfigFileStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile("ConfigFileStatus", "Created");
 
     console.log("isConfigFileStatusInMasterFile: ", isConfigFileStatusInMasterFile);
@@ -285,6 +285,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
       console.log("Config file alreade created");
     }
 
+    // FIXME: write a file to hold the string of the master file property names
     const isKubectlConfigStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile("KubectlConfigStatus", "Configured");
 
     console.log("isKubectlConfigStatusInMasterFile: ", isKubectlConfigStatusInMasterFile);
@@ -295,9 +296,10 @@ awsEventCallbacks.createCluster = async (clusterName) => {
       console.log("Kubectl already configured");
     }
 
-    const workerNodeStackName = `${clusterName}WorkerNodeStack2`;
+    const workerNodeStackName = `${clusterName}-worker-nodes`;
     console.log("CHECKING WORKER NODE STATUS")
 
+    // FIXME: write a file to hold the string of the master file property names
     const isWorkerNodeInMasterFile = await awsHelperFunctions.checkAWSMasterFile("workerNodeStackName", workerNodeStackName);
 
     console.log("isWorkerNodeInMasterFile: ", isWorkerNodeInMasterFile);
@@ -310,7 +312,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     } else {
       console.log("Workernode stack already created")
     }
-
+    // FIXME: write a file to hold the string of the master file property names
     const isNodeInstanceMasterFile = await awsHelperFunctions.checkAWSMasterFile("nodeInstance", "created");
 
     console.log("isNodeInstanceMasterFile: ", isNodeInstanceMasterFile);

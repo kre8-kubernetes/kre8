@@ -56,7 +56,7 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
     const fileExists = fs.existsSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`);
 
     if (fileExists) {
-      const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+      const awsMasterFileContents = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
       const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
       console.log("Master file exits and here are the contents:", parsedAWSMasterFileContents);
 
@@ -94,7 +94,7 @@ awsHelperFunctions.appendAWSMasterFile = async (data) => {
 
     console.log("Data to append to file", typeof data, data);
     
-    const awsMasterFileContents = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+    const awsMasterFileContents = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
 
     const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
 

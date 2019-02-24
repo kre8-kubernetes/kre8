@@ -7,8 +7,8 @@ const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 
 const fs = require('fs');
-const { spawn } = require('child_process');
 const fsp = require('fs').promises;
+const { spawn } = require('child_process');
 
 //**.ENV Variables */
 const REGION = process.env.REGION;
@@ -70,7 +70,7 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
       
       //Create file named for IAM Role and save in assets folder 
       // FIXME: Do we need this file anymore???
-      fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${iamRoleName}.json`, stringifiedIamRoleDataFromForm);
+      await fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${iamRoleName}.json`, stringifiedIamRoleDataFromForm);
 
       awsMasterFile = awsHelperFunctions.appendAWSMasterFile(iamRoleDataforMasterFile);
 
@@ -151,7 +151,7 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
 
       if (stackStatus === "CREATE_COMPLETE") {
         // FIXME: do we need this now that we have a master file for this data
-        const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+        const createStackFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
         
         const stackDataForMasterFile = {
           stackName: parsedStackData[0].StackName,
@@ -197,7 +197,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     console.log('=================  awsEventCallbacks.createCluster ==================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    // FIXME: write a file to hold the string of the master file property names
+    // FIXME: should we move these master file property names to a constants page and require the object in?
     const key = "clusterName";
     
     //Check if cluster has been created. If not:
@@ -296,7 +296,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
       console.log("Kubectl already configured");
     }
 
-    const workerNodeStackName = `${clusterName}-worker-nodes`;
+    const workerNodeStackName = `${clusterName}-worker-node`;
     console.log("CHECKING WORKER NODE STATUS")
 
     // FIXME: write a file to hold the string of the master file property names

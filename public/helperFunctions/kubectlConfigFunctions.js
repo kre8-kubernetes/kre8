@@ -61,7 +61,7 @@ kubectlConfigFunctions.createConfigFile = (clusterName) => {
   awsHelperFunctions.checkFileSystemForDirectoryAndMkDir(folderName);
 
   //Save file in users .kube directory
-  fs.writeFileSync(`${process['HOME']}/.kube/config-${clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
+  fs.writeFileSync(`${process.env['HOME']}/.kube/config-${clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
 
   //write to Masterfile that Config file was created
 
@@ -80,26 +80,28 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
     console.log('============  kubectlConfigFunctions.configureKubectl ===============')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    if (process.env['KUBECONFIG'] !== undefined) { 
+    if (process.env['KUBECONFIG'] !== undefined) {
       const incomingKubeConfigPath = `${process.env['HOME']}/.kube/config-${clusterName}`
       if (process.env['KUBECONFIG'].slice(1) !== incomingKubeConfigPath) {
         
-        console.log("kubeconfig exists, but not the same");
+        console.log("KUBECONFIG env var exists, but not the same");
 
         process.env['KUBECONFIG'] = incomingKubeConfigPath;
 
-        let bashRead = fs.readFileSync(process.env['HOME'] + '/.bash_profile', 'utf-8')
+        let bashRead = await fsp.readFile(process.env['HOME'] + '/.bash_profile', 'utf-8')
 
         bashRead = read.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`)
 
-        fs.writeFileSync(process.env['HOME'] + '/.bash_profile', read, 'utf-8');
+        await fsp.writeFile(process.env['HOME'] + '/.bash_profile', bashRead, 'utf-8');
+
+        console.log('re-wrote .bash_profile to set KUBECONFIG env var to the new cluster config file')
         // let textToAppendToBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
         // let appendBashProfileFile = await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToAppendToBashProfile);
       } else {
         console.log("kubeconfig exists and is the same");
       }
     } else {
-      console.log("if kubeconfig doesn't exist");
+      console.log("if KUBECONFIG env var doesn't exist");
 
       process.env['KUBECONFIG'] = incomingKubeConfigPath;
 
@@ -229,7 +231,7 @@ kubectlConfigFunctions.inputNodeInstance = async (workerNodeStackName, clusterNa
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-    console.log('============  kubectlConfigFunctions.configureKubectl ===============')
+    console.log('==============  kubectlConfigFunctions.inputNodeInstance ============')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
     //TODO read new worker stack file to get new roleArn
@@ -265,7 +267,7 @@ kubectlConfigFunctions.inputNodeInstance = async (workerNodeStackName, clusterNa
     await awsHelperFunctions.appendAWSMasterFile(dataToAddToAWSMaster);
 
   } catch (err) {
-    console.log(''err);
+    console.log('Error coming from within kubectlConfigFunctions.inputNodeInstance: ', err);
   }
 
   console.log('Kubectl configured');

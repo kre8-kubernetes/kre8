@@ -9,7 +9,7 @@ const fsp = require('fs').promises;
 
 const YAML = require('yamljs');
 
-//** --------- IMPORT RESOURCE FILES --------- 
+//** --------- IMPORT RESOURCE FILES ---------
 const events = require('../eventTypes.js')
 const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
 const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
@@ -24,6 +24,7 @@ const CloudFormation = require('aws-sdk/clients/cloudformation');
 //** --------- IMPORT DOCUMENTS ---------------- 
 const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
+// FIXME: I don't think that we need this anymore
 const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-cm.json');
 
 //** --------- .ENV Variables -------------- 
@@ -96,7 +97,7 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     //create 
     iamRoleCreated = await awsEventCallbacks.createIAMRole(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
   } catch (err) {
-    console.log(err);
+    console.log('Error from CREATE_IAM_ROLE in main.js:', err);
 }
   //TODO decide what to return to the the user
 
@@ -110,13 +111,18 @@ ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
   let createdStack;
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('============  ipcMain.on(events.CREATE_TECH_STACK,... ===============')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    // FIXME: should the stack template be stringified inside of the awsParameters just like
+    // the iamCreateRole process like above?
     const stackTemplateStringified = JSON.stringify(stackTemplate);
     const techStackName = data.stackName;
 
     createdStack = await awsEventCallbacks.createTechStack(techStackName, stackTemplateStringified);
 
   } catch (err) {
-    console.log(err);
+    console.log('Error from CREATE_TECH_STACK: in main.js: ', err);
   }
 
   //TODO decide what to send back to user. Now juse sends stackName
@@ -133,7 +139,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
   try {
      createdCluster = await awsEventCallbacks.createCluster(clusterName);
   } catch (err) {
-    console.log(err);
+    console.log('Error from CREATE_CLUSTER event listener in main.js:', err);
   }
 
   win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);

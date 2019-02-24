@@ -2,7 +2,11 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const awsParameters = {};
 
-//** Parameter for CREATE_IAM_ROLE 
+/** Parameter for CREATE_IAM_ROLE 
+ * @param {String} rolename
+ * @param {String} roleDescription
+ * @param {Object} iamRolePolicyDocument This is the JSON object for the IAM role policy 
+ */
 awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocument) => {
   const iamRoleParam = {
     AssumeRolePolicyDocument: JSON.stringify(iamRolePolicyDocument),
@@ -13,7 +17,10 @@ awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocu
   return iamRoleParam;
 }
 
-//** Parameter for CREATE_TECH_STACK 
+/** Parameter for CREATE_TECH_STACK 
+ * @param {String} stackName
+ * @param {String} stackTemplateStringified this has already been stringified
+ */
 awsParameters.createTechStackParam = (stackName, stackTemplateStringified) => {
   const techStackParam = {
     StackName: stackName,

@@ -69,7 +69,7 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
       }
     } else {
       const dataForAWSMasterDataFile = { [key]: value };
-      const stringifiedDataForAWSMasterDataFile = JSON.stringify(dataForAWSMasterDataFile);
+      const stringifiedDataForAWSMasterDataFile = JSON.stringify(dataForAWSMasterDataFile, null, 2);
       const awsMasterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedDataForAWSMasterDataFile);
 
       console.log("file did not exist. Created file and wrote initial data to file: ", stringifiedDataForAWSMasterDataFile);
@@ -77,7 +77,7 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
       valueToReturn = false;
     }
   } catch (err) {
-    console.log(err);
+    console.log('Error from awsHelperFunctions.checkAWSMasterFile:', err);
   }
 
   console.log("valueToReturn: ", valueToReturn);
@@ -88,7 +88,6 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
 awsHelperFunctions.appendAWSMasterFile = async (data) => {
 
   try {
-
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('============= awsHelperFunctions.appendAWSMasterFile ================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -103,16 +102,16 @@ awsHelperFunctions.appendAWSMasterFile = async (data) => {
       parsedAWSMasterFileContents[key] = data[key];
     }
 
-    const stringifiedAWSMasterFileContents = JSON.stringify(parsedAWSMasterFileContents);
+    const stringifiedAWSMasterFileContents = JSON.stringify(parsedAWSMasterFileContents, null, 2);
+    
+    await fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedAWSMasterFileContents);
 
-    const awsUpdatedMasterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedAWSMasterFileContents);
-
-    console.log("data added to master file");
+    console.log("Data was added to the master file");
 
     return parsedAWSMasterFileContents;
 
   } catch (err) {
-    console.log(err);
+    console.log('Error from awsHelperFunctions.appendAWSMaster File: ', err);
   }
 }
 

@@ -24,8 +24,6 @@ const CloudFormation = require('aws-sdk/clients/cloudformation');
 //** --------- IMPORT DOCUMENTS ---------------- 
 const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
-// FIXME: I don't think that we need this anymore
-const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-cm.json');
 
 //** --------- .ENV Variables -------------- 
 const REGION = process.env.REGION;
@@ -57,7 +55,7 @@ function createWindow () {
 //** ----------------------- AWS SDK EVENTS ----------------------- **//
 //** -------------------------------------------------------------- **//
 
-//TODO BRADON: have user decide their region...
+//TODO: BRADON: have user decide their region...
 
 
 //** --------- FUNCTIONS TO EXECUTE ON DOWNLOAD ------------------ **//
@@ -68,7 +66,7 @@ function createWindow () {
 //TODO: Braden convert to on startup function perform once
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
   
-  //TODO if statement, check for file first. 
+  //TODO: if statement, check for file first. 
   try {
     await onDownload.installIAMAuthenticator();
     await onDownload.enableIAMAuthenticator();
@@ -107,7 +105,7 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
   } catch (err) {
     console.log('Error from CREATE_IAM_ROLE in main.js:', err);
 }
-  //TODO decide what to return to the the user
+  //TODO: decide what to return to the the user
 
   win.webContents.send(events.HANDLE_NEW_ROLE, iamRoleCreated);
 })
@@ -133,7 +131,7 @@ ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
     console.log('Error from CREATE_TECH_STACK: in main.js: ', err);
   }
 
-  //TODO decide what to send back to user. Now juse sends stackName
+  //TODO: decide what to send back to user. Now juse sends stackName
   win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
 })
 
@@ -154,14 +152,14 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 });
 
 
-//TODO No button should be used, should auto happen after last thing completes
+//TODO: No button should be used, should auto happen after last thing completes
 
 //** --------- TESTING BUTTON  ---------------------------------- **//
 
 
 ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 
-  //TODO Test .includes on bash profile
+  //TODO: Test .includes on bash profile
      //read the bash profile
       //stringify the contents
       //check if teh file contains "KUBECONFIG"
@@ -184,7 +182,7 @@ ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 
 //**-----------POD-----------**//
 
-//TODO Modularize YAML creation
+//TODO: Modularize YAML creation
 
 //CREATE POD 
 ipcMain.on(events.CREATE_POD, (event, data) => {

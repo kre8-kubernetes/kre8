@@ -8,7 +8,7 @@ const onDownload = {}
 //** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ---------------------- **//
 onDownload.installIAMAuthenticator = async () => {
 
-  //TODO how to do node child process w await?
+  //TODO: how to do node child process w await?
   try {
 
     const child = spawn('curl', ['-o', 'aws-iam-authenticator', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator']);
@@ -34,7 +34,7 @@ onDownload.installIAMAuthenticator = async () => {
 //** --------- APPLY EXECUTE PERMISSIONS TO THE BINARY FILE ---------------- **//
 onDownload.enableIAMAuthenticator = async () => {
 
-  //TODO add await
+  //TODO: add await
   try {
     const child = spawn('chmod', ['+x', './aws-iam-authenticator']);
       child.stdout.on('data', (data) => {
@@ -59,7 +59,7 @@ onDownload.enableIAMAuthenticator = async () => {
  
 onDownload.copyToBinFolder = async () => {
 
-  //TODO Should we use fsp?
+  //TODO: Should we use fsp?
 
   try {
     //Check if user has bin folder in Home directory, if not, make one.

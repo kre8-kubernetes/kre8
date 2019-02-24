@@ -100,6 +100,9 @@ awsParameters.createWorkerNodeStackParam = (workerNodeStackName, stackTemplatefo
   const securityGroupIds = parsedAWSMasterFileData.securityGroupIds;
   const awsKeyValuePairValue = parsedAWSMasterFileData.KeyName;
 
+  //TODO: find a way to continuously get the latest AMI values for eks instances
+  // because right now we are hard coding it and the values will change periodically
+  // there is probably a way to poll the later values from AWS
   const workerNodeStackParam = {
     StackName: workerNodeStackName,
     Capabilities: [ "CAPABILITY_IAM" ],
@@ -125,7 +128,7 @@ awsParameters.createWorkerNodeStackParam = (workerNodeStackName, stackTemplatefo
 
 //** Parameter for INPUT NODE INSTANCE 
 
-awsParameters.createInputNodeInstance = (roleArn) => {
+awsParameters.createInputNodeInstance = (nodeInstanceRoleArn) => {
 
   const inputNodeInstanceParam = {
     "apiVersion": "v1",
@@ -135,7 +138,7 @@ awsParameters.createInputNodeInstance = (roleArn) => {
         "namespace": "kube-system"
     },
     "data": {
-        "mapRoles": "- "+roleArn+"\n  username: system:node:{{EC2PrivateDNSName}}\n  groups:\n    - system:bootstrappers\n    - system:nodes\n"
+      "mapRoles": "- " + nodeInstanceRoleArn +"\n  username: system:node:{{EC2PrivateDNSName}}\n  groups:\n    - system:bootstrappers\n    - system:nodes\n"
     }
 }
 

@@ -175,7 +175,7 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
     console.log('Error from awsEventCallbacks.createTechStack:', err); 
   }
 
-  //TODO Decide what to return to user
+  //TODO: Decide what to return to user
   return parsedStackData;
 };
 
@@ -184,7 +184,7 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
 awsEventCallbacks.createCluster = async (clusterName) => {
   
   console.log("ClusterCreating: ", clusterName);
-  //TODO, do we actually need to declare all of these here
+  //TODO: do we actually need to declare all of these here
   let parsedClusterData;
   let iamRoleArn;
   let subnetIdsString;
@@ -318,6 +318,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     console.log("isNodeInstanceMasterFile: ", isNodeInstanceMasterFile);
 
     if (!isNodeInstanceMasterFile) {
+      process.env['KUBECONFIG'] = `:${process.env['HOME']}/.kube/config-${clusterName}`
       await kubectlConfigFunctions.inputNodeInstance(workerNodeStackName, clusterName);
     } else {
       console.log("node instance already input");
@@ -326,7 +327,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
   } catch (err) {
     console.log('Error from awsEventCallbacks.createCluster: ', err);
   }
-  //TODO what to return to User
+  //TODO: what to return to User
   return parsedClusterData;
 };
 

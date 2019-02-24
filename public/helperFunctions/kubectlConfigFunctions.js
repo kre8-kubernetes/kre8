@@ -30,44 +30,50 @@ const kubectlConfigFunctions = {};
 
 //**--------- GENERATE AND SAVE CONFIG FILE ON USER COMPUTER ------------- **//
 
-kubectlConfigFunctions.createConfigFile = (clusterName) => {
-  console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-  console.log('============  kubectlConfigFunctions.createConfigFile ===============')
-  console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+kubectlConfigFunctions.createConfigFile = async (clusterName) => {
 
-  console.log("creating config file");
-
-  //Access data from cluster data file
-  const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+  try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('============  kubectlConfigFunctions.createConfigFile ===============')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
   
-  //Gather required data 
-  const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
-  const serverEndpoint = parsedAWSMasterFileData.serverEndPoint;
-  const clusterArn = parsedAWSMasterFileData.clusterArn;
-  const certificateAuthorityData = parsedAWSMasterFileData.certificateAuthorityData;
-
-  //Generate parameter with gathered data
-  const AWSClusterConfigFileData = awsParameters.createConfigParam(clusterName, serverEndpoint, certificateAuthorityData, clusterArn);
+    console.log("creating config file");
   
-  //Format data from the AWSClusterConfigFileData object into YAML to save in user's filesystem 
-  let stringifiedAWSClusterConfigFile = JSON.stringify(AWSClusterConfigFileData);
-  let parsedAWSClusterConfigFile = JSON.parse(stringifiedAWSClusterConfigFile);
-  let yamledAWSClusterConfigFile = YAML.stringify(parsedAWSClusterConfigFile, 6);
-  let regexCharToRemove = /(['])+/g;
-  let yamledAWSClusterConfigFileWithoutRegex = yamledAWSClusterConfigFile.replace(regexCharToRemove, "");
-
-  //Check if user has a .kube folder in root directory, if not, make one
-  const folderName = ".kube";
-  awsHelperFunctions.checkFileSystemForDirectoryAndMkDir(folderName);
-
-  //Save file in users .kube directory
-  fs.writeFileSync(`${process.env['HOME']}/.kube/config-${clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
-
-  //write to Masterfile that Config file was created
-
-  const dataForAWSMasterDataFile = { ConfigFileStatus: "Created" };
-  awsHelperFunctions.appendAWSMasterFile(dataForAWSMasterDataFile);
-  console.log("added Config File Status to Masterfile");
+    //Access data from cluster data file
+    const awsMasterFileData = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+    
+    //Gather required data 
+    const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
+    const serverEndpoint = parsedAWSMasterFileData.serverEndPoint;
+    const clusterArn = parsedAWSMasterFileData.clusterArn;
+    const certificateAuthorityData = parsedAWSMasterFileData.certificateAuthorityData;
+  
+    //Generate parameter with gathered data
+    const AWSClusterConfigFileData = awsParameters.createConfigParam(clusterName, serverEndpoint, certificateAuthorityData, clusterArn);
+    
+    //Format data from the AWSClusterConfigFileData object into YAML to save in user's filesystem 
+    let stringifiedAWSClusterConfigFile = JSON.stringify(AWSClusterConfigFileData);
+    let parsedAWSClusterConfigFile = JSON.parse(stringifiedAWSClusterConfigFile);
+    let yamledAWSClusterConfigFile = YAML.stringify(parsedAWSClusterConfigFile, 6);
+    let regexCharToRemove = /(['])+/g;
+    let yamledAWSClusterConfigFileWithoutRegex = yamledAWSClusterConfigFile.replace(regexCharToRemove, "");
+  
+    //Check if user has a .kube folder in root directory, if not, make one
+    const folderName = ".kube";
+    awsHelperFunctions.checkFileSystemForDirectoryAndMkDir(folderName);
+  
+    //Save file in users .kube directory
+    await fsp.writeFile(`${process.env['HOME']}/.kube/config-${clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
+  
+    //write to Masterfile that Config file was created
+  
+    const dataForAWSMasterDataFile = { ConfigFileStatus: "Created" };
+    await awsHelperFunctions.appendAWSMasterFile(dataForAWSMasterDataFile);
+    console.log("added Config File Status to Masterfile");
+    
+  } catch (err) {
+    console.log('error in kubectlConfigFunctions.createConfigFile: ', err);
+  }
 };
 
 //**--------- CONFIGURE KUBECTL WITH CONFIG FILE -------------------------- **//
@@ -89,7 +95,7 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
 
         let bashRead = await fsp.readFile(process.env['HOME'] + '/.bash_profile', 'utf-8')
 
-        bashRead = read.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`)
+        bashRead = bashRead.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`)
 
         await fsp.writeFile(process.env['HOME'] + '/.bash_profile', bashRead, 'utf-8');
 
@@ -108,6 +114,8 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
       await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToAppendToBashProfile);
     }
 
+    console.log('this is the current KUBECONFIG at kubectl get svc time:', process.env['KUBECONFIG'])
+
     const child = spawnSync('kubectl', ['get', 'svc']);
     console.log("child: ", child);
 
@@ -122,7 +130,7 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
     await awsHelperFunctions.appendAWSMasterFile(dataForAWSMasterDataFile);
     
     //FIXME: Do we need this, we aren't doing anything with the read here.
-    const masterFileRead = fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+    const masterFileRead = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
 
     console.log('Data from the masterFile', masterFileRead);
 
@@ -139,7 +147,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (workerNodeStackName, cl
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-    console.log('============  kubectlConfigFunctions.configureKubectl ===============')
+    console.log('=========  kubectlConfigFunctions.createStackForWorkerNode ==========')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log("Creating Worker Node Stack");
 
@@ -200,7 +208,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (workerNodeStackName, cl
       //TODO: double check that data is the same, and remove unneccessary
       const stackDataForMasterFile = {
         workerNodeStackName: parsedStackData[0].StackName,
-        workerNodeStackId: parsedStackData[0].StackId,
+        nodeInstanceRoleArn: parsedStackData[0].Outputs[0].OutputValue,
       };
 
       console.log("stackDataForMasterFile: ", stackDataForMasterFile)
@@ -231,37 +239,55 @@ kubectlConfigFunctions.inputNodeInstance = async (workerNodeStackName, clusterNa
     console.log('==============  kubectlConfigFunctions.inputNodeInstance ============')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    //TODO read new worker stack file to get new roleArn
-    //TODO should this be awaited?
+    //TODO: read new worker stack file to get new roleArn
+    //TODO: should this be awaited?
 
     const awsMasterFileData = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
   
     //Gather required data 
     const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
-    const workerNodeStackId = parsedAWSMasterFileData.workerNodeStackId;
+    const nodeInstanceRoleArn = parsedAWSMasterFileData.nodeInstanceRoleArn;
     
     //Generate paramater
-    const paramToFile = awsParameters.createInputNodeInstance(workerNodeStackId);
-    const paramToFileStringified = JSON.stringify(paramToFile);
+    // FIXME: We may not need this parameter creation anymore
+    // const paramToFile = awsParameters.createInputNodeInstance(nodeInstanceRoleArn);
+    // const paramToFileStringified = JSON.stringify(paramToFile);
+    // //Pass param to create aws-auth file
+    // //FIXME: Do we need this file anymore???
+    // const authFileCreate = await fsp.writeFile(__dirname + `/../sdkAssets/private/AUTH_FILE_${workerNodeStackName}.json`, paramToFileStringified);
 
-    //Pass param to create aws-auth file
-    const authFileCreate = await fsp.writeFile(__dirname + `/../sdkAssets/private/AUTH_FILE_${workerNodeStackName}.json`, paramToFileStringified);
+    // read the template yaml, replace the placeholder with arn value and create new yaml file.
+    const templateRead = await fsp.readFile(__dirname + `/../sdkAssets/samples/node-instance-template.yaml`, 'utf-8');
+    const newFileString = templateRead.replace(/<NodeInstanceARN>/, nodeInstanceRoleArn);
+    await fsp.writeFile(__dirname + `/../sdkAssets/private/AUTH_FILE_${workerNodeStackName}.yaml`, newFileString);
 
-    const filePathToAuthFile = path.join(__dirname, `../sdkAssets/private/AUTH_FILE_${workerNodeStackName}.json`);
+    const filePathToAuthFile = path.join(__dirname, `../sdkAssets/private/AUTH_FILE_${workerNodeStackName}.yaml`);
 
     console.log("filepath: ", filePathToAuthFile);
     
     //Command Kubectl to configure by applying the Auth File
-    const child = spawnSync('kubectl', ['apply', '-f', filePathToAuthFile]);
+    const kubectlApplyChild = spawnSync('kubectl', ['apply', '-f', filePathToAuthFile]);
 
-    const stdout = child.stdout.toString();
+    let stdout = kubectlApplyChild.stdout.toString();
     console.log('stdout:', stdout);
 
-    const stderr = child.stderr.toString();
+    let stderr = kubectlApplyChild.stderr.toString();
     console.log('stdout:', stderr);
 
     const dataToAddToAWSMaster = {"nodeInstance": "created" }
     await awsHelperFunctions.appendAWSMasterFile(dataToAddToAWSMaster);
+
+    // set a short timeout here to allow for the kubectl apply to take place
+    console.log('waiting 5 seconds')
+    await awsHelperFunctions.timeout(5000);
+
+    const kubectlGetChild = spawnSync('kubectl', ['get', 'nodes']);
+
+    stdout = kubectlGetChild.stdout.toString();
+    console.log('stdout: ', stdout)
+
+    stderr = kubectlGetChild.stderr.toString();
+    console.log('stderr', stderr);
 
   } catch (err) {
     console.log('Error coming from within kubectlConfigFunctions.inputNodeInstance: ', err);

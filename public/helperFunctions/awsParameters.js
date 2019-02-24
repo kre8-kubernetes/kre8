@@ -143,19 +143,3 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
 }
 
 module.exports = awsParameters;
-
-const createInputNodeInstance = (roleArn) => {
-  const inputNodeInstanceParam = {
-    "apiVersion": "v1",
-    "kind": "ConfigMap",
-    "metadata": {
-        "name": "aws-auth",
-        "namespace": "kube-system"
-    },
-    "data": {
-        "mapRoles": "- "+roleArn+"\n  username: system:node:{{EC2PrivateDNSName}}\n  groups:\n    - system:bootstrappers\n    - system:nodes\n"
-    }
-}
-  console.log("exiting params");
-  return inputNodeInstanceParam;
-}

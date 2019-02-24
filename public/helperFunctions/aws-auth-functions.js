@@ -1,4 +1,4 @@
-//TODO Functions to be executed within installaton OR at initial loading of app
+//TODO: Functions to be executed within installaton OR at initial loading of app
 
 //** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS --------------------------- **//
 sdkController.installIAMAuthenticator = (req, res, next) => {
@@ -17,7 +17,7 @@ sdkController.installIAMAuthenticator = (req, res, next) => {
   
 }
 
-//TODO --need to add to kre8 file
+//TODO: --need to add to kre8 file
 //** --------- APPLY EXECUTE PERMISSIONS TO THE BINARY FILE -------------------- **//
 sdkController.enableIAMAuthenticator = (req, res, next) => {
   
@@ -35,7 +35,7 @@ sdkController.enableIAMAuthenticator = (req, res, next) => {
   
 }
 
-//TODO --need to add to kre8 file
+//TODO: --need to add to kre8 file
 //** ---- COPY AWS-IAM-AUTHENTICATOR FILE TO BIN FOLDER IN USER HOME DIRECTORY - **//
 sdkController.copyToBinFolder = (req, res, next) => {
   //** Check if the user has a bin folder in their Home directory, if not, make one. */
@@ -47,7 +47,7 @@ sdkController.copyToBinFolder = (req, res, next) => {
     };  
   };
 
-  //TODO --need to add to kre8 file
+  //TODO: --need to add to kre8 file
   //** Copy the AWS-iam-authenticator file into the bin folder. */
   const child = spawn('cp', ['./aws-iam-authenticator', process.env['HOME'] + '/bin/aws-iam-authenticator']);
     child.stdout.on('data', (data) => {
@@ -61,7 +61,7 @@ sdkController.copyToBinFolder = (req, res, next) => {
     });
 }
 
-//TODO --need to add to kre8 file
+//TODO: --need to add to kre8 file
 //** ---- APPEND PATH TO BASH_PROFILE FILE - **//
 sdkController.appendToBashProfile = (req, res, next) => {
 
@@ -73,5 +73,5 @@ fs.appendFile(process.env['HOME'] + '/.bash_profile', textToInsert, (err) => {
   }
 })
 
-//TODO run source .bash_profile command
+//TODO: run source .bash_profile command
 }

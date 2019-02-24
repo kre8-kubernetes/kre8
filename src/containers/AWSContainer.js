@@ -85,7 +85,7 @@ class App extends Component {
   handleCreateRole(e) {
     e.preventDefault();
     console.log('handleCreateRole Clicked!!!');
-    //TODO Dynamically intake data from form
+    //TODO: Dynamically intake data from form
     const awsIAMRoleData = {
       roleName: this.state.createRole_roleName,
       description: this.state.createRole_description,
@@ -104,7 +104,7 @@ class App extends Component {
   handleCreateTechStack(e) {
     e.preventDefault();
     console.log('createTechStack Clicked!!!');
-    //TODO Dynamically intake data from form
+    //TODO: Dynamically intake data from form
     const awsTechStackData = {
       stackName: this.state.createTechStack_stackName,
     }
@@ -121,7 +121,7 @@ class App extends Component {
   handleCreateCluster(e) {
     e.preventDefault();
     console.log('handleCreateCluster Clicked!!!');
-    //TODO Dynamically intake data from form
+    //TODO: Dynamically intake data from form
     const awsClusterData = {
       clusterName: this.state.createCluster_clusterName,
     }

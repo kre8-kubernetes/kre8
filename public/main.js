@@ -9,7 +9,7 @@ const fsp = require('fs').promises;
 
 const YAML = require('yamljs');
 
-//** --------- IMPORT RESOURCE FILES --------- 
+//** --------- IMPORT RESOURCE FILES ---------
 const events = require('../eventTypes.js')
 const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
 const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
@@ -24,7 +24,6 @@ const CloudFormation = require('aws-sdk/clients/cloudformation');
 //** --------- IMPORT DOCUMENTS ---------------- 
 const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
-const workerNodeJsonAuthFile = require(__dirname + '/sdkAssets/private/aws-auth-cm.json');
 
 //** --------- .ENV Variables -------------- 
 const REGION = process.env.REGION;
@@ -56,7 +55,7 @@ function createWindow () {
 //** ----------------------- AWS SDK EVENTS ----------------------- **//
 //** -------------------------------------------------------------- **//
 
-//TODO BRADON: have user decide their region...
+//TODO: BRADON: have user decide their region...
 
 
 //** --------- FUNCTIONS TO EXECUTE ON DOWNLOAD ------------------ **//
@@ -67,7 +66,7 @@ function createWindow () {
 //TODO: Braden convert to on startup function perform once
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
   
-  //TODO if statement, check for file first. 
+  //TODO: if statement, check for file first. 
   try {
     await onDownload.installIAMAuthenticator();
     await onDownload.enableIAMAuthenticator();
@@ -93,6 +92,9 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
   let iamRoleCreated;
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('============  ipcMain.on(events.CREATE_IAM_ROLE,... =================')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     //Data from user input + imported policy document
     const iamRoleName = data.roleName;
     const iamRoleDescription = data.description;
@@ -101,10 +103,9 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     //create 
     iamRoleCreated = await awsEventCallbacks.createIAMRole(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
   } catch (err) {
-    console.log(err);
+    console.log('Error from CREATE_IAM_ROLE in main.js:', err);
 }
-
-  //TODO decide what to return to the the user
+  //TODO: decide what to return to the the user
 
   win.webContents.send(events.HANDLE_NEW_ROLE, iamRoleCreated);
 })
@@ -116,16 +117,21 @@ ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
   let createdStack;
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('============  ipcMain.on(events.CREATE_TECH_STACK,... ===============')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    // FIXME: should the stack template be stringified inside of the awsParameters just like
+    // the iamCreateRole process like above?
     const stackTemplateStringified = JSON.stringify(stackTemplate);
     const techStackName = data.stackName;
 
     createdStack = await awsEventCallbacks.createTechStack(techStackName, stackTemplateStringified);
 
   } catch (err) {
-    console.log(err);
+    console.log('Error from CREATE_TECH_STACK: in main.js: ', err);
   }
 
-  //TODO decide what to send back to user. Now juse sends stackName
+  //TODO: decide what to send back to user. Now juse sends stackName
   win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
 })
 
@@ -137,23 +143,23 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   let createdCluster;
   try {
-     createdCluster = await awsEventCallbacks.createCluster(clusterName);
+    createdCluster = await awsEventCallbacks.createCluster(clusterName);
   } catch (err) {
-    console.log(err);
+    console.log('Error from CREATE_CLUSTER event listener in main.js:', err);
   }
 
   win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
 });
 
 
-//TODO No button should be used, should auto happen after last thing completes
+//TODO: No button should be used, should auto happen after last thing completes
 
 //** --------- TESTING BUTTON  ---------------------------------- **//
 
 
 ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 
-  //TODO Test .includes on bash profile
+  //TODO: Test .includes on bash profile
      //read the bash profile
       //stringify the contents
       //check if teh file contains "KUBECONFIG"
@@ -176,7 +182,7 @@ ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 
 //**-----------POD-----------**//
 
-//TODO Modularize YAML creation
+//TODO: Modularize YAML creation
 
 //CREATE POD 
 ipcMain.on(events.CREATE_POD, (event, data) => {

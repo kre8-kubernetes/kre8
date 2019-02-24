@@ -21,14 +21,13 @@ const AWSTestComponent = (props) => {
       <br />
       <div className="section">
         <form>
-          Role Name:
-        <br />
-          <input id='createRole_roleName' onChange={props.handleChange} value={props.createRole_roleName} type="text" name="createRole_roleName" />
-          <br />
-          Description:
-        <br />
-          <input id='createRole_description' onChange={props.handleChange} value={props.createRole_description} type="text" name="createRole_description" />
-          <br />
+          <h2>Create an IAM Role</h2>
+            <h4>Role name:</h4>
+              <input id='createRole_roleName' onChange={props.handleChange} value={props.createRole_roleName} type="text" name="createRole_roleName" />
+              <br />
+            <h4>Role description:</h4>
+             <input id='createRole_description' onChange={props.handleChange} value={props.createRole_description} type="text" name="createRole_description" />
+              <br />
         </form>
         <br />
         <button className="buttons" onClick={props.handleCreateRole}>Create IAM Role</button>
@@ -38,10 +37,10 @@ const AWSTestComponent = (props) => {
       <br />
       <div className="section">
         <form>
-          Stack Name:
-        <br />
-          <input id='createTechStack_stackName' onChange={props.handleChange} value={props.createTechStack_stackName} type="text" name="createTechStack_stackName" />
-          <br />
+          <h2>Create a Stack</h2>
+            <h4>Stack name:</h4>
+              <input id='createTechStack_stackName' onChange={props.handleChange} value={props.createTechStack_stackName} type="text" name="createTechStack_stackName" />
+              <br />
         </form>
         <br />
         <button className="buttons" onClick={props.handleCreateTechStack}>Create Tech Stack</button>
@@ -51,10 +50,10 @@ const AWSTestComponent = (props) => {
       <br />
       <div className="section">
         <form>
-          Cluster Name:
-        <br />
-          <input id='createCluster_clusterName' onChange={props.handleChange} value={props.createCluster_clusterName} type="text" name="createCluster_clusterName" />
-          <br />
+          <h2>Create a Cluster</h2>
+            <h4>Cluster name:</h4>
+              <input id='createCluster_clusterName' onChange={props.handleChange} value={props.createCluster_clusterName} type="text" name="createCluster_clusterName" />
+              <br />
         </form>
         <br />
         <button className="buttons" onClick={props.handleCreateCluster}>Create Cluster</button>

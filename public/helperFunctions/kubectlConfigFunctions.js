@@ -58,7 +58,7 @@ kubectlConfigFunctions.createConfigFile = (clusterName) => {
   awsHelperFunctions.checkFileSystemForDirectoryAndMkDir(folderName);
 
   //Save file in users .kube directory
-  fs.writeFileSync(`/Users/carolynharrold/${folderName}/config-${clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
+  fs.writeFileSync(`${process['HOME']}/.kube/config-${clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
 
   //write to Masterfile that Config file was created
 

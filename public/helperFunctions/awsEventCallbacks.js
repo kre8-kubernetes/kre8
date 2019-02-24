@@ -7,8 +7,8 @@ const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 
 const fs = require('fs');
-const { spawn } = require('child_process');
 const fsp = require('fs').promises;
+const { spawn } = require('child_process');
 
 //**.ENV Variables */
 const REGION = process.env.REGION;
@@ -21,11 +21,19 @@ const cloudformation = new CloudFormation({ region: REGION });
 const awsEventCallbacks = {};
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
+/**
+ * @param {String} iamRoleName
+ * @param {String} iamRoleDescription
+ * @param {Object} iamRolePolicyDoc this is a JSON object that has been required in main.js
+ */
 awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePolicyDoc) => {
 
   let awsMasterFile;
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('================  awsEventCallbacks.createIAMRole ===================')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
     const key = "iamRoleName";
 
@@ -40,7 +48,7 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
 
       //Send IAM data to AWS via the iamParams object to create an IAM Role*/
       const role = await iam.createRole(iamParams).promise();
-      console.log("AWS ROLE DATA: ", role);
+      console.log("Data that comes back from AWS after creating a role", role);
 
       //Collect the relevant IAM data returned from AWS
       const iamRoleDataFromForm = {
@@ -61,11 +69,13 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
       // const stringifiedIamRoleDataforMasterFile = JSON.stringify(iamRoleDataforMasterFile);
       
       //Create file named for IAM Role and save in assets folder 
-      fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${iamRoleName}.json`, stringifiedIamRoleDataFromForm);
+      // FIXME: Do we need this file anymore???
+      await fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${iamRoleName}.json`, stringifiedIamRoleDataFromForm);
 
       awsMasterFile = awsHelperFunctions.appendAWSMasterFile(iamRoleDataforMasterFile);
 
-      //Send Cluster + Service Policies to AWS to attach to created IAM Role 
+      //Send Cluster + Service Policies to AWS to attach to created IAM Role
+      // FIXME: Can we move these outside of the function? Possibly as a string const that we import
       const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
       const servicePolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
 
@@ -77,21 +87,30 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
     } else {
       console.log("Returned True. Text found in Master File, Role already exists");
     }
-  
+
   } catch (err) {
-    console.log(err);
+    console.log('Error from awsEventCallbacks.createIAMROle:', err);
   }
 
   return awsMasterFile;
 };
 
+
 //** --------- CREATE AWS TECH STACK ------------------------------------ **//
+/**
+ * @param {String} stackName
+ * @param {String} stackTemplateStringified this is a JSON object that was stringified right before being passed in as an argument
+ */
 awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) => {
 
   let parsedStackData;
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('================  awsEventCallbacks.createTechStack =================')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
+    // FIXME: should we move these master file property names to a constants page and require the object in?
     const key = "stackName";
 
     const isTechStackInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, stackName);
@@ -108,8 +127,8 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
       const getStackDataParam = { StackName: stackName };
 
       let stringifiedStackData;
-       // TODO, remove if below works: let stackStatus = "CREATE_IN_PROGRESS";
-       let stackStatus = "CREATE_IN_PROGRESS";
+      // TODO:, remove if below works: let stackStatus = "CREATE_IN_PROGRESS";
+      let stackStatus = "CREATE_IN_PROGRESS";
 
       const getStackData = async () => {
         try {
@@ -118,6 +137,7 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
           parsedStackData = JSON.parse(stringifiedStackData);
           stackStatus = parsedStackData[0].StackStatus;
         } catch (err) {
+          console.log(err);
         }
       }
     
@@ -130,7 +150,8 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
       }
 
       if (stackStatus === "CREATE_COMPLETE") {
-        const createStackFile = fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+        // FIXME: do we need this now that we have a master file for this data
+        const createStackFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
         
         const stackDataForMasterFile = {
           stackName: parsedStackData[0].StackName,
@@ -150,11 +171,11 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
       console.log("Stack already exists");
     }
 
-  } catch (err) { 
-    console.log(err); 
+  } catch (err) {
+    console.log('Error from awsEventCallbacks.createTechStack:', err); 
   }
 
-  //TODO Decide what to return to user
+  //TODO: Decide what to return to user
   return parsedStackData;
 };
 
@@ -163,7 +184,7 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
 awsEventCallbacks.createCluster = async (clusterName) => {
   
   console.log("ClusterCreating: ", clusterName);
-  //TODO, do we actually need to declare all of these here
+  //TODO: do we actually need to declare all of these here
   let parsedClusterData;
   let iamRoleArn;
   let subnetIdsString;
@@ -172,7 +193,11 @@ awsEventCallbacks.createCluster = async (clusterName) => {
   let vpcId;
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('=================  awsEventCallbacks.createCluster ==================')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
+    // FIXME: should we move these master file property names to a constants page and require the object in?
     const key = "clusterName";
     
     //Check if cluster has been created. If not:
@@ -211,14 +236,14 @@ awsEventCallbacks.createCluster = async (clusterName) => {
           
           console.log("status in getClusterData: ", clusterCreationStatus);
         } catch (err) {
-          console.log(err);
+          console.log('Error from the getClusterData function from within awsEventCallbacks.createCluster:', err);
         }
       }
       
       console.log("6 min settimeout starting");
       //Timeout execution thread for 6 minutes to give AWS time to create cluster
       await awsHelperFunctions.timeout(1000 * 60 * 6);
-      
+
       //Ask Amazon for cluster data
       getClusterData();
 
@@ -249,7 +274,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     } else {
       console.log("Cluster already exists");
     }
-
+    // FIXME: write a file to hold the string of the master file property names
     const isConfigFileStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile("ConfigFileStatus", "Created");
 
     console.log("isConfigFileStatusInMasterFile: ", isConfigFileStatusInMasterFile);
@@ -260,6 +285,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
       console.log("Config file alreade created");
     }
 
+    // FIXME: write a file to hold the string of the master file property names
     const isKubectlConfigStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile("KubectlConfigStatus", "Configured");
 
     console.log("isKubectlConfigStatusInMasterFile: ", isKubectlConfigStatusInMasterFile);
@@ -270,9 +296,10 @@ awsEventCallbacks.createCluster = async (clusterName) => {
       console.log("Kubectl already configured");
     }
 
-    const workerNodeStackName = `${clusterName}WorkerNodeStack2`;
+    const workerNodeStackName = `${clusterName}-worker-node`;
     console.log("CHECKING WORKER NODE STATUS")
 
+    // FIXME: write a file to hold the string of the master file property names
     const isWorkerNodeInMasterFile = await awsHelperFunctions.checkAWSMasterFile("workerNodeStackName", workerNodeStackName);
 
     console.log("isWorkerNodeInMasterFile: ", isWorkerNodeInMasterFile);
@@ -285,21 +312,22 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     } else {
       console.log("Workernode stack already created")
     }
-
+    // FIXME: write a file to hold the string of the master file property names
     const isNodeInstanceMasterFile = await awsHelperFunctions.checkAWSMasterFile("nodeInstance", "created");
 
     console.log("isNodeInstanceMasterFile: ", isNodeInstanceMasterFile);
 
     if (!isNodeInstanceMasterFile) {
+      process.env['KUBECONFIG'] = `:${process.env['HOME']}/.kube/config-${clusterName}`
       await kubectlConfigFunctions.inputNodeInstance(workerNodeStackName, clusterName);
     } else {
       console.log("node instance already input");
     }
   
   } catch (err) {
-    console.log("err", err);
+    console.log('Error from awsEventCallbacks.createCluster: ', err);
   }
-  //TODO what to return to User
+  //TODO: what to return to User
   return parsedClusterData;
 };
 

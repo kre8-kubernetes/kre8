@@ -82,7 +82,6 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
   return AWSClusterConfigFileParam;
 }
 
-
 //** Parameter for CREATE_WORKER_NODE_TECH_STACK 
 
 awsParameters.createWorkerNodeStackParam = (workerNodeStackName, stackTemplateforWorkerNodeStringified) => {

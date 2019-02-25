@@ -86,6 +86,8 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
     console.log('============  kubectlConfigFunctions.configureKubectl ===============')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
+    console.log("process.env['KUBECONFIG']: ", process.env['KUBECONFIG']);
+
     if (process.env['KUBECONFIG'] !== undefined) {
       if (!process.env['KUBECONFIG'].includes(clusterName)) {
         

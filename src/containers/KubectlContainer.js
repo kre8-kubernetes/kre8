@@ -156,13 +156,7 @@ class App extends Component {
     ipcRenderer.send(events.CREATE_SERVICE, obj);
   }
 
-  
-  
-  
-  
-  
-  
-  
+
   
   //**--------------INCOMING DATA FROM MAIN THREAD-----------------**//
 
@@ -235,20 +229,6 @@ class App extends Component {
     newState.service_replicas = '';
     this.setState(newState);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   render() {

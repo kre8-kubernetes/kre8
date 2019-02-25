@@ -14,7 +14,9 @@ const events = require('../eventTypes.js')
 const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
 const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
 const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
+const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemplates');
 const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
+const onDownload = require(__dirname + '/helperFunctions/onDownloadFunctions');
 
 //** --------- IMPORT AWS SDK ELEMENTS --------- 
 const EKS = require('aws-sdk/clients/eks');
@@ -33,7 +35,7 @@ const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 //** --------- INITIALIZE SDK IMPORTS ------ 
 const iam = new IAM()
 const eks = new EKS({ region: REGION});
-const cloudformation = new CloudFormation({ region: REGION});
+const cloudformation = new CloudFormation({ region: REGION });
 
 //** --------- CREATE WINDOW OBJECT --------
 let win;
@@ -55,13 +57,8 @@ function createWindow () {
 //** ----------------------- AWS SDK EVENTS ----------------------- **//
 //** -------------------------------------------------------------- **//
 
-//TODO: BRADON: have user decide their region...
-
 
 //** --------- FUNCTIONS TO EXECUTE ON DOWNLOAD ------------------ **//
-
-
-//** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS -------------- **//
 
 //TODO: Braden convert to on startup function perform once
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
@@ -173,86 +170,47 @@ ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 })
 
 
-//** ----------KUBECTL EVENTS WILL GO HERE ------------------------- **//
+//** ----------KUBECTL EVENTS WILL GO HERE ------------------- **//
 
 // KUBECTL EVENTS - CREATE POD (EXAMPLE)
 // ipcMain.on(events.CREATE_POD, (event, data) => {
 //   win.webContents.send(events.HANDLE_NEW_POD, 'New Pod Here');
 // })
 
-//**-----------POD-----------**//
+//**----------- CREATE A POD -------------------------------- **//
 
-//TODO: Modularize YAML creation
-
-//CREATE POD 
 ipcMain.on(events.CREATE_POD, (event, data) => {
   
-  // Build Pod Yaml
+  // Pass user input into createPodYamlTemplate method to generate template
   console.log('data.podName: ', data.podName);
+  const podYamlTemplate = kubernetesTemplates.createPodYamlTemplate(data);
 
-  //POD YAML TEMPLATE
-  const podYaml = {
-    apiVersion: "v1",
-    kind: "Pod",
-    metadata: {
-      name: `${data.podName}`,
-      labels: {
-        app: "myapp"
-      }
-    },
-    spec: {
-      containers: [
-        {
-          name: `${data.containerName}`,
-          image: `${data.imageName}`,
-          imagePullPolicy: "Always",
-          env: [
-            {
-              name: "DEMO_GREETING",
-              value: "Hello from the environment"
-            }
-          ],
-          command: ["sh", "-c", "echo Hello Kubernetes! && sleep 3600"]
-        }
-      ]
+  let stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate);
+
+  //WRITE A NEW POD YAML FILE
+  fs.writeFile(__dirname + `/yamlAssets/private/pods/${data.podName}.json`,
+  stringifiedPodYamlTemplate, (err) => {
+      if (err) {
+        return console.log(err);
+      } else {
+      console.log("You made a pod Yaml!!!!");
     }
-  };
+  });
 
-  let stringifiedYaml = JSON.stringify(podYaml);
-
-
-
-
-//WRITE A NEW POD YAML FILE
-fs.writeFile(
-  __dirname + `/yamlAssets/pods/${data.podName}.json`,
-  stringifiedYaml,
-  function(err) {
-    if (err) {
-      return console.log(err);
-    }
-    console.log("You made a pod Yaml!!!!");
-  }
-);
-
-
-//CREATE POD AND INSERT INTO MINIKUBE
-const child = spawn("kubectl", [
-  "apply",
-  "-f",
-  __dirname + `/yamlAssets/pods/${data.podName}.json`
-]);
-console.log("podCreator");
-child.stdout.on("data", info => {
-  console.log(`stdout: ${info}`);
-  win.webContents.send(events.HANDLE_NEW_POD, `${info}`);
-});
-child.stderr.on("data", info => {
-  console.log(`stderr: ${info}`);
-});
-child.on("close", code => {
-  console.log(`child process exited with code ${code}`);
-});
+  //CREATE POD AND INSERT INTO MINIKUBE
+  const child = spawn('kubectl', ['apply', '-f', __dirname + `/yamlAssets/private/pods/${data.podName}.json`]);
+  
+    console.log("podCreator");
+    child.stdout.on("data", info => {
+      console.log(`stdout: ${info}`);
+      win.webContents.send(events.HANDLE_NEW_POD, `${info}`);
+    });
+    child.stderr.on("data", info => {
+      console.log(`stderr: ${info}`);
+    });
+    child.on("close", code => {
+      console.log(`child process exited with code ${code}`);
+    });
 });
 
 
@@ -263,60 +221,54 @@ child.on("close", code => {
 ipcMain.on(events.CREATE_SERVICE, (event, data) => {
   console.log("data:", data);
 
-  //SERVICE YAML TEMPLATE
-  const serviceYaml = {
-    apiVersion: "v1",
-    kind: "Service",
-    metadata: {
-      name: `${data.name}`
-    },
-    spec: {
-      selector: {
-        app: `${data.appName}`
-      },
-      ports: [
-        {
-          protocol: "TCP",
-          port: `${data.port}`,
-          targetPort: `${data.targetPort}`
-        }
-      ]
-    }
-  }
-    
+  const serviceYamlTemplate = kubernetesTemplates.createServiceYamlTemplate(data);
 
-  let stringifiedYaml = JSON.stringify(serviceYaml);
+  //SERVICE YAML TEMPLATE
+  // const serviceYamlTemplate = {
+  //   apiVersion: "v1",
+  //   kind: "Service",
+  //   metadata: {
+  //     name: `${data.name}`
+  //   },
+  //   spec: {
+  //     selector: {
+  //       app: `${data.appName}`
+  //     },
+  //     ports: [
+  //       {
+  //         protocol: "TCP",
+  //         port: `${data.port}`,
+  //         targetPort: `${data.targetPort}`
+  //       }
+  //     ]
+  //   }
+  // }
+    
+  let stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate);
 
   //WRITE A NEW SERVICE YAML FILE
-  fs.writeFile(
-    __dirname + `/yamlAssets/services/${data.serviceName}.json`,
-    stringifiedYaml,
-    function(err) {
+  fs.writeFile(__dirname + `/yamlAssets/private/services/${data.serviceName}.json`, stringifiedServiceYamlTemplate, (err) => {
       if (err) {
-        return console.log(err);
+        console.log(err);
       }
       console.log("You made a service Yaml!!!!");
     }
   );
 
 
-//CREATE SERVICE AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", [
-    "create",
-    "-f",
-    __dirname + `/yamlAssets/services/${data.serviceName}.json`
-  ]);
-  console.log("serviceCreator");
-  child.stdout.on("data", data => {
-    console.log(`stdout: ${data}`);
-    win.webContents.send(events.HANDLE_NEW_SERVICE, `${data}`);
-  });
-  child.stderr.on("data", data => {
-    console.log(`stderr: ${data}`);
-  });
-  child.on("close", code => {
-    console.log(`child process exited with code ${code}`);
-  });
+  //CREATE SERVICE AND INSERT INTO MINIKUBE
+  const child = spawn("kubectl", ["create", "-f", __dirname + `/yamlAssets/private/services/${data.serviceName}.json`]);
+    console.log("serviceCreator");
+    child.stdout.on("data", data => {
+      console.log(`stdout: ${data}`);
+      win.webContents.send(events.HANDLE_NEW_SERVICE, `${data}`);
+    });
+    child.stderr.on("data", data => {
+      console.log(`stderr: ${data}`);
+    });
+    child.on("close", code => {
+      console.log(`child process exited with code ${code}`);
+    });
 });
 
 
@@ -330,52 +282,54 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
   
   console.log("data.deploymentName: ", data.deploymentName);
 
-  //DEPLOYMENT YAML TEMPLATE
-  const deploymentYaml = {
-    apiVersion: "apps/v1",
-    kind: "Deployment",
-    metadata: {
-      name: `${data.deploymentName}`,
-      labels: {
-        app: `${data.appName}`
-      }
-    },
-    spec: {
-      replicas: `${data.replicas}`,
-      selector: {
-        matchLabels: {
-          app: `${data.appName}`
-        }
-      },
-      template: {
-        metadata: {
-          labels: {
-            app: `${data.appName}`
-          }
-        },
-        spec: {
-          containers: [
-            {
-              name: `${data.containerName}`,
-              image: `${data.image}`,
-              ports: [
-                {
-                  containerPort: `${data.containerPort}`
-                }
-              ]
-            }
-          ]
-        }
-      }
-    }
-  };
+  const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
 
-  let stringifiedYaml = JSON.stringify(deploymentYaml);
+  //DEPLOYMENT YAML TEMPLATE
+  // const deploymentYaml = {
+  //   apiVersion: "apps/v1",
+  //   kind: "Deployment",
+  //   metadata: {
+  //     name: `${data.deploymentName}`,
+  //     labels: {
+  //       app: `${data.appName}`
+  //     }
+  //   },
+  //   spec: {
+  //     replicas: `${data.replicas}`,
+  //     selector: {
+  //       matchLabels: {
+  //         app: `${data.appName}`
+  //       }
+  //     },
+  //     template: {
+  //       metadata: {
+  //         labels: {
+  //           app: `${data.appName}`
+  //         }
+  //       },
+  //       spec: {
+  //         containers: [
+  //           {
+  //             name: `${data.containerName}`,
+  //             image: `${data.image}`,
+  //             ports: [
+  //               {
+  //                 containerPort: `${data.containerPort}`
+  //               }
+  //             ]
+  //           }
+  //         ]
+  //       }
+  //     }
+  //   }
+  // };
+
+  let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate);
 
   //WRITE A NEW DEPLOYENT YAML FILE
   fs.writeFile(
-    __dirname + `/yamlAssets/deployments/${data.deploymentName}.json`,
-    stringifiedYaml,
+    __dirname + `/yamlAssets/private/deployments/${data.deploymentName}.json`,
+    stringifiedDeploymentYamlTemplate,
     function(err) {
       if (err) {
         return console.log(err);
@@ -385,23 +339,19 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
   );
 
 
-//CREATE DEPLOYMENT AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", [
-    "create",
-    "-f",
-    __dirname + `/yamlAssets/deployments/${data.deploymentName}.json`
-  ]);
-  console.log("deploymentCreator");
-  child.stdout.on("data", info => {
-    console.log(`stdout: ${info}`);
-    win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, `${info}`);
-  });
-  child.stderr.on("data", info => {
-    console.log(`stderr: ${info}`);
-  });
-  child.on("close", code => {
-    console.log(`child process exited with code ${code}`);
-  });
+  //CREATE DEPLOYMENT AND INSERT INTO MINIKUBE
+  const child = spawn("kubectl", ["create", "-f", __dirname + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
+    console.log("deploymentCreator");
+    child.stdout.on("data", info => {
+      console.log(`stdout: ${info}`);
+      win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, `${info}`);
+    });
+    child.stderr.on("data", info => {
+      console.log(`stderr: ${info}`);
+    });
+    child.on("close", code => {
+      console.log(`child process exited with code ${code}`);
+    });
 });
 
 
@@ -414,6 +364,7 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 })
+
 
 app.on('activate', () => {
   if (win === null) {

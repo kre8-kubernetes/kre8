@@ -33,13 +33,13 @@ const KubectlTestComponent = props => {
 
 
   return (
-    <div>   
-      <img src={clouds} alt="Clouds" className="image"/>;
+    <div className='kubectl_form_container'>   
+      {/* <img src={clouds} alt="Clouds" className="image"/>; */}
 
       <br />
       <br />
-      <div className="section">
-        <form className="createAPod">
+      <div className="kubectl_form_item">
+        <form>
           <h2>Create and Deploy a Pod</h2>
             <h4>Pod name:</h4>
               <input id='pod_podName' value={props.pod_podName} onChange={props.handleChange} type="text" name="pod-name" />
@@ -55,7 +55,7 @@ const KubectlTestComponent = props => {
 
       <br />
       <br />
-      <div className="section">
+      <div className="kubectl_form_item">
         <form>
           <h2>Create a Deployment</h2>
             <h4>Deployment name:</h4>
@@ -85,7 +85,7 @@ const KubectlTestComponent = props => {
 
       <br />
       <br />
-      <div className="section">
+      <div className="kubectl_form_item">
         <form>
           <h4>Service name:</h4>
             <input id='service_name' value={props.service_name} onChange={props.handleChange} type="text" name="Service name" />

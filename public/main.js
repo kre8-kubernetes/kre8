@@ -42,7 +42,7 @@ let win;
 
 //Function to create our application window, that will be invoked with app.on('ready')
 function createWindow () {
-  win = new BrowserWindow({width: 1200, height: 800});
+  win = new BrowserWindow({width: 1400, height: 900});
   
   if (isDev) {
   // adding react dev tools for developement

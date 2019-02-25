@@ -37,7 +37,12 @@
     "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
+    "@vx/gradient": "0.0.183",
+    "@vx/group": "0.0.183",
+    "@vx/hierarchy": "0.0.183",
+    "@vx/shape": "0.0.184",
     "aws-sdk": "^2.402.0",
+    "d3-hierarchy": "^1.1.8",
     "dotenv": "^6.2.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",

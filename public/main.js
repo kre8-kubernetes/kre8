@@ -185,38 +185,10 @@ ipcMain.on(events.CREATE_POD, (event, data) => {
   console.log('data.podName: ', data.podName);
   const podYamlTemplate = kubernetesTemplates.createPodYamlTemplate(data);
 
-  //POD YAML TEMPLATE
-  // const podYaml = {
-  //   apiVersion: "v1",
-  //   kind: "Pod",
-  //   metadata: {
-  //     name: `${data.podName}`,
-  //     labels: {
-  //       app: "myapp"
-  //     }
-  //   },
-  //   spec: {
-  //     containers: [
-  //       {
-  //         name: `${data.containerName}`,
-  //         image: `${data.imageName}`,
-  //         imagePullPolicy: "Always",
-  //         env: [
-  //           {
-  //             name: "DEMO_GREETING",
-  //             value: "Hello from the environment"
-  //           }
-  //         ],
-  //         command: ["sh", "-c", "echo Hello Kubernetes! && sleep 3600"]
-  //       }
-  //     ]
-  //   }
-  // };
-
   let stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate);
 
   //WRITE A NEW POD YAML FILE
-  fs.writeFile(__dirname + `/yamlAssets/pods/${data.podName}.json`,
+  fs.writeFile(__dirname + `/yamlAssets/private/pods/${data.podName}.json`,
   stringifiedPodYamlTemplate, (err) => {
       if (err) {
         return console.log(err);
@@ -226,7 +198,7 @@ ipcMain.on(events.CREATE_POD, (event, data) => {
   });
 
   //CREATE POD AND INSERT INTO MINIKUBE
-  const child = spawn('kubectl', ['apply', '-f', __dirname + `/yamlAssets/pods/${data.podName}.json`]);
+  const child = spawn('kubectl', ['apply', '-f', __dirname + `/yamlAssets/private/pods/${data.podName}.json`]);
   
     console.log("podCreator");
     child.stdout.on("data", info => {
@@ -275,7 +247,7 @@ ipcMain.on(events.CREATE_SERVICE, (event, data) => {
   let stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate);
 
   //WRITE A NEW SERVICE YAML FILE
-  fs.writeFile(__dirname + `/yamlAssets/services/${data.serviceName}.json`, stringifiedServiceYamlTemplate, (err) => {
+  fs.writeFile(__dirname + `/yamlAssets/private/services/${data.serviceName}.json`, stringifiedServiceYamlTemplate, (err) => {
       if (err) {
         console.log(err);
       }
@@ -285,7 +257,7 @@ ipcMain.on(events.CREATE_SERVICE, (event, data) => {
 
 
   //CREATE SERVICE AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", ["create", "-f", __dirname + `/yamlAssets/services/${data.serviceName}.json`]);
+  const child = spawn("kubectl", ["create", "-f", __dirname + `/yamlAssets/private/services/${data.serviceName}.json`]);
     console.log("serviceCreator");
     child.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
@@ -356,7 +328,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
 
   //WRITE A NEW DEPLOYENT YAML FILE
   fs.writeFile(
-    __dirname + `/yamlAssets/deployments/${data.deploymentName}.json`,
+    __dirname + `/yamlAssets/private/deployments/${data.deploymentName}.json`,
     stringifiedDeploymentYamlTemplate,
     function(err) {
       if (err) {
@@ -368,7 +340,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
 
 
   //CREATE DEPLOYMENT AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", ["create", "-f", __dirname + `/yamlAssets/deployments/${data.deploymentName}.json`]);
+  const child = spawn("kubectl", ["create", "-f", __dirname + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
     console.log("deploymentCreator");
     child.stdout.on("data", info => {
       console.log(`stdout: ${info}`);

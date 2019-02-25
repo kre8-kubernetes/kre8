@@ -16,39 +16,115 @@ class TreeGraphContainer extends Component {
 
   render() {
     const treeData = {
-      "name": "T",
-      "children": [{
-        "name": "A",
-        "children": [
-          { "name": "A1" },
-          { "name": "A2" },
-          { "name": "A3" },
-          {
-            "name": "C",
-            "children": [{
-              "name": "C1",
-            }, {
-              "name": "D",
+      "name": "Master Node",
+      "type": "master",
+      "children": [
+        {
+          "name": "Worker Node #1",
+          "type": "node",
+          "children": [
+            { 
+              "name": "Dream POD #1",
+              "type": "pod",
               "children": [{
-                "name": "D1"
-              }, {
-                "name": "D2"
-              }, {
-                "name": "D3"
+                "name": "Dream POD Container",
+                "type": "container",
               }]
-            }]
-          },
-        ]
-      },
-      { "name": "Z" },
-      {
-        "name": "B",
-        "children": [
-          { "name": "B1" },
-          { "name": "B2" },
-          { "name": "B3" },
-        ]
-      },
+            },
+            { 
+              "name": "Dream POD #2",
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "type": "container",
+              }]
+            },
+            { 
+              "name": "Dream POD #3",
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "type": "container",
+              }]
+            },
+          ]
+        },
+        {
+          "name": "Worker Node #2",
+          "type": "node",
+          "children": [
+            { 
+              "name": "Dream POD #1",
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "type": "container",
+              }]
+            },
+            { 
+              "name": "Dream POD #2",
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "type": "container",
+              }]
+            },
+            { 
+              "name": "Dream POD #3",
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "type": "container",
+              }]
+            },
+          ]
+        },
+        {
+          "name": "Worker Node #3",
+          "type": "node",
+          "children": [
+            { 
+              "name": "Dream POD #1",
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "type": "container",
+              }]
+            },
+            { 
+              "name": "Dream POD #2",
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "type": "container",
+              }]
+            },
+            { 
+              "name": "Dream POD #3",
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "type": "container",
+              }]
+            },
+          ]
+        },
+        {
+          "name": "kube-apiserver",
+          "type": "master-component",
+        },
+        {
+          "name": "etcd",
+          "type": "master-component",
+        },
+        {
+          "name": "kube-scheduler",
+          "type": "master-component",
+        },
+        {
+          "name": "kube-controller-manager",
+          "type": "master-component",
+        },
       ],
     };
 
@@ -62,8 +138,8 @@ class TreeGraphContainer extends Component {
     return (
       <div className='treegraph_container'>
         <TreeGraphComponent
-          width={900}
-          height={600}
+          width={1100}
+          height={800}
           treeData={treeData}
           margin={margin}
         />

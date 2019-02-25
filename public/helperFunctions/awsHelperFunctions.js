@@ -23,6 +23,33 @@ const awsParameters = require(__dirname + '/awsParameters');
 const awsHelperFunctions = {};
 
 
+//** -- Function to generate AWS config object by reading file -------- 
+
+awsHelperFunctions.returnAWSCredentials = async () => {
+  try{
+    const awsConfigData = {};
+    const fileExists = fs.existsSync(__dirname + `/../sdkAssets/private/AWS_CONFIG_DATA.json`);
+
+    if (fileExists) {
+      const awsConfigFileData = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_CONFIG_DATA.json`, 'utf-8');
+      const parsedAWSConfigFileData = JSON.parse(awsConfigFileData);
+      console.log("Config file exits and here are the contents:", parsedAWSConfigFileData);
+      awsConfigData.accessKeyId = parsedAWSConfigFileData.awsAccessKeyId;
+      awsConfigData.secretAccessKey = parsedAWSConfigFileData.secretAccessKey;
+      awsConfigData.region = parsedAWSConfigFileData.awsRegion;
+    } else {
+      //TODO unknown if we need
+      //awsConfigData.region = REGION;
+    }
+    console.log("awsConfigData: ", awsConfigData)
+    return awsConfigData;
+
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+
 //** -- Timeout Function blocks excution thread for ms Miliseconds ------ 
 awsHelperFunctions.timeout = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));

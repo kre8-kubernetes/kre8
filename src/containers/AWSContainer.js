@@ -7,6 +7,8 @@ import * as events from '../../eventTypes';
 
 import AWSTestComponent from '../components/AWSTestComponent'
 
+//TODO: Create logic for form data sanitation, ie don't accept an empty field from a user when they click submit
+
 const mapStateToProps = store => ({
   roleName: store.aws.roleName,
   podName: store.kubectl.podName
@@ -69,7 +71,7 @@ class AwsContainer extends Component {
   }
 
   // Handlers to trigger events that will take place in the main thread
-  
+  //TODO: delete this one 
   //** ------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ---------- **//
   emitInstallAuthenticator(e) {
     e.preventDefault();
@@ -85,7 +87,6 @@ class AwsContainer extends Component {
   handleCreateRole(e) {
     e.preventDefault();
     console.log('handleCreateRole Clicked!!!');
-    //TODO: Dynamically intake data from form
     const awsIAMRoleData = {
       roleName: this.state.createRole_roleName,
       description: this.state.createRole_description,

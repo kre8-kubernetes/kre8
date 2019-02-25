@@ -20,6 +20,19 @@ const cloudformation = new CloudFormation({ region: REGION });
 
 const awsEventCallbacks = {};
 
+
+//** --------- CONFIGURE AWS CREDENTIALS ------------------------------ **//
+
+awsEventCallbacks.configureAWSCredentials = async (data) => {
+
+  const stringifiedDataForAWSConfigFile = JSON.stringify(data, null, 2);
+  const awsConfigFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_CONFIG_DATA.json`, stringifiedDataForAWSConfigFile);
+
+}
+
+
+
+
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
 /**
  * @param {String} iamRoleName
@@ -305,7 +318,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     console.log("isWorkerNodeInMasterFile: ", isWorkerNodeInMasterFile);
 
     if (!isWorkerNodeInMasterFile) {
-      console.log("CREATING WORKE NODE")
+      console.log("CREATING WORKER NODE")
 
       await kubectlConfigFunctions.createStackForWorkerNode(workerNodeStackName, clusterName, subnetIdsString, vpcId, securityGroupIds);
 

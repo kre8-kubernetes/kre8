@@ -22,20 +22,32 @@ const onDownload = require(__dirname + '/helperFunctions/onDownloadFunctions');
 const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
+const STS = require('aws-sdk/clients/sts');
+//const AWSConfig = require('aws-sdk/config'); 
 
 //** --------- IMPORT DOCUMENTS ---------------- 
 const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
 
 //** --------- .ENV Variables -------------- 
-const REGION = process.env.REGION;
+//TODO: Test region
+//const REGION = process.env.REGION;
+
+let REGION = process.env.REGION;
 const PORT = process.env.PORT;
 const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 
 //** --------- INITIALIZE SDK IMPORTS ------ 
-const iam = new IAM()
-const eks = new EKS({ region: REGION});
-const cloudformation = new CloudFormation({ region: REGION });
+let config = awsHelperFunctions.returnAWSCredentials();
+
+const sts = new STS({ region: REGION });
+const eks = new EKS({ config });
+const cloudformation = new CloudFormation({ config });
+const iam = new IAM( {config} );
+
+// const eks = new EKS({ region: REGION });
+//const cloudformation = new CloudFormation({ region: REGION });
+//const awsConfig = new AWSConfig();
 
 //** --------- CREATE WINDOW OBJECT --------
 let win;
@@ -77,11 +89,52 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
   win.webContents.send(events.HANDLE_NEW_ROLE, 'New Role Name Here');
 })
 
-//TODO: ADD FUNCTIONS:
-//APPLY EXECUTE PERMISSIONS TO THE BINARY FILE 
-//COPY AWS-IAM-AUTHENTICATOR FILE TO BIN FOLDER IN USER HOME DIRECTORY
-//APPEND PATH TO BASH_PROFILE FILE
 
+//** --------- CONFIGURE AWS CREDENTIALS --------------------------- **//
+ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
+
+
+  try {
+
+    console.log("data:", data);
+
+    //region: data.awsRegion,
+
+    const dataForAWSConfigFile = {
+      awsAccessKeyId: data.awsAccessKeyId,
+      awsSecretAccessKey: data.awsSecretAccessKey,
+    }; 
+    console.log("------------------------------------------------")
+    console.log("sts above: ", sts)
+    console.log("------------------------------------------------")
+
+    console.log("sts.config above: ", sts.config)
+    console.log("------------------------------------------------")
+
+    console.log("sts.config.credentials above: ", sts.config.credentials)
+
+    sts.config.credentials = dataForAWSConfigFile;
+    // sts.config.credentials["awsSecretAccessKey"] = data.awsSecretAccessKey;
+    console.log("------------------------------------------------")
+    console.log("sts.config below: ", sts.config)
+    console.log("------------------------------------------------")
+
+    console.log("sts.config.credentials below: ", sts.config.credentials)
+
+    console.log("------------------------------------------------")
+
+    const credentialStatus = await sts.getCallerIdentity().promise();
+    console.log("credentialStatus: ", credentialStatus);
+    awsEventCallbacks.configureAWSCredentials(dataForAWSConfigFile);
+
+  } catch (err) {
+    console.log(err);
+  }
+
+  //TODO: send back whether or not data worked to the front end
+
+  win.webContents.send(events.HANDLE_SET_CREDENTIALS, 'AWS Configured');
+})
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------- **//
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {

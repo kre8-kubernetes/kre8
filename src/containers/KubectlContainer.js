@@ -29,7 +29,7 @@ const mapDispatchToProps = dispatch => ({
 
 });
 
-class App extends Component {
+class KubectlContainer extends Component {
   constructor(props) {
     super(props);
 
@@ -268,4 +268,4 @@ class App extends Component {
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(KubectlContainer));

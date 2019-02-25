@@ -2,53 +2,42 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { ipcRenderer } from 'electron';
 import { Switch, Route, withRouter } from 'react-router-dom';
-import * as actions from '../store/actions/actions.js';
-import * as events from '../../eventTypes';
 
 import HomeComponent from '../components/HomeComponent'
 
-const mapStateToProps = store => ({
-  roleName: store.aws.roleName,
-  podName: store.kubectl.podName
-});
-
-const mapDispatchToProps = dispatch => ({
-  setNewRole: (text) => {
-    dispatch(actions.setRole(text))
-  }
-});
-
-
-
-class App extends Component {
+class HomeContainer extends Component {
   constructor(props) {
     super(props);
-    this.handleChangeScreen = this.handleChangeScreen.bind(this);
-    // this.handleNewRole = this.handleNewRole.bind(this);
+    this.state = {
+      aws_access_key_id: '',
+      aws_secret_access_key_id: ''
+    }
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
+  handleChange(e) {
+    e.preventDefault();
+    this.setState({ [e.target.name]: e.target.value });
+  }
 
-  //**--------------EVENT HANDLERS-----------------**//
-
-  //CREATE POD HANDLER
-  handleChangeScreen(data) {
+  handleSubmit() {
     console.log('handleChangeScreen Clicked!!!');
     this.props.history.push('/aws')
-
-    // ipcRenderer.send(events.CHANGE_SCREEN, 'changed');
   }
-
-
 
   render() {
     return (
       <div>
-        <HomeComponent handleChangeScreen={this.handleChangeScreen}
-          
+        <HomeComponent 
+          handleChange={this.handleChange}
+          aws_access_key_id={this.state.aws_access_key_id}
+          aws_secret_access_key_id={this.state.aws_secret_access_key_id}
+          handleSubmit={this.handleSubmit}
         />
       </div>
     );
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default withRouter(connect(null, null)(HomeContainer));

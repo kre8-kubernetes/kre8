@@ -305,7 +305,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     console.log("isWorkerNodeInMasterFile: ", isWorkerNodeInMasterFile);
 
     if (!isWorkerNodeInMasterFile) {
-      console.log("CREATING WORKE NODE")
+      console.log("CREATING WORKER NODE")
 
       await kubectlConfigFunctions.createStackForWorkerNode(workerNodeStackName, clusterName, subnetIdsString, vpcId, securityGroupIds);
 

@@ -25,8 +25,8 @@ const awsEventCallbacks = {};
 
 awsEventCallbacks.configureAWSCredentials = async (data) => {
 
-  const stringifiedDataForAWSConfigFile = JSON.stringify(data, null, 2);
-  const awsConfigFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_CONFIG_DATA.json`, stringifiedDataForAWSConfigFile);
+  // const stringifiedDataForAWSConfigFile = JSON.stringify(data, null, 2);
+  // const awsConfigFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_CONFIG_DATA.json`, stringifiedDataForAWSConfigFile);
 
 }
 

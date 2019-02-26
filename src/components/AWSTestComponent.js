@@ -7,18 +7,18 @@ import "../styles.css";
 const AWSTestComponent = props => {
   return (
     <div className="aws_cluster_page_item">
-      {/* <img src={cloudGIF} alt="CloudGIF" className="HomeGIF" /> */}
+    
       
-
-      
-      <div className="aws_cluster_form_container">
+      <div className="aws_cluster_container">
+        
         
         {/* IAM Authenticator button */}
-        <button onClick={props.emitInstallAuthenticator}>
+        <button onClick={props.emitInstallAuthenticator} className='buttons'>
           Install AWS IAM Authenticator
         </button>
         <br />
 
+        <div className='aws_cluster_form_container'>
         {/* Create IAM Role form and Button */}
         <div className="aws_cluster_form_item">
           <form>
@@ -88,9 +88,10 @@ const AWSTestComponent = props => {
             Create Cluster
           </button> */}
         </div>
+        </div>
 
         <br></br>
-        <button onClick={props.handleConfigAndMakeNodes}>
+        <button onClick={props.handleConfigAndMakeNodes} className='buttons'>
           Do all the things AND Configure Kubectl AND Make Worker Nodes
         </button>
       </div>

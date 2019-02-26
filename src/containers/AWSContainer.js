@@ -155,6 +155,9 @@ class AwsContainer extends Component {
      } = this.state;
 
     return (
+      <div>
+      <div className="aws_cluster_page_background"></div>
+
       <div className="aws_cluster_page_container">
         <AWSComponent
           handleChange={this.handleChange}
@@ -170,6 +173,7 @@ class AwsContainer extends Component {
           handleCreateCluster={this.handleCreateCluster}
           handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
         />
+      </div>
       </div>
     );
   }

@@ -38,12 +38,11 @@ const PORT = process.env.PORT;
 const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 
 //** --------- INITIALIZE SDK IMPORTS ------ 
-let config = awsHelperFunctions.returnAWSCredentials();
 
-const sts = new STS({ region: REGION });
-const eks = new EKS({ config });
-const cloudformation = new CloudFormation({ config });
-const iam = new IAM( {config} );
+const sts = new STS();
+const eks = new EKS();
+const cloudformation = new CloudFormation();
+const iam = new IAM();
 
 // const eks = new EKS({ region: REGION });
 //const cloudformation = new CloudFormation({ region: REGION });
@@ -53,7 +52,17 @@ const iam = new IAM( {config} );
 let win;
 
 //Function to create our application window, that will be invoked with app.on('ready')
-function createWindow () {
+function createWindowAndSetEnvironmentVariables () {
+
+  // Read from credentials file and store the environment variables
+  if (fs.existsSync(__dirname + '/sdkAssets/private/awsCredentials.json')) {
+    const readCredentialsFile = fs.readFileSync(__dirname + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+    const parsedCredentialsFile = JSON.parse(readCredentialsFile);
+    Object.entries(parsedCredentialsFile).forEach((arr) => {
+      process.env[arr[0]] = arr[1];
+    });
+  }
+
   win = new BrowserWindow({width: 1400, height: 900});
   
   if (isDev) {
@@ -93,47 +102,50 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
 //** --------- CONFIGURE AWS CREDENTIALS --------------------------- **//
 ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
 
+  console.log('data', data);
+
 
   try {
+    // when a user enters their info
 
-    console.log("data:", data);
+    // we should first check if the credentials files exists
+    if (fs.existsSync(__dirname + '/sdkAssets/private/awsCredentials.json')) {
+      // if it does then we should change the file to reflect their input
+      const readCredentialsFile = await fsp.readFile(__dirname + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+      const parsedCredentialsFile = JSON.parse(readCredentialsFile);
+      console.log('this is the parsed obj', parsedCredentialsFile);
 
-    //region: data.awsRegion,
-
-    const dataForAWSConfigFile = {
-      awsAccessKeyId: data.awsAccessKeyId,
-      awsSecretAccessKey: data.awsSecretAccessKey,
-    }; 
-    console.log("------------------------------------------------")
-    console.log("sts above: ", sts)
-    console.log("------------------------------------------------")
-
-    console.log("sts.config above: ", sts.config)
-    console.log("------------------------------------------------")
-
-    console.log("sts.config.credentials above: ", sts.config.credentials)
-
-    sts.config.credentials = dataForAWSConfigFile;
-    // sts.config.credentials["awsSecretAccessKey"] = data.awsSecretAccessKey;
-    console.log("------------------------------------------------")
-    console.log("sts.config below: ", sts.config)
-    console.log("------------------------------------------------")
-
-    console.log("sts.config.credentials below: ", sts.config.credentials)
-
-    console.log("------------------------------------------------")
-
+      parsedCredentialsFile.AWS_ACCESS_KEY_ID = data.awsAccessKeyId;
+      parsedCredentialsFile.AWS_SECRET_ACCESS_KEY = data.awsSecretAccessKey;
+      parsedCredentialsFile.REGION = data.awsRegion;
+      // we should then explicitly set the environment variables to match
+      process.env['AWS_ACCESS_KEY_ID'] = data.awsAccessKeyId;
+      process.env['AWS_SECRET_ACCESS_KEY'] = data.awsSecretAccessKey;
+      process.env['REGION'] = data.awsRegion;
+      const stringedCredentialFiles = JSON.stringify(parsedCredentialsFile, null, 2);
+      await fsp.writeFile(__dirname + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+    } else {
+      // if the file does not exist then we should just write the file
+      const credentialsObjToWrite = {
+        AWS_ACCESS_KEY_ID: data.awsAccessKeyId,
+        AWS_SECRET_ACCESS_KEY: data.awsSecretAccessKey,
+        REGION: data.awsRegion
+      };
+      const stringedCredentialFiles = JSON.stringify(credentialsObjToWrite, null, 2);
+      await fsp.writeFile(__dirname + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+    }
     const credentialStatus = await sts.getCallerIdentity().promise();
     console.log("credentialStatus: ", credentialStatus);
-    awsEventCallbacks.configureAWSCredentials(dataForAWSConfigFile);
-
+    win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
+    
   } catch (err) {
     console.log(err);
+    //TODO: send back whether or not data worked to the front end
+    win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'Main thread threw an error');
   }
+  
+  win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'hello');
 
-  //TODO: send back whether or not data worked to the front end
-
-  win.webContents.send(events.HANDLE_SET_CREDENTIALS, 'AWS Configured');
 })
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------- **//
@@ -409,7 +421,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
 
 
 // HANDLE app ready
-app.on('ready', createWindow);
+app.on('ready', createWindowAndSetEnvironmentVariables);
 
 // HANDLE app shutdown
 app.on('window-all-closed', () => {

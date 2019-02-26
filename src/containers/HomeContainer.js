@@ -37,7 +37,7 @@ class HomeContainer extends Component {
   }
 
   componentWillUnmount() {
-    ipcRenderer.removeListener(events.HANDLE_AWS_CREDENTIALSE, this.handleAWSCredentials);
+    ipcRenderer.removeListener(events.HANDLE_AWS_CREDENTIALS, this.handleAWSCredentials);
   }
 
   //**--------------EVENT HANDLERS-----------------**//
@@ -63,8 +63,7 @@ class HomeContainer extends Component {
   //** ------- CONFIGURE AWS CREDENTIALS --------------------- **//
   setAWSCredentials(e) {
     e.preventDefault();
-    console.log('handle aws credentials clicked!!!');
-    
+  
     const awsConfigData = {
       awsAccessKeyId: this.state.awsAccessKeyId,
       awsSecretAccessKey: this.state.awsSecretAccessKey,
@@ -83,11 +82,10 @@ class HomeContainer extends Component {
   handleAWSCredentials(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
-    this.props.history.push('/aws')
-    // this.props.setNewRole(data);
+    if (data.UserId) {
+      this.props.history.push('/aws')
+    }
   }
-
-
 
   render() {
     return (
@@ -99,7 +97,6 @@ class HomeContainer extends Component {
           awsSecretAccessKey={this.state.awsSecretAccessKey}
           awsRegion={this.state.awsRegion}
           setAWSCredentials={this.setAWSCredentials}
-          handleAWSCredentials={this.handleAWSCredentials}
         />
       </div>
     );

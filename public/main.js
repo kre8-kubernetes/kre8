@@ -86,9 +86,16 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
   
   //TODO: if statement, check for file first. 
   try {
-    await onDownload.installIAMAuthenticator();
-    await onDownload.enableIAMAuthenticator();
-    await onDownload.copyToBinFolder();
+
+    const iamAuthenticatorExists = fs.existsSync(process.env['HOME'] + '/bin/aws-iam-authenticator');
+
+    if (!iamAuthenticatorExists) {
+      await onDownload.installIAMAuthenticator();
+      await onDownload.enableIAMAuthenticator();
+      await onDownload.copyToBinFolder();
+    }
+
+    
     await onDownload.appendToBashProfile();
 
   } catch (err) {

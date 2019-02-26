@@ -10,7 +10,6 @@ onDownload.installIAMAuthenticator = async () => {
   console.log('now installing IAM authenticator');
 
 
-  //TODO: how to do node child process w await?
   try {
 
     const child = spawnSync('curl', ['-o', 'aws-iam-authenticator', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator']);

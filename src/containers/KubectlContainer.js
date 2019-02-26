@@ -6,6 +6,7 @@ import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
 import KubectlTestComponent from '../components/KubectlTestComponent';
+import TreeGraphContainer from './TreeGraphContainer.js';
 
 const mapStateToProps = store => ({
   roleName: store.aws.roleName,
@@ -51,7 +52,6 @@ class KubectlContainer extends Component {
       service_targetPort: ''
     }
 
-
     this.handleChange = this.handleChange.bind(this);
     
     this.handleCreatePod = this.handleCreatePod.bind(this);
@@ -65,48 +65,21 @@ class KubectlContainer extends Component {
 
   }
 
-  
-
-
-
-
   //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
-
-  // POD LIFECYCLE METHOD - On component mount we will create listeners, so that the main thread can communicate when needed
+  
+  // DEPLOYMENT LIFECYCLE METHOD
   componentDidMount() {
     ipcRenderer.on(events.HANDLE_NEW_POD, this.handleNewPod)
+    ipcRenderer.on(events.HANDLE_NEW_SERVICE, this.handleNewService)
+    ipcRenderer.on(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment)
   }
-
+  
   // On component unmount, we will unsubscribe to listeners
   componentWillUnmount() {
     ipcRenderer.removeListener(events.HANDLE_NEW_POD, this.handleNewPod);
-  }
-
-
-  // DEPLOYMENT LIFECYCLE METHOD
-  componentDidMount() {
-    ipcRenderer.on(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment)
-  }
-
-  // On component unmount, we will unsubscribe to listeners
-  componentWillUnmount() {
+    ipcRenderer.removeListener(events.HANDLE_NEW_SERVICE, this.handleNewService);
     ipcRenderer.removeListener(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment);
   }
-
-
-    // SERVICE LIFECYCLE METHOD
-    componentDidMount() {
-      ipcRenderer.on(events.HANDLE_NEW_SERVICE, this.handleNewService)
-    }
-  
-    // On component unmount, we will unsubscribe to listeners
-    componentWillUnmount() {
-      ipcRenderer.removeListener(events.HANDLE_NEW_SERVICE, this.handleNewService);
-    }
-
-
-
-
 
   //**--------------EVENT HANDLERS-----------------**//
 
@@ -156,8 +129,6 @@ class KubectlContainer extends Component {
     ipcRenderer.send(events.CREATE_SERVICE, obj);
   }
 
-
-  
   //**--------------INCOMING DATA FROM MAIN THREAD-----------------**//
 
   //INCOMING POD DATA
@@ -176,14 +147,6 @@ class KubectlContainer extends Component {
     newState.pod_imageName = '';
     this.setState(newState);
   }
-  
-  
-  // //INCOMING POD DATA
-  // handleNewPod(event, data) {
-  //   // The following is going to be the logic that occurs once a new role was created via the main thread process
-  //   console.log('incoming text:', data);
-  //   this.props.setNewPod(data);
-  // }
 
   //INCOMING DEPLOYMENT DATA 
   handleNewDeployment(event, data) {
@@ -230,10 +193,9 @@ class KubectlContainer extends Component {
     this.setState(newState);
   }
 
-
   render() {
     return (
-      <div>
+      <div className='kubectl_container'>
         <KubectlTestComponent
           handleChange={this.handleChange}
           handleCreatePod={this.handleCreatePod}
@@ -260,7 +222,8 @@ class KubectlContainer extends Component {
           pods={this.props.pods}
           deployments={this.props.deployments}
           services={this.props.services}
-
+        />
+        <TreeGraphContainer 
 
         />
       </div>
@@ -268,4 +231,4 @@ class KubectlContainer extends Component {
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(KubectlContainer));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(KubectlContainer))

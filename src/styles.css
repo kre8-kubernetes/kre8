@@ -5,26 +5,6 @@
 * this increases performance as well
 */
 
-.section {
-  /* display:grid; */
-  border-radius: 10px; 
-  border-style: solid;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  font-size: 15px;
-  padding: 10px;
-  width: 15%;
-}
-
-.section input[type="text"] {
-  display:flex;
-  justify-content: center;
-}
-
-.section:hover {
-  transition: 0.3s;
-  background-color:lightgray;
-}
-
 .buttons {
   border:none;
   background-color: gray;
@@ -106,3 +86,77 @@ h4 {
   padding-bottom: 5px;
   margin-bottom: 5px;
 }
+
+/* KubectlContainer Styling */
+
+.kubectl_container {
+  display: flex;
+  flex-direction: row;
+  align-content: space-around;
+}
+
+/* Kubectl Component Styling */
+
+.kubectl_form_container {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 2;
+  border: 2px solid red;
+}
+
+.kubectl_form_container {
+  /* display:grid; */
+  border-radius: 10px; 
+  border-style: solid;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 15px;
+  padding: 10px;
+}
+
+.kubectl_form_container input[type="text"] {
+  display:flex;
+  justify-content: center;
+}
+
+.kubectl_form_container:hover {
+  transition: 0.3s;
+  background-color:lightgray;
+}
+
+.kubectl_form_item form {
+  width: 100%;
+}
+
+/* Treegraph component Styling */
+
+.treegraph_container {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 8;
+  border: 2px solid blue;
+}
+
+/* NodeInfo Component Popup */
+
+.popup {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0,0,0, 0.5);
+}
+
+.popup_inner {
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  top: 25%;
+  bottom: 25%;
+  margin: auto;
+  background: white;
+}
+

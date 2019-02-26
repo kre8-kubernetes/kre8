@@ -4,7 +4,7 @@ const isDev = require('electron-is-dev');
 require('dotenv').config();
 
 const fs = require('fs');
-const { spawn } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 const fsp = require('fs').promises;
 
 const YAML = require('yamljs');
@@ -89,7 +89,7 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
     await onDownload.installIAMAuthenticator();
     await onDownload.enableIAMAuthenticator();
     await onDownload.copyToBinFolder();
-    await onDownload.appendToBashProfile;
+    await onDownload.appendToBashProfile();
 
   } catch (err) {
     console.log(err);

@@ -89,7 +89,8 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
     await onDownload.installIAMAuthenticator();
     await onDownload.enableIAMAuthenticator();
     await onDownload.copyToBinFolder();
-    await onDownload.appendToBashProfile;
+
+    await onDownload.appendToBashProfile();
 
   } catch (err) {
     console.log(err);

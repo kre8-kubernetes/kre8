@@ -38,7 +38,6 @@ const PORT = process.env.PORT;
 const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 
 //** --------- INITIALIZE SDK IMPORTS ------ 
-// let config = awsHelperFunctions.returnAWSCredentials();
 
 const sts = new STS();
 const eks = new EKS();
@@ -62,7 +61,6 @@ function createWindowAndSetEnvironmentVariables () {
     Object.entries(parsedCredentialsFile).forEach((arr) => {
       process.env[arr[0]] = arr[1];
     });
-    console.log('process.env', process.env)
   }
 
   win = new BrowserWindow({width: 1400, height: 900});

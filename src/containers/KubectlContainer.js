@@ -7,6 +7,7 @@ import * as events from '../../eventTypes';
 
 import KubectlTestComponent from '../components/KubectlTestComponent';
 import TreeGraphContainer from './TreeGraphContainer.js';
+import SimpleReactValidator from 'simple-react-validator';
 
 const mapStateToProps = store => ({
   roleName: store.aws.roleName,
@@ -34,6 +35,10 @@ class KubectlContainer extends Component {
   constructor(props) {
     super(props);
 
+    this.validator = new SimpleReactValidator({
+      element: (message, className) => <div className="errorClass">{message}</div>
+    });
+
     this.state = {
       pod_podName: '',
       pod_containerName: '',
@@ -49,7 +54,9 @@ class KubectlContainer extends Component {
       service_name: '',
       service_appName: '',
       service_port: '',
-      service_targetPort: ''
+      service_targetPort: '',
+
+      display_error: false,
     }
 
     this.handleChange = this.handleChange.bind(this);
@@ -63,6 +70,7 @@ class KubectlContainer extends Component {
     this.handleCreateService = this.handleCreateService.bind(this);
     this.handleNewService = this.handleNewService.bind(this);
 
+    this.testFormValidation = this.testFormValidation.bind(this);
   }
 
   //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
@@ -91,16 +99,34 @@ class KubectlContainer extends Component {
     this.setState(newState);
   };
 
+  testFormValidation () {
+    if (this.validator.allValid()) {
+      return true;
+      alert('You submitted the form!');
+    } else {
+      this.validator.showMessages();
+      this.forceUpdate();
+      return false;
+      // rerender to show messages for the first time
+    }
+  }
+
 
   //CREATE POD HANDLER
   handleCreatePod(data) {
     console.log('handleCreatePod Clicked!!!');
+
     const obj = {
       podName: this.state.pod_podName,
       containerName: this.state.pod_containerName,
       imageName: this.state.pod_imageName,
     }
-    ipcRenderer.send(events.CREATE_POD, obj);
+
+    if (this.testFormValidation()) {
+      console.log("All form data passed validation");
+      ipcRenderer.send(events.CREATE_POD, obj);
+    }
+    console.log("Invalid or missing data entry");
   }
 
   //CREATE DEPLOYMENT HANDLER
@@ -114,7 +140,12 @@ class KubectlContainer extends Component {
       containerPort: this.state.deployment_containerPort,
       replicas: this.state.deployment_replicas
     }
-    ipcRenderer.send(events.CREATE_DEPLOYMENT, obj);
+
+    if (this.testFormValidation()) {
+      console.log("All form data passed validation");
+      ipcRenderer.send(events.CREATE_DEPLOYMENT, obj);
+    }
+    console.log("Invalid or missing data entry");
   }
 
   //CREATE SERVICE HANDLER
@@ -126,7 +157,11 @@ class KubectlContainer extends Component {
       port: this.state.service_port,
       targetPort: this.state.service_targetPort
     }
-    ipcRenderer.send(events.CREATE_SERVICE, obj);
+    if (this.testFormValidation()) {
+      console.log("All form data passed validation");
+      ipcRenderer.send(events.CREATE_SERVICE, obj);
+    }
+    console.log("Invalid or missing data entry");
   }
 
   //**--------------INCOMING DATA FROM MAIN THREAD-----------------**//
@@ -201,6 +236,7 @@ class KubectlContainer extends Component {
           handleCreatePod={this.handleCreatePod}
           handleCreateDeployment={this.handleCreateDeployment}
           handleCreateService={this.handleCreateService}
+          validator={this.validator}
 
           pod_podName={this.state.pod_podName}
           pod_containerName={this.state.pod_containerName}

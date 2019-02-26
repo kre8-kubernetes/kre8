@@ -242,6 +242,12 @@ ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 //   win.webContents.send(events.HANDLE_NEW_POD, 'New Pod Here');
 // })
 
+ipcMain.on(events.GET_MASTER_NODE, (event, data) => {
+  // run 'kubectl get svc -o=json' to get the services, one element in the item array will contain
+  // the apiserver. result.items[x].metadata.labels.component = "apiserver"
+  // this is our master node so send this back
+})
+
 //**----------- CREATE A POD -------------------------------- **//
 
 ipcMain.on(events.CREATE_POD, (event, data) => {

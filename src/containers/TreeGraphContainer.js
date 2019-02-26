@@ -22,6 +22,10 @@ class TreeGraphContainer extends Component {
     this.hideNodeInfo = this.hideNodeInfo.bind(this);
   }
 
+  componentDidMount() {
+    // on mount, get the master node, get the worker nodes
+  }
+
   showNodeInfo(node) {
     this.setState({ ...this.state, showInfo: true, nodeInfoToShow: node });
   }

@@ -155,7 +155,7 @@ class AwsContainer extends Component {
      } = this.state;
 
     return (
-      <div>
+      <div className="aws_cluster_page_container">
         <AWSTestComponent
           handleChange={this.handleChange}
 

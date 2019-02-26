@@ -59,7 +59,7 @@ class HomeContainer extends Component {
 
   render() {
     return (
-      <div>
+      <div className="home_page_container">
         <HomeComponent 
           handleChange={this.handleChange}
           awsAccessKeyId={this.state.awsAccessKeyId}

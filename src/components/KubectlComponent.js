@@ -5,7 +5,7 @@ import star from '../assets/Star.png'
 import cube from '../assets/3d-cube.jpg'
 import sphere from '../assets/Blue_sphere.png'
 
-const KubectlTestComponent = props => {
+const KubectlComponent = props => {
 
   const pods = props.pods.map(pod => {
     return (
@@ -67,31 +67,31 @@ const something = true;
           <h2>Create a Deployment</h2>
             <h4>Deployment name:</h4>
               <input id='deployment_deploymentName' value={props.deployment_deploymentName} onChange={props.handleChange} type="text" name="Deployment name" />
-              {props.validator.message('Deployment name', props.deployment_deploymentName, 'required')}
+              {props.validator1.message('Deployment name', props.deployment_deploymentName, 'required')}
               <br />
             <h4>App name:</h4>
               <input id='deployment_appName' value={props.deployment_appName} onChange={props.handleChange} type="text" name="App name" />
-              {props.validator.message('App name', props.deployment_appName, 'required')}
+              {props.validator1.message('App name', props.deployment_appName, 'required')}
 
               <br />
             <h4>Container name:</h4>
               <input id='deployment_containerName' value={props.deployment_containerName} onChange={props.handleChange} type="text" name="Container name" />
-              {props.validator.message('Container name', props.deployment_containerName, 'required')}
+              {props.validator1.message('Container name', props.deployment_containerName, 'required')}
 
               <br />
             <h4>Image:</h4>
               <input id='deployment_image' value={props.deployment_image} onChange={props.handleChange} type="text" name="Image name" />
-              {props.validator.message('Image', props.deployment_image, 'required')}
+              {props.validator1.message('Image', props.deployment_image, 'required')}
 
               <br />
             <h4>Container Port:</h4>
               <input id='deployment_containerPort' value={props.deployment_containerPort} onChange={props.handleChange} type="text" name="Container port" />
-              {props.validator.message('Container port', props.deployment_containerPort, 'required|numeric')}
+              {props.validator1.message('Container port', props.deployment_containerPort, 'required|numeric')}
 
               <br />
             <h4>Number of replicas:</h4>
               <input id='deployment_replicas' value={props.deployment_replicas} onChange={props.handleChange} type="text" name="Replicas" />
-              {props.validator.message('Number of replicas', props.deployment_replicas, 'required|numeric')}
+              {props.validator1.message('Number of replicas', props.deployment_replicas, 'required|numeric')}
 
               <br />
           </form>
@@ -106,20 +106,20 @@ const something = true;
       <div className="kubectl_form_item">
         <form>
           <h4>Service name:</h4>
-            <input id='service_name' value={props.service_name} onChange={props.handleChange} type="text" name="Service name" />
-            {props.validator.message('ImService nameage', props.service_name, 'required')}
+            <input id='service_serviceName' value={props.service_serviceName} onChange={props.handleChange} type="text" name="Service name" />
+            {props.validator2.message('Service name', props.service_serviceName, 'required')}
 
           <h4>App name:</h4>
             <input id='service_appName' value={props.service_appName} onChange={props.handleChange} type="text" name="App name" />
-            {props.validator.message('App name', props.service_appName, 'required')}
+            {props.validator2.message('App name', props.service_appName, 'required')}
 
           <h4>Service port:</h4>
             <input id='service_port' value={props.service_port} onChange={props.handleChange} type="text" name="Port" />
-            {props.validator.message('Port', props.service_port, 'required|numeric')}
+            {props.validator2.message('Port', props.service_port, 'required|numeric')}
 
           <h4>Target port:</h4>
             <input id='service_targetPort' value={props.service_targetPort} onChange={props.handleChange} type="text" name="Target Port" />
-            {props.validator.message('Target port', props.service_targetPort, 'required|numeric')}
+            {props.validator2.message('Target port', props.service_targetPort, 'required|numeric')}
 
           <br />
         </form>
@@ -145,4 +145,4 @@ const something = true;
   );
 };
 
-export default KubectlTestComponent;
+export default KubectlComponent;

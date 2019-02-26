@@ -173,6 +173,14 @@ h4 {
   margin-bottom: 5px;
 }
 
+h5 {
+  padding-top: 1px;
+  margin-top: 1px;
+  color: grey;
+  font-weight: lighter;
+  font-size: 9px;
+}
+
 /* KubectlContainer Styling */
 
 .kubectl_container {

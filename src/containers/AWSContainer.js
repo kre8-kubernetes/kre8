@@ -5,7 +5,7 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
-import AWSTestComponent from '../components/AWSTestComponent'
+import AWSComponent from '../components/AWSComponent'
 
 //TODO: Create logic for form data sanitation, ie don't accept an empty field from a user when they click submit
 
@@ -156,7 +156,7 @@ class AwsContainer extends Component {
 
     return (
       <div className="aws_cluster_page_container">
-        <AWSTestComponent
+        <AWSComponent
           handleChange={this.handleChange}
 
           createRole_roleName={createRole_roleName}

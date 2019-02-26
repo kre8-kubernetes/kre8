@@ -5,7 +5,7 @@ import { ipcRenderer } from 'electron';
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
-import KubectlTestComponent from '../components/KubectlTestComponent';
+import KubectlComponent from '../components/KubectlComponent';
 import TreeGraphContainer from './TreeGraphContainer.js';
 import SimpleReactValidator from 'simple-react-validator';
 
@@ -39,6 +39,14 @@ class KubectlContainer extends Component {
       element: (message, className) => <div className="errorClass">{message}</div>
     });
 
+    this.validator1 = new SimpleReactValidator({
+      element: (message, className) => <div className="errorClass">{message}</div>
+    });
+
+    this.validator2 = new SimpleReactValidator({
+      element: (message, className) => <div className="errorClass">{message}</div>
+    });
+
     this.state = {
       pod_podName: '',
       pod_containerName: '',
@@ -51,7 +59,7 @@ class KubectlContainer extends Component {
       deployment_containerPort: '',
       deployment_replicas: '',
 
-      service_name: '',
+      service_serviceName: '',
       service_appName: '',
       service_port: '',
       service_targetPort: '',
@@ -99,15 +107,36 @@ class KubectlContainer extends Component {
     this.setState(newState);
   };
 
-  testFormValidation () {
+  testFormValidation() {
     if (this.validator.allValid()) {
+      alert('Your pod is being created!');
       return true;
-      alert('You submitted the form!');
     } else {
       this.validator.showMessages();
       this.forceUpdate();
       return false;
-      // rerender to show messages for the first time
+    }
+  }
+
+  testFormValidation1() {
+    if (this.validator1.allValid()) {
+      alert('Your deployment is being created!');
+      return true;
+    } else {
+      this.validator1.showMessages();
+      this.forceUpdate();
+      return false;
+    }
+  }
+
+  testFormValidation2() {
+    if (this.validator2.allValid()) {
+      alert('Your service is being created!');
+      return true;
+    } else {
+      this.validator2.showMessages();
+      this.forceUpdate();
+      return false;
     }
   }
 
@@ -126,6 +155,7 @@ class KubectlContainer extends Component {
       console.log("All form data passed validation");
       ipcRenderer.send(events.CREATE_POD, obj);
     }
+
     console.log("Invalid or missing data entry");
   }
 
@@ -141,7 +171,7 @@ class KubectlContainer extends Component {
       replicas: this.state.deployment_replicas
     }
 
-    if (this.testFormValidation()) {
+    if (this.testFormValidation1()) {
       console.log("All form data passed validation");
       ipcRenderer.send(events.CREATE_DEPLOYMENT, obj);
     }
@@ -152,12 +182,12 @@ class KubectlContainer extends Component {
   handleCreateService(data) {
     console.log('handleCreateService Clicked!!!');
     const obj = {
-      name: this.state.service_name,
+      name: this.state.service_serviceName,
       appName: this.state.service_appName,
       port: this.state.service_port,
       targetPort: this.state.service_targetPort
     }
-    if (this.testFormValidation()) {
+    if (this.testFormValidation2()) {
       console.log("All form data passed validation");
       ipcRenderer.send(events.CREATE_SERVICE, obj);
     }
@@ -212,31 +242,38 @@ class KubectlContainer extends Component {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
     const obj = {
-      name: this.state.service_name,
+      name: this.state.service_serviceName,
       appName: this.state.service_appName,
-      containerName: this.state.service_containerName,
-      image: this.state.service_image,
-      replicas: this.state.service_replicas
+      port: this.state.service_port,
+      targetPort: this.state.service_targetPort
+      //containerName: this.state.service_containerName,
+      //image: this.state.service_image,
+      //replicas: this.state.service_replicas
     }    
     this.props.setNewService(obj);
     const newState = this.state;
-    newState.service_name = '';
+    newState.service_serviceName = '';
     newState.service_appName = '';
-    newState.service_containerName = '';
-    newState.service_image = '';
-    newState.service_replicas = '';
+    newState.service_port = '';
+    newState.service_targetPort = ';'
+    //newState.service_containerName = '';
+    //newState.service_image = '';
+    //newState.service_replicas = '';
     this.setState(newState);
   }
 
   render() {
     return (
       <div className='kubectl_container'>
-        <KubectlTestComponent
+        <KubectlComponent
           handleChange={this.handleChange}
           handleCreatePod={this.handleCreatePod}
           handleCreateDeployment={this.handleCreateDeployment}
           handleCreateService={this.handleCreateService}
           validator={this.validator}
+          validator1={this.validator1}
+          validator2={this.validator2}
+
 
           pod_podName={this.state.pod_podName}
           pod_containerName={this.state.pod_containerName}
@@ -251,9 +288,14 @@ class KubectlContainer extends Component {
 
           service_serviceName={this.state.service_serviceName}
           service_appName={this.state.service_appName}
-          service_containerName={this.state.service_containerName}
-          service_image={this.state.service_image}
-          service_replicas={this.state.service_replicas}
+          service_port={this.state.service_port}
+          service_targetPort={this.state.service_targetPort}
+
+
+          //ToDO: Delete these elements if not in use
+          //service_containerName={this.state.service_containerName
+          //service_image={this.state.service_image}
+          //service_replicas={this.state.service_replicas}
 
           pods={this.props.pods}
           deployments={this.props.deployments}

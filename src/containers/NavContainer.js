@@ -5,7 +5,7 @@ import NavComponent from '../components/NavComponent.js';
 
 const NavContainer = (props) => {
   return (
-    <div>
+    <div className="nav_container">
       <NavComponent />
     </div>
   )

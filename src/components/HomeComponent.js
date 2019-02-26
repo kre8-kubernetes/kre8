@@ -12,16 +12,18 @@ const HomeComponent = props => {
         {/* <div className="section"> */}
         <h1>Kre8</h1>
           <h2>Create and Deploy your Kubernetes Cluster to the Cloud</h2>
-          <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. Kre8 is here to simplify everything for you. Let's get started!</p>
+          <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. 
+            Kre8 is here to simplify everything for you. Let's get started!</p>
             <form>
-                <h4>Input AWS Access Key ID</h4>
+                <h4>AWS Access Key ID:</h4>
                 <input id='awsAccessKeyId' onChange={props.handleChange} value={props.awsAccessKeyId} type="text" name="awsAccessKeyId" />
-                <h4>Input AWS Secret Access Key</h4>
+                <h4>AWS Secret Access Key:</h4>
                 <input id='awsSecretAccessKey' onChange={props.handleChange} value={props.awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
-                <h4>Input AWS Region</h4>
+                <h4>AWS Region:</h4>
                 <input id='awsRegion' onChange={props.handleChange} value={props.awsRegion} type="text" name="awsRegion" />
-                <button onClick={props.setAWSCredentials} className="homebutton">Submit!</button>
             </form>
+            <br></br>
+            <button onClick={props.setAWSCredentials} className="buttons">Submit</button>
         </div>
 
     </div>

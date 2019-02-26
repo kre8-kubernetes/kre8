@@ -7,18 +7,18 @@ import "../styles.css";
 const AWSTestComponent = props => {
   return (
     <div className="aws_cluster_page_item">
-      {/* <img src={cloudGIF} alt="CloudGIF" className="HomeGIF" /> */}
+    
       
-
-      
-      <div className="aws_cluster_form_container">
+      <div className="aws_cluster_container">
+        
         
         {/* IAM Authenticator button */}
-        <button onClick={props.emitInstallAuthenticator}>
+        <button onClick={props.emitInstallAuthenticator} className='buttons'>
           Install AWS IAM Authenticator
         </button>
         <br />
 
+        <div className='aws_cluster_form_container'>
         {/* Create IAM Role form and Button */}
         <div className="aws_cluster_form_item">
           <form>
@@ -43,9 +43,9 @@ const AWSTestComponent = props => {
             <br />
           </form>
           <br />
-          {/* <button className="buttons" onClick={props.handleCreateRole}>
+          <button className="buttons" onClick={props.handleCreateRole}>
             Create IAM Role
-          </button> */}
+          </button>
         </div>
         
         {/* Create Tech Stack Form */}
@@ -63,9 +63,9 @@ const AWSTestComponent = props => {
             <br />
           </form>
           <br />
-          {/* <button className="buttons" onClick={props.handleCreateTechStack}>
+          <button className="buttons" onClick={props.handleCreateTechStack}>
             Create Tech Stack
-          </button> */}
+          </button>
         </div>
         
         {/* Create AWS Cluster */}
@@ -84,13 +84,14 @@ const AWSTestComponent = props => {
             <br />
           </form>
           <br />
-          {/* <button className="buttons" onClick={props.handleCreateCluster}>
+          <button className="buttons" onClick={props.handleCreateCluster}>
             Create Cluster
-          </button> */}
+          </button>
+        </div>
         </div>
 
         <br></br>
-        <button onClick={props.handleConfigAndMakeNodes}>
+        <button onClick={props.handleConfigAndMakeNodes} className='buttons'>
           Do all the things AND Configure Kubectl AND Make Worker Nodes
         </button>
       </div>

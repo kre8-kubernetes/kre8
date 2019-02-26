@@ -2,7 +2,7 @@ import React from 'react';
 import { Group } from '@vx/group';
 
 
-const RootNodeComponent = ({ node }) => {
+const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const peach = '#fd9b93';
   const pink = '#fe6e9e';
   const blue = '#03c0dc';
@@ -11,16 +11,27 @@ const RootNodeComponent = ({ node }) => {
   const lightpurple = '#374469';
   const white = '#ffffff';
   const bg = '#272b4d';
+  const height = 75;
+  const width = 60;
   return (
-    <Group top={node.x} left={node.y}>
-      <circle r={12} fill="url('#lg')" />
+    <Group top={top} left={left}>
+      <circle
+        r={15}
+        fill={blue}
+        stroke="black" 
+        strokeWidth="1"
+        onClick={() => {
+          showNodeInfo(node);
+          console.log('from circle', node);
+        }}
+      />
       <text
         dy={'.33em'}
-        fontSize={9}
+        fontSize={11}
         fontFamily="Arial"
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
-        fill={plum}
+        fill={'#000000'}
       >
         {node.data.name}
       </text>
@@ -28,4 +39,4 @@ const RootNodeComponent = ({ node }) => {
   );
 }
 
-export default RootNodeComponent;
+export default PodComponent;

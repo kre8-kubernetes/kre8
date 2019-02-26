@@ -6,44 +6,70 @@ import { Tree } from '@vx/hierarchy';
 import { LinkHorizontal } from '@vx/shape';
 import { hierarchy } from 'd3-hierarchy';
 import { LinearGradient } from '@vx/gradient';
+import uuid from 'uuid'
 
 import TreeGraphComponent from '../components/TreeGraphComponent';
+import NodeInfoComponent from '../components/NodeInfoComponent';
 
 class TreeGraphContainer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      showInfo: false,
+      nodeInfoToShow: {}
+    }
+    this.showNodeInfo = this.showNodeInfo.bind(this);
+    this.hideNodeInfo = this.hideNodeInfo.bind(this);
+  }
+
+  showNodeInfo(node) {
+    this.setState({ ...this.state, showInfo: true, nodeInfoToShow: node });
+  }
+
+  hideNodeInfo() {
+    this.setState({ ...this.state, showInfo: false });
   }
 
   render() {
     const treeData = {
       "name": "Master Node",
+      "id": uuid(),
       "type": "master",
       "children": [
         {
           "name": "Worker Node #1",
+          "id": uuid(),
+          "worder_node_id": 0,
           "type": "node",
           "children": [
             { 
               "name": "Dream POD #1",
+              "id": uuid(),
+              "pod_id": 0,
               "type": "pod",
               "children": [{
                 "name": "Dream POD Container",
+                "id": uuid(),
                 "type": "container",
               }]
             },
             { 
               "name": "Dream POD #2",
+              "id": uuid(),
               "type": "pod",
               "children": [{
                 "name": "Dream POD Container",
+                "id": uuid(),
                 "type": "container",
               }]
             },
             { 
               "name": "Dream POD #3",
+              "id": uuid(),
               "type": "pod",
               "children": [{
                 "name": "Dream POD Container",
+                "id": uuid(),
                 "type": "container",
               }]
             },
@@ -51,29 +77,37 @@ class TreeGraphContainer extends Component {
         },
         {
           "name": "Worker Node #2",
+          "id": uuid(),
+          "worder_node_id": 1,
           "type": "node",
           "children": [
             { 
               "name": "Dream POD #1",
+              "id": uuid(),
               "type": "pod",
               "children": [{
                 "name": "Dream POD Container",
+                "id": uuid(),
                 "type": "container",
               }]
             },
             { 
               "name": "Dream POD #2",
+              "id": uuid(),
               "type": "pod",
               "children": [{
                 "name": "Dream POD Container",
+                "id": uuid(),
                 "type": "container",
               }]
             },
             { 
               "name": "Dream POD #3",
+              "id": uuid(),
               "type": "pod",
               "children": [{
                 "name": "Dream POD Container",
+                "id": uuid(),
                 "type": "container",
               }]
             },
@@ -81,50 +115,100 @@ class TreeGraphContainer extends Component {
         },
         {
           "name": "Worker Node #3",
+          "id": uuid(),
+          "worder_node_id": 2,
           "type": "node",
           "children": [
             { 
               "name": "Dream POD #1",
+              "id": uuid(),
               "type": "pod",
               "children": [{
                 "name": "Dream POD Container",
+                "id": uuid(),
                 "type": "container",
               }]
             },
             { 
               "name": "Dream POD #2",
+              "id": uuid(),
               "type": "pod",
               "children": [{
                 "name": "Dream POD Container",
+                "id": uuid(),
                 "type": "container",
               }]
             },
             { 
               "name": "Dream POD #3",
+              "id": uuid(),
               "type": "pod",
               "children": [{
                 "name": "Dream POD Container",
+                "id": uuid(),
                 "type": "container",
               }]
             },
           ]
         },
         {
-          "name": "kube-apiserver",
-          "type": "master-component",
+          "name": "Worker Node #4",
+          "id": uuid(),
+          "worder_node_id": 3,
+          "type": "node",
+          "children": [
+            {
+              "name": "Dream POD #1",
+              "id": uuid(),
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "id": uuid(),
+                "type": "container",
+              }]
+            },
+            {
+              "name": "Dream POD #2",
+              "id": uuid(),
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "id": uuid(),
+                "type": "container",
+              }]
+            },
+            {
+              "name": "Dream POD #3",
+              "id": uuid(),
+              "type": "pod",
+              "children": [{
+                "name": "Dream POD Container",
+                "id": uuid(),
+                "type": "container",
+              }]
+            },
+          ]
         },
-        {
-          "name": "etcd",
-          "type": "master-component",
-        },
-        {
-          "name": "kube-scheduler",
-          "type": "master-component",
-        },
-        {
-          "name": "kube-controller-manager",
-          "type": "master-component",
-        },
+        // {
+        //   "name": "kube-apiserver",
+        //   "id": uuid(),
+        //   "type": "master-component",
+        // },
+        // {
+        //   "name": "etcd",
+        //   "id": uuid(),
+        //   "type": "master-component",
+        // },
+        // {
+        //   "name": "kube-scheduler",
+        //   "id": uuid(),
+        //   "type": "master-component",
+        // },
+        // {
+        //   "name": "kube-controller-manager",
+          
+        //   "type": "master-component",
+        // },
       ],
     };
 
@@ -137,7 +221,14 @@ class TreeGraphContainer extends Component {
 
     return (
       <div className='treegraph_container'>
+        {this.state.showInfo === true && (
+          <NodeInfoComponent
+            nodeInfoToShow={this.state.nodeInfoToShow}
+            hideNodeInfo={this.hideNodeInfo}
+          />
+        )}
         <TreeGraphComponent
+          showNodeInfo={this.showNodeInfo}
           width={1100}
           height={800}
           treeData={treeData}

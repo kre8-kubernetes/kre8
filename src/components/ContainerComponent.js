@@ -2,7 +2,7 @@ import React from 'react';
 import { Group } from '@vx/group';
 
 
-const ParentNodeComponent = ({ node }) => {
+const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const peach = '#fd9b93';
   const pink = '#fe6e9e';
   const blue = '#03c0dc';
@@ -11,32 +11,27 @@ const ParentNodeComponent = ({ node }) => {
   const lightpurple = '#374469';
   const white = '#ffffff';
   const bg = '#272b4d';
-  const width = 40;
-  const height = 20;
-  const centerX = -width / 2;
-  const centerY = -height / 2;
-
+  const height = 75;
+  const width = 60;
   return (
-    <Group top={node.x} left={node.y}>
-      <rect
-        height={height}
-        width={width}
-        y={centerY}
-        x={centerX}
-        fill={bg}
-        stroke={blue}
-        strokeWidth={1}
+    <Group top={top} left={left}>
+      <circle
+        r={10}
+        fill={plum}
+        stroke="black"
+        strokeWidth="1"
         onClick={() => {
-          alert(`clicked: ${JSON.stringify(node.data.name)}`);
+          showNodeInfo(node);
+          console.log('from circle', node);
         }}
       />
       <text
         dy={'.33em'}
-        fontSize={9}
+        fontSize={11}
         fontFamily="Arial"
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
-        fill={white}
+        fill={'#000000'}
       >
         {node.data.name}
       </text>
@@ -44,4 +39,4 @@ const ParentNodeComponent = ({ node }) => {
   );
 }
 
-export default ParentNodeComponent;
+export default PodComponent;

@@ -5,8 +5,6 @@
 * this increases performance as well
 */
 
-
-
 .buttons {
   border:none;
   background-color: gray;
@@ -138,7 +136,6 @@ h4 {
   border: 2px solid blue;
 }
 
-
 /* NodeInfo Component Popup */
 
 .popup {
@@ -162,3 +159,4 @@ h4 {
   margin: auto;
   background: white;
 }
+

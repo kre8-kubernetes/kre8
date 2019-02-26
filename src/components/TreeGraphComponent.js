@@ -63,12 +63,6 @@ const TreeGraphComponent = (props) => {
                   const [radialX, radialY] = pointRadial(node.x, node.y);
                   top = radialY;
                   left = radialX;
-                  // if (node.data.type === 'node') {
-                  //   if (node.data.worder_node_id % 2 === 0) {
-                  //     top = top * 2;
-                  //     left = left * 2;
-                  //   }
-                  // };
   
                   if (node.data.type === 'master') return <MasterNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i}/>
                   if (node.data.type === 'node') return <WorkerNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
@@ -80,9 +74,6 @@ const TreeGraphComponent = (props) => {
             );
           }}
         </Tree>
-
-
-        
       </svg>
     </div>
   )

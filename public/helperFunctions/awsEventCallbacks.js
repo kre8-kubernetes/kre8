@@ -20,6 +20,52 @@ const cloudformation = new CloudFormation({ region: REGION });
 
 const awsEventCallbacks = {};
 
+
+//** --------- CONFIGURE AWS CREDENTIALS ------------------------------ **//
+
+awsEventCallbacks.configureAWSCredentials = async (data) => {
+
+  // Check if AWS credentials files exists
+  if (fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json')) {
+    
+    //if so, change the file to reflect user input
+    const readCredentialsFile = await fsp.readFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+    const parsedCredentialsFile = JSON.parse(readCredentialsFile);
+    console.log('this is the parsed obj', parsedCredentialsFile);
+
+    parsedCredentialsFile.AWS_ACCESS_KEY_ID = data.awsAccessKeyId;
+    parsedCredentialsFile.AWS_SECRET_ACCESS_KEY = data.awsSecretAccessKey;
+    parsedCredentialsFile.REGION = data.awsRegion;
+
+    //Explicitly set the environment variables to match user input
+    process.env['AWS_ACCESS_KEY_ID'] = data.awsAccessKeyId;
+    process.env['AWS_SECRET_ACCESS_KEY'] = data.awsSecretAccessKey;
+    process.env['REGION'] = data.awsRegion;
+
+    const stringedCredentialFiles = JSON.stringify(parsedCredentialsFile, null, 2);
+
+    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+
+  } else {
+    //If the file does not exist, set the environment variables and write the file
+    process.env['AWS_ACCESS_KEY_ID'] = data.awsAccessKeyId;
+    process.env['AWS_SECRET_ACCESS_KEY'] = data.awsSecretAccessKey;
+    process.env['REGION'] = data.awsRegion;
+
+    const credentialsObjToWrite = {
+      AWS_ACCESS_KEY_ID: data.awsAccessKeyId,
+      AWS_SECRET_ACCESS_KEY: data.awsSecretAccessKey,
+      REGION: data.awsRegion
+    };
+
+    const stringedCredentialFiles = JSON.stringify(credentialsObjToWrite, null, 2);
+
+    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+
+  }
+}
+
+
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
 /**
  * @param {String} iamRoleName
@@ -96,7 +142,7 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
 };
 
 
-//** --------- CREATE AWS TECH STACK ------------------------------------ **//
+//** --------- CREATE AWS STACK ------------------------------------ **//
 /**
  * @param {String} stackName
  * @param {String} stackTemplateStringified this is a JSON object that was stringified right before being passed in as an argument
@@ -196,6 +242,8 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('=================  awsEventCallbacks.createCluster ==================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+
+    console.log('The process.env:', process.env);
 
     // FIXME: should we move these master file property names to a constants page and require the object in?
     const key = "clusterName";

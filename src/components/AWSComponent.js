@@ -4,21 +4,19 @@ import cloudGIF from "../assets/cloudGIF.gif";
 
 import "../styles.css";
 
-const AWSTestComponent = props => {
+const AWSComponent = props => {
   return (
     <div className="aws_cluster_page_item">
-      {/* <img src={cloudGIF} alt="CloudGIF" className="HomeGIF" /> */}
-      
-
-      
-      <div className="aws_cluster_form_container">
+    
+      <div className="aws_cluster_container">
         
         {/* IAM Authenticator button */}
-        <button onClick={props.emitInstallAuthenticator}>
+        <button onClick={props.emitInstallAuthenticator} className='buttons'>
           Install AWS IAM Authenticator
         </button>
         <br />
 
+        <div className='aws_cluster_form_container'>
         {/* Create IAM Role form and Button */}
         <div className="aws_cluster_form_item">
           <form>
@@ -31,7 +29,10 @@ const AWSTestComponent = props => {
               type="text"
               name="createRole_roleName"
             />
-            <br />
+            {props.validator.message('Role name', props.createRole_roleName, 'required')}
+
+            <h5>Role name can contain alphanumeric and '+=,.@-_' characters. Maximum 64 characters.</h5>
+            {/* <br />
             <h4>Role description:</h4>
             <input
               id="createRole_description"
@@ -40,7 +41,7 @@ const AWSTestComponent = props => {
               type="text"
               name="createRole_description"
             />
-            <br />
+            <br /> */}
           </form>
           <br />
           <button className="buttons" onClick={props.handleCreateRole}>
@@ -60,6 +61,9 @@ const AWSTestComponent = props => {
               type="text"
               name="createTechStack_stackName"
             />
+            {props.validator.message('Stack name', props.createTechStack_stackName, 'required')}
+
+            <h5>Stack name can contain only alphanumeric characters and dashes '-'. Maximum 128 characters.</h5>
             <br />
           </form>
           <br />
@@ -81,6 +85,8 @@ const AWSTestComponent = props => {
               type="text"
               name="createCluster_clusterName"
             />
+            {props.validator.message('Cluster name', props.createCluster_clusterName, 'required')}
+            <h5>Cluster name can contain only alphanumeric characters, dashes '-' and underscores '_'. Maximum 100 characters.</h5>            
             <br />
           </form>
           <br />
@@ -90,7 +96,7 @@ const AWSTestComponent = props => {
         </div>
 
         <br></br>
-        <button onClick={props.handleConfigAndMakeNodes}>
+        <button onClick={props.handleConfigAndMakeNodes} className='buttons'>
           Do all the things AND Configure Kubectl AND Make Worker Nodes
         </button>
       </div>
@@ -99,4 +105,4 @@ const AWSTestComponent = props => {
   );
 };
 
-export default AWSTestComponent;
+export default AWSComponent;

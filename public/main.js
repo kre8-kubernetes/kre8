@@ -89,10 +89,11 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
   try {
 
     const iamAuthenticatorExists = fs.existsSync(process.env['HOME'] + '/bin/aws-iam-authenticator');
+
     if (!iamAuthenticatorExists) {
-      await onDownload.installIAMAuthenticator();
-      await onDownload.enableIAMAuthenticator();
-      await onDownload.copyToBinFolder();
+      onDownload.installIAMAuthenticator();
+      onDownload.enableIAMAuthenticator();
+      onDownload.copyToBinFolder();
     }
     await onDownload.appendToBashProfile();
 
@@ -100,7 +101,8 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
     console.log(err);
   }
 
-  win.webContents.send(events.HANDLE_NEW_ROLE, 'New Role Name Here');
+  //TODO: should we delete this, since not sending any info to frontend
+  //win.webContents.send(events.HANDLE_NEW_ROLE, 'New Role Name Here');
 })
 
 
@@ -142,7 +144,7 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     const iamRolePolicyDoc = iamRolePolicyDocument;
 
     //create 
-    iamRoleCreated = await awsEventCallbacks.createIAMRole(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
+      iamRoleCreated = await awsEventCallbacks.createIAMRole(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
   } catch (err) {
     console.log('Error from CREATE_IAM_ROLE in main.js:', err);
 }

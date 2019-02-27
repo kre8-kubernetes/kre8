@@ -79,6 +79,8 @@ onDownload.appendToBashProfile = async () => {
     const textToInsert = `\nexport PATH=$HOME/bin:$PATH`;
     const bashProfileExists = fs.existsSync(process.env['HOME'] +'/.bash_profile');
     console.log('bashProfileExists:', bashProfileExists)
+
+
     if (bashProfileExists) {
 
       console.log("profile exists");
@@ -91,11 +93,13 @@ onDownload.appendToBashProfile = async () => {
 
       if (!bashIncludesText) {
         console.log("did not include text, adding it to profile");
-        await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToInsert) 
+        await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToInsert)
+        process.env['PATH'] = process.env['HOME'] + '/bin:' + process.env['PATH'];
       } else {
         console.log ("profile already included the text")
       }
     } else {
+
       console.log('profile didnt exist', textToInsert)
       await fsp.writeFile(process.env['HOME'] +'/.bash_profile', textToInsert)
     }

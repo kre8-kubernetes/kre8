@@ -54,8 +54,8 @@ kubernetesTemplates.createServiceYamlTemplate = (data) => {
       ports: [
         {
           protocol: "TCP",
-          port: `${data.port}`,
-          targetPort: `${data.targetPort}`
+          port: Number(`${data.port}`),
+          targetPort: Number(`${data.targetPort}`)
         }
       ]
     }
@@ -78,7 +78,7 @@ kubernetesTemplates.createDeploymentYamlTemplate = (data) => {
       }
     },
     spec: {
-      replicas: `${data.replicas}`,
+      replicas: Number(`${data.replicas}`),
       selector: {
         matchLabels: {
           app: `${data.appName}`
@@ -97,7 +97,7 @@ kubernetesTemplates.createDeploymentYamlTemplate = (data) => {
               image: `${data.image}`,
               ports: [
                 {
-                  containerPort: `${data.containerPort}`
+                  containerPort: Number(`${data.containerPort}`)
                 }
               ]
             }

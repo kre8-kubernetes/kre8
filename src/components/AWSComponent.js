@@ -1,6 +1,5 @@
 import React from "react";
-// import clouds from '../assets/clouds.jpeg'
-// import cloudGIF from "../assets/cloudGIF.gif";
+
 
 import "../styles.css";
 
@@ -17,6 +16,7 @@ const AWSComponent = props => {
         <br />
 
         <div className='aws_cluster_form_container'>
+        
         {/* Create IAM Role form and Button */}
         <div className="aws_cluster_form_item">
           <form>
@@ -74,7 +74,6 @@ const AWSComponent = props => {
         
         {/* Create AWS Cluster */}
         <div className="aws_cluster_form_item">
-          {/* <div className="section"> */}
           <form>
             <h3>Create a Cluster</h3>
             <h4>Cluster name:</h4>

@@ -243,6 +243,8 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     console.log('=================  awsEventCallbacks.createCluster ==================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
+    console.log('The process.env:', process.env);
+
     // FIXME: should we move these master file property names to a constants page and require the object in?
     const key = "clusterName";
     

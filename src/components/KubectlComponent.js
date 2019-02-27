@@ -1,44 +1,11 @@
 import React from "react";
 import '../styles.css'
-import clouds from '../assets/clouds.jpeg'
-import star from '../assets/Star.png'
-import cube from '../assets/3d-cube.jpg'
-import sphere from '../assets/Blue_sphere.png'
+
 
 const KubectlComponent = props => {
 
-  const pods = props.pods.map(pod => {
-    return (
-      <div>
-        <img src={sphere} alt='Pod'/>
-      </div>
-    )
-  });
-
-  const deployments = props.deployments.map(deployment => {
-    return (
-      <div>
-        <img src={cube} alt='Deployment'/>
-      </div>
-    )
-  });
-
-  const services = props.services.map(service => {
-    return (
-      <div>
-        <img src={star} alt='Service'/>
-      </div>
-    )
-  });
-
-const something = true;
   return (
     <div className='kubectl_form_container'>   
-      {/* <img src={clouds} alt="Clouds" className="image"/>; */}
-
-      {/* {this.props.dfhsdhf === true && (
-        <h1>hello</h1>
-      )} */}
 
       <br />
       <br />
@@ -128,19 +95,6 @@ const something = true;
         <button onClick={props.handleCreateService} className="buttons">Create a Service</button>
       </div>
 
-      
-        {/* <img src={sphere} alt="pod" className="pod"/>
-        {/* {props.podName}/> */}
-        {/* <img src={cube} alt="deployment" className="deployment"/>; */}
-        {/* {props.deploymentName} */}
-        {/* <img src={star} alt="service" className="service"/>; */}
-
-        {/* {props.serviceName} */}
-    <div>
-      {pods}
-      {deployments}
-      {services}
-    </div>
 
     </div>
   );

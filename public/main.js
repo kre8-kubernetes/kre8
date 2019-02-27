@@ -46,23 +46,22 @@ const iam = new IAM();
 
 //** --------- CREATE WINDOW OBJECT --------
 let win;
-let applicationPath;
 
 //Function to create our application window, that will be invoked with app.on('ready')
 function createWindowAndSetEnvironmentVariables () {
 
   if (isDev) {
-    applicationPath = __dirname;
+    process.env['APPLICATION_PATH'] = __dirname;
     BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH)
-    console.log("applicationPath inside if isDev, createWindowAndSetEnvironmentVariables: ", applicationPath)
+    console.log("process.env['APPLICATION_PATH'] inside if isDev, createWindowAndSetEnvironmentVariables: ", process.env['APPLICATION_PATH'])
 
   } else {
-    applicationPath = process.env['HOME'] + '/Library/Application Support/kre8';
+    process.env['APPLICATION_PATH'] = process.env['HOME'] + '/Library/Application Support/kre8';
   }
 
   // Read from credentials file and store the environment variables
-  if (fs.existsSync(applicationPath + '/sdkAssets/private/awsCredentials.json')) {
-    const readCredentialsFile = fs.readFileSync(applicationPath + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+  if (fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json')) {
+    const readCredentialsFile = fs.readFileSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
     Object.entries(parsedCredentialsFile).forEach((arr) => {
       process.env[arr[0]] = arr[1];
@@ -233,7 +232,7 @@ ipcMain.on(events.CREATE_POD, (event, data) => {
   let stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate);
 
   //WRITE A NEW POD YAML FILE
-  fs.writeFile(applicationPath + `/yamlAssets/private/pods/${data.podName}.json`,
+  fs.writeFile(process.env['APPLICATION_PATH'] + `/yamlAssets/private/pods/${data.podName}.json`,
   stringifiedPodYamlTemplate, (err) => {
       if (err) {
         return console.log(err);
@@ -243,7 +242,7 @@ ipcMain.on(events.CREATE_POD, (event, data) => {
   });
 
   //CREATE POD AND INSERT INTO MINIKUBE
-  const child = spawn('kubectl', ['apply', '-f', applicationPath + `/yamlAssets/private/pods/${data.podName}.json`]);
+  const child = spawn('kubectl', ['apply', '-f', process.env['APPLICATION_PATH'] + `/yamlAssets/private/pods/${data.podName}.json`]);
   
     console.log("podCreator");
     child.stdout.on("data", info => {
@@ -292,7 +291,7 @@ ipcMain.on(events.CREATE_SERVICE, (event, data) => {
   let stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate);
 
   //WRITE A NEW SERVICE YAML FILE
-  fs.writeFile(applicationPath + `/yamlAssets/private/services/${data.serviceName}.json`, stringifiedServiceYamlTemplate, (err) => {
+  fs.writeFile(process.env['APPLICATION_PATH'] + `/yamlAssets/private/services/${data.serviceName}.json`, stringifiedServiceYamlTemplate, (err) => {
       if (err) {
         console.log(err);
       }
@@ -302,7 +301,7 @@ ipcMain.on(events.CREATE_SERVICE, (event, data) => {
 
 
   //CREATE SERVICE AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", ["create", "-f", applicationPath + `/yamlAssets/private/services/${data.serviceName}.json`]);
+  const child = spawn("kubectl", ["create", "-f", process.env['APPLICATION_PATH'] + `/yamlAssets/private/services/${data.serviceName}.json`]);
     console.log("serviceCreator");
     child.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
@@ -373,7 +372,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
 
   //WRITE A NEW DEPLOYENT YAML FILE
   fs.writeFile(
-    applicationPath + `/yamlAssets/private/deployments/${data.deploymentName}.json`,
+    process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`,
     stringifiedDeploymentYamlTemplate,
     function(err) {
       if (err) {
@@ -385,7 +384,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
 
 
   //CREATE DEPLOYMENT AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", ["create", "-f", applicationPath + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
+  const child = spawn("kubectl", ["create", "-f", process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
     console.log("deploymentCreator");
     child.stdout.on("data", info => {
       console.log(`stdout: ${info}`);

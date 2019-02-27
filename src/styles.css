@@ -206,14 +206,6 @@ body {
   background-color: white; */
 } 
 
-h5 {
-  padding-top: 1px;
-  margin-top: 1px;
-  color: grey;
-  font-weight: lighter;
-  font-size: 9px;
-}
-
 /* KubectlContainer Styling */
 
 
@@ -347,4 +339,18 @@ h5 {
 h4 {
   padding-bottom: 5px;
   margin-bottom: 5px;
+}
+
+h5 {
+  padding-top: 1px;
+  margin-top: 1px;
+  color: grey;
+  font-weight: lighter;
+  font-size: 9px;
+}
+
+.dropDown {
+  
+
+
 }

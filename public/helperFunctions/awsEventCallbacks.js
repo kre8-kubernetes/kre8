@@ -26,10 +26,10 @@ const awsEventCallbacks = {};
 awsEventCallbacks.configureAWSCredentials = async (data) => {
 
   // Check if AWS credentials files exists
-  if (fs.existsSync(applicationPath + '/sdkAssets/private/awsCredentials.json')) {
+  if (fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json')) {
     
     //if so, change the file to reflect user input
-    const readCredentialsFile = await fsp.readFile(applicationPath + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+    const readCredentialsFile = await fsp.readFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
     console.log('this is the parsed obj', parsedCredentialsFile);
 
@@ -44,7 +44,7 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
 
     const stringedCredentialFiles = JSON.stringify(parsedCredentialsFile, null, 2);
 
-    await fsp.writeFile(applicationPath + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
 
   } else {
     //If the file does not exist, set the environment variables and write the file
@@ -60,7 +60,7 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
 
     const stringedCredentialFiles = JSON.stringify(credentialsObjToWrite, null, 2);
 
-    await fsp.writeFile(applicationPath + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
 
   }
 }

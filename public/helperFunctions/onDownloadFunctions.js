@@ -18,7 +18,7 @@ onDownload.installIAMAuthenticator = () => {
 
 }
 
-//** --------- APPLY PERMISSIONS TO THE BINARY FILE ------------------------ **//
+//** --------- APPLY PERMISSIONS TO BINARY FILE TO MAKE EXECUTABLE -------- **//
 onDownload.enableIAMAuthenticator = () => {
   console.log('now enabling IAM authenticator');
 
@@ -31,7 +31,7 @@ onDownload.enableIAMAuthenticator = () => {
 }
 
 //** ---- COPY AWS-IAM-AUTHENTICATOR TO BIN FOLDER IN HOME DIRECTORY ------ **//
-onDownload.copyToBinFolder = () => {
+onDownload.copyIAMAuthenticatorToBinFolder = () => {
   console.log('now copying to bin folder');
 
   //Check if user has bin folder in Home directory, if not, create one
@@ -51,12 +51,12 @@ onDownload.copyToBinFolder = () => {
  
 }
 
-//** ---- APPEND PATH TO BASH_PROFILE FILE -------------------------------- **//
+//** ---- SET PATH ENVIRONTMENT VARIABLE & APPEND TO BASH_PROFILE FILE --- **//
 //Function checks if the user has a .bash_profile file in their home directory, 
 //if so, it checks to see if it explicitly sets the PATH variable to point to the bin folder  
 //if not, it appends this to the profile
 //if no .bash_profile exists, it creates one with this text included
-onDownload.appendToBashProfile = async () => {
+onDownload.setPATHAndAppendToBashProfile = async () => {
   console.log('now appending path to bash profile');
 
   try {
@@ -87,7 +87,7 @@ onDownload.appendToBashProfile = async () => {
       console.log('profile didnt exist', textToInsert)
       await fsp.writeFile(process.env['HOME'] +'/.bash_profile', textToInsert)
     }
-    
+
   } catch (err) {
     console.log(err);
   }

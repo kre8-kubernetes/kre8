@@ -1,9 +1,5 @@
 import React from "react";
 import '../styles.css'
-import clouds from '../assets/clouds.jpeg'
-import star from '../assets/Star.png'
-import cube from '../assets/3d-cube.jpg'
-import sphere from '../assets/Blue_sphere.png'
 
 const KubectlComponent = props => {
 

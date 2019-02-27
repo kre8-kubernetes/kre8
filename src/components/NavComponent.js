@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// import icon from '../assets/pulsating-heptagon.gif';
 
 
 const NavComponent = () => {

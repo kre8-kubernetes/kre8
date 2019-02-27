@@ -1,6 +1,5 @@
 import React from "react";
 import '../styles.css'
-import cloudGIF from '../assets/cloudGIF.gif'
 
 
 const HomeComponent = props => {

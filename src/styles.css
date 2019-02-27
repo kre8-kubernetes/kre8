@@ -101,16 +101,15 @@ body {
   width: 300px;
   outline: none;
 }
-/* 
-.home_page_form_container:hover {
-  transition: 0.3s;
-  background-color: lightgray;
-} */
 
-/* .section:hover {
-  transition: 0.3s;
-  background-color:rgb(238, 235, 235);
-} */
+.info_button{
+  background-image: url("./assets/questionIcon.png");
+  background-size: cover;
+  background-position: center;
+
+}
+
+
 
 /*
 <-----------AWS PAGE---------->

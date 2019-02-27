@@ -19,7 +19,6 @@ const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConf
 const onDownload = require(__dirname + '/helperFunctions/onDownloadFunctions');
 
 //** --------- IMPORT DOCUMENTS ---------------- 
-console.log("applicationPath outside functions: ", applicationPath)
 const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
 

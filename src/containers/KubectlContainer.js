@@ -154,9 +154,9 @@ class KubectlContainer extends Component {
     if (this.testFormValidation()) {
       console.log("All form data passed validation");
       ipcRenderer.send(events.CREATE_POD, obj);
+    } else {
+      console.log("Invalid or missing data entry");
     }
-
-    console.log("Invalid or missing data entry");
   }
 
   //CREATE DEPLOYMENT HANDLER
@@ -174,8 +174,9 @@ class KubectlContainer extends Component {
     if (this.testFormValidation1()) {
       console.log("All form data passed validation");
       ipcRenderer.send(events.CREATE_DEPLOYMENT, obj);
+    } else {
+      console.log("Invalid or missing data entry");
     }
-    console.log("Invalid or missing data entry");
   }
 
   //CREATE SERVICE HANDLER
@@ -267,13 +268,13 @@ class KubectlContainer extends Component {
       <div className='kubectl_container'>
         <KubectlComponent
           handleChange={this.handleChange}
-          handleCreatePod={this.handleCreatePod}
-          handleCreateDeployment={this.handleCreateDeployment}
-          handleCreateService={this.handleCreateService}
           validator={this.validator}
           validator1={this.validator1}
           validator2={this.validator2}
 
+          handleCreatePod={this.handleCreatePod}
+          handleCreateDeployment={this.handleCreateDeployment}
+          handleCreateService={this.handleCreateService}
 
           pod_podName={this.state.pod_podName}
           pod_containerName={this.state.pod_containerName}

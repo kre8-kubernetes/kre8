@@ -69,6 +69,7 @@ const something = true;
               <input id='deployment_deploymentName' value={props.deployment_deploymentName} onChange={props.handleChange} type="text" name="Deployment name" />
               {props.validator1.message('Deployment name', props.deployment_deploymentName, 'required')}
               <br />
+              
             <h4>App name:</h4>
               <input id='deployment_appName' value={props.deployment_appName} onChange={props.handleChange} type="text" name="App name" />
               {props.validator1.message('App name', props.deployment_appName, 'required')}

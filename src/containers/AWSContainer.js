@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { ipcRenderer } from 'electron';
 import { Switch, Route, withRouter } from 'react-router-dom';
+import SimpleReactValidator from 'simple-react-validator';
+
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
@@ -29,6 +31,11 @@ class AwsContainer extends Component {
       createTechStack_stackName: '',
       createCluster_clusterName: '',
     }
+
+    this.validator = new SimpleReactValidator({
+      element: (message, className) => <div className="errorClass">{message}</div>
+    });
+
     this.handleChange = this.handleChange.bind(this);
 
     this.handleCreateRole = this.handleCreateRole.bind(this);
@@ -45,12 +52,13 @@ class AwsContainer extends Component {
 
     this.handleConfigAndMakeNodes = this.handleConfigAndMakeNodes.bind(this);
     this.handleNewNodes = this.handleNewNodes.bind(this);
+
+    this.testFormValidation = this.testFormValidation.bind(this);
   }
 
-  handleChange(e) {
-    e.preventDefault();
-    this.setState({ [e.target.name]: e.target.value });
-  }
+
+
+  //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
 
   // On component mount we will create listeners, so that the main thread can communicate when needed
   componentDidMount() {
@@ -68,6 +76,23 @@ class AwsContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_NEW_TECH_STACK, this.handleNewTechStack);
     ipcRenderer.removeListener(events.HANDLE_NEW_CLUSTER, this.handleNewCluster);
     ipcRenderer.removeListener(events.HANDLE_NEW_NODES, this.handleNewNodes);
+  }
+
+  //**--------------EVENT HANDLERS-----------------**//
+  handleChange(e) {
+    e.preventDefault();
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  testFormValidation() {
+    if (this.validator.allValid()) {
+      alert('Your pod is being created!');
+      return true;
+    } else {
+      this.validator.showMessages();
+      this.forceUpdate();
+      return false;
+    }
   }
 
   // Handlers to trigger events that will take place in the main thread
@@ -91,8 +116,14 @@ class AwsContainer extends Component {
       roleName: this.state.createRole_roleName,
       description: this.state.createRole_description,
     }
-    this.setState({ ...this.state, createRole_roleName: '', createRole_description: ''})
-    ipcRenderer.send(events.CREATE_IAM_ROLE, awsIAMRoleData);
+
+    if (this.testFormValidation()) {
+      console.log("All form data passed validation");
+      this.setState({ ...this.state, createRole_roleName: '', createRole_description: ''})
+      ipcRenderer.send(events.CREATE_IAM_ROLE, awsIAMRoleData);
+    } else {
+      console.log("Invalid or missing data entry");
+    }
   }
 
   handleNewRole(event, data) {
@@ -109,8 +140,14 @@ class AwsContainer extends Component {
     const awsTechStackData = {
       stackName: this.state.createTechStack_stackName,
     }
-    this.setState({ ...this.state, createTechStack_stackName: ''});
-    ipcRenderer.send(events.CREATE_TECH_STACK, awsTechStackData);
+
+    if (this.testFormValidation()) {
+      console.log("All form data passed validation");
+      this.setState({ ...this.state, createTechStack_stackName: ''});
+      ipcRenderer.send(events.CREATE_TECH_STACK, awsTechStackData);
+    } else {
+      console.log("Invalid or missing data entry");
+    }
   }
   
   handleNewTechStack(event, data) {
@@ -122,12 +159,19 @@ class AwsContainer extends Component {
   handleCreateCluster(e) {
     e.preventDefault();
     console.log('handleCreateCluster Clicked!!!');
+
     //TODO: Dynamically intake data from form
     const awsClusterData = {
       clusterName: this.state.createCluster_clusterName,
     }
-    this.setState({ ...this.state, createCluster_clusterName: ''});
-    ipcRenderer.send(events.CREATE_CLUSTER, awsClusterData);
+
+    if (this.testFormValidation()) {
+      console.log("All form data passed validation");
+      this.setState({ ...this.state, createCluster_clusterName: ''});
+      ipcRenderer.send(events.CREATE_CLUSTER, awsClusterData);
+    } else {
+      console.log("Invalid or missing data entry");
+    }  
   }
   
   handleNewCluster(event, data) {
@@ -135,6 +179,7 @@ class AwsContainer extends Component {
     //TODO: this.props.SOMETHING(data);
   }
   
+  //TODO: Remove this portion, no longer relevant
   //** --------- Config Kubectl and Create Worker Nodes -------------- **//
   handleConfigAndMakeNodes(e) {
     e.preventDefault();
@@ -161,6 +206,7 @@ class AwsContainer extends Component {
       <div className="aws_cluster_page_container">
         <AWSComponent
           handleChange={this.handleChange}
+          validator={this.validator}         
 
           createRole_roleName={createRole_roleName}
           createRole_description={createRole_description}

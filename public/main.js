@@ -18,22 +18,19 @@ const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemp
 const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
 const onDownload = require(__dirname + '/helperFunctions/onDownloadFunctions');
 
+//** --------- IMPORT DOCUMENTS ---------------- 
+console.log("applicationPath outside functions: ", applicationPath)
+const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
+const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
+
 //** --------- IMPORT AWS SDK ELEMENTS --------- 
 const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 const STS = require('aws-sdk/clients/sts');
-//const AWSConfig = require('aws-sdk/config'); 
-
-//** --------- IMPORT DOCUMENTS ---------------- 
-const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
-const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
 
 //** --------- .ENV Variables -------------- 
-//TODO: Test region
-//const REGION = process.env.REGION;
-
-let REGION = process.env.REGION;
+//let REGION = process.env.REGION;
 const PORT = process.env.PORT;
 const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 
@@ -50,13 +47,23 @@ const iam = new IAM();
 
 //** --------- CREATE WINDOW OBJECT --------
 let win;
+let applicationPath;
 
 //Function to create our application window, that will be invoked with app.on('ready')
 function createWindowAndSetEnvironmentVariables () {
 
+  if (isDev) {
+    applicationPath = __dirname;
+    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH)
+    console.log("applicationPath inside if isDev, createWindowAndSetEnvironmentVariables: ", applicationPath)
+
+  } else {
+    applicationPath = process.env['HOME'] + '/Library/Application Support/kre8';
+  }
+
   // Read from credentials file and store the environment variables
-  if (fs.existsSync(__dirname + '/sdkAssets/private/awsCredentials.json')) {
-    const readCredentialsFile = fs.readFileSync(__dirname + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+  if (fs.existsSync(applicationPath + '/sdkAssets/private/awsCredentials.json')) {
+    const readCredentialsFile = fs.readFileSync(applicationPath + '/sdkAssets/private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
     Object.entries(parsedCredentialsFile).forEach((arr) => {
       process.env[arr[0]] = arr[1];
@@ -64,15 +71,12 @@ function createWindowAndSetEnvironmentVariables () {
   }
 
   win = new BrowserWindow({width: 1400, height: 900});
-  
-  if (isDev) {
-  // adding react dev tools for developement
-    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH)
-  }
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
   win.on('closed', () => win = null)
 }
+
+
 
 //** -------------------------------------------------------------- **//
 //** ----------------------- AWS SDK EVENTS ----------------------- **//
@@ -84,18 +88,14 @@ function createWindowAndSetEnvironmentVariables () {
 //TODO: Braden convert to on startup function perform once
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
   
-  //TODO: if statement, check for file first. 
   try {
 
     const iamAuthenticatorExists = fs.existsSync(process.env['HOME'] + '/bin/aws-iam-authenticator');
-
     if (!iamAuthenticatorExists) {
       await onDownload.installIAMAuthenticator();
       await onDownload.enableIAMAuthenticator();
       await onDownload.copyToBinFolder();
     }
-
-    
     await onDownload.appendToBashProfile();
 
   } catch (err) {
@@ -111,38 +111,12 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
 
   console.log('data', data);
 
-
   try {
-    // when a user enters their info
 
-    // we should first check if the credentials files exists
-    if (fs.existsSync(__dirname + '/sdkAssets/private/awsCredentials.json')) {
-      // if it does then we should change the file to reflect their input
-      const readCredentialsFile = await fsp.readFile(__dirname + '/sdkAssets/private/awsCredentials.json', 'utf-8');
-      const parsedCredentialsFile = JSON.parse(readCredentialsFile);
-      console.log('this is the parsed obj', parsedCredentialsFile);
-
-      parsedCredentialsFile.AWS_ACCESS_KEY_ID = data.awsAccessKeyId;
-      parsedCredentialsFile.AWS_SECRET_ACCESS_KEY = data.awsSecretAccessKey;
-      parsedCredentialsFile.REGION = data.awsRegion;
-      // we should then explicitly set the environment variables to match
-      process.env['AWS_ACCESS_KEY_ID'] = data.awsAccessKeyId;
-      process.env['AWS_SECRET_ACCESS_KEY'] = data.awsSecretAccessKey;
-      process.env['REGION'] = data.awsRegion;
-      const stringedCredentialFiles = JSON.stringify(parsedCredentialsFile, null, 2);
-      await fsp.writeFile(__dirname + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
-    } else {
-      // if the file does not exist then we should just write the file
-      const credentialsObjToWrite = {
-        AWS_ACCESS_KEY_ID: data.awsAccessKeyId,
-        AWS_SECRET_ACCESS_KEY: data.awsSecretAccessKey,
-        REGION: data.awsRegion
-      };
-      const stringedCredentialFiles = JSON.stringify(credentialsObjToWrite, null, 2);
-      await fsp.writeFile(__dirname + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
-    }
+    awsEventCallbacks.configureAWSCredentials(data);
     const credentialStatus = await sts.getCallerIdentity().promise();
     console.log("credentialStatus: ", credentialStatus);
+
     win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
     
   } catch (err) {
@@ -260,7 +234,7 @@ ipcMain.on(events.CREATE_POD, (event, data) => {
   let stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate);
 
   //WRITE A NEW POD YAML FILE
-  fs.writeFile(__dirname + `/yamlAssets/private/pods/${data.podName}.json`,
+  fs.writeFile(applicationPath + `/yamlAssets/private/pods/${data.podName}.json`,
   stringifiedPodYamlTemplate, (err) => {
       if (err) {
         return console.log(err);
@@ -270,7 +244,7 @@ ipcMain.on(events.CREATE_POD, (event, data) => {
   });
 
   //CREATE POD AND INSERT INTO MINIKUBE
-  const child = spawn('kubectl', ['apply', '-f', __dirname + `/yamlAssets/private/pods/${data.podName}.json`]);
+  const child = spawn('kubectl', ['apply', '-f', applicationPath + `/yamlAssets/private/pods/${data.podName}.json`]);
   
     console.log("podCreator");
     child.stdout.on("data", info => {
@@ -319,7 +293,7 @@ ipcMain.on(events.CREATE_SERVICE, (event, data) => {
   let stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate);
 
   //WRITE A NEW SERVICE YAML FILE
-  fs.writeFile(__dirname + `/yamlAssets/private/services/${data.serviceName}.json`, stringifiedServiceYamlTemplate, (err) => {
+  fs.writeFile(applicationPath + `/yamlAssets/private/services/${data.serviceName}.json`, stringifiedServiceYamlTemplate, (err) => {
       if (err) {
         console.log(err);
       }
@@ -329,7 +303,7 @@ ipcMain.on(events.CREATE_SERVICE, (event, data) => {
 
 
   //CREATE SERVICE AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", ["create", "-f", __dirname + `/yamlAssets/private/services/${data.serviceName}.json`]);
+  const child = spawn("kubectl", ["create", "-f", applicationPath + `/yamlAssets/private/services/${data.serviceName}.json`]);
     console.log("serviceCreator");
     child.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
@@ -400,7 +374,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
 
   //WRITE A NEW DEPLOYENT YAML FILE
   fs.writeFile(
-    __dirname + `/yamlAssets/private/deployments/${data.deploymentName}.json`,
+    applicationPath + `/yamlAssets/private/deployments/${data.deploymentName}.json`,
     stringifiedDeploymentYamlTemplate,
     function(err) {
       if (err) {
@@ -412,7 +386,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
 
 
   //CREATE DEPLOYMENT AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", ["create", "-f", __dirname + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
+  const child = spawn("kubectl", ["create", "-f", applicationPath + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
     console.log("deploymentCreator");
     child.stdout.on("data", info => {
       console.log(`stdout: ${info}`);

@@ -75,13 +75,27 @@ onDownload.appendToBashProfile = async () => {
   console.log('now appending to bash profile');
 
   try {
-    console.log('trying to append to bash profile')
+
     const textToInsert = `\nexport PATH=$HOME/bin:$PATH`;
     const bashProfileExists = fs.existsSync(process.env['HOME'] +'/.bash_profile');
     console.log('bashProfileExists:', bashProfileExists)
-    if (bashProfileExists){
-      await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToInsert) 
-    }else{
+    if (bashProfileExists) {
+
+      console.log("profile exists");
+
+      let bashProfileContents = await fsp.readFile(process.env['HOME'] + '/.bash_profile', 'utf-8')
+    
+      const textToCheckFor = 'export PATH=$HOME/bin:$PATH';
+
+      const bashIncludesText = bashProfileContents.includes(textToCheckFor);
+
+      if (!bashIncludesText) {
+        console.log("did not include text, adding it to profile");
+        await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToInsert) 
+      } else {
+        console.log ("profile already included the text")
+      }
+    } else {
       console.log('profile didnt exist', textToInsert)
       await fsp.writeFile(process.env['HOME'] +'/.bash_profile', textToInsert)
     }

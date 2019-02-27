@@ -28,6 +28,7 @@ class HomeContainer extends Component {
     this.setAWSCredentials = this.setAWSCredentials.bind(this);
     this.handleAWSCredentials = this.handleAWSCredentials.bind(this);
     this.testFormValidation = this.testFormValidation.bind(this);
+    this.handleFormChange = this.handleFormChange.bind(this);
   }
 
   //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
@@ -45,7 +46,14 @@ class HomeContainer extends Component {
   //HANDLE CHANGE METHOD FOR FORMS
   handleChange(e) {
     e.preventDefault();
+    console.log("e.target: ", e.target);
     this.setState({ [e.target.name]: e.target.value });
+  }
+
+  handleFormChange(e) {
+    console.log(e.target.value);
+    console.log("state: ", this.state);
+    this.setState({ "awsRegion": e.target.value });
   }
 
   testFormValidation() {
@@ -87,16 +95,19 @@ class HomeContainer extends Component {
     }
   }
 
-  render() {
+  render() { 
+    console.log(this.state.awsRegion)
     return (
       <div className="home_page_container">
         <HomeComponent 
           handleChange={this.handleChange}
+          handleFormChange={this.handleFormChange}
           validator={this.validator}
           awsAccessKeyId={this.state.awsAccessKeyId}
           awsSecretAccessKey={this.state.awsSecretAccessKey}
           awsRegion={this.state.awsRegion}
           setAWSCredentials={this.setAWSCredentials}
+
         />
       </div>
     );

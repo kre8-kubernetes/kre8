@@ -1,35 +1,35 @@
 import React from "react";
 import '../styles.css'
-import clouds from '../assets/clouds.jpeg'
-import star from '../assets/Star.png'
-import cube from '../assets/3d-cube.jpg'
-import sphere from '../assets/Blue_sphere.png'
+// import clouds from '../assets/clouds.jpeg'
+// import star from '../assets/Star.png'
+// import cube from '../assets/3d-cube.jpg'
+// import sphere from '../assets/Blue_sphere.png'
 
 const KubectlTestComponent = props => {
 
-  const pods = props.pods.map(pod => {
-    return (
-      <div>
-        <img src={sphere} alt='Pod'/>
-      </div>
-    )
-  });
+  // const pods = props.pods.map(pod => {
+  //   return (
+  //     <div>
+  //       <img src={sphere} alt='Pod'/>
+  //     </div>
+  //   )
+  // });
 
-  const deployments = props.deployments.map(deployment => {
-    return (
-      <div>
-        <img src={cube} alt='Deployment'/>
-      </div>
-    )
-  });
+  // const deployments = props.deployments.map(deployment => {
+  //   return (
+  //     <div>
+  //       <img src={cube} alt='Deployment'/>
+  //     </div>
+  //   )
+  // });
 
-  const services = props.services.map(service => {
-    return (
-      <div>
-        <img src={star} alt='Service'/>
-      </div>
-    )
-  });
+  // const services = props.services.map(service => {
+  //   return (
+  //     <div>
+  //       <img src={star} alt='Service'/>
+  //     </div>
+  //   )
+  // });
 
 
   return (

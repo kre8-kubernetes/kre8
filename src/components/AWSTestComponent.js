@@ -1,6 +1,6 @@
 import React from "react";
 // import clouds from '../assets/clouds.jpeg'
-import cloudGIF from "../assets/cloudGIF.gif";
+// import cloudGIF from "../assets/cloudGIF.gif";
 
 import "../styles.css";
 

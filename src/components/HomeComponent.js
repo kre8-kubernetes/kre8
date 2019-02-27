@@ -1,6 +1,6 @@
 import React from "react";
 import '../styles.css'
-import cloudGIF from '../assets/cloudGIF.gif'
+// import cloudGIF from '../assets/cloudGIF.gif'
 
 
 const HomeComponent = props => {
@@ -14,6 +14,7 @@ const HomeComponent = props => {
           <h2>Create and Deploy your Kubernetes Cluster to the Cloud</h2>
           <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. 
             Kre8 is here to simplify everything for you. Let's get started!</p>
+            <button id="" onClick={this.props.displayInfoHandler(id)}></button>
             <form>
                 <h4>AWS Access Key ID:</h4>
                 <input id='awsAccessKeyId' onChange={props.handleChange} value={props.awsAccessKeyId} type="text" name="awsAccessKeyId" />

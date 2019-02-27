@@ -24,6 +24,7 @@ body {
   justify-content: center;
   align-items: center;
   background-color: black;
+  /* color: white; */
 }
 
 .nav_component_container {
@@ -33,6 +34,11 @@ body {
   justify-content: left;
   /* align-items: center; */
   padding: 10px;
+}
+
+.errorClass {
+  color: red;
+  font-size: 10px;
 }
 
 .nav_item {
@@ -199,6 +205,7 @@ body {
   background-color: white; */
 } 
 
+/* KubectlContainer Styling */
 
 
 /*
@@ -331,4 +338,18 @@ body {
 h4 {
   padding-bottom: 5px;
   margin-bottom: 5px;
+}
+
+h5 {
+  padding-top: 1px;
+  margin-top: 1px;
+  color: grey;
+  font-weight: lighter;
+  font-size: 9px;
+}
+
+.dropDown {
+  
+
+
 }

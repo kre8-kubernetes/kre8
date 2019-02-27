@@ -4,7 +4,7 @@ const isDev = require('electron-is-dev');
 require('dotenv').config();
 
 const fs = require('fs');
-const { spawn } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 const fsp = require('fs').promises;
 
 const YAML = require('yamljs');
@@ -242,10 +242,44 @@ ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
 //   win.webContents.send(events.HANDLE_NEW_POD, 'New Pod Here');
 // })
 
-ipcMain.on(events.GET_MASTER_NODE, (event, data) => {
-  // run 'kubectl get svc -o=json' to get the services, one element in the item array will contain
-  // the apiserver. result.items[x].metadata.labels.component = "apiserver"
-  // this is our master node so send this back
+//** ---------- Get the Master Node ------------------- **//
+// run 'kubectl get svc -o=json' to get the services, one element in the item array will contain
+// the apiserver. result.items[x].metadata.labels.component = "apiserver"
+// this is our master node so send this back
+ipcMain.on(events.GET_MASTER_NODE, async (event, data) => {
+  try {
+    // run kubctl
+    const apiServiceData = spawnSync('kubectl', ['get', 'svc', '-o=json']);
+    // string the data and log to the console;
+    const stdout = apiServiceData.stdout.toString();
+    const stdoutParsed = JSON.parse(stdout);
+    const stderr = apiServiceData.stderr.toString();
+    const clusterApiData = stdoutParsed.items.find((item) => {
+      return item.metadata.labels.component === 'apiserver';
+    });
+    win.webContents.send(events.HANDLE_MASTER_NODE, clusterApiData);
+  } catch (err) {
+    console.log('error from the GET_MASTER_NODE event listener call back in main.js', err)
+    win.webContents.send(events.HANDLE_MASTER_NODE, err);
+  }
+})
+
+//** -------------- Get the Worker Nodes -------------------- **//
+
+ipcMain.on(events.GET_WORKER_NODES, async (event, data) => {
+  try {
+    const apiNodeData = spawnSync('kubectl', ['get', 'nodes', '-o=json'])
+    const stdout = apiNodeData.stdout.toString();
+    const stdoutParsed = JSON.parse(stdout);
+    const stderr = apiNodeData.stderr.toString();
+    console.log('stdout: ', stdoutParsed);
+    console.log('stdout type: ', typeof stdoutParsed);
+    console.log('stderr', stderr);
+    win.webContents.send(events.HANDLE_WORKER_NODES, stdoutParsed);
+  } catch (err) {
+    console.log('error from the GET_WORKER_NODES event listener call back in main.js', err);
+    win.webContents.send(events.HANDLE_WORKER_NODES, err);
+  }
 })
 
 //**----------- CREATE A POD -------------------------------- **//

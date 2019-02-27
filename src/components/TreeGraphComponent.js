@@ -52,7 +52,6 @@ const TreeGraphComponent = (props) => {
                       strokeWidth="2"
                       fill="none"
                       radius={d => d.y}
-
                     />
                   );
                 })}
@@ -64,8 +63,8 @@ const TreeGraphComponent = (props) => {
                   top = radialY;
                   left = radialX;
   
-                  if (node.data.type === 'master') return <MasterNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i}/>
-                  if (node.data.type === 'node') return <WorkerNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
+                  if (node.data.type === 'apiserver') return <MasterNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i}/>
+                  if (node.data.type === 'Node') return <WorkerNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
                   if (node.data.type === 'pod') return <PodComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
                   if (node.data.type === 'container') return <ContainerComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
                   // if (node.data.type === 'master-component') return <ContainerComponent node={node} top={top} left={left} key={i} />

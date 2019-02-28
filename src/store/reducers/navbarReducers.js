@@ -17,6 +17,8 @@ export default function kubectlReducers(state = initialState, action) {
       return {...state, showCreateButton: false};
     case types.TOGGLE_CREATE_MENU:
       return {...state, showCreateMenu: !state.showCreateMenu}
+    case types.TOGGLE_CREATE_MENU_ITEM:
+      return {...state, showCreateMenuItem: !state.showCreateMenuItem}
     case types.MENU_ITEM_TO_SHOW:
       return {...state, menuItemToShow: action.payload}
     default:

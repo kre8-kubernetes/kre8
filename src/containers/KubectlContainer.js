@@ -7,6 +7,7 @@ import * as events from '../../eventTypes';
 
 import KubectlComponent from '../components/KubectlComponent';
 import TreeGraphContainer from './TreeGraphContainer.js';
+import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
 import SimpleReactValidator from 'simple-react-validator';
 
 const mapStateToProps = store => ({
@@ -14,8 +15,8 @@ const mapStateToProps = store => ({
   pods: store.kubectl.pods,
   deployments: store.kubectl.deployments,
   services: store.kubectl.services,
-  // deploymentName: store.kubectl.deploymentName,
-  // serviceName: store.kubectl.serviceName
+  showCreateMenuItem: store.navbar.showCreateMenuItem,
+  menuItemToShow: store.navbar.menuItemToShow,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -27,8 +28,10 @@ const mapDispatchToProps = dispatch => ({
   },
   setNewService: (data) => {
     dispatch(actions.setService(data))
+  },
+  toggleCreateMenuItem: () => {
+    dispatch(actions.toggleCreateMenuItem())
   }
-
 });
 
 class KubectlContainer extends Component {
@@ -266,7 +269,7 @@ class KubectlContainer extends Component {
   render() {
     return (
       <div className='kubectl_container'>
-        <KubectlComponent
+        {/* <KubectlComponent
           handleChange={this.handleChange}
           validator={this.validator}
           validator1={this.validator1}
@@ -301,7 +304,25 @@ class KubectlContainer extends Component {
           pods={this.props.pods}
           deployments={this.props.deployments}
           services={this.props.services}
-        />
+        /> */}
+        {this.props.showCreateMenuItem === true && (
+          <CreateMenuItemComponent
+            menuItemToShow={this.props.menuItemToShow}
+            toggleCreateMenuItem={this.props.toggleCreateMenuItem}
+            handleCreateDeployment={this.handleCreateDeployment}
+            handleChange={this.handleChange}
+
+            validator1={this.validator1}
+            
+            deployments={this.props.deployments}
+            deployment_deploymentName={this.state.deployment_deploymentName}
+            deployment_appName={this.state.deployment_appName}
+            deployment_containerName={this.state.deployment_containerName}
+            deployment_image={this.state.deployment_image}
+            deployment_containerPort={this.state.deployment_containerPort}
+            deployment_replicas={this.state.deployment_replicas}
+          />
+        )}
         <TreeGraphContainer 
 
         />

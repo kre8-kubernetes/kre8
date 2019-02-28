@@ -39,19 +39,19 @@ const TreeGraphComponent = (props) => {
         <rect width={width} height={height} rx={14} fill={'#232F3E'} />
         <Tree root={data} size={[innerWidth, innerHeight]}>
           {tree => {
-            console.log('tree', tree)
+            // console.log('tree', tree)
             return (
               <Group top={yMax / 2} left={xMax / 2}>
                 {tree.links().map((link, i) => {
-                  console.log('link', link);
+                  // console.log('link', link);
                   return (
-                    <LinkRadial
+                    <LinkRadialLine
                       key={`link-${i}`}
                       data={link}
                       stroke={'#3B6F89'}
                       strokeWidth="2"
                       fill="none"
-                      radius={d => d.y}
+                      // radius={d => d.y}
 
                     />
                   );

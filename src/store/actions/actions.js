@@ -16,6 +16,10 @@ export const toggleCreateMenu = () => ({
   type: types.TOGGLE_CREATE_MENU
 });
 
+export const toggleCreateMenuItem = () => ({
+  type: types.TOGGLE_CREATE_MENU_ITEM
+});
+
 export const menuItemToShow = (menuItem) => ({
   type: types.MENU_ITEM_TO_SHOW
 });

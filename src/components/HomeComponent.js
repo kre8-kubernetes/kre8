@@ -1,5 +1,7 @@
 import React from "react";
 import '../styles.css'
+import { Link } from 'react-router-dom';
+
 
 
 const HomeComponent = props => {
@@ -10,10 +12,15 @@ const HomeComponent = props => {
 
         <h1>Kre8</h1>
           <h2>Create and Deploy your Kubernetes Cluster to the Cloud</h2>
+          <div className="p_container">
           <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. 
             Kre8 is here to simplify everything for you. Let's get started!</p>
+            </div>
             {/* <button id="" onClick={this.props.displayInfoHandler(id)}></button> */}
+            
             <form>
+            <br></br>
+            <br></br>
                 <h4>AWS Access Key ID</h4>
                   <input id='awsAccessKeyId' onChange={props.handleChange} value={props.awsAccessKeyId} type="text" name="awsAccessKeyId" />
                   <h5>TODO ADD Data requirements here</h5>
@@ -46,6 +53,7 @@ const HomeComponent = props => {
             </form>
             <br></br>
             <button onClick={props.setAWSCredentials} className="buttons">Submit</button>
+             <Link to="/aws">AWS</Link>
         </div>
 
     </div>

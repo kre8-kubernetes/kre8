@@ -107,6 +107,33 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
   //TODO: Braden, should we delete this, since not sending any info to frontend
   //win.webContents.send(events.HANDLE_NEW_ROLE, 'New Role Name Here');
 })
+ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
+
+  const fileExists = fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json');
+
+  let credentialStatusToReturn;
+
+    if (fileExists) {
+
+      const readCredentialsFile = await fsp.readFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+
+      const parsedCredentialsFile = JSON.parse(readCredentialsFile);
+      console.log('this is the parsed obj', parsedCredentialsFile);
+
+      if ((parsedCredentialsFile.AWS_ACCESS_KEY_ID.length > 10) && (parsedCredentialsFile.AWS_SECRET_ACCESS_KEY.length > 20) && (      parsedCredentialsFile.REGION > 5)) {
+        credentialStatusToReturn = true;
+      }
+    } else {
+      credentialStatusToReturn = false;
+    }
+
+
+
+  win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatusToReturn);
+})
+
+
+
 
 
 //** --------- CONFIGURE AWS CREDENTIALS --------------------------- **//
@@ -126,7 +153,7 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
     const credentialStatus = await sts.getCallerIdentity().promise();
     console.log("credentialStatus: ", credentialStatus);
 
-    win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
+    win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatus);
     
   } catch (err) {
     console.log(err);

@@ -4,7 +4,7 @@ import * as types from '../actionTypes.js'
 // ******* NAVBAR ACTIONS *******
 // ******************************
 
-export const showCreateButton = () => ({
+export const displayCreateButton = () => ({
   type: types.SHOW_CREATE_BUTTON
 });
 

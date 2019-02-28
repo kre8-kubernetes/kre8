@@ -16,7 +16,7 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
       <circle
         r={52}
         fill="url('#lg')"
-        stroke='#71248e'
+        stroke='#3B6F89'
         strokeWidth="12"
         onClick={() => {
           showNodeInfo(node);

@@ -353,3 +353,19 @@ h5 {
 
 
 }
+
+/**************** NAVBAR COMPONENTS ***************/
+
+/* Create Menu (Button and Menu) */
+
+.create_menu_component_container {
+  position: absolute;
+  left: 50px;
+  /* right: 25%; */
+  top: 50px;
+  width: 100px;
+  height: 200px;
+  /* bottom: 25%; */
+  /* margin: auto; */
+  background: white;
+}

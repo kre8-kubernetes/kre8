@@ -13,7 +13,8 @@ import NodeInfoComponent from '../components/NodeInfoComponent';
 
 const mapStateToProps = store => ({
   roleName: store.aws.roleName,
-  podName: store.kubectl.podName
+  podName: store.kubectl.podName,
+  // showCreateMenu: 
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -238,6 +239,7 @@ class TreeGraphContainer extends Component {
             hideNodeInfo={this.hideNodeInfo}
           />
         )}
+        {/* {this.state.showCreateMenu === true && () */}
         <TreeGraphComponent
           showNodeInfo={this.showNodeInfo}
           width={1100}

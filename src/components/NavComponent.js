@@ -10,7 +10,9 @@ const NavComponent = (props) => {
         <button onClick={props.toggleCreateMenu}>+++</button>
       )}
       {props.showCreateMenu === true && (
-
+        <CreateMenuComponent 
+          handleMenuItemToShow={props.handleMenuItemToShow}
+        />
       )}
       <div onClick={props.hideCreateButton} className='nav_item'>
         <Link to="/">HOME</Link>

@@ -30,6 +30,11 @@ const mapDispatchToProps = dispatch => ({
 class NavContainer extends Component {
   constructor(props) {
     super(props);
+    this.handleMenuItemToShow = this.handleMenuItemToShow.bind(this);
+  }
+
+  handleMenuItemToShow(e) {
+    this.props.menuItemToShow(e.target.id);
   }
 
   render() {
@@ -48,6 +53,7 @@ class NavContainer extends Component {
           toggleCreateMenu={toggleCreateMenu}
           hideCreateButton={hideCreateButton}
           displayCreateButton={displayCreateButton}
+          handleMenuItemToShow={this.handleMenuItemToShow}
         />
       </div>
     )

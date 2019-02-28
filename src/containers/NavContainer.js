@@ -22,7 +22,13 @@ const mapDispatchToProps = dispatch => ({
   toggleCreateMenu: () => {
     dispatch(actions.toggleCreateMenu())
   },
+  hideCreateMenu: () => {
+    dispatch(actions.hideCreateMenu())
+  },
   toggleCreateMenuItem: () => {
+    dispatch(actions.toggleCreateMenuItem())
+  },
+  CreateMenuItem: () => {
     dispatch(actions.toggleCreateMenuItem())
   },
   menuItemToShow: (menuItem) => {
@@ -34,12 +40,22 @@ class NavContainer extends Component {
   constructor(props) {
     super(props);
     this.handleMenuItemToShow = this.handleMenuItemToShow.bind(this);
+    this.handleNavBarClick = this.handleNavBarClick.bind(this);
   }
 
   handleMenuItemToShow(e) {
     this.props.menuItemToShow(e.target.id);
     this.props.toggleCreateMenuItem();
+  }
 
+  handleNavBarClick(e) {
+    console.log('e.target', e.target.id);
+    if (e.target.id === 'kubectl_link') {
+      this.props.displayCreateButton();
+    } else {
+      this.props.hideCreateButton();
+    }
+    this.props.hideCreateMenu();
   }
 
   render() {
@@ -59,6 +75,7 @@ class NavContainer extends Component {
           hideCreateButton={hideCreateButton}
           displayCreateButton={displayCreateButton}
           handleMenuItemToShow={this.handleMenuItemToShow}
+          handleNavBarClick={this.handleNavBarClick}
         />
       </div>
     )

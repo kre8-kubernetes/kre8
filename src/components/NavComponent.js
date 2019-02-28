@@ -14,16 +14,16 @@ const NavComponent = (props) => {
           handleMenuItemToShow={props.handleMenuItemToShow}
         />
       )}
-      <div onClick={props.hideCreateButton} className='nav_item'>
+      <div onClick={props.handleNavBarClick} className='nav_item2'>
         <Link to="/">HOME</Link>
       </div>
       &nbsp;
-      <div onClick={props.hideCreateButton} className='nav_item'>
+      <div onClick={props.handleNavBarClick} className='nav_item2'>
         <Link to="/aws">AWS</Link>
       </div>
       &nbsp;
-      <div onClick={props.displayCreateButton} className='nav_item'>
-        <Link to="/cluster">KUBECTL</Link>
+      <div id='kubectl_link' onClick={props.handleNavBarClick} className='nav_item2'>
+        <Link id='kubectl_link' to="/cluster">KUBECTL</Link>
       </div>
     </div>
   )

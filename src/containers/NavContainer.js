@@ -49,7 +49,6 @@ class NavContainer extends Component {
   }
 
   handleNavBarClick(e) {
-    console.log('e.target', e.target.id);
     if (e.target.id === 'kubectl_link') {
       this.props.displayCreateButton();
     } else {

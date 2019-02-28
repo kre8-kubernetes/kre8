@@ -13,8 +13,6 @@ import NodeInfoComponent from '../components/NodeInfoComponent';
 import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
 
 const mapStateToProps = store => ({
-  roleName: store.aws.roleName,
-  podName: store.kubectl.podName,
   showCreateMenuItem: store.navbar.showCreateMenuItem,
   menuItemToShow: store.navbar.menuItemToShow,
 });

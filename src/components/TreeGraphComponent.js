@@ -3,7 +3,7 @@ import { Group } from '@vx/group';
 import { Tree } from '@vx/hierarchy';
 import { LinkHorizontal, LinkRadial, LinkRadialLine } from '@vx/shape';
 import { hierarchy } from 'd3-hierarchy';
-import { LinearGradient } from '@vx/gradient';
+import { LinearGradient, RadialGradient } from '@vx/gradient';
 import { pointRadial } from 'd3-shape';
 
 import MasterNodeComponent from './MasterNodeComponent';
@@ -21,6 +21,29 @@ const TreeGraphComponent = (props) => {
   const white = '#ffffff';
   const bg = '#272b4d';
 
+
+  //masternode
+  const HydrogenDark = '#667db6';
+  const HydrogenLight = '#0082c8';
+
+  // const HydrogenDark = '#021B79';
+  // const HydrogenLight = '#0575E6';
+
+  //worker node
+  const darkBlue = '#373B44';
+  const lighterBlue = '#4286f4';
+
+  //podGradient
+  const coolSkyDark = '#2980B9'
+  const coolSkyLight = '#6DD5FA'
+
+  //container
+  const waterDark = '#B2FEFA';
+  const waterLight = '#B2FEFA';
+
+  //
+
+
   const { height, width, treeData, margin } = props;
   const yMax = height - margin.top - margin.bottom;
   const xMax = width - margin.left - margin.right;
@@ -35,7 +58,15 @@ const TreeGraphComponent = (props) => {
   return (
     <div className='treegraph_component'>
       <svg width={width} height={height}>
-        <LinearGradient id="lg" from={peach} to={pink} />
+        <RadialGradient id="lg" from={HydrogenDark} to={HydrogenLight} />
+        <LinearGradient id="workerNodeGradient" from={darkBlue} to={lighterBlue} />
+        <LinearGradient id="podGradient" from={HydrogenDark} to={HydrogenLight} />
+        <RadialGradient id="containerGradient" from={coolSkyDark} to={coolSkyLight} />
+        <LinearGradient id="podGradient" from={HydrogenDark} to={HydrogenLight} />
+        <RadialGradient id="containerGradient" from={coolSkyDark} to={coolSkyLight} />
+
+
+
         <rect width={width} height={height} rx={14} fill={'#232F3E'} />
         <Tree root={data} size={[innerWidth, innerHeight]}>
           {tree => {
@@ -49,7 +80,7 @@ const TreeGraphComponent = (props) => {
                       key={`link-${i}`}
                       data={link}
                       stroke={'#3B6F89'}
-                      strokeWidth="2"
+                      strokeWidth="1"
                       fill="none"
                       // radius={d => d.y}
 

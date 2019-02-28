@@ -17,7 +17,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
     <Group top={top} left={left}>
       <circle
         r={10}
-        fill={plum}
+        fill="url('#containerGradient')"
         stroke="black"
         strokeWidth="1"
         onClick={() => {

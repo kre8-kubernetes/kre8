@@ -22,6 +22,9 @@ const mapDispatchToProps = dispatch => ({
   toggleCreateMenu: () => {
     dispatch(actions.toggleCreateMenu())
   },
+  toggleCreateMenuItem: () => {
+    dispatch(actions.toggleCreateMenuItem())
+  },
   menuItemToShow: (menuItem) => {
     dispatch(actions.menuItemToShow(menuItem))
   },
@@ -35,6 +38,8 @@ class NavContainer extends Component {
 
   handleMenuItemToShow(e) {
     this.props.menuItemToShow(e.target.id);
+    this.props.toggleCreateMenuItem();
+
   }
 
   render() {

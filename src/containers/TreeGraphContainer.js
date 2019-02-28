@@ -10,17 +10,16 @@ import uuid from 'uuid'
 
 import TreeGraphComponent from '../components/TreeGraphComponent';
 import NodeInfoComponent from '../components/NodeInfoComponent';
+import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
 
 const mapStateToProps = store => ({
   roleName: store.aws.roleName,
   podName: store.kubectl.podName,
-  // showCreateMenu: 
+  showCreateMenuItem: store.navbar.showCreateMenuItem,
+  menuItemToShow: store.navbar.menuItemToShow,
 });
 
 const mapDispatchToProps = dispatch => ({
-  setNewRole: (text) => {
-    dispatch(actions.setRole(text))
-  }
 });
 
 class TreeGraphContainer extends Component {
@@ -163,44 +162,6 @@ class TreeGraphContainer extends Component {
             },
           ]
         },
-        {
-          "name": "Worker Node #4",
-          "id": uuid(),
-          "worder_node_id": 3,
-          "type": "node",
-          "children": [
-            {
-              "name": "Dream POD #1",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-                "name": "Dream POD Container",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-            {
-              "name": "Dream POD #2",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-                "name": "Dream POD Container",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-            {
-              "name": "Dream POD #3",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-                "name": "Dream POD Container",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-          ]
-        },
         // {
         //   "name": "kube-apiserver",
         //   "id": uuid(),
@@ -239,7 +200,6 @@ class TreeGraphContainer extends Component {
             hideNodeInfo={this.hideNodeInfo}
           />
         )}
-        {/* {this.state.showCreateMenu === true && () */}
         <TreeGraphComponent
           showNodeInfo={this.showNodeInfo}
           width={1100}
@@ -252,4 +212,4 @@ class TreeGraphContainer extends Component {
   }
 }
 
-export default withRouter(connect(null, null)(TreeGraphContainer));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TreeGraphContainer));

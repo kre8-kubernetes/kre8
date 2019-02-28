@@ -28,7 +28,7 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
   // Check if AWS credentials files exists
   if (fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json')) {
     
-    //if so, change the file to reflect user input
+    //if so, update the file to reflect user input
     const readCredentialsFile = await fsp.readFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
     console.log('this is the parsed obj', parsedCredentialsFile);

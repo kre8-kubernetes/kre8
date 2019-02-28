@@ -18,7 +18,7 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
       <circle
         r={25}
         fill={lightpurple}
-        stroke="black"
+        stroke="#3B6F89"
         strokeWidth="2"
         onClick={() => {
           showNodeInfo(node);

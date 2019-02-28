@@ -36,7 +36,7 @@ const TreeGraphComponent = (props) => {
     <div className='treegraph_component'>
       <svg width={width} height={height}>
         <LinearGradient id="lg" from={peach} to={pink} />
-        <rect width={width} height={height} rx={14} fill={'#f2fffd'} />
+        <rect width={width} height={height} rx={14} fill={'#232F3E'} />
         <Tree root={data} size={[innerWidth, innerHeight]}>
           {tree => {
             console.log('tree', tree)
@@ -48,7 +48,7 @@ const TreeGraphComponent = (props) => {
                     <LinkRadial
                       key={`link-${i}`}
                       data={link}
-                      stroke={green}
+                      stroke={'#3B6F89'}
                       strokeWidth="2"
                       fill="none"
                       radius={d => d.y}

@@ -18,7 +18,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
       <circle
         r={15}
         fill={blue}
-        stroke="black" 
+        stroke="#3B6F89" 
         strokeWidth="1"
         onClick={() => {
           showNodeInfo(node);

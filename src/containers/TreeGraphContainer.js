@@ -11,6 +11,17 @@ import uuid from 'uuid'
 import TreeGraphComponent from '../components/TreeGraphComponent';
 import NodeInfoComponent from '../components/NodeInfoComponent';
 
+const mapStateToProps = store => ({
+  roleName: store.aws.roleName,
+  podName: store.kubectl.podName
+});
+
+const mapDispatchToProps = dispatch => ({
+  setNewRole: (text) => {
+    dispatch(actions.setRole(text))
+  }
+});
+
 class TreeGraphContainer extends Component {
   constructor(props) {
     super(props);

@@ -4,7 +4,7 @@ const initialState = {
   showCreateButton: false,
   showCreateMenu: false,
   showCreateMenuItem: false,
-  menuItemToShow: 1,
+  menuItemToShow: 'none',
 };
 
 export default function kubectlReducers(state = initialState, action) {

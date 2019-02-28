@@ -10,6 +10,8 @@ const mapStateToProps = store => ({
   showCreateMenu: store.navbar.showCreateMenu,
   showCreateMenuItem: store.navbar.showCreateMenuItem,
   menuItemToShow: store.navbar.menuItemToShow,
+  showClusterInfo: store.navbar.showClusterInfo,
+  clusterInfo: store.navbar.clusterInfo
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -34,6 +36,12 @@ const mapDispatchToProps = dispatch => ({
   menuItemToShow: (menuItem) => {
     dispatch(actions.menuItemToShow(menuItem))
   },
+  displayClusterInfo: () => {
+    dispatch(actions.displayClusterInfo())
+  },
+  hideClusterInfo: () => {
+    dispatch(actions.hideClusterInfo())
+  }
 });
 
 class NavContainer extends Component {
@@ -44,6 +52,7 @@ class NavContainer extends Component {
   }
 
   handleMenuItemToShow(e) {
+    console.log('e.target', e.target);
     this.props.menuItemToShow(e.target.id);
     this.props.toggleCreateMenuItem();
   }
@@ -59,8 +68,18 @@ class NavContainer extends Component {
 
   render() {
     const { 
-      showCreateButton, showCreateMenu, showCreateMenuItem, menuItemToShow,
-      toggleCreateMenu, hideCreateButton, displayCreateButton,
+      showCreateButton,
+      showCreateMenu,
+      showCreateMenuItem,
+      menuItemToShow,
+      clusterInfo,
+      showClusterInfo,
+
+      toggleCreateMenu,
+      hideCreateButton,
+      displayCreateButton,
+      hideClusterInfo,
+      displayClusterInfo
     } = this.props;
     return (
       <div className="nav_container">
@@ -69,10 +88,14 @@ class NavContainer extends Component {
           showCreateMenu={showCreateMenu}
           showCreateMenuItem={showCreateMenuItem}
           menuItemToShow={menuItemToShow}
+          showClusterInfo={showClusterInfo}
+          clusterInfo={clusterInfo}
 
           toggleCreateMenu={toggleCreateMenu}
           hideCreateButton={hideCreateButton}
           displayCreateButton={displayCreateButton}
+          hideClusterInfo={hideClusterInfo}
+          displayClusterInfo={displayClusterInfo}
           handleMenuItemToShow={this.handleMenuItemToShow}
           handleNavBarClick={this.handleNavBarClick}
         />

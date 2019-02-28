@@ -3,6 +3,8 @@ import React from 'react';
 const CreateMenuItemComponent = (props) => {
   const { 
     handleChange,
+    handleCloseFormItem,
+    menuItemToShow,
     deployment_deploymentName,
     deployment_appName,
     deployment_containerName,
@@ -12,14 +14,30 @@ const CreateMenuItemComponent = (props) => {
     handleCreateDeployment,
     toggleCreateMenuItem,
   } = props;
+  // console.log('props from the CreateMenuItemComponent', props)
+  // const formItems = Object.entries(props.inputDataToShow).map((arr) => {
+  //   console.log(arr);
+  //   const inputName = arr[0];
+  //   const inputVal = arr[1];
+  //   const id = `${menuItemToShow}_${inputName}`;
+  //   console.log('id', id);
+  //   return (
+  //     <div className='create_menu_item_form_item'>
+  //       <h4>{menuItemToShow} {inputName}:</h4>
+  //       <input id={id} value={inputVal} onChange={handleChange} type="text" />
+  //       {props.validator1.message(`${menuItemToShow} name, ${inputName}, required`)}
+  //     </div>
+  //   )
+  // })
   return (
-    <div className="popup">
+    <div onClick={handleCloseFormItem} className="popup">
       <div className='create_menu_item_component_container'>
         {/**** TITLE  ****/}
         <div className='create_menu_item_component_item'>
           <h2>Create a Deployment</h2>
         </div>
         {/**** FORM ****/}
+        {/* {formItems} */}
         <div className='create_menu_item_component_item'>
           <div className='create_menu_item_form_container'>
             <div className='create_menu_item_form_item'>
@@ -57,7 +75,7 @@ const CreateMenuItemComponent = (props) => {
         {/**** BUTTONS ****/}
         <div className='create_menu_item_component_item'>
           <button onClick={handleCreateDeployment} className="buttons">Create a Deployment</button>
-          <button onClick={toggleCreateMenuItem} className="buttons">Close</button>
+          <button onClick={handleCloseFormItem} className="buttons">Close</button>
         </div>
       </div>
     </div>

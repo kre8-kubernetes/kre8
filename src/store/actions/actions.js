@@ -25,8 +25,18 @@ export const toggleCreateMenuItem = () => ({
 });
 
 export const menuItemToShow = (menuItem) => ({
-  type: types.MENU_ITEM_TO_SHOW
+  type: types.MENU_ITEM_TO_SHOW,
+  payload: menuItem
 });
+
+export const displayClusterInfo = () => ({
+  type: types.DISPLAY_CLUSTER_INFO
+});
+
+export const hideClusterInfo = () => ({
+  type: types.HIDE_CLUSTER_INFO
+});
+
 
 
 // ******************************

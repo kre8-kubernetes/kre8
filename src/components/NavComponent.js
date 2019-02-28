@@ -1,30 +1,52 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CreateMenuComponent from './CreateMenuComponent'
+import ClusterInfoComponent from './ClusterInfoComponent'
 
 
 const NavComponent = (props) => {
   return (
     <div className='nav_component_container'>
-      {props.showCreateButton === true && (
-        <button onClick={props.toggleCreateMenu}>+++</button>
-      )}
+      {/* THE CREATE DROP DOWN MENU */}
       {props.showCreateMenu === true && (
         <CreateMenuComponent 
           handleMenuItemToShow={props.handleMenuItemToShow}
         />
       )}
-      <div onClick={props.handleNavBarClick} className='nav_item2'>
-        <Link to="/">HOME</Link>
+      {/* NAV LEFT CONTAINER */}
+      <div className='nav_left_container'>
+        <div className='nav_left_container_item'>
+          <button onClick={props.toggleCreateMenu}>+++</button>
+        </div>
+        <div className='nav_left_container_item'>
+          <div onClick={props.handleNavBarClick} className='nav_item2'>
+            <Link to="/">HOME</Link>
+          </div>
+        </div>
+        <div className='nav_left_container_item'>
+          <div onClick={props.handleNavBarClick} className='nav_item2'>
+            <Link to="/aws">AWS</Link>
+          </div>      
+        </div>
+        <div className='nav_left_container_item'>
+          <div id='kubectl_link' onClick={props.handleNavBarClick} className='nav_item2'>
+            <Link id='kubectl_link' to="/cluster">KUBECTL</Link>
+          </div>
+        </div>
       </div>
-      &nbsp;
-      <div onClick={props.handleNavBarClick} className='nav_item2'>
-        <Link to="/aws">AWS</Link>
+      {/* NAV RIGHT CONTAINER */}
+      <div className='nav_right_container'>
+        <div className='nav_component_container_item'>
+          <button onMouseEnter={props.displayClusterInfo} onMouseLeave={props.hideClusterInfo}>Cluster Data</button>
+        </div>
       </div>
-      &nbsp;
-      <div id='kubectl_link' onClick={props.handleNavBarClick} className='nav_item2'>
-        <Link id='kubectl_link' to="/cluster">KUBECTL</Link>
-      </div>
+      {/* THE CLUSTER INFO BOX */}
+      {props.showClusterInfo === true && (
+        <ClusterInfoComponent
+          clusterInfo={props.clusterInfo}
+        />
+      )}
+
     </div>
   )
 }

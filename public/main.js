@@ -68,7 +68,7 @@ function createWindowAndSetEnvironmentVariables () {
     });
   }
 
-  win = new BrowserWindow({width: 1400, height: 900});
+  win = new BrowserWindow({width: 1080, height: 810});
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
   win.on('closed', () => win = null)

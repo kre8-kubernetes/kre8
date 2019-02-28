@@ -16,7 +16,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
   return (
     <Group top={top} left={left}>
       <circle
-        r={15}
+        r={25}
         fill={blue}
         stroke="#3B6F89" 
         strokeWidth="1"

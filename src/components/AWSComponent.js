@@ -1,7 +1,7 @@
 import React from "react";
-
-
+import { Link } from 'react-router-dom';
 import "../styles.css";
+
 
 const AWSComponent = props => {
   return (
@@ -99,6 +99,7 @@ const AWSComponent = props => {
         <button onClick={props.handleConfigAndMakeNodes} className='buttons'>
           Do all the things AND Configure Kubectl AND Make Worker Nodes
         </button>
+        <Link to="/cluster">KUBECTL</Link>
       </div>
 
     </div>

@@ -1,5 +1,30 @@
 import * as types from '../actionTypes.js'
 
+// ******************************
+// ******* NAVBAR ACTIONS *******
+// ******************************
+
+export const showCreateButton = () => ({
+  type: types.SHOW_CREATE_BUTTON
+});
+
+export const hideCreateButton = () => ({
+  type: types.HIDE_CREATE_BUTTON
+});
+
+export const toggleCreateMenu = () => ({
+  type: types.TOGGLE_CREATE_MENU
+});
+
+export const menuItemToShow = (menuItem) => ({
+  type: types.MENU_ITEM_TO_SHOW
+});
+
+
+// ******************************
+// ******* Kubectl ACTIONs ******
+// ******************************
+
 export function setRole(text) {
   return {
     type: types.SET_NEW_ROLE,

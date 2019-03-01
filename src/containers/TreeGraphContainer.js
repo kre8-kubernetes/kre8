@@ -46,38 +46,38 @@ class TreeGraphContainer extends Component {
       "type": "master",
       "children": [
         {
-          "name": "Worker Node #1",
+          "name": "WN1",
           "id": uuid(),
           "worder_node_id": 0,
           "type": "node",
           "children": [
             { 
-              "name": "Dream POD #1",
+              "name": "POD1",
               "id": uuid(),
               "pod_id": 0,
               "type": "pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "C1",
                 "id": uuid(),
                 "type": "container",
               }]
             },
             { 
-              "name": "Dream POD #2",
+              "name": "POD2",
               "id": uuid(),
               "type": "pod",
               "children": [{
-                "name": "Dream POD Container",
+               "name": "C7",
                 "id": uuid(),
                 "type": "container",
               }]
             },
             { 
-              "name": "Dream POD #3",
+              "name": "POD3",
               "id": uuid(),
               "type": "pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "C3",
                 "id": uuid(),
                 "type": "container",
               }]
@@ -85,37 +85,37 @@ class TreeGraphContainer extends Component {
           ]
         },
         {
-          "name": "Worker Node #2",
+          "name": "WN2",
           "id": uuid(),
           "worder_node_id": 1,
           "type": "node",
           "children": [
             { 
-              "name": "Dream POD #1",
+              "name": "POD4",
               "id": uuid(),
               "type": "pod",
               "children": [{
-                "name": "Dream POD Container",
+               "name": "C4",
                 "id": uuid(),
                 "type": "container",
               }]
             },
             { 
-              "name": "Dream POD #2",
+              "name": "POD5",
               "id": uuid(),
               "type": "pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "C5",
                 "id": uuid(),
                 "type": "container",
               }]
             },
             { 
-              "name": "Dream POD #3",
+              "name": "POD6",
               "id": uuid(),
               "type": "pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "C6",
                 "id": uuid(),
                 "type": "container",
               }]
@@ -123,37 +123,37 @@ class TreeGraphContainer extends Component {
           ]
         },
         {
-          "name": "Worker Node #3",
+          "name": "WN3",
           "id": uuid(),
           "worder_node_id": 2,
           "type": "node",
           "children": [
             { 
-              "name": "Dream POD #1",
+              "name": "POD7",
               "id": uuid(),
               "type": "pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "C7",
                 "id": uuid(),
                 "type": "container",
               }]
             },
             { 
-              "name": "Dream POD #2",
+              "name": "POD8",
               "id": uuid(),
               "type": "pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "C8",
                 "id": uuid(),
                 "type": "container",
               }]
             },
             { 
-              "name": "Dream POD #3",
+              "name": "POD9",
               "id": uuid(),
               "type": "pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "C9",
                 "id": uuid(),
                 "type": "container",
               }]

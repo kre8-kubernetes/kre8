@@ -2,12 +2,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import CreateMenuComponent from './CreateMenuComponent'
 import ClusterInfoComponent from './ClusterInfoComponent'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 
 const NavComponent = (props) => {
   return (
     <div className='nav_component_container'>
       {/* THE CREATE DROP DOWN MENU */}
+      {props.showCreateButton === true && (
+        <button className="barsButton" onClick={props.toggleCreateMenu}><FontAwesomeIcon icon="bars" id="bars"/></button>
+      )}
       {props.showCreateMenu === true && (
         <CreateMenuComponent 
           handleMenuItemToShow={props.handleMenuItemToShow}
@@ -47,6 +52,7 @@ const NavComponent = (props) => {
         />
       )}
 
+      {/* <img src='../assets/logo.png' alt='logo' className='logo'/> */}
     </div>
   )
 }

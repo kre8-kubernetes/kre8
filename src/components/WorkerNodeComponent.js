@@ -19,8 +19,8 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
         r={25}
         //fill={lightpurple}
         fill="url('#workerNodeGradient')"
-        stroke="#3B6F89"
-        strokeWidth="2"
+        stroke="#E2F0F2"
+        strokeWidth="0"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
@@ -32,7 +32,7 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
         fontFamily="Arial"
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
-        fill={'#71248e'}
+        fill={'#D7D7D7'}
       >
         {node.data.name}
       </text>

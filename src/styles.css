@@ -146,6 +146,8 @@ h5 {
   background-position: center; */
   /* color: white; */
 }
+  
+
 
 .home_page_item {
   display: flex;
@@ -162,12 +164,11 @@ h5 {
   height: 100%;
   justify-content: center;
   align-items: center;
-  border: solid black;
   border-width: thin;
   border-radius: 5px;
-  box-shadow: 0px 2px 3px 1px #1F1ELE;
+  box-shadow: 10px 10px 5px rgba(0, 0, 0, .5);
   padding: 10px;
-  background-color:whitesmoke;
+  background-color: whitesmoke;
   color: black;
   font-family: monospace;
 }
@@ -185,13 +186,23 @@ h5 {
   outline: none;
 }
 
-/* .info_button{
-  background-image: url("./assets/questionIcon.png");
-  background-size: cover;
-  background-position: center;
+#home_info:hover{
+  cursor: pointer;
+}
 
-} */
+/*
+<-----------MORE INFO COMPONENT---------->
+*/
 
+.info_component{
+  background-color: whitesmoke;
+  border: solid red;
+  font-family: monospace;
+  z-index: 1;
+  position: absolute;
+  width: 50%;
+  height: 25%;
+}
 
 
 /*
@@ -335,7 +346,7 @@ h5 {
   display: flex;
   flex-direction: column;
   flex-basis: 8;
-  border: 2px solid blue;
+  border: 2px solid black;
 }
 
 /* NodeInfo Component Popup */

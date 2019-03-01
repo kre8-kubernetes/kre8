@@ -1,13 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CreateMenuComponent from './CreateMenuComponent'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 
 const NavComponent = (props) => {
   return (
     <div className='nav_component_container'>
       {props.showCreateButton === true && (
-        <button onClick={props.toggleCreateMenu}>+++</button>
+        <button className="barsButton" onClick={props.toggleCreateMenu}><FontAwesomeIcon icon="bars" id="bars"/></button>
       )}
       {props.showCreateMenu === true && (
         <CreateMenuComponent 
@@ -25,6 +27,7 @@ const NavComponent = (props) => {
       <div onClick={props.displayCreateButton} className='nav_item'>
         <Link to="/cluster">KUBECTL</Link>
       </div>
+      {/* <img src='../assets/logo.png' alt='logo' className='logo'/> */}
     </div>
   )
 }

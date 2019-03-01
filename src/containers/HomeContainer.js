@@ -160,7 +160,7 @@ class HomeContainer extends Component {
 
     return (
       <div className="home_page_container">
-        <HomeComponent 
+        {/* <HomeComponent 
           handleChange={this.handleChange}
           handleFormChange={this.handleFormChange}
           validator={this.validator}
@@ -171,7 +171,7 @@ class HomeContainer extends Component {
           displayInfoHandler={this.displayInfoHandler}
           grabCoords={this.grabCoords}
 
-        />
+        /> */}
         {this.state.showInfo === true && (
         <InfoComponent 
           text_info={this.state.text_info}
@@ -196,6 +196,8 @@ class HomeContainer extends Component {
             awsSecretAccessKey={this.state.awsSecretAccessKey}
             awsRegion={this.state.awsRegion}
             setAWSCredentials={this.setAWSCredentials}
+            displayInfoHandler={this.displayInfoHandler}
+            grabCoords={this.grabCoords}
           />
 
         }

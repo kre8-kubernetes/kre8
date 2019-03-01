@@ -99,19 +99,20 @@ class HomeContainer extends Component {
   setAWSCredentials(e) {
     e.preventDefault();
   
-    const awsConfigData = {
-      awsAccessKeyId: this.state.awsAccessKeyId,
-      awsSecretAccessKey: this.state.awsSecretAccessKey,
-      awsRegion: this.state.awsRegion
-    }
+    // const awsConfigData = {
+    //   awsAccessKeyId: this.state.awsAccessKeyId,
+    //   awsSecretAccessKey: this.state.awsSecretAccessKey,
+    //   awsRegion: this.state.awsRegion
+    // }
 
-    if (this.testFormValidation()) {
-      console.log("All form data passed validation");
-      this.setState({ ...this.state, awsAccessKeyId: '', awsSecretAccessKey: '', awsRegion: ''});
-      ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsConfigData);
-    }
+    // if (this.testFormValidation()) {
+    //   console.log("All form data passed validation");
+    //   this.setState({ ...this.state, awsAccessKeyId: '', awsSecretAccessKey: '', awsRegion: ''});
+    //   ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsConfigData);
+    // }
 
-    console.log("Invalid or missing data entry");
+    // console.log("Invalid or missing data entry");
+    this.props.history.push('/cluster')
   }
 
   handleAWSCredentials(event, data) {

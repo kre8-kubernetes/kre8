@@ -3,6 +3,10 @@ import { Group } from '@vx/group';
 
 
 const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
+
+  const darkBlue = '#373B44';
+  const lighterBlue = '#4286f4';
+
   const peach = '#fd9b93';
   const pink = '#fe6e9e';
   const blue = '#03c0dc';
@@ -14,6 +18,7 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
   return (
     <Group top={top} left={left}>
       <circle
+        className="node"
         r={52}
         fill="url('#lg')"
         stroke='#3B6F89'

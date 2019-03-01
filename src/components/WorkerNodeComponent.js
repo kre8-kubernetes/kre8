@@ -17,7 +17,8 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
     <Group top={top} left={left}>
       <circle
         r={25}
-        fill={lightpurple}
+        //fill={lightpurple}
+        fill="url('#workerNodeGradient')"
         stroke="#3B6F89"
         strokeWidth="2"
         onClick={() => {

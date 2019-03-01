@@ -11,6 +11,8 @@ import * as events from '../../eventTypes';
 
 import HomeComponent from '../components/HomeComponent';
 import InfoComponent from '../components/InfoComponent';
+import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
+
 
 class HomeContainer extends Component {
   constructor(props) {
@@ -21,7 +23,8 @@ class HomeContainer extends Component {
       awsRegion: '',
       text_info:'',
       showInfo: false,
-      mouseCoords: {}
+      mouseCoords: {},
+      credentialStatus: false 
     }
 
     this.validator = new SimpleReactValidator({
@@ -31,17 +34,21 @@ class HomeContainer extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.setAWSCredentials = this.setAWSCredentials.bind(this);
     this.handleAWSCredentials = this.handleAWSCredentials.bind(this);
+    this.processAWSCredentialStatus = this.processAWSCredentialStatus.bind(this);
     
     this.displayInfoHandler = this.displayInfoHandler.bind(this);
     this.hideInfoHandler = this.hideInfoHandler.bind(this);
 
     this.testFormValidation = this.testFormValidation.bind(this);
     this.handleFormChange = this.handleFormChange.bind(this);
+    this.handleButtonClickOnHomeComponentPostCredentials = this.handleButtonClickOnHomeComponentPostCredentials.bind(this);
   }
 
   //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
 
   componentDidMount() {
+    ipcRenderer.send(events.CHECK_CREDENTIAL_STATUS, "checking for credentials");
+    ipcRenderer.on(events.RETURN_CREDENTIAL_STATUS, this.processAWSCredentialStatus);
     ipcRenderer.on(events.HANDLE_AWS_CREDENTIALS, this.handleAWSCredentials);
   }
 
@@ -64,6 +71,8 @@ class HomeContainer extends Component {
     this.setState({ "awsRegion": e.target.value });
   }
 
+  //TODO: create credential method
+
   testFormValidation() {
     if (this.validator.allValid()) {
       alert('Your credentials are bring validated by Amazon Web Services. This can take up to one minute.');
@@ -75,8 +84,18 @@ class HomeContainer extends Component {
     }
   }
 
+  //** ------- PROCESS AWS CREDENTIALS ON APPLICATION OPEN ----------- **//
 
-  //** ------- CONFIGURE AWS CREDENTIALS --------------------- **//
+  //if credentials are saved in file, display HomeContainerPostCredentials
+  processAWSCredentialStatus(event, data) {
+    console.log(data);
+    if (data === true) {
+      this.setState({ ...this.state, credentialStatus: false });
+    }
+  }
+
+
+  //** ------- CONFIGURE AWS CREDENTIALS ----------------------------- **//
   setAWSCredentials(e) {
     e.preventDefault();
   
@@ -102,6 +121,12 @@ class HomeContainer extends Component {
       this.props.history.push('/aws')
     }
   }
+
+  handleButtonClickOnHomeComponentPostCredentials(e) {
+    console.log('button pushed:', e);
+    this.props.history.push('/cluster')
+  }
+
 
 
 
@@ -132,7 +157,6 @@ class HomeContainer extends Component {
 
 
   render() { 
-    console.log(this.state.awsRegion)
 
     return (
       <div className="home_page_container">
@@ -156,9 +180,31 @@ class HomeContainer extends Component {
         />
         )}
 
-      </div>
+        { (this.state.credentialStatus === true) ?
+
+          <HomeComponentPostCredentials
+          handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
+          /> 
+          
+          :
+         
+          <HomeComponent 
+            handleChange={this.handleChange}
+            handleFormChange={this.handleFormChange}
+            validator={this.validator}
+            awsAccessKeyId={this.state.awsAccessKeyId}
+            awsSecretAccessKey={this.state.awsSecretAccessKey}
+            awsRegion={this.state.awsRegion}
+            setAWSCredentials={this.setAWSCredentials}
+          />
+
+        }
+        
+    </div>
     );
   }
 }
+
+
 
 export default withRouter(connect(null, null)(HomeContainer));

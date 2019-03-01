@@ -64,10 +64,9 @@ const TreeGraphComponent = (props) => {
         <RadialGradient id="containerGradient" from={coolSkyDark} to={coolSkyLight} />
         <LinearGradient id="podGradient" from={HydrogenDark} to={HydrogenLight} />
         <RadialGradient id="containerGradient" from={coolSkyDark} to={coolSkyLight} />
-
-
-
-        <rect width={width} height={height} rx={14} fill={'#232F3E'} />
+        <LinearGradient id="back" from={'#141E30'} to={'#243B55'} />
+        
+        <rect width={width} height={height} rx={14} fill="url('#back')" />
         <Tree root={data} size={[innerWidth, innerHeight]}>
           {tree => {
             // console.log('tree', tree)

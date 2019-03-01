@@ -10,9 +10,9 @@ import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
 import HomeComponent from '../components/HomeComponent';
+import InfoComponent from '../components/InfoComponent';
 import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
 
-// import InfoComponent from '../components/InfoComponent';
 
 class HomeContainer extends Component {
   constructor(props) {
@@ -21,10 +21,9 @@ class HomeContainer extends Component {
       awsAccessKeyId: '',
       awsSecretAccessKey: '',
       awsRegion: '',
-
       text_info:'',
       showInfo: false,
-
+      mouseCoords: {},
       credentialStatus: false 
     }
 
@@ -37,8 +36,8 @@ class HomeContainer extends Component {
     this.handleAWSCredentials = this.handleAWSCredentials.bind(this);
     this.processAWSCredentialStatus = this.processAWSCredentialStatus.bind(this);
     
-    // this.displayInfoHandler = this.displayInfoHandler.bind(this);
-    // this.hideInfo = this.hideInfo.bind(this);
+    this.displayInfoHandler = this.displayInfoHandler.bind(this);
+    this.hideInfoHandler = this.hideInfoHandler.bind(this);
 
     this.testFormValidation = this.testFormValidation.bind(this);
     this.handleFormChange = this.handleFormChange.bind(this);
@@ -131,30 +130,55 @@ class HomeContainer extends Component {
 
 
 
-  //MORE INFO BUTTON CLICK HANDLER
-  //this should tell info component which text to display
-  // displayInfoHandler(buttonId){
-  //   const home_info = 'In order to use KRE8 to create and launch your Kubernetes cluster on Amazon’s Elastic Container Service for Kubernetes (EKS), you must have an Amazon Web Services Account. KRE8 needs the below details from your AWS account in order to deploy your cluster. KRE8 will use these details to generate a file titled “credentials” in a folder named .aws in your root directory. AWS will reference this file to verify your permissions as you build your Kubernetes cluster.'
-  //   const aws_info = ''
+  // MORE INFO BUTTON CLICK HANDLER
+  // this should tell info component which text to display
+  displayInfoHandler(e){
+    const home_info = 'In order to use KRE8 to create and launch your Kubernetes cluster on Amazon’s Elastic Container Service for Kubernetes (EKS), you must have an Amazon Web Services Account. KRE8 needs the below details from your AWS account in order to deploy your cluster. KRE8 will use these details to generate a file titled “credentials” in a folder named .aws in your root directory. AWS will reference this file to verify your permissions as you build your Kubernetes cluster.'
+    const aws_info = ''
 
-  //   if(buttonId === home_info_button){
-  //     this.setState({...this.state, text_info: home_info, showInfo: true})
-  //   }
-  //   if(buttonId === aws_info_button){
-  //     this.setState({...this.state, text_info: aws_info, showInfo: true})
-  //   }
-  // }
+    const x = e.screenX;
+    const y = e.screenY;
+    const newCoords = {top: y, left: x}
+    if(e.target.id === "home_info"){
+      this.setState({...this.state, text_info: home_info, mouseCoords: newCoords, showInfo: true})
+    }
+    // if(buttonId === aws_info_button){
+    //   this.setState({...this.state, text_info: aws_info, showInfo: true})
+    // }
+  }
 
-  // //HIDE INFO BUTTON CLICK HANDLER
-  // hideInfoHandler(){
-  //   this.setState({...this.state, showInfo: false})
-  // }
+  //HIDE INFO BUTTON CLICK HANDLER
+  hideInfoHandler(){
+    this.setState({...this.state, showInfo: false})
+  }
+
+
+
 
 
   render() { 
 
     return (
       <div className="home_page_container">
+        <HomeComponent 
+          handleChange={this.handleChange}
+          handleFormChange={this.handleFormChange}
+          validator={this.validator}
+          awsAccessKeyId={this.state.awsAccessKeyId}
+          awsSecretAccessKey={this.state.awsSecretAccessKey}
+          awsRegion={this.state.awsRegion}
+          setAWSCredentials={this.setAWSCredentials}
+          displayInfoHandler={this.displayInfoHandler}
+          grabCoords={this.grabCoords}
+
+        />
+        {this.state.showInfo === true && (
+        <InfoComponent 
+          text_info={this.state.text_info}
+          hideInfoHandler={this.hideInfoHandler}
+          mouseCoords={this.state.mouseCoords}
+        />
+        )}
 
         { (this.state.credentialStatus === true) ?
 
@@ -181,12 +205,6 @@ class HomeContainer extends Component {
   }
 }
 
-//TODO:adrian, i moved this below
-{/* </div>
-<InfoComponent 
-        //put a boolean in state
-          text={this.state.text}
-          hideInfo={this.handleInfoHandler}
-        />  */}
+
 
 export default withRouter(connect(null, null)(HomeContainer));

@@ -23,7 +23,7 @@ KRE8's powerful dashboard tool provides the functionality to create, edit and de
   1. Download and install [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/), the official Kubernetes command-line tool.
   2. Create an [Amazon Web Services](https://aws.amazon.com) account and/or have your credentials available.
 
-  #### Intalling
+  #### Installation
   1. TODO: Braden
   2. TODO:
 

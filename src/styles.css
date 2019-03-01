@@ -93,11 +93,6 @@ body {
   height: 100vh;
   align-items: center;
   background-color: #232F3E;
-
-  /* background-image: url("./assets/big-clouds-childrens-plain.jpg");
-  background-size: cover;
-  background-position: center; */
-  /* color: white; */
 }
 
 .home_page_item {
@@ -138,13 +133,23 @@ body {
   outline: none;
 }
 
-/* .info_button{
-  background-image: url("./assets/questionIcon.png");
-  background-size: cover;
-  background-position: center;
+#home_info:hover{
+  cursor: pointer;
+}
 
-} */
+/*
+<-----------MORE INFO COMPONENT---------->
+*/
 
+.info_component{
+  background-color: whitesmoke;
+  border: solid red;
+  font-family: monospace;
+  z-index: 1;
+  position: absolute;
+  width: 50%;
+  height: 25%;
+}
 
 
 /*

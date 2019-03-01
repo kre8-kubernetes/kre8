@@ -1,7 +1,8 @@
 import React from "react";
 import '../styles.css'
 import { Link } from 'react-router-dom';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 
 const HomeComponent = props => {
@@ -14,9 +15,9 @@ const HomeComponent = props => {
           <h2>Create and Deploy your Kubernetes Cluster to the Cloud</h2>
           <div className="p_container">
           <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. 
-            Kre8 is here to simplify everything for you. Let's get started!</p>
+            Kre8 is here to simplify everything for you. Let's get started! <FontAwesomeIcon icon="question-circle" id="home_info" onClick={props.displayInfoHandler} styles={props.mouseCoords}/></p>
             </div>
-            {/* <button id="" onClick={this.props.displayInfoHandler(id)}></button> */}
+            
             
             <form>
             <br></br>

@@ -5,30 +5,15 @@ import { ipcRenderer } from 'electron';
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
-import KubectlComponent from '../components/KubectlComponent';
-import TreeGraphContainer from './TreeGraphContainer.js';
 import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
 import SimpleReactValidator from 'simple-react-validator';
 
 const mapStateToProps = store => ({
-  roleName: store.aws.roleName,
-  pods: store.kubectl.pods,
-  deployments: store.kubectl.deployments,
-  services: store.kubectl.services,
   showCreateMenuItem: store.navbar.showCreateMenuItem,
   menuItemToShow: store.navbar.menuItemToShow,
 });
 
 const mapDispatchToProps = dispatch => ({
-  setNewPod: (data) => {
-    dispatch(actions.setPod(data))
-  },
-  setNewDeployment: (data) => {
-    dispatch(actions.setDeployment(data))
-  },
-  setNewService: (data) => {
-    dispatch(actions.setService(data))
-  },
   toggleCreateMenuItem: () => {
     dispatch(actions.toggleCreateMenuItem())
   }
@@ -51,28 +36,32 @@ class KubectlContainer extends Component {
     });
 
     this.state = {
-      pod_podName: '',
-      pod_containerName: '',
-      pod_imageName: '',
-
-      deployment_deploymentName: '',
-      deployment_appName: '',
-      deployment_containerName: '',
-      deployment_image: '',
-      deployment_containerPort: '',
-      deployment_replicas: '',
-
-      service_serviceName: '',
-      service_appName: '',
-      service_port: '',
-      service_targetPort: '',
-
+      inputData: {
+        pod: {
+          podName: '',
+          containerName: '',
+          imageName: '',
+        },
+        deployment: {
+          deploymentName: '',
+          appName: '', 
+          containerName: '',
+          image: '',
+          containerPort: '',
+          replicas: '',
+        },
+        service: {
+          serviceName: '',
+          appName: '',
+          port: '',
+          targetPort: '',
+        }
+      },
       display_error: false,
     }
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleCloseFormItem = this.handleCloseFormItem.bind(this);
-    
+
     this.handleCreatePod = this.handleCreatePod.bind(this);
     this.handleNewPod = this.handleNewPod.bind(this);
 
@@ -86,14 +75,14 @@ class KubectlContainer extends Component {
   }
 
   //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
-  
+
   // DEPLOYMENT LIFECYCLE METHOD
   componentDidMount() {
     ipcRenderer.on(events.HANDLE_NEW_POD, this.handleNewPod)
     ipcRenderer.on(events.HANDLE_NEW_SERVICE, this.handleNewService)
     ipcRenderer.on(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment)
   }
-  
+
   // On component unmount, we will unsubscribe to listeners
   componentWillUnmount() {
     ipcRenderer.removeListener(events.HANDLE_NEW_POD, this.handleNewPod);
@@ -106,16 +95,12 @@ class KubectlContainer extends Component {
   //HANDLE CHANGE METHOD FOR FORMS
   handleChange(e) {
     e.preventDefault();
+    console.log('e.target from handle change for the form', e.target)
+    const split = e.target.id.split('_');
     const newState = this.state;
-    newState[e.target.id] = e.target.value;
+    newState[split[0]][split[1]] = e.target.value;
     this.setState(newState);
   };
-
-  handleCloseFormItem(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.props.toggleCreateMenuItem();
-  }
 
   testFormValidation() {
     if (this.validator.allValid()) {
@@ -156,9 +141,9 @@ class KubectlContainer extends Component {
     console.log('handleCreatePod Clicked!!!');
 
     const obj = {
-      podName: this.state.pod_podName,
-      containerName: this.state.pod_containerName,
-      imageName: this.state.pod_imageName,
+      podName: this.state.inputData.podName,
+      containerName: this.state.inputData.containerName,
+      imageName: this.state.inputData.imageName,
     }
 
     if (this.testFormValidation()) {
@@ -173,12 +158,12 @@ class KubectlContainer extends Component {
   handleCreateDeployment(data) {
     console.log('handleCreateDeployment Clicked!!!');
     const obj = {
-      deploymentName: this.state.deployment_deploymentName,
-      appName: this.state.deployment_appName,
-      containerName: this.state.deployment_containerName,
-      image: this.state.deployment_image,
-      containerPort: this.state.deployment_containerPort,
-      replicas: this.state.deployment_replicas
+      deploymentName: this.state.inputData.deploymentName,
+      appName: this.state.inputData.appName,
+      containerName: this.state.inputData.containerName,
+      image: this.state.inputData.image,
+      containerPort: this.state.inputData.containerPort,
+      replicas: this.state.inputData.replicas
     }
 
     if (this.testFormValidation1()) {
@@ -193,10 +178,10 @@ class KubectlContainer extends Component {
   handleCreateService(data) {
     console.log('handleCreateService Clicked!!!');
     const obj = {
-      name: this.state.service_serviceName,
-      appName: this.state.service_appName,
-      port: this.state.service_port,
-      targetPort: this.state.service_targetPort
+      name: this.state.inputData.serviceName,
+      appName: this.state.inputData.appName,
+      port: this.state.inputData.port,
+      targetPort: this.state.inputData.targetPort
     }
     if (this.testFormValidation2()) {
       console.log("All form data passed validation");
@@ -212,15 +197,15 @@ class KubectlContainer extends Component {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
     const obj = {
-      podName: this.state.pod_podName,
-      containerName: this.state.pod_containerName,
-      imageName: this.state.pod_imageName,
-    }    
+      podName: this.state.inputData.podName,
+      containerName: this.state.inputData.containerName,
+      imageName: this.state.inputData.imageName,
+    }
     this.props.setNewPod(obj);
     const newState = this.state;
-    newState.pod_podName = '';
-    newState.pod_containerName = '';
-    newState.pod_imageName = '';
+    newState.inputData.podName = '';
+    newState.inputData.containerName = '';
+    newState.inputData.imageName = '';
     this.setState(newState);
   }
 
@@ -229,21 +214,21 @@ class KubectlContainer extends Component {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
     const obj = {
-      deploymentName: this.state.deployment_deploymentName,
-      appName: this.state.deployment_appName,
-      containerName: this.state.deployment_containerName,
-      image: this.state.deployment_image,
-      containerPort: this.state.deployment_containerPort,
-      replicas: this.state.deployment_replicas
-    }    
+      deploymentName: this.state.inputData.deploymentName,
+      appName: this.state.inputData.appName,
+      containerName: this.state.inputData.containerName,
+      image: this.state.inputData.image,
+      containerPort: this.state.inputData.containerPort,
+      replicas: this.state.inputData.replicas
+    }
     this.props.setNewDeployment(obj);
     const newState = this.state;
-    newState.deployment_deploymentName = '';
-    newState.deployment_appName = '';
-    newState.deployment_containerName = '';
-    newState.deployment_image = '';
-    newState.deployment_containerPort = '';
-    newState.deployment_replicas = '';
+    newState.inputData.deploymentName = '';
+    newState.inputData.appName = '';
+    newState.inputData.containerName = '';
+    newState.inputData.image = '';
+    newState.inputData.containerPort = '';
+    newState.inputData.replicas = '';
     this.setState(newState);
   }
 
@@ -253,20 +238,20 @@ class KubectlContainer extends Component {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
     const obj = {
-      name: this.state.service_serviceName,
-      appName: this.state.service_appName,
-      port: this.state.service_port,
-      targetPort: this.state.service_targetPort
+      name: this.state.inputData.serviceName,
+      appName: this.state.inputData.appName,
+      port: this.state.inputData.port,
+      targetPort: this.state.inputData.targetPort
       //containerName: this.state.service_containerName,
       //image: this.state.service_image,
       //replicas: this.state.service_replicas
-    }    
+    }
     this.props.setNewService(obj);
     const newState = this.state;
-    newState.service_serviceName = '';
-    newState.service_appName = '';
-    newState.service_port = '';
-    newState.service_targetPort = ';'
+    newState.inputData.serviceName = '';
+    newState.inputData.appName = '';
+    newState.inputData.port = '';
+    newState.inputData.targetPort = ';'
     //newState.service_containerName = '';
     //newState.service_image = '';
     //newState.service_replicas = '';
@@ -274,6 +259,10 @@ class KubectlContainer extends Component {
   }
 
   render() {
+    console.log('this.state from createMenuItemContainer', this.state)
+    console.log('this.props', this.props);
+    const inputDataToShow = this.state.inputData[this.props.menuItemToShow];
+    console.log('input data to show ', inputDataToShow);
     return (
       <div className='kubectl_container'>
         {/* <KubectlComponent
@@ -318,24 +307,20 @@ class KubectlContainer extends Component {
             toggleCreateMenuItem={this.props.toggleCreateMenuItem}
             handleCreateDeployment={this.handleCreateDeployment}
             handleChange={this.handleChange}
-            handleCloseFormItem={this.handleCloseFormItem}
 
             validator1={this.validator1}
 
-            inputData = {this.state.inputData}
-            
+            inputDataToShow={inputDataToShow}
+
             deployments={this.props.deployments}
-            deployment_deploymentName={this.state.deployment_deploymentName}
-            deployment_appName={this.state.deployment_appName}
-            deployment_containerName={this.state.deployment_containerName}
-            deployment_image={this.state.deployment_image}
-            deployment_containerPort={this.state.deployment_containerPort}
-            deployment_replicas={this.state.deployment_replicas}
+            deploymentName={this.state.deploymentName}
+            appName={this.state.appName}
+            containerName={this.state.containerName}
+            image={this.state.image}
+            containerPort={this.state.containerPort}
+            replicas={this.state.replicas}
           />
         )}
-        <TreeGraphContainer 
-
-        />
       </div>
     );
   }

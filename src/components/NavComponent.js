@@ -18,11 +18,15 @@ const NavComponent = (props) => {
       {/* NAV LEFT CONTAINER */}
       <div className='nav_left_container'>
         {props.showCreateButton === true && (
-        <div className='nav_left_container_item'>
-          <div onClick={props.toggleCreateMenu} className='nav_item2'>
-            <button className="barsButton"><FontAwesomeIcon icon="bars" id="bars" /></button>
+          <div id='nav_drop_down' className='nav_left_container_item' onClick={props.toggleCreateMenu}>
+            <div className='ham_bar'></div>
+            <div className='ham_bar'></div>
+            <div className='ham_bar'></div>
+            {/* TODO: should we get rid of FontAwesome? */}
+            {/* <div onClick={props.toggleCreateMenu} className='nav_item2'>
+              <button className="barsButton"><FontAwesomeIcon icon="bars" id="bars" /></button>
+            </div> */}
           </div>
-        </div>
         )}
         <div className='nav_left_container_item'>
           <div onClick={props.handleNavBarClick} className='nav_item2'>
@@ -52,8 +56,6 @@ const NavComponent = (props) => {
           clusterInfo={props.clusterInfo}
         />
       )}
-
-      {/* <img src='../assets/logo.png' alt='logo' className='logo'/> */}
     </div>
   )
 }

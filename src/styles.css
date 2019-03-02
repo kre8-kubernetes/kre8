@@ -543,6 +543,21 @@ h5 {
 .nav_left_container {
   display: flex;
   flex-direction: row;
+  margin-left: 20px;
+}
+
+#nav_drop_down {
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+
+.ham_bar {
+  height: 3px;
+  width: 30px;
+  margin: 2px 0;
+  border-radius: 2px;
+  background: white;
 }
 
 .nav_right_container {
@@ -632,14 +647,16 @@ h5 {
 /* .barsButton:hover{
   border: solid white;
 } */
-#bars{
+
+
+#bars {
   background-color: #090927;;
   width: 100px;
   height: 30px;
   color: white;
 }
 
-#pod_form{
+.create_menu_component_container_form {
   position:relative;
   width:100%;
   height:33%;
@@ -648,7 +665,9 @@ h5 {
   color: white;
 }
 
-#service_form{
+
+
+/* #service_form {
   position:relative;
   width:100%;
   height:33%;
@@ -657,24 +676,24 @@ h5 {
   color:white;
 }
 
-#deployment_form{
+#deployment_form {
   position:relative;
   width:100%;
   height:33%;
   border: none;
   background-color:rgb(2,18,41);
   color:white;
-}
+} */
 
-#pod_form:hover{
+/* #pod_form:hover {
   background-color:#009cd4;
 }
-#service_form:hover{
+#service_form:hover {
   background-color:#009cd4;
 }
-#deployment_form:hover{
+#deployment_form:hover {
   background-color:#009cd4;
-}
+} */
 
 
 

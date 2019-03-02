@@ -10,7 +10,7 @@ import * as events from '../../eventTypes';
 
 import HomeComponent from '../components/HomeComponent';
 import HelpInfoComponent from '../components/HelpInfoComponent';
-import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';\
+import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
 
 class HomeContainer extends Component {
   constructor(props) {
@@ -145,10 +145,6 @@ class HomeContainer extends Component {
   hideInfoHandler(){
     this.setState({...this.state, showInfo: false})
   }
-
-
-
-
 
   render() { 
 

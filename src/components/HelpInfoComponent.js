@@ -4,7 +4,7 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 
 
 //When you click the button, we display this modal. 
-const InfoComponent = props => {
+const HelpInfoComponent = (props) => {
     return (
       <div className="info_component">
         <h3>More Info!</h3>
@@ -14,5 +14,4 @@ const InfoComponent = props => {
     );
   }
 
-export default InfoComponent;
-
+export default HelpInfoComponent;

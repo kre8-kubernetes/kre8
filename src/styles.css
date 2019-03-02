@@ -160,22 +160,10 @@ h5 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 50%;
+  width: 55%;
   height: 50%;
   background: #071526;
   border-radius: 6px;
-}
-
-.node_info_component {
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  background: #071526;
-  color: #D7D7D7
 }
 
 .home_page_form_container_header {
@@ -183,22 +171,28 @@ h5 {
   flex-direction: row;
   justify-content: center;
   width: 100%;
-  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  color: #D7D7D7;
 }
 
 .home_page_form_container_text {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  color: white;
-  width: 85%;
+  font-size: 16px;
+  line-height: 23px;
+  font-weight: regular;
+  color: #D7D7D7;
+  width: 83%;
 }
 
 .home_page_form_container_inputs {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 85%;
+  width: 83%;
+  opacity: 0.7;
 }
 .home_page_form_container_inputs_item {
   display: flex;
@@ -210,62 +204,87 @@ h5 {
 
 .home_page_form_container_inputs_item input {
   width: 100%;
-  height: 30px;
-  background: #071526;
-  border: 1px solid #D6D9E0;
+  height: 33px;
   border-radius: 5px;
+  background: #071526;
   color: #D6D9E0;
+  border: 1px solid #D6D9E0;
+  font-size: 14px;
+  font-weight: thin;
+}
+
+.home_page_form_container_inputs_item input[type=text] {
+  padding-left: 10px;
+}
+
+.home_page_form_container_inputs_item input::placeholder {
+  color: #D6D9E0;
+}
+
+.home_page_form_container_inputs_item input:focus {
+  outline: none;
 }
 
 .home_page_form_container_buttons {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   align-content: center;
-  width: 85%;
+  width: 83%;
   padding: 8px 0;
 }
 
-.home_page_form_container_buttons_item button {
-  width: 110px;
-  height: 40px;
-  background: #071526;
-  border: 1px solid #D35B51;
-  margin-right: 40px;
-  border-radius: 5px;
-  color: #D35B51;
-  font-size: 1.1em;
-}
-
-.home_page_form_container_buttons_item button {
-  width: 110px;
-  height: 40px;
-  background: #071526;
-  border: 1px solid #D35B51;
-  margin-right: 40px;
-  border-radius: 5px;
-  color: #D35B51;
-  font-size: 1.1em;
+.home_page_form_container_buttons_item {
+  display: flex;
+  flex-direction: row;
 }
 
 .home_page_form_container_buttons_item select {
   width: 200px;
-  height: 30px;
+  height: 33px;
   background: #071526;
-  border: 1px solid white;
+  border: 1px solid #D6D9E0;
   border-radius: 5px;
-  cursor: none;
   color: #D6D9E0;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.home_page_form_container_buttons_item select:focus {
+  outline: none;
 }
 
 #home_info {
-  height: 25px;
-  width: 25px;
-  color: white;
-  opacity: 0.35;
+  height: 32px;
+  width: 32px;
+  font-size: 1.1em;
+  color: #D7D7D7;
+  border-radius: 20px;
+  background: #071526;
 }
 
+.home_page_form_container_buttons_item #home_submit_button {
+  width: 110px;
+  height: 40px;
+  background: #071526;
+  border: 1px solid #D35B51;
+  margin-right: 15px;
+  border-radius: 5px;
+  color: #D35B51;
+  font-size: 1.1em;
+  font-weight: medium;
+}
+
+.home_page_form_container_buttons_item button:focus {
+  outline: none;
+}
+
+.home_page_form_container_buttons_item #home_submit_button:active {
+  background: #D35B51;
+  opacity: 0.7;
+  color: #071526;
+}
 
 
 
@@ -323,7 +342,7 @@ h5 {
 <-----------MORE INFO COMPONENT---------->
 */
 
-.info_component{
+.info_component {
   background-color: whitesmoke;
   border: solid red;
   font-family: monospace;
@@ -410,7 +429,7 @@ h5 {
   outline: none;
 }
 
-.aws_cluster_form_container{
+.aws_cluster_form_container {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -426,7 +445,7 @@ h5 {
 
 
 /*
-<-----------KubectlContainer Styling---------->
+<-----------  KubectlContainer Styling  ---------->
 */
 
 .kubectl_container {

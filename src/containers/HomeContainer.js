@@ -5,14 +5,12 @@ import { ipcRenderer } from 'electron';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import SimpleReactValidator from 'simple-react-validator';
 
-
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
 import HomeComponent from '../components/HomeComponent';
-import InfoComponent from '../components/InfoComponent';
-import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
-
+import HelpInfoComponent from '../components/HelpInfoComponent';
+import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';\
 
 class HomeContainer extends Component {
   constructor(props) {
@@ -94,7 +92,6 @@ class HomeContainer extends Component {
     }
   }
 
-
   //** ------- CONFIGURE AWS CREDENTIALS ----------------------------- **//
   setAWSCredentials(e) {
     e.preventDefault();
@@ -127,9 +124,6 @@ class HomeContainer extends Component {
     this.props.history.push('/cluster')
   }
 
-
-
-
   // MORE INFO BUTTON CLICK HANDLER
   // this should tell info component which text to display
   displayInfoHandler(e){
@@ -161,21 +155,17 @@ class HomeContainer extends Component {
     return (
       <div className="home_page_container">
         {this.state.showInfo === true && (
-        <InfoComponent 
+        <HelpInfoComponent 
           text_info={this.state.text_info}
           hideInfoHandler={this.hideInfoHandler}
           mouseCoords={this.state.mouseCoords}
         />
         )}
-
         { (this.state.credentialStatus === true) ?
-
           <HomeComponentPostCredentials
-          handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
+            handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
           /> 
-          
           :
-         
           <HomeComponent 
             handleChange={this.handleChange}
             handleFormChange={this.handleFormChange}
@@ -187,9 +177,7 @@ class HomeContainer extends Component {
             displayInfoHandler={this.displayInfoHandler}
             grabCoords={this.grabCoords}
           />
-
         }
-        
     </div>
     );
   }

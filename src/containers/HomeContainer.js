@@ -61,13 +61,10 @@ class HomeContainer extends Component {
   //HANDLE CHANGE METHOD FOR FORMS
   handleChange(e) {
     e.preventDefault();
-    console.log("e.target: ", e.target);
     this.setState({ [e.target.name]: e.target.value });
   }
 
   handleFormChange(e) {
-    console.log(e.target.value);
-    console.log("state: ", this.state);
     this.setState({ "awsRegion": e.target.value });
   }
 
@@ -75,7 +72,7 @@ class HomeContainer extends Component {
 
   testFormValidation() {
     if (this.validator.allValid()) {
-      alert('Your credentials are bring validated by Amazon Web Services. This can take up to one minute.');
+      alert('Your credentials are being validated by Amazon Web Services. This can take up to one minute. \R \R Please click ok to continue.');
       return true;
     } else {
       this.validator.showMessages();
@@ -91,11 +88,15 @@ class HomeContainer extends Component {
     console.log(data);
     if (data === true) {
       this.setState({ ...this.state, credentialStatus: false });
-    }
+    } 
+    console.log("credentials are not yet entered, send to setup page")
   }
 
 
   //** ------- CONFIGURE AWS CREDENTIALS ----------------------------- **//
+  //Activates when user enters AWS credentials. If the credentials pass error handlers, 
+  //reset values in state, and send data to the main thread to verify entry data with AWS
+
   setAWSCredentials(e) {
     e.preventDefault();
   
@@ -114,16 +115,21 @@ class HomeContainer extends Component {
     console.log("Invalid or missing data entry");
   }
 
+  //Based on AWS response, either move the user on to the AWS entry page, or send error alert, for user to reenter credentials
   handleAWSCredentials(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
+    console.log("hellllllloooooooo");
     console.log('incoming text:', data);
     if (data.UserId) {
       this.props.history.push('/aws')
+      alert(`Signed in with the Role Arn: ${data.arn}`);
+    } else {
+      "alert('The credentials you entered are incorrect. Please check your entries and try again.');"
     }
   }
 
   handleButtonClickOnHomeComponentPostCredentials(e) {
-    console.log('button pushed:', e);
+    console.log('button pushed:');
     this.props.history.push('/cluster')
   }
 

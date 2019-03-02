@@ -40,7 +40,7 @@ const eks = new EKS();
 const cloudformation = new CloudFormation();
 const iam = new IAM();
 
-// const eks = new EKS({ region: REGION });
+//const eks = new EKS({ region: REGION });
 //const cloudformation = new CloudFormation({ region: REGION });
 //const awsConfig = new AWSConfig();
 
@@ -59,7 +59,7 @@ function createWindowAndSetEnvironmentVariables () {
     process.env['APPLICATION_PATH'] = process.env['HOME'] + '/Library/Application Support/kre8';
   }
 
-  // Read from credentials file and store the environment variables
+  //If the AWS Credentials File exists, use the data to set the required AWS Environment variables AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION
   if (fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json')) {
     const readCredentialsFile = fs.readFileSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
@@ -76,19 +76,21 @@ function createWindowAndSetEnvironmentVariables () {
 
 
 
-//** -------------------------------------------------------------- **//
-//** ----------------------- AWS SDK EVENTS ----------------------- **//
-//** -------------------------------------------------------------- **//
-
-
-//** --------- FUNCTIONS TO EXECUTE ON DOWNLOAD ------------------ **//
+//** -------------------------------------------------------------------- **//
+//** ----------------------- AWS SDK EVENTS ----------------------------- **//
+//** -------------------------------------------------------------------- **//
 
 //TODO: Braden convert to on startup function perform once
+//** --------- FUNCTIONS TO EXECUTE ON DOWNLOAD ------------------------ **//
+//** --------- Check for & install aws-iam-authenticator --------------- **//
+
+//To communicate with AWS, user must have the aws-iam-authenticator installed
+//These functions check if the aws-iam-authenticator is already installed in user's bin folder
+//If not, the authenticator will be installed, and the path will be defined in the user's 
+//.bash_profile file, which is where AWS specifies it should be
 ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
   
   try {
-
-    //Check if aws-iam-authenticator is already installed in user's bin folder
     const iamAuthenticatorExists = fs.existsSync(process.env['HOME'] + '/bin/aws-iam-authenticator');
 
     if (!iamAuthenticatorExists) {
@@ -97,7 +99,6 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
       onDownload.copyIAMAuthenticatorToBinFolder();
     }
 
-    //set PATH environment variable, so AWS can locate aws-iam-authenticator
     await onDownload.setPATHAndAppendToBashProfile();
 
   } catch (err) {
@@ -107,32 +108,23 @@ ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
   //TODO: Braden, should we delete this, since not sending any info to frontend
   //win.webContents.send(events.HANDLE_NEW_ROLE, 'New Role Name Here');
 })
+
+//** ------- EXECUTES ON EVERY OPENING OF APPLICATION ------ **//
+//** ------- Check credentials file to determine if user needs to configure the application **// 
+//If credential's file doesn't exist, serve HomeComponent, else, serve HomeComponentPostCredentials
+
 ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
 
-  const fileExists = fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json');
+  try {
+    const credentialStatusToReturn = await awsEventCallbacks.returnCredentialsStatus(data);
+    win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatusToReturn);
 
-  let credentialStatusToReturn;
+  } catch (err) {
+    console.log(err)
+    win.webContents.send(events.RETURN_CREDENTIAL_STATUS, "An error ocurred when verifying credentials");
+  }
 
-    if (fileExists) {
-
-      const readCredentialsFile = await fsp.readFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
-
-      const parsedCredentialsFile = JSON.parse(readCredentialsFile);
-      console.log('this is the parsed obj', parsedCredentialsFile);
-
-      if ((parsedCredentialsFile.AWS_ACCESS_KEY_ID.length > 10) && (parsedCredentialsFile.AWS_SECRET_ACCESS_KEY.length > 20) && (      parsedCredentialsFile.REGION > 5)) {
-        credentialStatusToReturn = true;
-      }
-    } else {
-      credentialStatusToReturn = false;
-    }
-
-
-
-  win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatusToReturn);
 })
-
-
 
 
 
@@ -140,20 +132,37 @@ ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
 //Function fires when user submits AWS credential information on homepage
 ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
 
-  console.log('data', data);
+  console.log('FUNCTION FIRED data', data);
 
   try {
+
+    awsEventCallbacks.configureAWSCredentials(data);
+
+    const credentialStatus = await sts.getCallerIdentity().promise();
+    console.log("credentialStatus: ", credentialStatus);
+
+    if (credentialStatus.Arn) {
+      console.log("credentialStatus.Arn in yes: ", credentialStatus.Arn)
+      win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
+
+
+    } else {
+      console.log("credentialStatus.Arn in else: ", credentialStatus.Arn)
+
+
+      let credentialStatusToReturn = false;
+      win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatusToReturn);
+
+    }
+
+    //if credential Status is true 
     
     //Set environment variables based
     //Check if AWS credential file exists, 
     //If so, update with new user input
-    awsEventCallbacks.configureAWSCredentials(data);
 
     //Asks AWS to verify credentials
-    const credentialStatus = await sts.getCallerIdentity().promise();
-    console.log("credentialStatus: ", credentialStatus);
 
-    win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatus);
     
   } catch (err) {
     console.log(err);
@@ -161,7 +170,7 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
     win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'Main thread threw an error');
   }
   
-  win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'hello');
+  //win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'hello');
 
 })
 
@@ -189,7 +198,7 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
   win.webContents.send(events.HANDLE_NEW_ROLE, iamRoleCreated);
 })
 
-//** ------ CREATE AWS TECH STACK + SAVE RETURNED DATA IN FILE ---- **//
+//** ------ CREATE AWS STACK + SAVE RETURNED DATA IN FILE ---- **//
 //Takes approx 1 - 1.5 mins to create stack and get data back from AWS
 ipcMain.on(events.CREATE_TECH_STACK, async (event, data) => {
 

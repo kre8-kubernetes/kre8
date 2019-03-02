@@ -21,8 +21,41 @@ const cloudformation = new CloudFormation({ region: REGION });
 const awsEventCallbacks = {};
 
 
-//** --------- CONFIGURE AWS CREDENTIALS ------------------------------ **//
+//** ------- EXECUTES ON EVERY OPENING OF APPLICATION ------ **//
+//** ------- Check credentials file to determine if user needs to configure the application **// 
+awsEventCallbacks.returnCredentialsStatus = async (data) => {
 
+  try {
+
+    const fileExists = fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json');
+
+    let credentialStatusToReturn;
+
+      if (fileExists) {
+
+        const readCredentialsFile = await fsp.readFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+
+        const parsedCredentialsFile = JSON.parse(readCredentialsFile);
+        console.log('this is the parsed obj', parsedCredentialsFile);
+
+        if ((parsedCredentialsFile.AWS_ACCESS_KEY_ID.length > 10) && (parsedCredentialsFile.AWS_SECRET_ACCESS_KEY.length > 20) && (      parsedCredentialsFile.REGION > 5)) {
+          credentialStatusToReturn = true;
+        }
+      } else {
+        credentialStatusToReturn = false;
+      }
+
+      return credentialStatusToReturn;
+
+    } catch (err) {
+      console.log(err);
+    }
+
+
+}
+
+
+//** --------- CONFIGURE AWS CREDENTIALS ------------------------------ **//
 awsEventCallbacks.configureAWSCredentials = async (data) => {
 
   // Check if AWS credentials files exists
@@ -42,9 +75,11 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
     process.env['AWS_SECRET_ACCESS_KEY'] = data.awsSecretAccessKey;
     process.env['REGION'] = data.awsRegion;
 
-    const stringedCredentialFiles = JSON.stringify(parsedCredentialsFile, null, 2);
+    console.log("environment variables: ", process.env['AWS_ACCESS_KEY_ID'], process.env['AWS_SECRET_ACCESS_KEY'],  process.env['REGION'] )
 
-    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+    const stringifiedCredentialFiles = JSON.stringify(parsedCredentialsFile, null, 2);
+
+    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringifiedCredentialFiles);
 
   } else {
     //If the file does not exist, set the environment variables and write the file
@@ -52,18 +87,21 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
     process.env['AWS_SECRET_ACCESS_KEY'] = data.awsSecretAccessKey;
     process.env['REGION'] = data.awsRegion;
 
-    const credentialsObjToWrite = {
+    console.log("environment variables: ", process.env['AWS_ACCESS_KEY_ID'], process.env['AWS_SECRET_ACCESS_KEY'],  process.env['REGION'] )
+
+    const dataForCredentialsFile = {
       AWS_ACCESS_KEY_ID: data.awsAccessKeyId,
       AWS_SECRET_ACCESS_KEY: data.awsSecretAccessKey,
       REGION: data.awsRegion
     };
 
-    const stringedCredentialFiles = JSON.stringify(credentialsObjToWrite, null, 2);
+    const stringifiedCredentialFiles = JSON.stringify(dataForCredentialsFile, null, 2);
 
-    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringifiedCredentialFiles);
 
   }
 }
+
 
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//

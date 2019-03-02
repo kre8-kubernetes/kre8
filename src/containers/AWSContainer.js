@@ -9,8 +9,6 @@ import * as events from '../../eventTypes';
 
 import AWSComponent from '../components/AWSComponent'
 
-//TODO: Create logic for form data sanitation, ie don't accept an empty field from a user when they click submit
-
 const mapStateToProps = store => ({
   roleName: store.aws.roleName,
   podName: store.kubectl.podName

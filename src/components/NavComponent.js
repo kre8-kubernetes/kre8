@@ -10,9 +10,6 @@ const NavComponent = (props) => {
   return (
     <div className='nav_component_container'>
       {/* THE CREATE DROP DOWN MENU */}
-      {props.showCreateButton === true && (
-        <button className="barsButton" onClick={props.toggleCreateMenu}><FontAwesomeIcon icon="bars" id="bars"/></button>
-      )}
       {props.showCreateMenu === true && (
         <CreateMenuComponent 
           handleMenuItemToShow={props.handleMenuItemToShow}
@@ -20,9 +17,13 @@ const NavComponent = (props) => {
       )}
       {/* NAV LEFT CONTAINER */}
       <div className='nav_left_container'>
+        {props.showCreateButton === true && (
         <div className='nav_left_container_item'>
-          <button onClick={props.toggleCreateMenu}>+++</button>
+          <div onClick={props.toggleCreateMenu} className='nav_item2'>
+            <button className="barsButton"><FontAwesomeIcon icon="bars" id="bars" /></button>
+          </div>
         </div>
+        )}
         <div className='nav_left_container_item'>
           <div onClick={props.handleNavBarClick} className='nav_item2'>
             <Link to="/">HOME</Link>
@@ -42,7 +43,7 @@ const NavComponent = (props) => {
       {/* NAV RIGHT CONTAINER */}
       <div className='nav_right_container'>
         <div className='nav_component_container_item'>
-          <button onMouseEnter={props.displayClusterInfo} onMouseLeave={props.hideClusterInfo}>Cluster Data</button>
+          <button className='nav_component_cluster_button' onMouseEnter={props.displayClusterInfo} onMouseLeave={props.hideClusterInfo}>Cluster Data</button>
         </div>
       </div>
       {/* THE CLUSTER INFO BOX */}

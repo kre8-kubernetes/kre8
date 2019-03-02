@@ -5,134 +5,13 @@
 * this increases performance as well
 */
 
-/*
-<-----------HTML FUNDAMENTAL---------->
-*/
+/**************************************************/
+/*************** HTML FUNDAMENTAL *****************/
+/**************************************************/
 
 body {
   margin: 0px;
 }
-
-/*
-<-----------NAV BAR---------->
-*/
-
-.errorClass {
-  color: red;
-  font-size: 10px;
-}
-/* 
-.nav_item1 {
-  padding: 10px;
-  opacity: 0.7;
-  border: solid black;
-  border-width: thin;
-  border-radius: 2px;
-  background-color:#ff9109;
-  padding: 5px;
-}
-
-.nav_item1 a {
-  text-decoration: none;
-  color:black;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.nav_item1:hover {
-  opacity: 1;
-}
-
-.nav_item2 {
-  padding: 10px;
-  opacity: 0.7;
-  border: solid black;
-  border-width: thin;
-  border-radius: 2px;
-  background-color:rgb(96,180,200);
-  padding: 5px;  
-}
-
-.nav_item2 a {
-  text-decoration: none;
-  color:black;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.nav_item2:hover {
-  opacity: 1;
-} */
-
-/*
-<-----------BUTTONS---------->
-*/
-
-/* .buttons {
-  border: none;
-  background-color: gray;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-size: 15px;
-  padding: 15px;
-  border-radius: 5px;
-  opacity: 0.6;
-  transition: 0.3s;
-} */
-
-.buttons:hover {
-  /* box-shadow: -1px 2px 10px #f5f5f5; */
-  cursor: pointer;
-  opacity: 1;
-}
-
-.confirm {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-}
-
-.homebutton:hover {
-  box-shadow: -1px 2px 10px #f5f5f5;
-  cursor: pointer;
-  opacity: 1;
-}
-
-.header {
-  position: absolute;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  /* justify-content: center; */
-  color: black;
-  top: 25%;
-  left: 20%;
-  padding: 50px;
-}
-
-@font-face {
-  font-family: myFirstFont;
-  src: url("https://fonts.googleapis.com/css?family=Ubuntu");
-}
-
-h4 {
-  padding-bottom: 5px;
-  margin-bottom: 5px;
-}
-
-h5 {
-  padding-top: 1px;
-  margin-top: 1px;
-  color: grey;
-  font-weight: lighter;
-  font-size: 9px;
-}
-
-/* .logo{
-  
-} */
-
-/*
-<-----------HOME PAGE---------->
-*/
 
 @font-face {
   font-family: 'Lato';
@@ -141,6 +20,20 @@ h5 {
   /* src: url('path/to/OpenSans.eot'); */
   src: local('Lato'), local('Lato'), url('./assets/Lato/Lato-Black.ttf') format('truetype');
 }
+
+@font-face {
+  font-family: myFirstFont;
+  src: url("https://fonts.googleapis.com/css?family=Ubuntu");
+}
+
+.errorClass {
+  color: red;
+  font-size: 10px;
+}
+
+/**************************************************/
+/*********** HOME PAGE COMPONENT STYLING **********/
+/**************************************************/
 
 .home_page_container {
   display: flex;
@@ -287,62 +180,11 @@ h5 {
 }
 
 
+/**************************************************/
+/*********** HELP INFO COMPONENT STYLING **********/
+/**************************************************/
 
-/* .home_page_item {
-  display: flex;
-  margin: 10px;
-  width: 100%;
-  height: 60%;
-  justify-content: center;
-} */
-
-/* .home_page_container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center
-} */
-
-
-/* 
-.home_page_form_container {
-  display: flex;
-  flex-direction: column;
-  width: 60%;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  border-width: thin;
-  border-radius: 5px;
-  box-shadow: 10px 10px 5px rgba(0, 0, 0, .5);
-  padding: 10px;
-  background-color: whitesmoke;
-  color: black;
-  font-family: monospace;
-}
-
-.home_page_form_container h1{
-  color: #ff9109;
-}
-
-.p_container{
-  border-bottom: 0.01em solid darkgray;
-}
-
-.home_page_form_container input {
-  width: 300px;
-  outline: none;
-}
-
-#home_info:hover{
-  cursor: pointer; */
-/* } */
-
-/*
-<-----------MORE INFO COMPONENT---------->
-*/
-
-.info_component {
+.help_info_component {
   background-color: whitesmoke;
   border: solid red;
   font-family: monospace;
@@ -352,33 +194,9 @@ h5 {
   height: 25%;
 }
 
-
-/*
-<-----------AWS PAGE---------->
-*/
-/* .aws_cluster_page_background{
-  position: fixed;
-  left: 0;
-  right:0;
-  z-index:1;
-  background-image: url("./assets/big-clouds-childrens-plain.jpg");
-  background-size: cover;
-  background-position: center;
-  filter: blur(3px);
-} */
-
-/* .aws_cluster_page_container:before {
-  content: '';
-  position: fixed;
-  left: 0;
-  right:0;
-  z-index:-1;
-  background-image: url("./assets/big-clouds-childrens-plain.jpg");
-  background-size: cover;
-  background-position: center;
-  filter: blur(3px);
-  display:block;
-} */
+/**************************************************/
+/************** AWS CONTAINER STYLING *************/
+/**************************************************/
 
 .aws_cluster_page_container {
   position: fixed;
@@ -391,15 +209,6 @@ h5 {
   width: 100%;
   height: 100vh;
   align-items: center;
-  /* background-image: url("./assets/big-clouds-childrens-plain.jpg");
-  background-size: cover;
-  background-position: center; */
-  /* filter: blur(3px); */
-
-  /* background-image: url("./assets/big-clouds-childrens-plain.jpg");
-  background-size: cover;
-  background-position: center;
-  filter: blur(5px); */
 }
 
 .aws_cluster_page_item {
@@ -436,17 +245,11 @@ h5 {
   justify-content: space-evenly;
   align-items: flex-start;
   padding: 10px;
-  /* border: solid black;
-  padding: 10px;
-  background-color: white; */
 } 
 
-/* KubectlContainer Styling */
-
-
-/*
-<-----------  KubectlContainer Styling  ---------->
-*/
+/**************************************************/
+/************ KubectlContainer Styling ************/
+/**************************************************/
 
 .kubectl_container {
   display: flex;
@@ -488,8 +291,9 @@ h5 {
   width: 100%;
 }
 
-/* Treegraph component Styling */
-
+/**************************************************/
+/*********** TreeGraphContainer Styling ***********/
+/**************************************************/
 .treegraph_container {
   display: flex;
   flex-direction: column;
@@ -497,7 +301,9 @@ h5 {
   border: 2px solid black;
 }
 
-/* NodeInfo Component Popup */
+/**************************************************/
+/************* POPUP CONTAINER STYLING ************/
+/**************************************************/
 
 .popup {
   position: fixed;
@@ -521,7 +327,9 @@ h5 {
   background: white;
 }
 
+/**************************************************/
 /**************** NAVBAR COMPONENTS ***************/
+/**************************************************/
 
 .nav_container {
   display: flex;
@@ -560,41 +368,27 @@ h5 {
   background: white;
 }
 
-.nav_right_container {
-  display: flex;
-  flex-direction: row;
-}
 
-
-/* Create Menu (Button and Menu) */
+  /* Create Menu (Button and Menu) */
 
 .create_menu_component_container {
   position: absolute;
   left: 50px;
-  /* right: 25%; */
   top: 40px;
   width: 20%;
   height: 20%;
-  /* bottom: 25%; */
-  /* margin: auto; */
   background-color:rgb(2,18,41);
 }
 
-
-  /* CLUSTER INFO BUTTON AND CARD */
-
-.cluster_info_container {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  left: 80%;
-  top: 50px;
-  width: 200px;
-  height: 200px;
-  background: white;
+.create_menu_component_container_form {
+  position:relative;
+  width:100%;
+  height:33%;
+  border: none;
+  background-color:rgb(2,18,41);
+  color: white;
 }
-
-  /* MENU ITEM FORM */
+  /* NAV COMPONENT LEFT */
 
 .create_menu_item_component_container {
   position: absolute;
@@ -624,6 +418,12 @@ h5 {
   width: 100%;
 }
 
+/* NAV COMPONENT RIGHT */
+
+.nav_right_container {
+  display: flex;
+  flex-direction: row;
+}
 
 .nav_component_cluster_button {
   font-family: Lato;
@@ -634,66 +434,34 @@ h5 {
   font-size: 15px;
 }
 
+.cluster_info_container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 80%;
+  top: 50px;
+  width: 200px;
+  height: 200px;
+  background: white;
+}
 
 
 
 
-.barsButton{
+
+
+/* .barsButton{
   background-color: #090927;
   border: none;
   width: 8%;
   outline:none;
-}
+} */
 /* .barsButton:hover{
   border: solid white;
 } */
 
 
-#bars {
-  background-color: #090927;;
-  width: 100px;
-  height: 30px;
-  color: white;
-}
 
-.create_menu_component_container_form {
-  position:relative;
-  width:100%;
-  height:33%;
-  border: none;
-  background-color:rgb(2,18,41);
-  color: white;
-}
-
-
-
-/* #service_form {
-  position:relative;
-  width:100%;
-  height:33%;
-  border: none;
-  background-color:rgb(2,18,41);
-  color:white;
-}
-
-#deployment_form {
-  position:relative;
-  width:100%;
-  height:33%;
-  border: none;
-  background-color:rgb(2,18,41);
-  color:white;
-} */
-
-/* #pod_form:hover {
-  background-color:#009cd4;
-}
-#service_form:hover {
-  background-color:#009cd4;
-}
-#deployment_form:hover {
-  background-color:#009cd4;
-} */
 
 
 

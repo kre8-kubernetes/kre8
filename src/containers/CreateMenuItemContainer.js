@@ -95,8 +95,15 @@ class CreateMenuItemContainer extends Component {
   //HANDLE CHANGE METHOD FOR FORMS
   handleChange(e) {
     e.preventDefault();
+    console.log('e.target', e.target.id);
     const split = e.target.id.split('_');
-    const newState = this.state.slice();
+    const newState = { ...this.state, 
+      inputData: { ...this.state.inputData,
+        pod: {...this.state.inputData.pod},
+        deployment: {...this.state.inputData.deployment},
+        service: {...this.state.inputData.service},
+      }
+    }
     newState.inputData[split[0]][split[1]] = e.target.value;
     this.setState(newState);
   };

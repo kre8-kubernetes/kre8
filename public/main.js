@@ -400,80 +400,24 @@ ipcMain.on(events.CREATE_SERVICE, (event, data) => {
 //**--------------DEPLOYMENT-----------------**//
 
 //CREATE DEPLOYMENT 
-ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
-  
-  console.log("data.deploymentName: ", data.deploymentName);
+ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
+  try {
+    // Create template and write file from the template
+    const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
+    let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);
+    console.log(stringifiedDeploymentYamlTemplate);
+    await fsp.writeFile(process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`, stringifiedDeploymentYamlTemplate);
+    // Create the deploy via a kubectl from terminal command, log outputs
+    const child = spawnSync("kubectl", ["create", "-f", process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
+    const stdout = child.stdout.toString();
+    const stderr = child.stderr.toString();
+    console.log('stdout', stdout, 'stderr', stderr);
+    // send the stdout of the process
+    win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stdout);
 
-  const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
-
-  //DEPLOYMENT YAML TEMPLATE
-  // const deploymentYaml = {
-  //   apiVersion: "apps/v1",
-  //   kind: "Deployment",
-  //   metadata: {
-  //     name: `${data.deploymentName}`,
-  //     labels: {
-  //       app: `${data.appName}`
-  //     }
-  //   },
-  //   spec: {
-  //     replicas: `${data.replicas}`,
-  //     selector: {
-  //       matchLabels: {
-  //         app: `${data.appName}`
-  //       }
-  //     },
-  //     template: {
-  //       metadata: {
-  //         labels: {
-  //           app: `${data.appName}`
-  //         }
-  //       },
-  //       spec: {
-  //         containers: [
-  //           {
-  //             name: `${data.containerName}`,
-  //             image: `${data.image}`,
-  //             ports: [
-  //               {
-  //                 containerPort: `${data.containerPort}`
-  //               }
-  //             ]
-  //           }
-  //         ]
-  //       }
-  //     }
-  //   }
-  // };
-
-  let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate);
-
-  //WRITE A NEW DEPLOYENT YAML FILE
-  fs.writeFile(
-    process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`,
-    stringifiedDeploymentYamlTemplate,
-    function(err) {
-      if (err) {
-        return console.log(err);
-      }
-      console.log("You made a deployment Yaml!!!!");
-    }
-  );
-
-
-  //CREATE DEPLOYMENT AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", ["create", "-f", process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
-    console.log("deploymentCreator");
-    child.stdout.on("data", info => {
-      console.log(`stdout: ${info}`);
-      win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, `${info}`);
-    });
-    child.stderr.on("data", info => {
-      console.log(`stderr: ${info}`);
-    });
-    child.on("close", code => {
-      console.log(`child process exited with code ${code}`);
-    });
+  } catch (err) {
+    console.log('err', err)
+  }
 });
 
 

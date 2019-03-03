@@ -31,8 +31,8 @@ const HomeComponent = props => {
         {/* BUTTONS AT THE BOTTOM CONTAINER */}
         <div className='home_page_form_container_buttons'>
           <div className='home_page_form_container_buttons_item'>
-            <select className="dropDown" placeholder='REGION' value={props.awsRegion} onChange={props.handleFormChange}>
-              <option selected='selected' value='REGION'>Select Region</option>
+            <select className="dropDown" value={props.awsRegion} onChange={props.handleFormChange}>
+              <option value='default'>Select Region</option>
               <option value='US West (Oregon) (us-west-2)'>US West (Oregon) (us-west-2)</option>
               <option value='US East (N. Virginia) (us-east-1)'>US East (N. Virginia) (us-east-1)</option>
               <option value='US East (Ohio) (us-east-2)'>US East (Ohio) (us-east-2)</option>

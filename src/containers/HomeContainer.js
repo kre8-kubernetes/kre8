@@ -18,7 +18,7 @@ class HomeContainer extends Component {
     this.state = {
       awsAccessKeyId: '',
       awsSecretAccessKey: '',
-      awsRegion: '',
+      awsRegion: 'default',
       text_info:'',
       showInfo: false,
       mouseCoords: {},

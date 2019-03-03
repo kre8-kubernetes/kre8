@@ -72,7 +72,7 @@ class HomeContainer extends Component {
 
   testFormValidation() {
     if (this.validator.allValid()) {
-      alert('Your credentials are being validated by Amazon Web Services. This can take up to one minute. \R \R Please click ok to continue.');
+      alert(`Your credentials are being validated by Amazon Web Services. This can take up to one minute. Please click ok to continue.`);
       return true;
     } else {
       this.validator.showMessages();
@@ -119,12 +119,17 @@ class HomeContainer extends Component {
   handleAWSCredentials(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log("hellllllloooooooo");
+
     console.log('incoming text:', data);
+    console.log('incoming text:', data.Arn);
+
     if (data.UserId) {
       this.props.history.push('/aws')
-      alert(`Signed in with the Role Arn: ${data.arn}`);
+
+      //TODO: Convert alert
+      alert(`Signed in with the Role Arn: ${data.Arn}`);
     } else {
-      "alert('The credentials you entered are incorrect. Please check your entries and try again.');"
+      alert('The credentials you entered are incorrect. Please check your entries and try again.');
     }
   }
 

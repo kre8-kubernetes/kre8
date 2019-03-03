@@ -38,7 +38,7 @@ awsEventCallbacks.returnCredentialsStatus = async (data) => {
         const parsedCredentialsFile = JSON.parse(readCredentialsFile);
         console.log('this is the parsed obj', parsedCredentialsFile);
 
-        if ((parsedCredentialsFile.AWS_ACCESS_KEY_ID.length > 10) && (parsedCredentialsFile.AWS_SECRET_ACCESS_KEY.length > 20) && (      parsedCredentialsFile.REGION > 5)) {
+        if ((parsedCredentialsFile.AWS_ACCESS_KEY_ID.length > 10) && (parsedCredentialsFile.AWS_SECRET_ACCESS_KEY.length > 20) && (parsedCredentialsFile.REGION > 5)) {
           credentialStatusToReturn = true;
         }
       } else {

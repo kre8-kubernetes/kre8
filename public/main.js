@@ -128,11 +128,14 @@ ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
 
 
 
-//** --------- CONFIGURE AWS CREDENTIALS --------------------------- **//
+//** --------- CONFIGURE AWS CREDENTIALS ON USER'S FIRST INTERACTION WITH APPLICATION ---------------- **//
 //Function fires when user submits AWS credential information on homepage
+//Writes credentials to file, sets environment variables with data from user
+//verifies with AWS API that credentials were correct
+//if so, user is advanced to next setup page; else, user is asked to retry entering credentials
 ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
 
-  console.log('FUNCTION FIRED data', data);
+  console.log('SET_AWS_CREDENTIALS FUNCTION FIRED data', data);
 
   try {
 
@@ -145,33 +148,15 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
       console.log("credentialStatus.Arn in yes: ", credentialStatus.Arn)
       win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
 
-
     } else {
       console.log("credentialStatus.Arn in else: ", credentialStatus.Arn)
-
-
-      let credentialStatusToReturn = false;
-      win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatusToReturn);
+      credentialStatus = false;
+      win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
 
     }
-
-    //if credential Status is true 
-    
-    //Set environment variables based
-    //Check if AWS credential file exists, 
-    //If so, update with new user input
-
-    //Asks AWS to verify credentials
-
-    
   } catch (err) {
     console.log(err);
-    //TODO: send back whether or not data worked to the front end
-    win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'Main thread threw an error');
   }
-  
-  //win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'hello');
-
 })
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------- **//
@@ -189,7 +174,7 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     const iamRolePolicyDoc = iamRolePolicyDocument;
 
     //create 
-      iamRoleCreated = await awsEventCallbacks.createIAMRole(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
+    iamRoleCreated = await awsEventCallbacks.createIAMRole(iamRoleName, iamRoleDescription, iamRolePolicyDoc);
   } catch (err) {
     console.log('Error from CREATE_IAM_ROLE in main.js:', err);
 }
@@ -459,7 +444,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (win === null) {
-    createWindow();
+    createWindowAndSetEnvironmentVariables();
   }
 });
 

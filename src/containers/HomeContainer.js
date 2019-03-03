@@ -5,14 +5,12 @@ import { ipcRenderer } from 'electron';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import SimpleReactValidator from 'simple-react-validator';
 
-
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
 import HomeComponent from '../components/HomeComponent';
-import InfoComponent from '../components/InfoComponent';
+import HelpInfoComponent from '../components/HelpInfoComponent';
 import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
-
 
 class HomeContainer extends Component {
   constructor(props) {
@@ -92,7 +90,6 @@ class HomeContainer extends Component {
     console.log("credentials are not yet entered, send to setup page")
   }
 
-
   //** ------- CONFIGURE AWS CREDENTIALS ----------------------------- **//
   //Activates when user enters AWS credentials. If the credentials pass error handlers, 
   //reset values in state, and send data to the main thread to verify entry data with AWS
@@ -138,9 +135,6 @@ class HomeContainer extends Component {
     this.props.history.push('/cluster')
   }
 
-
-
-
   // MORE INFO BUTTON CLICK HANDLER
   // this should tell info component which text to display
   displayInfoHandler(e){
@@ -163,30 +157,22 @@ class HomeContainer extends Component {
     this.setState({...this.state, showInfo: false})
   }
 
-
-
-
-
   render() { 
 
     return (
       <div className="home_page_container">
         {this.state.showInfo === true && (
-        <InfoComponent 
+        <HelpInfoComponent 
           text_info={this.state.text_info}
           hideInfoHandler={this.hideInfoHandler}
           mouseCoords={this.state.mouseCoords}
         />
         )}
-
         { (this.state.credentialStatus === true) ?
-
           <HomeComponentPostCredentials
-          handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
+            handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
           /> 
-          
           :
-         
           <HomeComponent 
             handleChange={this.handleChange}
             handleFormChange={this.handleFormChange}
@@ -198,9 +184,7 @@ class HomeContainer extends Component {
             displayInfoHandler={this.displayInfoHandler}
             grabCoords={this.grabCoords}
           />
-
         }
-        
     </div>
     );
   }

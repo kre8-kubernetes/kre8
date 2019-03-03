@@ -32,7 +32,7 @@ const HomeComponent = props => {
         <div className='home_page_form_container_buttons'>
           <div className='home_page_form_container_buttons_item'>
             <select className="dropDown" placeholder='REGION' value={props.awsRegion} onChange={props.handleFormChange}>
-              <option selected='selected' value='REGION'>REGION</option>
+              <option selected='selected' value='REGION'>Select Region</option>
               <option value='US West (Oregon) (us-west-2)'>US West (Oregon) (us-west-2)</option>
               <option value='US East (N. Virginia) (us-east-1)'>US East (N. Virginia) (us-east-1)</option>
               <option value='US East (Ohio) (us-east-2)'>US East (Ohio) (us-east-2)</option>
@@ -49,8 +49,12 @@ const HomeComponent = props => {
             </select>
           </div>
           <div className='home_page_form_container_buttons_item'>
-            <button onClick={props.setAWSCredentials}>Submit</button>
-            <FontAwesomeIcon icon="question-circle" id="home_info" onClick={props.displayInfoHandler} styles={props.mouseCoords}/>
+            <button id='home_submit_button' onClick={props.setAWSCredentials}>Submit</button>
+            <button id='home_info' onClick={props.displayInfoHandler}>
+              {/* TODO: remove FontAwesome if we dont need it!!! */}
+              {/* <FontAwesomeIcon icon="question-circle" id="home_info" styles={props.mouseCoords}/> */}
+              ?
+            </button>
           </div>
         </div>
       </div>

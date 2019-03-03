@@ -3,7 +3,7 @@ import { Group } from '@vx/group';
 import { Tree } from '@vx/hierarchy';
 import { LinkHorizontal, LinkRadial, LinkRadialLine } from '@vx/shape';
 import { hierarchy } from 'd3-hierarchy';
-import { LinearGradient } from '@vx/gradient';
+import { LinearGradient, RadialGradient } from '@vx/gradient';
 import { pointRadial } from 'd3-shape';
 
 import MasterNodeComponent from './MasterNodeComponent';
@@ -21,6 +21,37 @@ const TreeGraphComponent = (props) => {
   const white = '#ffffff';
   const bg = '#272b4d';
 
+
+  //masternode
+  const HydrogenDark = '#667db6';
+  const HydrogenLight = '#0082c8';
+
+  // const HydrogenDark = '#021B79';
+  // const HydrogenLight = '#0575E6';
+
+  //worker node
+  const darkBlue = '#373B44';
+  const lighterBlue = '#4286f4';
+
+  //podGradient
+  const coolSkyDark = '#2980B9'
+  const coolSkyLight = '#6DD5FA'
+
+  //container
+  const waterDark = '#B2FEFA';
+  const waterLight = '#B2FEFA';
+
+  //Blues
+  const blue1 = '#C5DEEf';
+  const blue2 = '#AED3EE';
+  const blue3 = '#76BAEB';
+  const blue4 = '#0251C0';
+  const blue5 = '#023C8B';
+  const blue6 = '#02326C';
+  const blue7 = '#012B49';
+  const blue8 = '#01253E';
+
+
   const { height, width, treeData, margin } = props;
   const yMax = height - margin.top - margin.bottom;
   const xMax = width - margin.left - margin.right;
@@ -35,23 +66,35 @@ const TreeGraphComponent = (props) => {
   return (
     <div className='treegraph_component'>
       <svg width={width} height={height}>
-        <LinearGradient id="lg" from={peach} to={pink} />
-        <rect width={width} height={height} rx={14} fill={'#f2fffd'} />
+        <RadialGradient id="lg" from={blue4} to={blue5} />
+        <RadialGradient id="workerNodeGradient" from={blue3} to={blue4} />
+        <RadialGradient id="podGradient" from={blue3} to={blue4} />
+        <RadialGradient id="containerGradient" from={blue4} to={blue5} />
+        <RadialGradient id="podGradient" from={blue5} to={blue6} />
+        <RadialGradient id="lines" from={blue6} to={blue7} />
+
+
+        <RadialGradient id="containerGradient" from={coolSkyDark} to={coolSkyLight} />
+        <LinearGradient id="back" from={'#141E30'} to={'#243B55'} />
+        
+        <rect width={width} height={height} rx={14} fill="url('#back')" />
         <Tree root={data} size={[innerWidth, innerHeight]}>
           {tree => {
-            console.log('tree', tree)
+            // console.log('tree', tree)
             return (
               <Group top={yMax / 2} left={xMax / 2}>
                 {tree.links().map((link, i) => {
-                  console.log('link', link);
+                  // console.log('link', link);
                   return (
-                    <LinkRadial
+                    <LinkRadialLine
                       key={`link-${i}`}
                       data={link}
-                      stroke={green}
-                      strokeWidth="2"
+                      stroke={'#1592E6'}
+                      //stroke="url('#lines')"
+                      strokeWidth="1"
                       fill="none"
-                      radius={d => d.y}
+                      // radius={d => d.y}
+
                     />
                   );
                 })}

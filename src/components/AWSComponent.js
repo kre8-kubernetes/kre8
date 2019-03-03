@@ -1,7 +1,7 @@
 import React from "react";
-
-
+import { Link } from 'react-router-dom';
 import "../styles.css";
+
 
 const AWSComponent = props => {
   return (
@@ -16,19 +16,20 @@ const AWSComponent = props => {
         <br />
 
         <div className='aws_cluster_form_container'>
-          {/* Create IAM Role form and Button */}
-          <div className="aws_cluster_form_item">
-            <form>
-              <h3>Create an IAM Role</h3>
-              <h4>Role name:</h4>
-              <input
-                id="createRole_roleName"
-                onChange={props.handleChange}
-                value={props.createRole_roleName}
-                type="text"
-                name="createRole_roleName"
-              />
-              {props.validator.message('Role name', props.createRole_roleName, 'required')}
+        
+        {/* Create IAM Role form and Button */}
+        <div className="aws_cluster_form_item">
+          <form>
+            <h3>Create an IAM Role</h3>
+            <h4>Role name:</h4>
+            <input
+              id="createRole_roleName"
+              onChange={props.handleChange}
+              value={props.createRole_roleName}
+              type="text"
+              name="createRole_roleName"
+            />
+            {props.validator.message('Role name', props.createRole_roleName, 'required')}
 
               <h5>Role name can contain alphanumeric and '+=,.@-_' characters. Maximum 64 characters.</h5>
               {/* <br />
@@ -66,28 +67,25 @@ const AWSComponent = props => {
               <br />
             </form>
             <br />
-            <button className="buttons" onClick={props.handleCreateTechStack}>
-              Create Tech Stack
-            </button>
-          </div>
-          
-          {/* Create AWS Cluster */}
-          <div className="aws_cluster_form_item">
-            {/* <div className="section"> */}
-            <form>
-              <h3>Create a Cluster</h3>
-              <h4>Cluster name:</h4>
-              <input
-                id="createCluster_clusterName"
-                onChange={props.handleChange}
-                value={props.createCluster_clusterName}
-                type="text"
-                name="createCluster_clusterName"
-              />
-              {props.validator.message('Cluster name', props.createCluster_clusterName, 'required')}
-              <h5>Cluster name can contain only alphanumeric characters, dashes '-' and underscores '_'. Maximum 100 characters.</h5>            
-              <br />
-            </form>
+          <button className="buttons" onClick={props.handleCreateTechStack}>
+            Create Tech Stack
+          </button>
+        </div>
+        
+        {/* Create AWS Cluster */}
+        <div className="aws_cluster_form_item">
+          <form>
+            <h3>Create a Cluster</h3>
+            <h4>Cluster name:</h4>
+            <input
+              id="createCluster_clusterName"
+              onChange={props.handleChange}
+              value={props.createCluster_clusterName}
+              type="text"
+              name="createCluster_clusterName"
+            />
+            {props.validator.message('Cluster name', props.createCluster_clusterName, 'required')}
+            <h5>Cluster name can contain only alphanumeric characters, dashes '-' and underscores '_'. Maximum 100 characters.</h5>            
             <br />
             <button className="buttons" onClick={props.handleCreateCluster}>
               Create Cluster
@@ -100,6 +98,11 @@ const AWSComponent = props => {
           </button>
         </div>
 
+        <br></br>
+        <button onClick={props.handleConfigAndMakeNodes} className='buttons'>
+          Do all the things AND Configure Kubectl AND Make Worker Nodes
+        </button>
+        <Link to="/cluster">KUBECTL</Link>
       </div>
     </div>
   );

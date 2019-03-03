@@ -16,10 +16,10 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
   return (
     <Group top={top} left={left}>
       <circle
-        r={15}
-        fill={blue}
-        stroke="black" 
-        strokeWidth="1"
+        r={25}
+        fill="url('#podGradient')"
+        stroke="#E2F0F2" 
+        strokeWidth="0"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
@@ -31,7 +31,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
         fontFamily="Arial"
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
-        fill={'#000000'}
+        fill={'#D7D7D7'}
       >
         {node.data.name}
       </text>

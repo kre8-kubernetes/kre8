@@ -13,6 +13,15 @@ import * as events from '../../eventTypes';
 
 import TreeGraphComponent from '../components/TreeGraphComponent';
 import NodeInfoComponent from '../components/NodeInfoComponent';
+import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
+
+const mapStateToProps = store => ({
+  showCreateMenuItem: store.navbar.showCreateMenuItem,
+  menuItemToShow: store.navbar.menuItemToShow,
+});
+
+const mapDispatchToProps = dispatch => ({
+});
 
 class TreeGraphContainer extends Component {
   constructor(props) {
@@ -294,4 +303,4 @@ class TreeGraphContainer extends Component {
   }
 }
 
-export default withRouter(connect(null, null)(TreeGraphContainer));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TreeGraphContainer));

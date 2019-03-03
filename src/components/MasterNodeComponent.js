@@ -3,6 +3,10 @@ import { Group } from '@vx/group';
 
 
 const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
+
+  const darkBlue = '#373B44';
+  const lighterBlue = '#4286f4';
+
   const peach = '#fd9b93';
   const pink = '#fe6e9e';
   const blue = '#03c0dc';
@@ -14,10 +18,11 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
   return (
     <Group top={top} left={left}>
       <circle
+        className="node"
         r={52}
         fill="url('#lg')"
-        stroke='#71248e'
-        strokeWidth="12"
+        stroke='#E2F0F2'
+        strokeWidth="0"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
@@ -29,7 +34,7 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
         fontFamily="Arial"
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
-        fill={'#71248e'}
+        fill={'#D7D7D7'}
       >
         {node.data.name}
       </text>

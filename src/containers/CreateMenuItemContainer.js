@@ -19,7 +19,7 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-class KubectlContainer extends Component {
+class CreateMenuItemContainer extends Component {
   constructor(props) {
     super(props);
 
@@ -95,10 +95,9 @@ class KubectlContainer extends Component {
   //HANDLE CHANGE METHOD FOR FORMS
   handleChange(e) {
     e.preventDefault();
-    console.log('e.target from handle change for the form', e.target)
     const split = e.target.id.split('_');
-    const newState = this.state;
-    newState[split[0]][split[1]] = e.target.value;
+    const newState = this.state.slice();
+    newState.inputData[split[0]][split[1]] = e.target.value;
     this.setState(newState);
   };
 
@@ -135,20 +134,12 @@ class KubectlContainer extends Component {
     }
   }
 
-
   //CREATE POD HANDLER
   handleCreatePod(data) {
     console.log('handleCreatePod Clicked!!!');
-
-    const obj = {
-      podName: this.state.inputData.podName,
-      containerName: this.state.inputData.containerName,
-      imageName: this.state.inputData.imageName,
-    }
-
     if (this.testFormValidation()) {
       console.log("All form data passed validation");
-      ipcRenderer.send(events.CREATE_POD, obj);
+      ipcRenderer.send(events.CREATE_POD, this.state.inputData.pod);
     } else {
       console.log("Invalid or missing data entry");
     }
@@ -157,18 +148,9 @@ class KubectlContainer extends Component {
   //CREATE DEPLOYMENT HANDLER
   handleCreateDeployment(data) {
     console.log('handleCreateDeployment Clicked!!!');
-    const obj = {
-      deploymentName: this.state.inputData.deploymentName,
-      appName: this.state.inputData.appName,
-      containerName: this.state.inputData.containerName,
-      image: this.state.inputData.image,
-      containerPort: this.state.inputData.containerPort,
-      replicas: this.state.inputData.replicas
-    }
-
     if (this.testFormValidation1()) {
       console.log("All form data passed validation");
-      ipcRenderer.send(events.CREATE_DEPLOYMENT, obj);
+      ipcRenderer.send(events.CREATE_DEPLOYMENT, this.state.inputData.deployment);
     } else {
       console.log("Invalid or missing data entry");
     }
@@ -177,15 +159,9 @@ class KubectlContainer extends Component {
   //CREATE SERVICE HANDLER
   handleCreateService(data) {
     console.log('handleCreateService Clicked!!!');
-    const obj = {
-      name: this.state.inputData.serviceName,
-      appName: this.state.inputData.appName,
-      port: this.state.inputData.port,
-      targetPort: this.state.inputData.targetPort
-    }
     if (this.testFormValidation2()) {
       console.log("All form data passed validation");
-      ipcRenderer.send(events.CREATE_SERVICE, obj);
+      ipcRenderer.send(events.CREATE_SERVICE, this.state.inputData.service);
     }
     console.log("Invalid or missing data entry");
   }
@@ -196,16 +172,10 @@ class KubectlContainer extends Component {
   handleNewPod(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
-    const obj = {
-      podName: this.state.inputData.podName,
-      containerName: this.state.inputData.containerName,
-      imageName: this.state.inputData.imageName,
-    }
-    this.props.setNewPod(obj);
     const newState = this.state;
-    newState.inputData.podName = '';
-    newState.inputData.containerName = '';
-    newState.inputData.imageName = '';
+    newState.inputData.pod.podName = '';
+    newState.inputData.pod.containerName = '';
+    newState.inputData.pod.imageName = '';
     this.setState(newState);
   }
 
@@ -213,22 +183,13 @@ class KubectlContainer extends Component {
   handleNewDeployment(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
-    const obj = {
-      deploymentName: this.state.inputData.deploymentName,
-      appName: this.state.inputData.appName,
-      containerName: this.state.inputData.containerName,
-      image: this.state.inputData.image,
-      containerPort: this.state.inputData.containerPort,
-      replicas: this.state.inputData.replicas
-    }
-    this.props.setNewDeployment(obj);
     const newState = this.state;
-    newState.inputData.deploymentName = '';
-    newState.inputData.appName = '';
-    newState.inputData.containerName = '';
-    newState.inputData.image = '';
-    newState.inputData.containerPort = '';
-    newState.inputData.replicas = '';
+    newState.inputData.deployment.deploymentName = '';
+    newState.inputData.deployment.appName = '';
+    newState.inputData.deployment.containerName = '';
+    newState.inputData.deployment.image = '';
+    newState.inputData.deployment.containerPort = '';
+    newState.inputData.deployment.replicas = '';
     this.setState(newState);
   }
 
@@ -237,88 +198,30 @@ class KubectlContainer extends Component {
   handleNewService(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
-    const obj = {
-      name: this.state.inputData.serviceName,
-      appName: this.state.inputData.appName,
-      port: this.state.inputData.port,
-      targetPort: this.state.inputData.targetPort
-      //containerName: this.state.service_containerName,
-      //image: this.state.service_image,
-      //replicas: this.state.service_replicas
-    }
-    this.props.setNewService(obj);
     const newState = this.state;
-    newState.inputData.serviceName = '';
-    newState.inputData.appName = '';
-    newState.inputData.port = '';
-    newState.inputData.targetPort = ';'
-    //newState.service_containerName = '';
-    //newState.service_image = '';
-    //newState.service_replicas = '';
+    newState.inputData.service.serviceName = '';
+    newState.inputData.service.appName = '';
+    newState.inputData.service.port = '';
+    newState.inputData.service.targetPort = ';'
     this.setState(newState);
   }
 
   render() {
-    console.log('this.state from createMenuItemContainer', this.state)
-    console.log('this.props', this.props);
     const inputDataToShow = this.state.inputData[this.props.menuItemToShow];
-    console.log('input data to show ', inputDataToShow);
     return (
-      <div className='kubectl_container'>
-        {/* <KubectlComponent
-          handleChange={this.handleChange}
-          validator={this.validator}
-          validator1={this.validator1}
-          validator2={this.validator2}
-
-          handleCreatePod={this.handleCreatePod}
-          handleCreateDeployment={this.handleCreateDeployment}
-          handleCreateService={this.handleCreateService}
-
-          pod_podName={this.state.pod_podName}
-          pod_containerName={this.state.pod_containerName}
-          pod_imageName={this.state.pod_imageName}
-
-          deployment_deploymentName={this.state.deployment_deploymentName}
-          deployment_appName={this.state.deployment_appName}
-          deployment_containerName={this.state.deployment_containerName}
-          deployment_image={this.state.deployment_image}
-          deployment_containerPort={this.state.deployment_containerPort}
-          deployment_replicas={this.state.deployment_replicas}
-
-          service_serviceName={this.state.service_serviceName}
-          service_appName={this.state.service_appName}
-          service_port={this.state.service_port}
-          service_targetPort={this.state.service_targetPort}
-
-
-          //ToDO: Delete these elements if not in use
-          //service_containerName={this.state.service_containerName
-          //service_image={this.state.service_image}
-          //service_replicas={this.state.service_replicas}
-
-          pods={this.props.pods}
-          deployments={this.props.deployments}
-          services={this.props.services}
-        /> */}
+      <div>
         {this.props.showCreateMenuItem === true && (
           <CreateMenuItemComponent
+            handleChange={this.handleChange}
             menuItemToShow={this.props.menuItemToShow}
             toggleCreateMenuItem={this.props.toggleCreateMenuItem}
             handleCreateDeployment={this.handleCreateDeployment}
-            handleChange={this.handleChange}
+            handleCreateService={this.handleCreateService}
+            handleCreatePod={this.handleCreatePod}
 
             validator1={this.validator1}
 
             inputDataToShow={inputDataToShow}
-
-            deployments={this.props.deployments}
-            deploymentName={this.state.deploymentName}
-            appName={this.state.appName}
-            containerName={this.state.containerName}
-            image={this.state.image}
-            containerPort={this.state.containerPort}
-            replicas={this.state.replicas}
           />
         )}
       </div>
@@ -326,4 +229,4 @@ class KubectlContainer extends Component {
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(KubectlContainer))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateMenuItemContainer))

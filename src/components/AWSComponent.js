@@ -90,8 +90,9 @@ const AWSComponent = props => {
             <button className="buttons" onClick={props.handleCreateCluster}>
               Create Cluster
             </button>
+            </form>
           </div>
-
+        <div>
           <br></br>
           <button onClick={props.handleConfigAndMakeNodes} className='buttons'>
             Do all the things AND Configure Kubectl AND Make Worker Nodes
@@ -104,6 +105,7 @@ const AWSComponent = props => {
         </button>
         <Link to="/cluster">KUBECTL</Link>
       </div>
+    </div>
     </div>
   );
 };

@@ -1,5 +1,4 @@
 //** --------- NPM MODULES ---------------- 
-require('dotenv').config();
 const YAML = require('yamljs');
 
 //** --------- NODE APIS ---------------- 
@@ -16,7 +15,7 @@ const EC2 = require('aws-sdk/clients/ec2')
 
 
 //** --------- INSTANTIATE AWS CLASSES --- 
-const ec2 = new EC2( { region: process.env.REGION });
+const ec2 = new EC2({ region: process.env.REGION });
 const cloudformation = new CloudFormation({ region: process.env.REGION });
 
 //const eks = new EKS();
@@ -33,7 +32,7 @@ const awsProps = require(__dirname + '/../awsPropertyNames');
 
 
 //** --------- IMPORT DOCUMENT TEMPLATES - 
-const stackTemplateForWorkerNode = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/amazon-eks-worker-node-stack-template.json');
+const stackTemplateForWorkerNode = require(path.join(__dirname, '/../Storage/AWS_Assets/Policy_Documents/amazon-eks-worker-node-stack-template.json'));
 
 //** --------- DECLARE EXPORT OBJECT ---------------------------------- 
 const kubectlConfigFunctions = {};
@@ -82,9 +81,14 @@ kubectlConfigFunctions.createConfigFile = async (clusterName) => {
     
       //Save file in users .kube directory
       await fsp.writeFile(`${process.env['HOME']}/.kube/config-${clusterName}`, yamledAWSClusterConfigFileWithoutRegex);
+
+      
     
       //write to Masterfile that Config file was created
       const dataForAWSMasterDataFile = { [awsProps.KUBECONFIG_FILE_STATUS]: KUBECONFIG_FILE_STATUS_CREATED };
+
+
+
       await awsHelperFunctions.appendAWSMasterFile(dataForAWSMasterDataFile);
       console.log("added Config File Status to Masterfile");
 
@@ -166,7 +170,7 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
   }
 }
 
-//** --------- CREATE A SECOND AWS TECH STACK FOR WORKER NODE -------- **//
+//** --------- CREATE A SECOND AWS TECH STACK FOR WORKER NODE ------------ **//
 /** 
  * @param {String} iamRoleName
  * @param {String} clusterName
@@ -206,7 +210,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (iamRoleName, clusterNam
         console.log("aws key value pair already set");
       }
 
-      const techStackParam = awsParameters.createWorkerNodeStackParam(iamRoleName, workerNodeStackName, stackTemplateforWorkerNode);
+      const techStackParam = awsParameters.createWorkerNodeStackParam(iamRoleName, workerNodeStackName, stackTemplateForWorkerNode);
 
       //Send tech stack data to AWS to create stack 
       await cloudformation.createStack(techStackParam).promise();
@@ -307,7 +311,7 @@ kubectlConfigFunctions.inputNodeInstance = async (iamRoleName, clusterName) => {
       let stderr = kubectlApplyChild.stderr.toString();
       console.log('stdout', stdout, 'stderr', stderr);
 
-      const nodeInstanceDataForAWSMasterFile = { [awsProps.NODE_INSTANCE]: NODE_INSTANCE_STATUS_CONFIGURED }
+      const nodeInstanceDataForAWSMasterFile = { [awsProps.NODE_INSTANCE]: awsProps.NODE_INSTANCE_STATUS_CONFIGURED }
       await awsHelperFunctions.appendAWSMasterFile(nodeInstanceDataForAWSMasterFile);
 
       // set a short timeout here to allow for the kubectl apply to take place

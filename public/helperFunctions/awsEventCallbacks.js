@@ -295,13 +295,13 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
 
     } else {
       console.log("Stack already exists");
-      return `AWS IAM Role with the name ${stackName} already exists. Continuing with the creation process, and attaching elements to ${stackName} stack.`;
+      return `AWS Stack with the name ${stackName} already exists. Continuing with the creation process, and attaching elements to ${stackName} stack.`;
 
     }
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createTechStack:', err);
-    return `AWS IAM Role with the name ${stackName} already exists. Continuing with the creation process, and attaching elements to ${stackName} stack.`; 
+    return `AWS Stack with the name ${stackName} already exists. Continuing with the creation process, and attaching elements to ${stackName} stack.`; 
   }
 };
 

@@ -204,6 +204,99 @@ body {
 /**************************************************/
 
 .aws_cluster_page_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background: #141E30;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #243B55, #141E30);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  font-family: Lato;
+}
+
+.aws_cluster_form_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 55%;
+  height: 50%;
+  background: #071526;
+  border-radius: 6px;
+}
+
+.aws_cluster_form_container_header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #D7D7D7;
+  width: 90%;
+}
+
+.aws_cluster_form_container_input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #D7D7D7;
+  width: 85%;
+  margin-right: 10px;
+}
+
+.aws_cluster_form_container_input h6 {
+  margin: 10px 0;
+  padding: 0;
+}
+
+.aws_cluster_form_container_input input {
+  width: 100%;
+  height: 33px;
+  border-radius: 5px;
+  background: #071526;
+  color: #D6D9E0;
+  border: 1px solid #D6D9E0;
+  font-size: 14px;
+  font-weight: thin;
+  opacity: 0.7;
+
+}
+
+.aws_cluster_form_container_input input[type=text] {
+  padding-left: 10px;
+}
+
+.aws_cluster_form_container_input input::placeholder {
+  color: #D6D9E0;
+}
+
+.aws_cluster_form_container_input input:focus {
+  outline: none;
+}
+
+.aws_cluster_form_container_button button {
+  width: 110px;
+  height: 40px;
+  background: #071526;
+  border: 1px solid #D35B51;
+  margin-right: 15px;
+  border-radius: 5px;
+  color: #D35B51;
+  font-size: 1.1em;
+  font-weight: medium;
+}
+
+.aws_cluster_form_container_button button:focus {
+  outline: none;
+}
+
+.aws_cluster_form_container_button button:active {
+  background: #D35B51;
+  opacity: 0.7;
+  color: #071526;
+}
+
+/* .aws_cluster_page_container {
   position: fixed;
   left: 0;
   right: 0;
@@ -250,7 +343,7 @@ body {
   justify-content: space-evenly;
   align-items: flex-start;
   padding: 10px;
-} 
+}  */
 
 /**************************************************/
 /************ KubectlContainer Styling ************/

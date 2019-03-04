@@ -220,9 +220,9 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, iamRolePolicyDocument) => 
 //** --------- CREATE AWS STACK ------------------------------------ **//
 /**
  * @param {String} stackName
- * @param {String} stackTemplateStringified this is a JSON object that was stringified right before being passed in as an argument
+ * @param {String} iamRoleName
  */
-awsEventCallbacks.createVPCStack = async (stackName, stackTemplate, iamRoleName) => {
+awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
 
 
   try {

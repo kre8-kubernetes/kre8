@@ -214,9 +214,9 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     // FIXME: should the stack template be stringified inside of the awsParameters just like
     // the iamCreateRole process like above?
-    const vpcStackName = data.stackName;
+    const vpcStackName = data.vpcStackName;
 
-    createdStack = await awsEventCallbacks.createVPCStack(vpcStackName, stackTemplate, data.iamRoleName);
+    createdStack = await awsEventCallbacks.createVPCStack(vpcStackName, data.iamRoleName);
     win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
 
 
@@ -239,17 +239,16 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 //** --------- CREATE AWS CLUSTER ---------------------------------- **//
 ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
-  //Collect form data, input by the user when creating a Cluster, and insert into clusterParams object
-  const clusterName = data.clusterName;
-
-  let createdCluster;
   try {
-    createdCluster = await awsEventCallbacks.createCluster(clusterName);
+    createdCluster = await awsEventCallbacks.createCluster(data.clusterName, data.iamRoleName);
+    win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
+
   } catch (err) {
     console.log('Error from CREATE_CLUSTER event listener in main.js:', err);
+    win.webContents.send(events.HANDLE_NEW_CLUSTER, err);
   }
 
-  win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
+  
 });
 
 

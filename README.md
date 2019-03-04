@@ -24,7 +24,7 @@ KRE8's powerful dashboard tool provides the functionality to create, edit and de
   2. Create an [Amazon Web Services](https://aws.amazon.com) account and/or have your credentials available.
 
   #### Installation
-  1. TODO: Braden
+  1. TODO:
   2. TODO:
 
 

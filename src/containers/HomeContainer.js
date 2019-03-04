@@ -107,9 +107,10 @@ class HomeContainer extends Component {
       console.log("All form data passed validation");
       this.setState({ ...this.state, awsAccessKeyId: '', awsSecretAccessKey: '', awsRegion: ''});
       ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsConfigData);
+    } else {
+      console.log("Invalid or missing data entry");
     }
-
-    console.log("Invalid or missing data entry");
+    
   }
 
   //Based on AWS response, either move the user on to the AWS entry page, or send error alert, for user to reenter credentials
@@ -119,12 +120,13 @@ class HomeContainer extends Component {
 
     console.log('incoming text:', data);
     console.log('incoming text:', data.Arn);
-
-    if (data.UserId) {
+    
+    if (data.Arn) {
       this.props.history.push('/aws')
 
       //TODO: Convert alert
       alert(`Signed in with the Role Arn: ${data.Arn}`);
+
     } else {
       alert('The credentials you entered are incorrect. Please check your entries and try again.');
     }

@@ -84,7 +84,8 @@ class AwsContainer extends Component {
 
   testFormValidation() {
     if (this.validator.allValid()) {
-      alert('Your pod is being created!');
+      //todo: convert alert
+      alert('Your AWS Kubernetes Cluster is being configured');
       return true;
     } else {
       this.validator.showMessages();
@@ -127,10 +128,16 @@ class AwsContainer extends Component {
   handleNewRole(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
+    //TODO: Convert alert;
+
+
+    alert(`IAM Role status: ${data.IAMROleName}`);
     // this.props.setNewRole(data);
   }
   
   //** --------- CREATE TECH STACK --------------------------------- **//
+
+  //TODO: DELETE Create tech stack logit and button
   handleCreateTechStack(e) {
     e.preventDefault();
     console.log('createTechStack Clicked!!!');

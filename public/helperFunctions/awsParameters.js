@@ -4,14 +4,12 @@ const awsParameters = {};
 
 /** Parameter for CREATE_IAM_ROLE 
  * @param {String} rolename
- * @param {String} roleDescription
  * @param {Object} iamRolePolicyDocument This is the JSON object for the IAM role policy 
  */
-awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocument) => {
+awsParameters.createIAMRoleParam = (roleName, iamRolePolicyDocument) => {
   const iamRoleParam = {
     AssumeRolePolicyDocument: JSON.stringify(iamRolePolicyDocument),
     RoleName: roleName,
-    Description: roleDescription,
     Path: '/', 
   };
   return iamRoleParam;
@@ -19,11 +17,11 @@ awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocu
 
 /** Parameter for CREATE_TECH_STACK 
  * @param {String} stackName
- * @param {String} stackTemplateStringified this has already been stringified
+ * @param {String} stackTemplate this has already been stringified
  */
-awsParameters.createTechStackParam = (stackName, stackTemplateStringified) => {
-  const techStackParam = {
-    StackName: stackName,
+awsParameters.createVPCStackParam = (vpcStackName, stackTemplate) => {
+  const vpcStackParam = {
+    StackName: vpcStackName,
     DisableRollback: false,
     EnableTerminationProtection: false,
     Parameters: [
@@ -32,9 +30,9 @@ awsParameters.createTechStackParam = (stackName, stackTemplateStringified) => {
       { ParameterKey: 'Subnet02Block', ParameterValue: '192.168.128.0/18', },
       { ParameterKey: 'Subnet03Block', ParameterValue: '192.168.192.0/18', }
     ],
-    TemplateBody: stackTemplateStringified,
+    TemplateBody: JSON.stringify(stackTemplate),
   };
-  return techStackParam;
+  return vpcStackParam;
 }
 
 //** Parameter for CREATE_CLUSTER 

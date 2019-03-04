@@ -13,6 +13,12 @@ const { spawn } = require('child_process');
 //**.ENV Variables */
 const REGION = process.env.REGION;
 
+const awsProps = require(__dirname + '/../awsPropertyNames'); 
+
+//** --------- IMPORT DOCUMENTS ---------------- 
+const iamRolePolicyDocument = require(process.env['AWS_STORAGE'] + '/AWS_Assets/Policy_Documents/iamRoleTrustPolicy.json');
+const stackTemplate = require(process.env['AWS_STORAGE'] + '/AWS_Assets/Policy_Documents/amazon-stack-template-eks-vpc-real.json');
+
 //** --------- INITIALIZE IMPORTS --------- 
 const iam = new IAM();
 const eks = new EKS({ region: REGION});
@@ -21,26 +27,29 @@ const cloudformation = new CloudFormation({ region: REGION });
 const awsEventCallbacks = {};
 
 
-//** ------- EXECUTES ON EVERY OPENING OF APPLICATION ------ **//
+//** ------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------------- **//
 //** ------- Check credentials file to determine if user needs to configure the application **// 
 awsEventCallbacks.returnCredentialsStatus = async (data) => {
 
   try {
 
-    const fileExists = fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json');
+    const fileExists = fs.existsSync(process.env['AWS_STORAGE'] + 'awsCredentials.json');
 
     let credentialStatusToReturn;
 
+    //TODO: Rather than checking for the text below, check for : Log In Status: SUCCESSFUL
+
       if (fileExists) {
 
-        const readCredentialsFile = await fsp.readFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+        const readCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', 'utf-8');
 
-        const parsedCredentialsFile = JSON.parse(readCredentialsFile);
+        const parsedCredentialsFile = JSON.parse(readCredentialsFile, null, 2);
         console.log('this is the parsed obj', parsedCredentialsFile);
 
-        if ((parsedCredentialsFile.AWS_ACCESS_KEY_ID.length > 10) && (parsedCredentialsFile.AWS_SECRET_ACCESS_KEY.length > 20) && (parsedCredentialsFile.REGION > 5)) {
+        if (parsedCredentialsFile.STATUS === "CONFIGURED") {
           credentialStatusToReturn = true;
         }
+
       } else {
         credentialStatusToReturn = false;
       }
@@ -51,7 +60,6 @@ awsEventCallbacks.returnCredentialsStatus = async (data) => {
       console.log(err);
     }
 
-
 }
 
 
@@ -59,12 +67,15 @@ awsEventCallbacks.returnCredentialsStatus = async (data) => {
 awsEventCallbacks.configureAWSCredentials = async (data) => {
 
   // Check if AWS credentials files exists
-  if (fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json')) {
+  //if (fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json')) {
+
+  if (fs.existsSync(process.env['AWS_STORAGE'] + '/awsCredentials.json')) {
+
     
     //if so, update the file to reflect user input
-    const readCredentialsFile = await fsp.readFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
+    const readCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
-    console.log('this is the parsed obj', parsedCredentialsFile);
+    console.log('Credeintial file this is the parsed obj', parsedCredentialsFile);
 
     parsedCredentialsFile.AWS_ACCESS_KEY_ID = data.awsAccessKeyId;
     parsedCredentialsFile.AWS_SECRET_ACCESS_KEY = data.awsSecretAccessKey;
@@ -77,9 +88,9 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
 
     console.log("environment variables: ", process.env['AWS_ACCESS_KEY_ID'], process.env['AWS_SECRET_ACCESS_KEY'],  process.env['REGION'] )
 
-    const stringifiedCredentialFiles = JSON.stringify(parsedCredentialsFile, null, 2);
+    const stringifiedCredentialFile = JSON.stringify(parsedCredentialsFile, null, 2);
 
-    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringifiedCredentialFiles);
+    await fsp.writeFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', stringifiedCredentialFile);
 
   } else {
     //If the file does not exist, set the environment variables and write the file
@@ -95,88 +106,114 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
       REGION: data.awsRegion
     };
 
-    const stringifiedCredentialFiles = JSON.stringify(dataForCredentialsFile, null, 2);
+    const stringifiedCredentialFile = JSON.stringify(dataForCredentialsFile, null, 2);
 
-    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringifiedCredentialFiles);
+    await fsp.writeFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', stringifiedCredentialFile);
 
   }
 }
 
 
+//** --------- UPDATE awsCredentials FILE WITH CREDENTIAL STATUS ------------------------------ **//
+
+awsEventCallbacks.updateCredentialsFileWithCredentialStatus= async (data) => {
+
+  try {
+
+    const readCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', 'utf-8');
+    const parsedCredentialsFile = JSON.parse(readCredentialsFile, null, 2);
+    parsedCredentialsFile.STATUS = 'CONFIGURED';
+    const stringifiedCredentialFile = JSON.stringify(parsedCredentialsFile, null, 2);
+    fsp.writeFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', stringifiedCredentialFile);
+
+  } catch (err) {
+    console.log(err);
+  }
+
+}
+
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
 /**
- * @param {String} iamRoleName
- * @param {String} iamRoleDescription
+ * @param {Object} data
  * @param {Object} iamRolePolicyDoc this is a JSON object that has been required in main.js
  */
-awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePolicyDoc) => {
-
-  let awsMasterFile;
+awsEventCallbacks.createIAMRole = async (iamRoleName, iamRolePolicyDocument) => {
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('================  awsEventCallbacks.createIAMRole ===================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    const key = "iamRoleName";
+    
+    
+    // ** -----------------------------------------
 
-    //test to see if the role by this name already exists. If false, do this:
-    const isIAMRoleNameInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, iamRoleName);
+    //Check if the user has already created a role by this name
+    const isIAMRoleNameInMasterFile = await awsHelperFunctions.checkAWSMasterFile(awsProps.IAM_ROLE_NAME, iamRoleName);
+
+
+
+
 
     console.log("isIAMRoleNameInMasterFile: ", isIAMRoleNameInMasterFile);
 
+    //If not, send IAM data to AWS via the iamParams object to create an IAM Role, and save the data to the file.
     if (!isIAMRoleNameInMasterFile) {
 
-      const iamParams = awsParameters.createIAMRoleParam(iamRoleName, roleDescription, iamRolePolicyDoc);
+      const iamParams = awsParameters.createIAMRoleParam(iamRoleName, iamRolePolicyDocument);
 
-      //Send IAM data to AWS via the iamParams object to create an IAM Role*/
       const role = await iam.createRole(iamParams).promise();
-      console.log("Data that comes back from AWS after creating a role", role);
 
-      //Collect the relevant IAM data returned from AWS
-      const iamRoleDataFromForm = {
-        iamRoleName: role.Role.RoleName,
-        roleID: role.Role.RoleId,
-        iamRoleArn: role.Role.Arn,
-        createDate: role.Role.CreateDate,
-        path: role.Role.Path
-      }
+      //TODO: handle error info from AWS
+      if (role.Role.CreateDate) {
 
-      const iamRoleDataforMasterFile = {
-        createDate: role.Role.CreateDate,
-        iamRoleName: role.Role.RoleName,
-        iamRoleArn: role.Role.Arn,
-      }
+        console.log("Data that comes back from AWS after creating a role", role);
 
-      const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm, null, 2);
-      // const stringifiedIamRoleDataforMasterFile = JSON.stringify(iamRoleDataforMasterFile);
-      
-      //Create file named for IAM Role and save in assets folder 
-      // FIXME: Do we need this file anymore???
-      await fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${iamRoleName}.json`, stringifiedIamRoleDataFromForm);
+        const iamRoleData = {
+          createDate: role.Role.CreateDate,
+          iamRoleName: role.Role.RoleName,
+          iamRoleArn: role.Role.Arn,
+        }
 
-      awsMasterFile = awsHelperFunctions.appendAWSMasterFile(iamRoleDataforMasterFile);
+        // ** -----------------------------------------
+
+        await awsHelperFunctions.appendAWSMasterFile(iamRoleData, iamRoleName);
+
+
+
+
+
 
       //Send Cluster + Service Policies to AWS to attach to created IAM Role
-      // FIXME: Can we move these outside of the function? Possibly as a string const that we import
-      const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
-      const servicePolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
+        const clusterPolicyParam = { RoleName: iamRoleName, PolicyArn: awsProps.CLUSTER_POLICY_ARN };
 
-      const clusterPolicyParam = { RoleName: iamRoleName, PolicyArn: clusterPolicyArn }
-      const servicePolicyParam = { RoleName: iamRoleName, PolicyArn: servicePolicyArn }
+        const servicePolicyParam = { RoleName: iamRoleName, PolicyArn: awsProps.SERVICE_POLICY_ARN };
 
-      await Promise.all([iam.attachRolePolicy(clusterPolicyParam).promise(), iam.attachRolePolicy(servicePolicyParam).promise()])
+        await Promise.all([
+          iam.attachRolePolicy(clusterPolicyParam).promise(), 
+          iam.attachRolePolicy(servicePolicyParam).promise()
+        ])
+
+        return iamRoleData;
+
+      } else {
+        //TODO: address this error situation
+        console.log("AWS IAM Role already exists.");
+        return `${iamRoleName} already exists.`;
+      }
 
     } else {
-      console.log("Returned True. Text found in Master File, Role already exists");
+      console.log("AWS IAM Role already exists.");
+      return `${iamRoleName} already exists.`;
+
     }
+
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createIAMROle:', err);
   }
 
-  return awsMasterFile;
 };
 
 
@@ -185,35 +222,33 @@ awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePo
  * @param {String} stackName
  * @param {String} stackTemplateStringified this is a JSON object that was stringified right before being passed in as an argument
  */
-awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) => {
+awsEventCallbacks.createVPCStack = async (stackName, stackTemplate, iamRoleName) => {
 
-  let parsedStackData;
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-    console.log('================  awsEventCallbacks.createTechStack =================')
+    console.log('================  awsEventCallbacks.createVPCStack =================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    // FIXME: should we move these master file property names to a constants page and require the object in?
-    const key = "stackName";
+    const isVPCStackInMasterFile = await awsHelperFunctions.checkAWSMasterFile(awsProps.VPC_STACK_NAME, stackName);
 
-    const isTechStackInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, stackName);
+    console.log("isVPCStackInMasterFile: ", isVPCStackInMasterFile);
 
-    console.log("isTechStackInMasterFile: ", isTechStackInMasterFile);
+    let parsedStackData;
 
-    if (!isTechStackInMasterFile) {
+    if (!isVPCStackInMasterFile) {
 
-      const techStackParam = await awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
+      const vpcStackParam = await awsParameters.createVPCStackParam(stackName, stackTemplate); 
 
       //Send tech stack data to AWS to create stack 
-      const stack = await cloudformation.createStack(techStackParam).promise();
+      await cloudformation.createStack(vpcStackParam).promise();
 
-      const getStackDataParam = { StackName: stackName };
 
       let stringifiedStackData;
-      // TODO:, remove if below works: let stackStatus = "CREATE_IN_PROGRESS";
+
       let stackStatus = "CREATE_IN_PROGRESS";
 
+      const getStackDataParam = { StackName: stackName };
       const getStackData = async () => {
         try {
           const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
@@ -233,9 +268,7 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
         getStackData();
       }
 
-      if (stackStatus === "CREATE_COMPLETE") {
-        // FIXME: do we need this now that we have a master file for this data
-        const createStackFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+      if (stackStatus === "CREATE_COMPLETE") {        
         
         const stackDataForMasterFile = {
           stackName: parsedStackData[0].StackName,
@@ -245,22 +278,25 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
         }
         stackDataForMasterFile.subnetIdsArray = stackDataForMasterFile.subnetIdsString.split(',');
 
-        await awsHelperFunctions.appendAWSMasterFile(stackDataForMasterFile);
+        await awsHelperFunctions.appendAWSMasterFile(stackDataForMasterFile, iamRoleName);
+
 
       } else {
-        console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
+        console.log(`Error in creating stack. Stack Status = ${stackStatus}`);
+        return `Error in creating stack. Stack Status = ${stackStatus}`;
       }
+
+    return parsedStackData;
+
 
     } else {
       console.log("Stack already exists");
+      return 'Stack already exists';
     }
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createTechStack:', err); 
   }
-
-  //TODO: Decide what to return to user
-  return parsedStackData;
 };
 
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
@@ -293,7 +329,10 @@ awsEventCallbacks.createCluster = async (clusterName) => {
 
     if (!isClusterInMasterFile) {
 
-      const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+      //const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+
+      const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + 'AWS_MASTER_DATA.json', 'utf-8');
+
 
       const parsedaAWSMasterFileData = JSON.parse(awsMasterFileData);
       iamRoleArn = parsedaAWSMasterFileData.iamRoleArn;
@@ -353,7 +392,8 @@ awsEventCallbacks.createCluster = async (clusterName) => {
           serverEndPoint: parsedClusterData.cluster.endpoint,
           certificateAuthorityData: parsedClusterData.cluster.certificateAuthority.data,
         }
-        awsHelperFunctions.appendAWSMasterFile(clusterDataforMasterFile);
+        //TODO double check
+        await awsHelperFunctions.appendAWSMasterFile(clusterDataforMasterFile, iamRoleName);
       } else {
         console.log(`Error in creating cluster. Cluster Status = ${clusterStatus}`);
       }

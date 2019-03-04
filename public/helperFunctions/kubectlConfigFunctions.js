@@ -14,7 +14,8 @@ const fsp = require('fs').promises;
 const YAML = require('yamljs');
 
 //** --------- IMPORT DOCUMENTS ---------------- 
-const stackTemplateForWorkerNode = require(__dirname + '/../sdkAssets/samples/amazon-eks-worker-node-stack-template.json');
+const stackTemplateForWorkerNode = require(process.env['AWS_STORAGE'] + '/AWS_Assets/Policy_Documents/amazon-eks-worker-node-stack-template.json');
+const nodeInsanceTemplate = require(process.env['AWS_STORAGE'] + '/AWS_Assets/Policy_Documents/node-instance-template.yaml');
 
 
 //**.ENV Variables */
@@ -259,7 +260,7 @@ kubectlConfigFunctions.inputNodeInstance = async (workerNodeStackName, clusterNa
     // const authFileCreate = await fsp.writeFile(__dirname + `/../sdkAssets/private/AUTH_FILE_${workerNodeStackName}.json`, paramToFileStringified);
 
     // read the template yaml, replace the placeholder with arn value and create new yaml file.
-    const templateRead = await fsp.readFile(__dirname + `/../sdkAssets/samples/node-instance-template.yaml`, 'utf-8');
+    const templateRead = await fsp.readFile(nodeInsanceTemplate, 'utf-8');
     const newFileString = templateRead.replace(/<NodeInstanceARN>/, nodeInstanceRoleArn);
     await fsp.writeFile(__dirname + `/../sdkAssets/private/AUTH_FILE_${workerNodeStackName}.yaml`, newFileString);
 

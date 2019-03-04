@@ -1,7 +1,7 @@
 # Documents
 /public/sdkAssets/private
 /public/yamlAssets/private
-
+/public/Storage
 
 # Logs
 logs

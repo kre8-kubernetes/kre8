@@ -24,30 +24,33 @@ const awsHelperFunctions = {};
 
 
 //** -- Function to generate AWS config object by reading file -------- 
+//TODO: does this function talk to anything? IF not, delete!!!
+// //Checks if AWS_CONFIG_FILE has been created
+// //If so, reads the file
+// awsHelperFunctions.returnAWSCredentials = async () => {
+//   try{
+//     const awsConfigData = {};
+//     const fileExists = fs.existsSync(process.env['AWS_STORAGE'] + '/AWS_CONFIG_DATA.json');
 
-awsHelperFunctions.returnAWSCredentials = async () => {
-  try{
-    const awsConfigData = {};
-    const fileExists = fs.existsSync(__dirname + `/../sdkAssets/private/AWS_CONFIG_DATA.json`);
+//     if (fileExists) {
+//       const awsConfigFileData = await fsp.readFile(process.env['AWS_STORAGE'] + '/AWS_CONFIG_DATA.json', 'utf-8');
+//       const parsedAWSConfigFileData = JSON.parse(awsConfigFileData);
+//       console.log("Config file exits and here are the contents:", parsedAWSConfigFileData);
+//       awsConfigData.accessKeyId = parsedAWSConfigFileData.awsAccessKeyId;
+//       awsConfigData.secretAccessKey = parsedAWSConfigFileData.secretAccessKey;
+//       awsConfigData.region = parsedAWSConfigFileData.awsRegion;
 
-    if (fileExists) {
-      const awsConfigFileData = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_CONFIG_DATA.json`, 'utf-8');
-      const parsedAWSConfigFileData = JSON.parse(awsConfigFileData);
-      console.log("Config file exits and here are the contents:", parsedAWSConfigFileData);
-      awsConfigData.accessKeyId = parsedAWSConfigFileData.awsAccessKeyId;
-      awsConfigData.secretAccessKey = parsedAWSConfigFileData.secretAccessKey;
-      awsConfigData.region = parsedAWSConfigFileData.awsRegion;
-    } else {
-      //TODO unknown if we need
-      //awsConfigData.region = REGION;
-    }
-    console.log("awsConfigData: ", awsConfigData)
-    return awsConfigData;
+//     } else {
+//       //TODO unknown if we need
+//       //awsConfigData.region = REGION;
+//     }
+//     console.log("awsConfigData: ", awsConfigData)
+//     return awsConfigData;
 
-  } catch (err) {
-    console.log(err)
-  }
-}
+//   } catch (err) {
+//     console.log(err)
+//   }
+// }
 
 
 //** -- Timeout Function blocks excution thread for ms Miliseconds ------ 
@@ -65,12 +68,11 @@ awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = (folderName) => {
   }
 }
 
-/** -- Function to read and check AWS_MASTER file ---
- * This is a function that will check if the master file exists and if it does,
- * then we will create that
-* @param {string} key keyname of the object property in question
-* @param {string} value the value of the property in question
-**/ 
+//** --------- READ & CHECK AWS_MASTER FILE --------------- **//
+//Checks if the master file exists and if it does not, create IT
+// @param {string} key keyname of the object property in question
+// @param {string} value the value of the property in question
+
 awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
 
   let valueToReturn;
@@ -80,29 +82,40 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
     console.log('=============  awsHelperFunctions.checkAWSMasterFile ================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    const fileExists = fs.existsSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`);
+    const fileExists = fs.existsSync(process.env['AWS_STORAGE'] + `${value}_MASTER_FILE.json`);
 
     if (fileExists) {
-      const awsMasterFileContents = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+
+      //TODO: CREATE A FILE SPECIFIC TO THE IAM ROLE
+      //TODO CAHNGE I AM ROLE TO CLUSTER NAME
+      const awsMasterFileContents = await fsp.readFile(process.env['AWS_STORAGE'] + `${value}_MASTER_FILE.json`, 'utf-8');
       const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
       console.log("Master file exits and here are the contents:", parsedAWSMasterFileContents);
 
       if (parsedAWSMasterFileContents[key] === value) {
-        console.log("key already exists in the parsed master file")
+        console.log("key and value already exists in the parsed master file")
         valueToReturn = true;
       } else {
         console.log("key did not exist in the parsed master file")
         valueToReturn = false;
       }
+    
+    //If file does not exist yet (will only ocurr when adding the IAM role)
     } else {
-      const dataForAWSMasterDataFile = { [key]: value };
+
+      //TODO: maybe fix
+      //const dataForAWSMasterDataFile = { [key]: value };
+      const dataForAWSMasterDataFile = {};
+
       const stringifiedDataForAWSMasterDataFile = JSON.stringify(dataForAWSMasterDataFile, null, 2);
-      const awsMasterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedDataForAWSMasterDataFile);
+
+      const awsMasterFile = await fsp.writeFile(process.env['AWS_STORAGE'] + `${value}_MASTER_FILE.json`, stringifiedDataForAWSMasterDataFile);
 
       console.log("file did not exist. Created file and wrote initial data to file: ", stringifiedDataForAWSMasterDataFile);
 
       valueToReturn = false;
     }
+    
   } catch (err) {
     console.log('Error from awsHelperFunctions.checkAWSMasterFile:', err);
   }
@@ -112,28 +125,28 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
 }
 
 //if checkAWSMasterFile returns false, append text
-awsHelperFunctions.appendAWSMasterFile = async (data) => {
+awsHelperFunctions.appendAWSMasterFile = async (data, value) => {
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('============= awsHelperFunctions.appendAWSMasterFile ================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    console.log("Data to append to file", typeof data, data);
+    console.log("Data to append to file", data);
     
-    const awsMasterFileContents = await fsp.readFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
-
+    const awsMasterFileContents = await fsp.readFile(process.env['AWS_STORAGE'] + `${value}_MASTER_FILE.json`, 'utf-8');
     const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
 
-    for (let key in data) {
-      parsedAWSMasterFileContents[key] = data[key];
-    }
+    //TODO Reconfigure
+    Object.entries(data).forEach(value => {
+      parsedAWSMasterFileContents[value[0]] = value[1];
+    })
 
     const stringifiedAWSMasterFileContents = JSON.stringify(parsedAWSMasterFileContents, null, 2);
     
-    await fsp.writeFile(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, stringifiedAWSMasterFileContents);
+    await fsp.writeFile(process.env['AWS_STORAGE'] + `${value}_MASTER_FILE.json`, stringifiedAWSMasterFileContents);
 
-    console.log("Data was added to the master file");
+    console.log("Data was added to the master file: ", stringifiedAWSMasterFileContents);
 
     return parsedAWSMasterFileContents;
 

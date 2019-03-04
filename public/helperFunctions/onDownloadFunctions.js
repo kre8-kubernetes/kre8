@@ -5,7 +5,9 @@ const path = require('path');
 
 const onDownload = {}
 
+
 //** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ---------------------- **//
+//To communicate with AWS, user must have the aws-iam-authenticator installed. 
 onDownload.installIAMAuthenticator = () => {
   console.log('now installing IAM authenticator');
 
@@ -31,19 +33,18 @@ onDownload.enableIAMAuthenticator = () => {
 }
 
 //** ---- COPY AWS-IAM-AUTHENTICATOR TO BIN FOLDER IN HOME DIRECTORY ------ **//
+//Checks if the user has a bin directory in their Home directory, if not one is created
+//and the aws-iam-authenticator is copied into the directory
+
 onDownload.copyIAMAuthenticatorToBinFolder = () => {
   console.log('now copying to bin folder');
 
-  //Check if user has bin folder in Home directory, if not, create one
   const binFolderExists = fs.existsSync(process.env['HOME'] + '/bin');
 
   if (!binFolderExists) {
-    fs.mkdirSync(process.env['HOME'] + '/bin'), (err) => {
-      if (err) console.log("mkdir error", "err");
-    }
+    fs.mkdirSync(process.env['HOME'] + '/bin');
   }
     
-  //Copy the aws-iam-authenticator into the bin folder
   const child = spawnSync('cp', ['./aws-iam-authenticator', process.env['HOME'] + '/bin/aws-iam-authenticator']);
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
@@ -52,18 +53,15 @@ onDownload.copyIAMAuthenticatorToBinFolder = () => {
 }
 
 //** ---- SET PATH ENVIRONTMENT VARIABLE & APPEND TO BASH_PROFILE FILE --- **//
-//Function checks if the user has a .bash_profile file in their home directory, 
-//if so, it checks to see if it explicitly sets the PATH variable to point to the bin folder  
-//if not, it appends this to the profile
-//if no .bash_profile exists, it creates one with this text included
+//Checks if user has .bash_profile file in home directory. If not, one is created. 
+//If so, checks if .bash_profile contains text setting PATH to point to the bin folder. 
+//If not, these instructions are appended to the file
 onDownload.setPATHAndAppendToBashProfile = async () => {
   console.log('now appending path to bash profile');
 
   try {
 
-    const textToInsert = `\nexport PATH=$HOME/bin:$PATH`;
-
-    //check if bash profile exists in user's home directory
+    const textToAppendToBashProfile = `\nexport PATH=$HOME/bin:$PATH`;
 
     const bashProfileExists = fs.existsSync(process.env['HOME'] +'/.bash_profile');
     console.log('bashProfileExists:', bashProfileExists)
@@ -78,24 +76,23 @@ onDownload.setPATHAndAppendToBashProfile = async () => {
     
       const bashProfileIncludesText = bashProfileContents.includes(textToCheckForinBashProfile);
 
-      if (!bashIncludesText) {
+      if (!bashProfileIncludesText) {
         console.log("did not include text, adding it to profile");
-        await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToInsert)
+        await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToAppendToBashProfile)
         process.env['PATH'] = process.env['HOME'] + '/bin:' + process.env['PATH'];
       } else {
         console.log ("bash profile already included the text")
       }
-    } else {
 
-      console.log('profile didnt exist', textToInsert)
-      await fsp.writeFile(process.env['HOME'] +'/.bash_profile', textToInsert)
+    } else {
+      console.log('profile didnt exist', textToAppendToBashProfile)
+      await fsp.writeFile(process.env['HOME'] +'/.bash_profile', textToAppendToBashProfile)
     }
 
   } catch (err) {
     console.log(err);
   }
 }
-
 
 
 module.exports = onDownload;

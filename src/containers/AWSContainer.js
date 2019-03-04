@@ -10,8 +10,7 @@ import * as events from '../../eventTypes';
 import AWSComponent from '../components/AWSComponent'
 
 const mapStateToProps = store => ({
-  roleName: store.aws.roleName,
-  podName: store.kubectl.podName
+
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -24,10 +23,9 @@ class AwsContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      createRole_roleName: '',
-      createRole_description: '',
-      createTechStack_stackName: '',
-      createCluster_clusterName: '',
+      iamRoleName: '',
+      vpcStackName: '',
+      clusterName: '',
     }
 
     this.validator = new SimpleReactValidator({
@@ -79,7 +77,7 @@ class AwsContainer extends Component {
   //**--------------EVENT HANDLERS-----------------**//
   handleChange(e) {
     e.preventDefault();
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.id]: e.target.value });
   }
 
   testFormValidation() {
@@ -112,13 +110,13 @@ class AwsContainer extends Component {
     e.preventDefault();
     console.log('handleCreateRole Clicked!!!');
     const awsIAMRoleData = {
-      roleName: this.state.createRole_roleName,
-      description: this.state.createRole_description,
+      iamRoleName: this.state.iamRoleName,
+      description: this.state.description,
     }
 
     if (this.testFormValidation()) {
       console.log("All form data passed validation");
-      this.setState({ ...this.state, createRole_roleName: '', createRole_description: ''})
+      this.setState({ ...this.state, iamRoleName: '', description: ''})
       ipcRenderer.send(events.CREATE_IAM_ROLE, awsIAMRoleData);
     } else {
       console.log("Invalid or missing data entry");
@@ -143,12 +141,12 @@ class AwsContainer extends Component {
     console.log('createTechStack Clicked!!!');
     //TODO: Dynamically intake data from form
     const awsTechStackData = {
-      stackName: this.state.createTechStack_stackName,
+      vpcStackName: this.state.vpcStackName,
     }
 
     if (this.testFormValidation()) {
       console.log("All form data passed validation");
-      this.setState({ ...this.state, createTechStack_stackName: ''});
+      this.setState({ ...this.state, vpcStackName: ''});
       ipcRenderer.send(events.CREATE_TECH_STACK, awsTechStackData);
     } else {
       console.log("Invalid or missing data entry");
@@ -167,13 +165,13 @@ class AwsContainer extends Component {
 
     //TODO: Dynamically intake data from form
     const awsClusterData = {
-      clusterName: this.state.createCluster_clusterName,
+      clusterName: this.state.clusterName,
     }
 
     if (this.testFormValidation()) {
       console.log("All form data passed validation");
-      this.setState({ ...this.state, createCluster_clusterName: ''});
-      ipcRenderer.send(events.CREATE_CLUSTER, awsClusterData);
+      this.setState({ ...this.state, clusterName: ''});
+      erer.send(events.CREATE_CLUSTER, awsClusterData);
     } else {
       console.log("Invalid or missing data entry");
     }  
@@ -188,8 +186,8 @@ class AwsContainer extends Component {
   //** --------- Config Kubectl and Create Worker Nodes -------------- **//
   handleConfigAndMakeNodes(e) {
     e.preventDefault();
-    console.log('clicked handleConfigAndMakeNodes');
-    ipcRenderer.send(events.CONFIG_KUBECTL_AND_MAKE_NODES, 'from config kubectl and make worker nodes');
+    console.log('data to send!!', this.state);
+    // ipcRenderer.send(events.CREATE_IAM_ROLE, this.state);
   }
 
   handleNewNodes(event, data) {
@@ -198,33 +196,29 @@ class AwsContainer extends Component {
 
   render() {
     const { 
-      createRole_roleName,
-      createRole_description,
-      createTechStack_stackName,
-      createCluster_clusterName,
+      iamRoleName,
+      vpcStackName,
+      clusterName,
      } = this.state;
 
     return (
       <div>
-      <div className="aws_cluster_page_background"></div>
+        <div className="aws_cluster_page_container">
+          <AWSComponent
+            handleChange={this.handleChange}
+            validator={this.validator}         
 
-      <div className="aws_cluster_page_container">
-        <AWSComponent
-          handleChange={this.handleChange}
-          validator={this.validator}         
+            iamRoleName={iamRoleName}
+            vpcStackName={vpcStackName}
+            clusterName={clusterName}
 
-          createRole_roleName={createRole_roleName}
-          createRole_description={createRole_description}
-          createTechStack_stackName={createTechStack_stackName}
-          createCluster_clusterName={createCluster_clusterName}
-
-          handleCreateRole={this.handleCreateRole}
-          emitInstallAuthenticator={this.emitInstallAuthenticator}
-          handleCreateTechStack={this.handleCreateTechStack}
-          handleCreateCluster={this.handleCreateCluster}
-          handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
-        />
-      </div>
+            handleCreateRole={this.handleCreateRole}
+            emitInstallAuthenticator={this.emitInstallAuthenticator}
+            handleCreateTechStack={this.handleCreateTechStack}
+            handleCreateCluster={this.handleCreateCluster}
+            handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
+          />
+        </div>
       </div>
     );
   }

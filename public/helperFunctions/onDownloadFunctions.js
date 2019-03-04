@@ -1,12 +1,13 @@
+//** --------- NODE APIS ---------------- 
 const fs = require('fs');
-const { spawn, spawnSync } = require('child_process');
 const fsp = require('fs').promises;
+const { spawn, spawnSync } = require('child_process');
 const path = require('path');
 
+//** --------- DECLARE EXPORT OBJECT ---------------------------------- 
 const onDownload = {}
 
-
-//** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ---------------------- **//
+//** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ------------------ **//
 //To communicate with AWS, user must have the aws-iam-authenticator installed. 
 onDownload.installIAMAuthenticator = () => {
   console.log('now installing IAM authenticator');
@@ -20,19 +21,18 @@ onDownload.installIAMAuthenticator = () => {
 
 }
 
-//** --------- APPLY PERMISSIONS TO BINARY FILE TO MAKE EXECUTABLE -------- **//
+//** --------- APPLY PERMISSIONS TO BINARY FILE TO MAKE EXECUTABLE ----- **//
 onDownload.enableIAMAuthenticator = () => {
   console.log('now enabling IAM authenticator');
 
   const child = spawnSync('chmod', ['+x', './aws-iam-authenticator']);
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
-
   console.log('stdout', stdout, 'stderr', stderr);
 
 }
 
-//** ---- COPY AWS-IAM-AUTHENTICATOR TO BIN FOLDER IN HOME DIRECTORY ------ **//
+//** ---- COPY AWS-IAM-AUTHENTICATOR TO BIN FOLDER IN HOME DIRECTORY ----- **//
 //Checks if the user has a bin directory in their Home directory, if not one is created
 //and the aws-iam-authenticator is copied into the directory
 

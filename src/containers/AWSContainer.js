@@ -127,9 +127,7 @@ class AwsContainer extends Component {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     console.log('incoming text:', data);
     //TODO: Convert alert;
-
-
-    alert(`IAM Role status: ${data.IAMROleName}`);
+    alert(data);
     // this.props.setNewRole(data);
   }
   
@@ -155,6 +153,7 @@ class AwsContainer extends Component {
   
   handleNewTechStack(event, data) {
     console.log('incoming text:', data);
+    alert(data)
     //TODO: this.props.SOMETHING(data);
   }
   
@@ -179,7 +178,8 @@ class AwsContainer extends Component {
   
   handleNewCluster(event, data) {
     console.log('incoming data from cluster:', data);
-    //TODO: this.props.SOMETHING(data);
+    //TODO: convert alert;
+    alert(data);
   }
   
   //TODO: Remove this portion, no longer relevant
@@ -187,11 +187,14 @@ class AwsContainer extends Component {
   handleConfigAndMakeNodes(e) {
     e.preventDefault();
     console.log('data to send!!', this.state);
-    // ipcRenderer.send(events.CREATE_IAM_ROLE, this.state);
+    ipcRenderer.send(events.CREATE_IAM_ROLE, this.state);
   }
 
   handleNewNodes(event, data) {
     console.log('kubectl has been configured and worker nodes have been made from the main thread:', data);
+    if (data === 'Done') {
+      this.props.history.push('/cluster');
+    }
   }
 
   render() {

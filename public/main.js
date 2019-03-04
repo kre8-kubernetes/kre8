@@ -1,120 +1,89 @@
-const { electron, app, BrowserWindow, ipcMain } = require('electron');
-const path = require('path');
-const isDev = require('electron-is-dev');
+//** --------- NPM MODULES ---------------- 
 require('dotenv').config();
+const { electron, app, BrowserWindow, ipcMain } = require('electron');
+const isDev = require('electron-is-dev');
 
+//** --------- NODE APIS ---------------- 
 const fs = require('fs');
-const fsp = require('fs').promises;
-const mkdirp = require('mkdirp');
 const { spawn, spawnSync } = require('child_process');
+const path = require('path');
+//const mkdirp = require('mkdirp');
+//const fsp = require('fs').promises;
 
-const YAML = require('yamljs');
+//** --------- AWS SDK ELEMENTS --------- 
+const IAM = require('aws-sdk/clients/iam');
+const STS = require('aws-sdk/clients/sts');
+//const EKS = require('aws-sdk/clients/eks');
+//const CloudFormation = require('aws-sdk/clients/cloudformation');
 
-//** --------- IMPORT RESOURCE FILES ---------
+//** --------- INSTANTIATE AWS CLASSES --- 
+const sts = new STS();
+//const eks = new EKS();
+//const cloudformation = new CloudFormation();
+//const awsConfig = new AWSConfig();
+//const iam = new IAM();
+//const eks = new EKS({ region: REGION });
+//const cloudformation = new CloudFormation({ region: REGION });
+
+//** --------- IMPORT MODULES -----------
 const events = require('../eventTypes.js')
 const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
-const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
-const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
-const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemplates');
 const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
-const onDownload = require(__dirname + '/helperFunctions/onDownloadFunctions');
+const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemplates');
+//const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
+//const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
 
-// //** --------- IMPORT DOCUMENTS ---------------- 
+//** --------- IMPORT DOCUMENT TEMPLATES - 
 // const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
 // const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
-
-//** --------- IMPORT AWS SDK ELEMENTS --------- 
-const EKS = require('aws-sdk/clients/eks');
-const IAM = require('aws-sdk/clients/iam');
-const CloudFormation = require('aws-sdk/clients/cloudformation');
-const STS = require('aws-sdk/clients/sts');
 
 //** --------- .ENV Variables -------------- 
 //let REGION = process.env.REGION;
 const PORT = process.env.PORT;
 const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 
-//** --------- INITIALIZE SDK IMPORTS ------ 
-
-const sts = new STS();
-const eks = new EKS();
-const cloudformation = new CloudFormation();
-const iam = new IAM();
-
-//const eks = new EKS({ region: REGION });
-//const cloudformation = new CloudFormation({ region: REGION });
-//const awsConfig = new AWSConfig();
-
-//** --------- CREATE WINDOW OBJECT -------------------------------------------- **//
+//Declare window object
 let win;
 
-//Invoked with app.on('ready'): creates application window, serves either dev or production version of app and
+//** --------- CREATE WINDOW OBJECT -------------------------------------------- **//
+//Invoked with app.on('ready'): 
+//Insures IAM Authenticator is installed and configured 
 //sets necessary environment variables
+//creates application window, serves either dev or production version of app and
 function createWindowAndSetEnvironmentVariables () {
 
+  awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator();
+  
+
   if (isDev) {
+    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
     process.env['APPLICATION_PATH'] = __dirname;
-    process.env['AWS_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/AWS_Assets/';
-    process.env['KUBECTL_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/KUBECTL_Assets'
-    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH)
-    console.log("process.env['APPLICATION_PATH'] inside if isDev, createWindowAndSetEnvironmentVariables: ", process.env['APPLICATION_PATH'])
-    mkdirp.sync(process.env['AWS_STORAGE']);
-    mkdirp.sync(process.env['KUBECTL_STORAGE']);
+    awsEventCallbacks.setEnvVarsAndMkDirsInDev();
 
   } else {
-    process.env['APPLICATION_PATH'] = process.env['HOME'] + '/Library/Application\ Support/KRE8';
-    process.env['AWS_STORAGE'] = process.env['APPLICATION_PATH'] + `/Storage/AWS_Assets/`;
-    process.env['KUBECTL_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/KUBECTL_Assets'
-
-    //TODO: check if we need to create this, or if in the configuration of electron we do it then
-    mkdirp.sync(process.env['AWS_STORAGE']);
-    mkdirp.sync(process.env['KUBECTL_STORAGE']);
+    awsEventCallbacks.setEnvVarsAndMkDirsInProd();
+    //TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
   }
 
-  //If awsCredentials file has already been created, use data to set required AWS Environment Variables: 
-  //AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION
+  //If awsCredentials file has already been created, use data to set additional required 
+  //AWS Environment Variables AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION
   if (fs.existsSync(process.env['AWS_STORAGE'] + 'awsCredentials.json')) {
     const readCredentialsFile = fs.readFileSync(process.env['AWS_STORAGE'] + 'awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
+
     Object.entries(parsedCredentialsFile).forEach((arr) => {
       process.env[arr[0]] = arr[1];
+      console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
     });
+
+    console.log("process.env['AWS_REGION']: ", process.env['AWS_REGION'])
   }
 
   win = new BrowserWindow({width: 1080, height: 810});
-
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
   win.on('closed', () => win = null)
 }
 
-
-//TODO: Braden convert to on startup function perform once
-//** --------- EXECUTES ON DOWNLOAD -------------------------------------------- **//
-//** --------- Check for & install aws-iam-authenticator ----------------------- **//
-//To communicate with AWS, user must have the aws-iam-authenticator installed
-//These functions check if authenticator is already installed in user's bin folder
-//If not, the authenticator will be installed, and the path will be defined in the user's 
-//.bash_profile file, which is where AWS specifies it should be
-ipcMain.on(events.INSTALL_IAM_AUTHENTICATOR, async (event, data) => {
-  
-  try {
-    const iamAuthenticatorExists = fs.existsSync(process.env['HOME'] + '/bin/aws-iam-authenticator');
-
-    if (!iamAuthenticatorExists) {
-      onDownload.installIAMAuthenticator();
-      onDownload.enableIAMAuthenticator();
-      onDownload.copyIAMAuthenticatorToBinFolder();
-    }
-
-    await onDownload.setPATHAndAppendToBashProfile();
-
-  } catch (err) {
-    console.log(err);
-  }
-
-  //TODO: Braden, should we delete this, since not sending any info to frontend
-  //win.webContents.send(events.HANDLE_NEW_ROLE, 'New Role Name Here');
-})
 
 //** ------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------------- **//
 //** ------- Check credentials file to determine if user needs to configure the application **// 
@@ -158,7 +127,6 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
       console.log("credentialStatus.Arn in yes: ", credentialStatus.Arn);
 
       await awsEventCallbacks.updateCredentialsFileWithCredentialStatus();
-
       win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
 
     } else {
@@ -185,12 +153,15 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
 
 ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
+
   try {
 
     //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------------------------
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('============  ipcMain.on(events.CREATE_IAM_ROLE)... =================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+
+    process.env['IAM_ROLE_NAME'] = data.iamRoleName;
 
     iamRoleStatusData = await awsEventCallbacks.createIAMRole(data.iamRoleName);
 
@@ -206,7 +177,6 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
   //** ------ CREATE AWS STACK + SAVE RETURNED DATA IN FILE ---- **//
   //Takes approx 1 - 1.5 mins to create stack and get data back from AWS
 
-  let createdStack;
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -216,7 +186,7 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     // the iamCreateRole process like above?
     const vpcStackName = data.vpcStackName;
 
-    createdStack = await awsEventCallbacks.createVPCStack(vpcStackName, data.iamRoleName);
+    const createdStack = await awsEventCallbacks.createVPCStack(vpcStackName, data.iamRoleName);
     win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
 
 
@@ -226,71 +196,56 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
   }
 
-  //TODO: decide what to send back to user. Now just sends stackName
-})
-
-
-
-
-
-
-
-
-//** --------- CREATE AWS CLUSTER ---------------------------------- **//
-ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
+  //** --------- CREATE AWS CLUSTER ---------------------------------- **//
 
   try {
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+    console.log('============  ipcMain.on(events.CREATE_CLUSTER),... ==============')
+    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     createdCluster = await awsEventCallbacks.createCluster(data.clusterName, data.iamRoleName);
     win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
 
   } catch (err) {
-    console.log('Error from CREATE_CLUSTER event listener in main.js:', err);
+    console.log('Error from CREATE_CLUSTER in main.js:', err);
     win.webContents.send(events.HANDLE_NEW_CLUSTER, err);
   }
 
-  
-});
+  try {
 
+    console.log("starting kube config");
+    await kubectlConfigFunctions.createConfigFile(data.clusterName);
+    await kubectlConfigFunctions.configureKubectl(data.clusterName);
+    win.webContents.send(events.HANDLE_NEW_CLUSTER, `kubectl Configured`);
 
-//TODO: No button should be used, should auto happen after last thing completes
+    await kubectlConfigFunctions.createStackForWorkerNode(data.iamRoleName, data.clusterName);
+    
+    win.webContents.send(events.HANDLE_NEW_CLUSTER, `Worker Node VPC Stack Created`);
 
-//** --------- TESTING BUTTON  ---------------------------------- **//
+    await kubectlConfigFunctions.inputNodeInstance(data.iamRoleName, data.clusterName);
 
+    //TODO: add listener to give updates on these statuses
+    win.webContents.send(events.HANDLE_NEW_NODES, 'Done')
 
-ipcMain.on(events.CONFIG_KUBECTL_AND_MAKE_NODES, async (event, data) => {
-
-  //TODO: Test .includes on bash profile
-     //read the bash profile
-      //stringify the contents
-      //check if teh file contains "KUBECONFIG"
-      //if not, proceed
-      //if so:
-        //
-
-
-
-  win.webContents.send(events.HANDLE_NEW_NODES, 'Nodes were made from the main thread')
+  } catch (err) {
+    console.log('Error from awsEventCallbacks.createCluster: ', err);
+  }
 })
 
 
-//** ----------KUBECTL EVENTS WILL GO HERE ------------------- **//
+//** --------------------------------------------------------------------------- **//
+//** ----------------------- KUBECTL EVENTS ------------------------------------ **//
+//** --------------------------------------------------------------------------- **//
 
-// KUBECTL EVENTS - CREATE POD (EXAMPLE)
-// ipcMain.on(events.CREATE_POD, (event, data) => {
-//   win.webContents.send(events.HANDLE_NEW_POD, 'New Pod Here');
-// })
-
-//**----------- CREATE A POD -------------------------------- **//
+//**----------- CREATE A KUBERNETES POD ------------------------------ **//
+//Pass user input into createPodYamlTemplate method to generate template
+//Create a pod based on that template, launch pod via kubectl
 
 ipcMain.on(events.CREATE_POD, (event, data) => {
   
-  // Pass user input into createPodYamlTemplate method to generate template
   console.log('data.podName: ', data.podName);
   const podYamlTemplate = kubernetesTemplates.createPodYamlTemplate(data);
 
   let stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate);
-
-  //WRITE A NEW POD YAML FILE
   
   fs.writeFile(process.env['KUBECTL_STORAGE'] + `/pods/${data.podName}.json`,
   stringifiedPodYamlTemplate, (err) => {
@@ -301,9 +256,10 @@ ipcMain.on(events.CREATE_POD, (event, data) => {
     }
   });
 
-  //CREATE POD AND INSERT INTO MINIKUBE
+  
   const child = spawn('kubectl', ['apply', '-f', process.env['KUBECTL_STORAGE'] + `/pods/${data.podName}.json`]);
   
+  //TODO: Braden clean up
     console.log("podCreator");
     child.stdout.on("data", info => {
       console.log(`stdout: ${info}`);
@@ -459,6 +415,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, (event, data) => {
 });
 
 
+//** --------- APPLICATION OBJECT EVENT EMITTERS ---------- **//
 // HANDLE app ready
 app.on('ready', createWindowAndSetEnvironmentVariables);
 
@@ -469,10 +426,8 @@ app.on('window-all-closed', () => {
   }
 })
 
-
 app.on('activate', () => {
   if (win === null) {
     createWindowAndSetEnvironmentVariables();
   }
 });
-

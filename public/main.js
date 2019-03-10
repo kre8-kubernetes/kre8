@@ -3,6 +3,8 @@ const path = require('path');
 const isDev = require('electron-is-dev');
 require('dotenv').config();
 
+
+
 const fs = require('fs');
 const { spawn, spawnSync } = require('child_process');
 const fsp = require('fs').promises;
@@ -68,7 +70,7 @@ function createWindowAndSetEnvironmentVariables () {
     });
   }
 
-  win = new BrowserWindow({width: 1080, height: 810});
+  win = new BrowserWindow({width: 1080, height: 810, backgroundColor: '#000411', title: 'Kre8'});
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
   win.on('closed', () => win = null)

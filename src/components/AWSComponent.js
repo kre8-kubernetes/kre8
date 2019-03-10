@@ -8,7 +8,7 @@ const AWSComponent = props => {
     <div className="aws_cluster_form_container">
 
       <div className='aws_cluster_form_container_header'>
-        <h2>Setup Cluster to AWS</h2>
+        <h2>Setup Cluster to AWS</h2> 
       </div>
       <div className='aws_cluster_form_container_input'>
         <input id="iamRoleName" placeholder='IAM Role Name' onChange={props.handleChange} value={props.iamRoleName} type="text"/>
@@ -28,9 +28,11 @@ const AWSComponent = props => {
         <h6>Cluster name can contain only alphanumeric characters, dashes '-' and underscores '_'. Maximum 100 characters.</h6>
       </div>
 
-      <div className='aws_cluster_form_container_button'>
-        <button onClick={props.handleConfigAndMakeNodes} className='buttons'>Submit</button>
-      </div>
+      <div className='aws_cluster_form_container_button_item'>
+        <button id="aws_submit_button" onClick={props.handleConfigAndMakeNodes} className='buttons'>Submit</button>
+        <button id='aws_info' onClick={props.displayInfoHandler}>?</button>
+        </div>
+
       
     </div>
   );

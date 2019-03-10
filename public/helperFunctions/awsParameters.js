@@ -108,7 +108,7 @@ awsParameters.createWorkerNodeStackParam = (iamRoleName, workerNodeStackName, st
 
   console.log("CREATNG STACK PARAM");
 
-  const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + `${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+  const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + `AWS_Private/${iamRoleName}_MASTER_FILE.json`, 'utf-8');
 
   const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
 

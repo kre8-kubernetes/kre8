@@ -57,10 +57,12 @@ awsEventCallbacks.setEnvVarsAndMkDirsInDev = () => {
   mkdirp.sync(process.env['KUBECTL_STORAGE']);
 }
 
+
 awsEventCallbacks.setEnvVarsAndMkDirsInProd = () => {
   process.env['APPLICATION_PATH'] = process.env['HOME'] + '/Library/Application\ Support/KRE8';
   process.env['AWS_STORAGE'] = process.env['APPLICATION_PATH'] + `/Storage/AWS_Assets/`;
   process.env['KUBECTL_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/KUBECTL_Assets'
+  
   mkdirp.sync(process.env['AWS_STORAGE']);
   mkdirp.sync(process.env['KUBECTL_STORAGE']);
 }
@@ -72,12 +74,12 @@ awsEventCallbacks.returnCredentialsStatus = async (data) => {
 
   try {
 
-    const awsCredentialFileExists = fs.existsSync(process.env['AWS_STORAGE'] + 'awsCredentials.json');
+    const awsCredentialFileExists = fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json');
 
-    console.log("process.env['AWS_STORAGE'] + 'awsCredentials.json': ", process.env['AWS_STORAGE'] + 'awsCredentials.json');
+    console.log("process.env['AWS_STORAGE'] + 'awsCredentials.json': ", process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json');
 
       if (awsCredentialFileExists) {
-        const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', 'utf-8');
+        const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
 
         const parsedCredentialsFile = JSON.parse(readAWSCredentialsFile);
         console.log('this is the parsed obj', parsedCredentialsFile);

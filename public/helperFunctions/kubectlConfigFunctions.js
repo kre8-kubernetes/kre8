@@ -61,7 +61,7 @@ kubectlConfigFunctions.createConfigFile = async (iamRoleName, clusterName) => {
       console.log("CONFIG FILE DID NOT EXIST")
 
       //Read Master File and grab data
-      const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+      const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${iamRoleName}_MASTER_FILE.json`, 'utf-8');
       const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
       const serverEndpoint = parsedAWSMasterFileData.serverEndPoint;
       const certificateAuthorityData = parsedAWSMasterFileData.certificateAuthorityData;
@@ -319,7 +319,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (iamRoleName, clusterNam
       }
     } else {
       console.log("Workernode stack already exists")
-      return `AWS Worker Node stack with the name ${workerNodeStackName} already exists. Continuing with the creation process, and attaching elements to ${workerNodeStackName} stack.`;
+      return `AWS Worker Node stack with the name ${clusterName}-worker-node already exists. Continuing with the creation process, and attaching elements to ${clusterName}-worker-node stack.`;
 
     }
 
@@ -329,7 +329,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (iamRoleName, clusterNam
 
   }
 
-  return `AWS Worker Node Stack ${workerNodeStackName} created.`
+  return `AWS Worker Node Stack ${clusterName}-worker-node created.`
 
 }
 
@@ -359,7 +359,7 @@ kubectlConfigFunctions.inputNodeInstance = async (iamRoleName, clusterName) => {
 
     if (!authFileExists) {
 
-      const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+      const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${iamRoleName}_MASTER_FILE.json`, 'utf-8');
     
       const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
       const nodeInstanceRoleArn = parsedAWSMasterFileData.nodeInstanceRoleArn;
@@ -462,35 +462,60 @@ kubectlConfigFunctions.inputNodeInstance = async (iamRoleName, clusterName) => {
 
 }
 
-kubectlConfigFunctions.testKubectlStatus = () => {
+kubectlConfigFunctions.testKubectlStatus = async () => {
 
   console.log("testing status")
 
   try {
 
-  const kubectlApplyChild = spawnSync('kubectl', ['get', 'nodes']);
-  let stdout = kubectlApplyChild.stdout.toString();
-  let stderr = kubectlApplyChild.stderr.toString();
-  console.log('stdout: ', stdout, 'stderr: ', stderr);
+    let successfulOutput;
+    let errorMessage;
 
-  if (!stderr) {
-    console.log(`Kubectl successfully configured: ${stdout}`)
-    return `Kubectl successfully configured: ${stdout}`;
+    let getKubectlStatus = () => {
+      const kubectlStatus = spawnSync('kubectl', ['get', 'nodes']);
+      successfulOutput = kubectlStatus.stdout.toString();
+      errorMessage = kubectlStatus.stderr.toString();
+      console.log('successfulOutput: ', successfulOutput, 'errorMessage: ', errorMessage);
 
-  } else {
-    console.log(`An error ocurred when configuring kubectl: ${stderr}`)
-    return `An error ocurred when configuring kubectl: ${stderr}`
+
+      if (!errorMessage) {
+        return `${successfulOutput}`;
+      } else {
+        return `${errorMessage}`
+      }
+    }
+
+    getKubectlStatus();
+
+    console.log("successfulOutput: ", successfulOutput);
+    console.log("type of successfulOutput: ", typeof successfulOutput);
+
+    if ((successfulOutput.includes('Ready')) && (!successfulOutput.includes('Not'))) {
+      console.log("successfulOutput status: ", successfulOutput)
+
+      while (successfulOutput.includes('NotReady')) {
+        console.log("successfulOutput status: ", successfulOutput)
+          // wait 30 seconds before rerunning function
+        await awsHelperFunctions.timeout(1000 * 30)
+        getKubectlStatus();
+      }
+
+      console.log(`Kubectl successfully configured: ${successfulOutput}, errorMessage: ${errorMessage}`)
+      return `Kubectl successfully configured: ${successfulOutput}`;
+
+      
+    } else {
+      console.log(`An error ocurred when configuring kubectl: ${errorMessage}`)
+      return `An error ocurred when configuring kubectl: ${errorMessage}`
+
+    }
+
+  } catch (err) {
+    console.log(err)
+    return `An error ocurred when configuring kubectl: ${err}`;
   }
 
-} catch (err) {
-  console.log(err)
-  return (err);
 }
-
-}
-
-
-
 
 
 module.exports = kubectlConfigFunctions;

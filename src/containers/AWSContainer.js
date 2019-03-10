@@ -191,9 +191,14 @@ class AwsContainer extends Component {
   }
 
   handleNewNodes(event, data) {
-    console.log('kubectl has been configured and worker nodes have been made from the main thread:', data);
-    if (data === 'Done') {
+    
+    //TODO: convert alerts
+    if (!data.includes('Not') && data.includes('Ready')) {
       this.props.history.push('/cluster');
+      console.log('kubectl has been configured and worker nodes have been made from the main thread:', data);
+      alert(`kubect configured successfully. Node status: ${data}`)
+    } else {
+      alert(`An error occurred while configuring kubectl: ${data}`);
     }
   }
 

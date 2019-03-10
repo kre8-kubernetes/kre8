@@ -270,15 +270,14 @@ body {
 }
 
 .aws_cluster_form_container_explainer_text {
-  margin: 10px 0;
-  padding: 0;
   font-size: 10px;
   font-weight: lighter;
-  color: #D7D7D7;
+  color: #E2F0F2;
   opacity: 30%;
-  margin-left: 5px;
-  padding-bottom: 5px;
-  padding-top: 1px;
+  margin-left: 3px;
+  padding-bottom: 15px;
+  padding-top: 3px;
+  font-style: italic;
 }
 
 .aws_cluster_form_container_input input {

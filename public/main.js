@@ -66,8 +66,8 @@ function createWindowAndSetEnvironmentVariables () {
 
   //If awsCredentials file has already been created, use data to set additional required 
   //AWS Environment Variables AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION
-  if (fs.existsSync(process.env['AWS_STORAGE'] + 'awsCredentials.json')) {
-    const readCredentialsFile = fs.readFileSync(process.env['AWS_STORAGE'] + 'awsCredentials.json', 'utf-8');
+  if (fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json')) {
+    const readCredentialsFile = fs.readFileSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
 
     Object.entries(parsedCredentialsFile).forEach((arr) => {
@@ -79,7 +79,7 @@ function createWindowAndSetEnvironmentVariables () {
   }
 
   // win = new BrowserWindow({width: 1080, height: 810, resizable: false });
-  win = new BrowserWindow({ height: 720, width: 930, maxHeight: 810, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based"});
+  win = new BrowserWindow({ height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based"});
 
   // win = new BrowserWindow({ maxHeight: 810, maxWidth: 1080, minWidth: 900, minHeight: 700, vibrancy: "title-bar"});
 
@@ -256,7 +256,7 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 //serve HomeComponent page, else, serve HomeComponentPostCredentials
 ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
 
-  const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+  const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${iamRoleName}_MASTER_FILE.json`, 'utf-8');
 
   const dataToDisplay = {}
   const parsedAWSMasterFileData = JSON.parse(dataFromMasterFile);

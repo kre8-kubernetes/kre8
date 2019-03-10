@@ -52,9 +52,14 @@ const TreeGraphComponent = (props) => {
   const blue8 = '#01253E';
 
 
+
+
   const { height, width, treeData, margin } = props;
   const yMax = height - margin.top - margin.bottom;
   const xMax = width - margin.left - margin.right;
+
+  // const innerWidth = 2 * Math.PI;
+  // const innerHeight = Math.min(yMax, xMax) / 2;
 
   const innerWidth = 2 * Math.PI;
   const innerHeight = Math.min(yMax, xMax) / 2;
@@ -73,11 +78,13 @@ const TreeGraphComponent = (props) => {
         <RadialGradient id="podGradient" from={blue5} to={blue6} />
         <RadialGradient id="lines" from={blue6} to={blue7} />
 
+        <filter id="shadow"><feDropShadow dx="1" dy="1" stdDeviation="1"/></filter>
+
 
         <RadialGradient id="containerGradient" from={coolSkyDark} to={coolSkyLight} />
         <LinearGradient id="back" from={'#141E30'} to={'#243B55'} />
         
-        <rect width={width} height={height} rx={14} fill="url('#back')" />
+        <rect width={width} height={height} rx={0} fill="url('#back')" />
         <Tree root={data} size={[innerWidth, innerHeight]}>
           {tree => {
             // console.log('tree', tree)
@@ -93,6 +100,7 @@ const TreeGraphComponent = (props) => {
                       //stroke="url('#lines')"
                       strokeWidth="1"
                       fill="none"
+                      filter="url(#shadow)"
                       // radius={d => d.y}
 
                     />

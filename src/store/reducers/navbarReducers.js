@@ -7,7 +7,19 @@ const initialState = {
   menuItemToShow: 'none',
   showClusterInfo: false,
   clusterInfo: {
-    name: 'Cluster Name'
+    'Cluster Name': 'Cluster Name',
+    clusterName: '',
+    clusterArn: '',
+    iamRoleName: '',
+    iamRoleArn: '',
+    stackName: '',
+    vpcId: '',
+    securityGroupIds: '',
+    subnetIdsArray: '',
+    serverEndPoint: '',
+    KeyName: '',
+    workerNodeStackName: '',
+    nodeInstanceRoleArn: '',
   }
 };
 

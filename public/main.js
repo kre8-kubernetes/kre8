@@ -54,7 +54,6 @@ function createWindowAndSetEnvironmentVariables () {
 
   awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator();
   
-
   if (isDev) {
     BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
     process.env['APPLICATION_PATH'] = __dirname;
@@ -79,7 +78,13 @@ function createWindowAndSetEnvironmentVariables () {
     console.log("process.env['AWS_REGION']: ", process.env['AWS_REGION'])
   }
 
-  win = new BrowserWindow({width: 1080, height: 810});
+  // win = new BrowserWindow({width: 1080, height: 810, resizable: false });
+  win = new BrowserWindow({ height: 720, width: 930, maxHeight: 810, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based"});
+
+  // win = new BrowserWindow({ maxHeight: 810, maxWidth: 1080, minWidth: 900, minHeight: 700, vibrancy: "title-bar"});
+
+  //, titleBarStyle: "hiddenInset" 
+
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
   win.on('closed', () => win = null)
 }
@@ -240,6 +245,39 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     console.log('Error from awsEventCallbacks.createCluster: ', err);
   }
 })
+
+//** --------------------------------------------------------------------------- **//
+//** ----------------------- FUNCTION TO SEND CLUSTER DATA TO DISPLAY ---------- **//
+//** --------------------------------------------------------------------------- **//
+
+//** ------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------------- **//
+//** ------- Check credentials file to determine if user needs to configure the application **// 
+//If credential's file hasn't been created yet (meaning user hasn't entered credentials previously), 
+//serve HomeComponent page, else, serve HomeComponentPostCredentials
+ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
+
+  const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+
+  const dataToDisplay = {}
+  const parsedAWSMasterFileData = JSON.parse(dataFromMasterFile);
+
+  dataToDisplay.iamRoleName = parsedAWSMasterFileData.iamRoleName;
+  dataToDisplay.iamRoleArn = parsedAWSMasterFileData.iamRoleArn;
+  dataToDisplay.stackName = parsedAWSMasterFileData.stackName;
+  dataToDisplay.clusterName = parsedAWSMasterFileData.clusterName;
+  dataToDisplay.clusterArn = parsedAWSMasterFileData.clusterArn;
+  dataToDisplay.vpcId = parsedAWSMasterFileData.vpcId;
+  dataToDisplay.securityGroupIds = parsedAWSMasterFileData.securityGroupIds;
+  dataToDisplay.subnetIdsArray = parsedAWSMasterFileData.subnetIdsArray;
+  dataToDisplay.serverEndPoint = parsedAWSMasterFileData.serverEndPoint;
+  dataToDisplay.KeyName = parsedAWSMasterFileData.KeyName;
+  dataToDisplay.workerNodeStackName = parsedAWSMasterFileData.workerNodeStackName;
+  dataToDisplay.nodeInstanceRoleArn = parsedAWSMasterFileData.nodeInstanceRoleArn;
+
+win.webContents.send(events.SEND_CLUSTER_DATA, dataToDisplay)
+})
+
+
 
 
 //** --------------------------------------------------------------------------- **//

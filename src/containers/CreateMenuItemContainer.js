@@ -81,6 +81,8 @@ class CreateMenuItemContainer extends Component {
     ipcRenderer.on(events.HANDLE_NEW_POD, this.handleNewPod)
     ipcRenderer.on(events.HANDLE_NEW_SERVICE, this.handleNewService)
     ipcRenderer.on(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment)
+    ipcRenderer.on(events.SEND_CLUSTER_DATA, this.displayClusterData)
+
   }
 
   // On component unmount, we will unsubscribe to listeners
@@ -88,6 +90,9 @@ class CreateMenuItemContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_NEW_POD, this.handleNewPod);
     ipcRenderer.removeListener(events.HANDLE_NEW_SERVICE, this.handleNewService);
     ipcRenderer.removeListener(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment);
+    //TODO: Braden do we need this one?
+    ipcRenderer.on(events.SEND_CLUSTER_DATA, this.displayClusterData)
+
   }
 
   //**--------------EVENT HANDLERS-----------------**//
@@ -204,6 +209,12 @@ class CreateMenuItemContainer extends Component {
     newState.inputData.service.port = '';
     newState.inputData.service.targetPort = ';'
     this.setState(newState);
+  }
+
+  displayClusterData(event, data) {
+    
+
+
   }
 
   render() {

@@ -9,6 +9,10 @@
 /*************** HTML FUNDAMENTAL *****************/
 /**************************************************/
 
+svg:hover {
+  fill: red;
+}
+
 body {
   margin: 0px;
 }
@@ -54,19 +58,25 @@ body {
   justify-content: center;
   align-items: center;
   width: 55%;
+  min-width: 500px;
+  max-width: 525px;
+  min-height: 380px;
+  max-height: 390px;
   height: 50%;
   background: #071526;
   border-radius: 6px;
+  padding-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 .home_page_form_container_header {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  color: #D7D7D7;
   width: 100%;
   font-size: 20px;
   font-weight: bold;
-  color: #D7D7D7;
 }
 
 .home_page_form_container_text {
@@ -75,7 +85,7 @@ body {
   justify-content: center;
   font-size: 16px;
   line-height: 23px;
-  font-weight: regular;
+  font-weight: lighter;
   color: #D7D7D7;
   width: 83%;
 }
@@ -136,7 +146,7 @@ body {
 .home_page_form_container_buttons_item select {
   width: 200px;
   height: 33px;
-  background: #071526;
+  background: hsl(213, 69%, 9%);
   border: 1px solid #D6D9E0;
   border-radius: 5px;
   color: #D6D9E0;
@@ -155,6 +165,7 @@ body {
   color: #D7D7D7;
   border-radius: 20px;
   background: #071526;
+  margin-top: 3px;
 }
 
 #home_info:active {
@@ -223,9 +234,20 @@ body {
   align-items: center;
   width: 55%;
   height: 50%;
+  min-width: 500px;
+  max-width: 525px;
+  min-height: 380px;
+  max-height: 390px;
   background: #071526;
   border-radius: 6px;
+  padding-bottom: 20px;
+  /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
+/* 
+.aws_cluster_form_container:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+} */
 
 .aws_cluster_form_container_header {
   display: flex;
@@ -233,6 +255,9 @@ body {
   align-items: center;
   color: #D7D7D7;
   width: 90%;
+  font-size: 20px;
+  font-weight: bold;
+
 }
 
 .aws_cluster_form_container_input {
@@ -244,9 +269,16 @@ body {
   margin-right: 10px;
 }
 
-.aws_cluster_form_container_input h6 {
+.aws_cluster_form_container_explainer_text {
   margin: 10px 0;
   padding: 0;
+  font-size: 10px;
+  font-weight: lighter;
+  color: #D7D7D7;
+  opacity: 30%;
+  margin-left: 5px;
+  padding-bottom: 5px;
+  padding-top: 1px;
 }
 
 .aws_cluster_form_container_input input {
@@ -433,8 +465,10 @@ body {
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 40px;
-  background-color: #090927;
+  height: 50px;
+  /* background-color: #090927; */
+  background-color: #071526;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 .nav_component_container {

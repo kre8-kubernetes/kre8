@@ -62,16 +62,16 @@ class TreeGraphContainer extends Component {
                 "type": "container",
               }]
             },
-            { 
-              "name": "POD2",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-               "name": "C7",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
+            // { 
+            //   "name": "POD2",
+            //   "id": uuid(),
+            //   "type": "pod",
+            //   "children": [{
+            //    "name": "C7",
+            //     "id": uuid(),
+            //     "type": "container",
+            //   }]
+            // },
             { 
               "name": "POD3",
               "id": uuid(),
@@ -185,10 +185,13 @@ class TreeGraphContainer extends Component {
 
     const margin = {
       top: 10,
-      left: 30,
-      right: 40,
-      bottom: 80
+      left: 20,
+      right: 20,
+      bottom: 30
     };
+
+     {/* width={1100}
+          height={800} */}
 
     return (
       <div className='treegraph_container'>
@@ -200,7 +203,7 @@ class TreeGraphContainer extends Component {
         )}
         <TreeGraphComponent
           showNodeInfo={this.showNodeInfo}
-          width={1100}
+          width={1000}
           height={800}
           treeData={treeData}
           margin={margin}

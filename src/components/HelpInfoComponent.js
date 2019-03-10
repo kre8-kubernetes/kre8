@@ -7,9 +7,13 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 const HelpInfoComponent = (props) => {
     return (
       <div className="help_info_component">
-        <h3>More Info!</h3>
+        <h3>More Information</h3>
+        <br>
+        </br>
         <p>{props.text_info}</p>
-        <button onClick={props.hideInfoHandler}>Close</button>
+        <br>
+        </br>
+        <button onClick={props.hideInfoHandler}>X</button>
       </div>
     );
   }

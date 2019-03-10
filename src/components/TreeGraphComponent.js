@@ -77,7 +77,7 @@ const TreeGraphComponent = (props) => {
         <RadialGradient id="containerGradient" from={coolSkyDark} to={coolSkyLight} />
         <LinearGradient id="back" from={'#141E30'} to={'#243B55'} />
         
-        <rect width={width} height={height} rx={14} fill="url('#back')" />
+        {/* <rect width={width} height={height} rx={14} fill="url('#back')" /> */}
         <Tree root={data} size={[innerWidth, innerHeight]}>
           {tree => {
             // console.log('tree', tree)

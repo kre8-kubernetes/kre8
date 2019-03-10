@@ -33,19 +33,19 @@ const HomeComponent = props => {
           <div className='home_page_form_container_buttons_item'>
             <select className="dropDown" value={props.awsRegion} onChange={props.handleFormChange}>
               <option value='default'>Select Region</option>
-              <option value='US West (Oregon) (us-west-2)'>US West (Oregon) (us-west-2)</option>
-              <option value='US East (N. Virginia) (us-east-1)'>US East (N. Virginia) (us-east-1)</option>
-              <option value='US East (Ohio) (us-east-2)'>US East (Ohio) (us-east-2)</option>
-              <option value='EU (Frankfurt) (eu-central-1)'>EU (Frankfurt) (eu-central-1)</option>
-              <option value='EU (Stockholm) (eu-north-1)'>EU (Stockholm) (eu-north-1)</option>
-              <option value='EU (Ireland) (eu-west-1)'>EU (Ireland) (eu-west-1)</option>
-              <option value='EU (London) (eu-west-2)'>EU (London) (eu-west-2)</option>
-              <option value='EU (Paris) (eu-west-3)'>EU (Paris) (eu-west-3)</option>
-              <option value='Asia Pacific (Tokyo) (ap-northeast-1)'>Asia Pacific (Tokyo) (ap-northeast-1)</option>
-              <option value='Asia Pacific (Seoul) (ap-northeast-2)'>Asia Pacific (Seoul) (ap-northeast-2)</option>
-              <option value='Asia Pacific (Mumbai) (ap-south-1)'>Asia Pacific (Mumbai) (ap-south-1)</option>
-              <option value='Asia Pacific (Singapore) (ap-southeast-1)'>Asia Pacific (Singapore) (ap-southeast-1)</option>
-              <option value='Asia Pacific (Sydney) (ap-southeast-2)'>Asia Pacific (Sydney) (ap-southeast-2)</option>
+              <option value='us-west-2'>US West (Oregon) (us-west-2)</option>
+              <option value='us-east-1'>US East (N. Virginia) (us-east-1)</option>
+              <option value='us-east-2'>US East (Ohio) (us-east-2)</option>
+              <option value='eu-central-1'>EU (Frankfurt) (eu-central-1)</option>
+              <option value='eu-north-1'>EU (Stockholm) (eu-north-1)</option>
+              <option value='eu-west-1'>EU (Ireland) (eu-west-1)</option>
+              <option value='eu-west-2'>EU (London) (eu-west-2)</option>
+              <option value='eu-west-3'>EU (Paris) (eu-west-3)</option>
+              <option value='ap-northeast-1'>Asia Pacific (Tokyo) (ap-northeast-1)</option>
+              <option value='ap-northeast-2'>Asia Pacific (Seoul) (ap-northeast-2)</option>
+              <option value='ap-south-1'>Asia Pacific (Mumbai) (ap-south-1)</option>
+              <option value='ap-southeast-1'>Asia Pacific (Singapore) (ap-southeast-1)</option>
+              <option value='ap-southeast-2'>Asia Pacific (Sydney) (ap-southeast-2)</option>
             </select>
           </div>
           <div className='home_page_form_container_buttons_item'>

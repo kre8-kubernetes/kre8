@@ -148,6 +148,8 @@ class HomeContainer extends Component {
 
   render() { 
 
+    console.log('this.state.awsRegion', this.state.awsRegion);
+
     return (
       <div className="home_page_container">
         {this.state.showInfo === true && (

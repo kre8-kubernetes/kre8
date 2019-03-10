@@ -213,18 +213,28 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
   try {
 
     console.log("starting kube config");
-    await kubectlConfigFunctions.createConfigFile(data.clusterName);
-    await kubectlConfigFunctions.configureKubectl(data.clusterName);
-    win.webContents.send(events.HANDLE_NEW_CLUSTER, `kubectl Configured`);
 
-    await kubectlConfigFunctions.createStackForWorkerNode(data.iamRoleName, data.clusterName);
-    
-    win.webContents.send(events.HANDLE_NEW_CLUSTER, `Worker Node VPC Stack Created`);
+    const configFileCreationStatus = await kubectlConfigFunctions.createConfigFile(data.iamRoleName, data.clusterName);
+    win.webContents.send(events.HANDLE_NEW_CLUSTER, configFileCreationStatus);
 
-    await kubectlConfigFunctions.inputNodeInstance(data.iamRoleName, data.clusterName);
 
-    //TODO: add listener to give updates on these statuses
-    win.webContents.send(events.HANDLE_NEW_NODES, 'Done')
+    const kubectlConfigurationStatus = await kubectlConfigFunctions.configureKubectl(data.clusterName);
+    win.webContents.send(events.HANDLE_NEW_CLUSTER, kubectlConfigurationStatus);
+
+    const workerNodeStackCreationStatus = await kubectlConfigFunctions.createStackForWorkerNode(data.iamRoleName, data.clusterName);
+    win.webContents.send(events.HANDLE_NEW_CLUSTER, workerNodeStackCreationStatus);
+
+    const nodeInstanceCreationStatus = await kubectlConfigFunctions.inputNodeInstance(data.iamRoleName, data.clusterName);
+
+     win.webContents.send(events.HANDLE_NEW_NODES, nodeInstanceCreationStatus)
+
+    const kubectlConfigStatusTest = await kubectlConfigFunctions.testKubectlStatus();
+    console.log("final status: ", kubectlConfigStatusTest);
+
+    win.webContents.send(events.HANDLE_NEW_NODES, kubectlConfigStatusTest)
+
+
+   
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createCluster: ', err);

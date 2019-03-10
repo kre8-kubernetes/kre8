@@ -31,4 +31,9 @@ awsPropertyNames.EC2_KEY_PAIR = "KeyName";
 awsPropertyNames.NODE_INSTANCE = "nodeInstance";
 awsPropertyNames.NODE_INSTANCE_STATUS_CONFIGURED = "Created";
 
+//folderName
+awsPropertyNames.KUBE = ".kube";
+
+
+
 module.exports = awsPropertyNames;

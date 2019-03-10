@@ -287,6 +287,10 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
 
 
       } else {
+
+        //TODO: remove this
+        // win.webContents.send(events.HANDLE_NEW_TECH_STACK, `Error in creating stack. Stack Status = ${stackStatus}`);
+
         console.log(`Error in creating stack. Stack Status = ${stackStatus}`);
         return `Error in creating stack. Stack Status = ${stackStatus}`;
       }

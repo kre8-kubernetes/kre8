@@ -2,16 +2,17 @@ import React from 'react';
 
 const ApiserverInfoComponet = (props) => {
   const { data } = props;
-  console.log('data', data);
 
   const ports = data.spec.ports.map((port) => {
     return (
-      <div className='apiserver_info_ports_body_item'>
-        <p>Name - {port.name}</p>
-        <p>Port - {port.port}</p>
-        <p>Protocol - {port.name}</p>
-        <p>targetPort - {port.targetPort}</p>
-      </div>
+      Object.entries(port).map((item) => {
+        return (
+          <div className='additional_info_body_item'>
+            <p>{item[0]}</p>
+            <p>{item[1]}</p>
+          </div>
+        );
+      })
     )
   })
   return (
@@ -38,9 +39,9 @@ const ApiserverInfoComponet = (props) => {
         <p>{data.spec.clusterIP}</p>
       </div>
 
-      <div className='apiserver_info_component_item' id="apiserver_info_ports">
+      <div className='apiserver_info_component_additional_items'>
         <p>Ports -- </p>
-        <div className='apiserver_info_ports_body'>
+        <div className='additional_info_body'>
           {ports}
         </div>
       </div>

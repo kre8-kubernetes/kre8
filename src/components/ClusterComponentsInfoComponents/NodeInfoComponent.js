@@ -6,7 +6,7 @@ const NodeInfoComponent = (props) => {
 
   const addresses = data.status.addresses.map((address, i) => {
     return (
-      <div key={i} className='additional_info_body_items'>
+      <div key={i} className='additional_info_body_item'>
         <p>{address.type}</p>
         <p>{address.address}</p>
       </div>
@@ -14,7 +14,7 @@ const NodeInfoComponent = (props) => {
   });
   const allocatable = Object.entries(data.status.allocatable).map((pair, i) => {
     return (
-      <div key={i} className='additional_info_body_items'>
+      <div key={i} className='additional_info_body_item'>
         <p>{pair[0]}</p>
         <p>{pair[1]}</p>
       </div>
@@ -22,7 +22,7 @@ const NodeInfoComponent = (props) => {
   });
   const capacity = Object.entries(data.status.capacity).map((pair, i) => {
     return (
-      <div key={i} className='additional_info_body_items'>
+      <div key={i} className='additional_info_body_item'>
         <p>{pair[0]}</p>
         <p>{pair[1]}</p>
       </div>
@@ -30,7 +30,7 @@ const NodeInfoComponent = (props) => {
   });
   const nodeInfo = Object.entries(data.status.nodeInfo).map((pair, i) => {
     return (
-      <div key={i} className='additional_info_body_items'>
+      <div key={i} className='additional_info_body_item'>
         <p>{pair[0]}</p>
         <p>{pair[1]}</p>
       </div>
@@ -55,13 +55,12 @@ const NodeInfoComponent = (props) => {
         <p>Created At</p>
         <p>{data.metadata.creationTimestamp}</p>
       </div>
-      <div className='node_info_component_addtional_items'>
+      <div className='node_info_component_additional_items'>
         <p>Addresses -- </p>
-        <div className='addtional_info_body'>
+        <div className='additional_info_body'>
           {addresses}
         </div>
       </div>
-      <hr>
       <div className='node_info_component_additional_items'>
         <p>Allocatable -- </p>
         <div className='additional_info_body'>

@@ -47,6 +47,7 @@ const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 //Declare window object
 let win;
 
+
 //** --------- CREATE WINDOW OBJECT -------------------------------------------- **//
 //Invoked with app.on('ready'): 
 //Insures IAM Authenticator is installed and configured 
@@ -160,7 +161,7 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
 //** --------- Creates AWS account components: IAM Role, Stack, Cluster, Worker Node Stack ------------------ **//
 
 
-ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
+ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
 
   try {
@@ -174,21 +175,21 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     // process.env['IAM_ROLE_NAME'] = data.iamRoleName;
     process.env['CLUSTER_NAME'] = data.clusterName;
 
-
     iamRoleStatusData = await awsEventCallbacks.createIAMRole(data.iamRoleName);
-
     console.log("iamRoleCreated data to send: ", iamRoleStatusData);
 
+    const iamRoleStatus = { type: iamRoleStatus, status: awsProps.CREATED }
+
     //TODO: Do someting with the IAM Role Created Data on the front end
-    win.webContents.send(events.HANDLE_NEW_ROLE, iamRoleStatusData);
+    win.webContents.send(events.HANDLE_STATUS_CHANGE, iamRoleStatus);
 
   } catch (err) {
     console.log('Error from CREATE_IAM_ROLE in main.js:', err);
+    win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating IAM Role: ${err}`)
   }
 
   //** ------ CREATE AWS STACK + SAVE RETURNED DATA IN FILE ---- **//
   //Takes approx 1 - 1.5 mins to create stack and get data back from AWS
-
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -199,13 +200,14 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     const vpcStackName = data.vpcStackName;
 
     const createdStack = await awsEventCallbacks.createVPCStack(vpcStackName, data.iamRoleName);
-    win.webContents.send(events.HANDLE_NEW_TECH_STACK, createdStack);
+    const vpcStackStatus = { type: stackStatus, status: awsProps.CREATED }
+
+    win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
 
 
   } catch (err) {
     console.log('Error from CREATE_TECH_STACK: in main.js: ', err);
-    win.webContents.send(events.HANDLE_NEW_TECH_STACK, err);
-
+    win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Stack: ${err}`)
   }
 
   //** --------- CREATE AWS CLUSTER ---------------------------------- **//
@@ -218,11 +220,13 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
     createdCluster = await awsEventCallbacks.createCluster(data.clusterName);
     console.log("createdCluster to return: ", createdCluster);
-    win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
+    const clusterStatus = { type: clusterStatus, status: awsProps.CREATED }
+
+    win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
 
   } catch (err) {
     console.log('Error from CREATE_CLUSTER in main.js:', err);
-    win.webContents.send(events.HANDLE_NEW_CLUSTER, err);
+    win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Cluster: ${err}`)
   }
 
   try {
@@ -230,29 +234,32 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     console.log("starting kube config");
 
     const configFileCreationStatus = await kubectlConfigFunctions.createConfigFile(data.clusterName);
-    win.webContents.send(events.HANDLE_NEW_CLUSTER, configFileCreationStatus);
+    //win.webContents.send(events.HANDLE_STATUS_CHANGE, configFileCreationStatus);
 
 
     const kubectlConfigurationStatus = await kubectlConfigFunctions.configureKubectl(data.clusterName);
-    win.webContents.send(events.HANDLE_NEW_CLUSTER, kubectlConfigurationStatus);
+    //win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigurationStatus);
 
     const workerNodeStackCreationStatus = await kubectlConfigFunctions.createStackForWorkerNode( data.clusterName);
-    win.webContents.send(events.HANDLE_NEW_CLUSTER, workerNodeStackCreationStatus);
+
+    const workerNodeStatus = { type: workerNodeStatus, status: awsProps.CREATED }
+
+    win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
 
     const nodeInstanceCreationStatus = await kubectlConfigFunctions.inputNodeInstance(data.clusterName);
 
-     win.webContents.send(events.HANDLE_NEW_NODES, nodeInstanceCreationStatus)
 
     const kubectlConfigStatusTest = await kubectlConfigFunctions.testKubectlStatus();
     console.log("final status: ", kubectlConfigStatusTest);
-
-    win.webContents.send(events.HANDLE_NEW_NODES, kubectlConfigStatusTest)
-
+    const kubectlConfigStatus = { type: kubectlConfigStatus, status: awsProps.CREATED }
+    win.webContents.send(events.HANDLE_STATUS_CHANGES, kubectlConfigStatus)
 
    
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createCluster: ', err);
+    win.webContents.send(events.HANDLE_ERRORS, `Error occurred: ${err}`)
+
   }
 })
 
@@ -265,6 +272,14 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 //If credential's file hasn't been created yet (meaning user hasn't entered credentials previously), 
 //serve HomeComponent page, else, serve HomeComponentPostCredentials
 ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
+
+  const dataFromCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/$awsCredentials.json`, 'utf-8');
+
+  const parsedCredentialsFileData = JSON.parse(dataFromCredentialsFile);
+
+  console.log(parsedCredentialsFileData);
+
+  const clusterName = parsedCredentialsFileData.clusterName;
 
   const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
 

@@ -260,7 +260,6 @@ body {
   background: #071526;
   border-radius: 6px;
   padding-bottom: 20px;
-  /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 /* 
@@ -432,6 +431,94 @@ body {
   align-items: flex-start;
   padding: 10px;
 }  */
+/**************************************************/
+/************ AWS Loading Component Styling ************/
+/**************************************************/
+
+.aws_loading_form_component {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center;
+  align-items: center; */
+  min-width: 500px;
+  max-width: 525px;
+  min-height: 380px;
+  max-height: 390px;
+  background: #071526;
+  border-radius: 6px;
+  padding-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.aws_loading_form_component_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+
+}
+
+
+.aws_loading_component_header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #D7D7D7;
+  width: 100%;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.aws_loading_component_explainer_text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 23px;
+  font-weight: lighter;
+  color: #D7D7D7;
+  width: 83%;
+  margin-bottom: 10px;
+
+}
+
+.aws_loading_component_text {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  justify-content: left;
+  font-size: 16px;
+  line-height: 23px;
+  font-weight: lighter;
+  color: #D7D7D7;
+ 
+}
+
+.aws_loading_component_status_text {
+  display: flex;
+  flex-direction: column;
+  align-items: rigth;
+  justify-content: right;
+  font-size: 16px;
+  line-height: 23px;
+  font-weight: lighter;
+  color: #D7D7D7;
+}
+
+.aws_loading_component_error_text {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  line-height: 23px;
+  font-weight: lighter;
+  width: 83%;
+  color: red;
+  font-size: 10px;
+}
+
+
+
+
 
 /**************************************************/
 /************ KubectlContainer Styling ************/

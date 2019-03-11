@@ -93,7 +93,6 @@ kubectlConfigFunctions.createConfigFile = async (clusterName) => {
     } else {
       console.log("Config file alreadu created");
       return `The kubeclt config file was already created in the .kube folder in the root directory. Proceeding with the process.`;
-
     }
 
 
@@ -145,7 +144,9 @@ kubectlConfigFunctions.createConfigFile = async (clusterName) => {
     
   } catch (err) {
     console.log('There was an error in creating the kubectl config file in .kube folder in root directory: ', err);
-    return `There was an error in creating the kubectl config file in .kube folder in root directory: ${err}`;
+    throw(`An error occurred while creating the kubectl config file in the .kube folder in root directory: ${err}`);
+    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while creating the kubectl config file in the .kube folder in root directory: ${err}`);
+
   }
 };
 
@@ -212,10 +213,10 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
         return (`Kubectl has been configured. Here is the service data: ${stdout}`)
       }
 
-      //TODO fix this
-      return `An error occurred when configuring kubectl: ${stderr}`;
+      if (stderr) {
+        throw stderr;
+      }
 
-      
       // const dataForAWSMasterDataFile = { [awsProps.KUBECTL_CONFIG_STATUS]: awsProps.KUBECTL_CONFIG_STATUS_CONFIGURED };
       // // const stringifiedDataForAWSMasterDataFile = JSON.stringify(dataForAWSMasterDataFile);
       // await awsHelperFunctions.appendAWSMasterFile(dataForAWSMasterDataFile);
@@ -226,7 +227,8 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
 
   } catch (err) {
     console.log('Error coming from kubectlConfigFunctions.configureKubectl: ', err);
-    return `Error configuring kubeclt: ${err}`;
+    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while when configuring kubectl: ${err}`);
+    throw `An error occurred while when configuring kubectl: ${err}`;
   }
 
 }
@@ -239,6 +241,8 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
 
  //TODO: removed iamROleName from params
 kubectlConfigFunctions.createStackForWorkerNode = async (clusterName) => {
+
+  let stackStatus;
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -291,6 +295,9 @@ kubectlConfigFunctions.createStackForWorkerNode = async (clusterName) => {
           parsedStackData = JSON.parse(stringifiedStackData);
           stackStatus = parsedStackData[0].StackStatus;
         } catch (err) {
+
+          // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while retrieving Stack data: ${err}`);
+          throw `An error occurred while retrieving Stack data: ${err}`;
           console.log(err);
         }
       }
@@ -327,12 +334,12 @@ kubectlConfigFunctions.createStackForWorkerNode = async (clusterName) => {
 
   } catch (err) {
     console.log('Error coming from within kubectlConfigFunctions.createStackForWorkerNode', err);
-    return `Error in creating Worker Node Stack. Stack Status = ${stackStatus}`;
+    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while creating the Worker Node Stack: ${err}`);
 
+    throw `An error occurred while creating the Worker Node Stack: ${err}`;
+
+    
   }
-
-  return `AWS Worker Node Stack ${clusterName}-worker-node created.`
-
 }
 
 
@@ -397,7 +404,11 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
       stderr = kubectlGetChild.stderr.toString();
       console.log('stdout', stdout, 'stderr', stderr);
 
+      if (stderr) {
+        throw `An error occurred while retrieving the Worker Nodes: ${stderr}`
+      }
 
+      // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while retrieving the Worker Nodes: ${stderr}`);
 
       console.log('Kubectl configured');
       return 'Kubectl configured';
@@ -459,6 +470,8 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
     // }
 
   } catch (err) {
+    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while configuring kubectl with the Node Instances: ${err}`);
+    throw `An error occurred while configuring kubectl with the Node Instances: ${err}`;
     console.log('Error coming from within kubectlConfigFunctions.inputNodeInstance: ', err);
   }
 
@@ -483,14 +496,14 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
       if (!errorMessage) {
         return `${successfulOutput}`;
       } else {
-        return `${errorMessage}`
+        // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while configuring kubectl: ${errorMessage}`);
+        throw `An error occurred while configuring kubectl: ${errorMessage}`;
+        // return `${errorMessage}`
+
       }
     }
 
     getKubectlStatus();
-
-    console.log("successfulOutput: ", successfulOutput);
-    console.log("type of successfulOutput: ", typeof successfulOutput);
 
     if ((successfulOutput.includes('Ready')) && (!successfulOutput.includes('Not'))) {
       console.log("successfulOutput status: ", successfulOutput)
@@ -508,13 +521,15 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
       
     } else {
       console.log(`An error ocurred when configuring kubectl: ${errorMessage}`)
-      return `An error ocurred when configuring kubectl: ${errorMessage}`
-
+      // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while configuring kubectl: ${errorMessage}`);
+      throw `An error occurred while configuring kubectl: ${errorMessage}`;
+      
     }
 
   } catch (err) {
     console.log(err)
-    return `An error ocurred when configuring kubectl: ${err}`;
+    throw `An error occurred while configuring kubectl: ${err}`;
+    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while configuring kubectl: ${err}`);
   }
 
 }

@@ -27,6 +27,15 @@ class AwsContainer extends Component {
       iamRoleName: '',
       vpcStackName: '',
       clusterName: '',
+      awsComponentSubmitted: false,
+
+      iamRoleStatus: 'creating',
+      stackStatus:'creating',
+      clusterStatus:'creating',
+      workerNodeStatus: 'creating',
+      kubectlConfigStatus: 'creating',
+      errorMessage: 'ERROR',
+
     }
 
     this.validator = new SimpleReactValidator({
@@ -35,17 +44,21 @@ class AwsContainer extends Component {
 
     this.handleChange = this.handleChange.bind(this);
 
-    this.handleCreateRole = this.handleCreateRole.bind(this);
+    this.handleStatusChange = this.handleStatusChange.bind(this);
+    this.handleError = this.handleError.bind(this);
+
+
+    // this.handleCreateRole = this.handleCreateRole.bind(this);
     this.handleNewRole = this.handleNewRole.bind(this);
 
-    this.handleCreateTechStack = this.handleCreateTechStack.bind(this);
+    // this.handleCreateTechStack = this.handleCreateTechStack.bind(this);
     this.handleNewTechStack = this.handleNewTechStack.bind(this);
 
-    this.handleCreateCluster = this.handleCreateCluster.bind(this);
+    // this.handleCreateCluster = this.handleCreateCluster.bind(this);
     this.handleNewCluster = this.handleNewCluster.bind(this);
 
-    this.emitInstallAuthenticator = this.emitInstallAuthenticator.bind(this);
-    this.confirmInstallAuthenticator = this.confirmInstallAuthenticator.bind(this);
+    // this.emitInstallAuthenticator = this.emitInstallAuthenticator.bind(this);
+    // this.confirmInstallAuthenticator = this.confirmInstallAuthenticator.bind(this);
 
     this.handleConfigAndMakeNodes = this.handleConfigAndMakeNodes.bind(this);
     this.handleNewNodes = this.handleNewNodes.bind(this);
@@ -59,20 +72,30 @@ class AwsContainer extends Component {
 
   // On component mount we will create listeners, so that the main thread can communicate when needed
   componentDidMount() {
-    ipcRenderer.on(events.CONFIRM_IAM_AUTHENTICATOR_INSTALLED, this.confirmInstallAuthenticator);
-    ipcRenderer.on(events.HANDLE_NEW_ROLE, this.handleNewRole);
-    ipcRenderer.on(events.HANDLE_NEW_TECH_STACK, this.handleNewTechStack);
-    ipcRenderer.on(events.HANDLE_NEW_CLUSTER, this.handleNewCluster);
-    ipcRenderer.on(events.HANDLE_NEW_NODES, this.handleNewNodes);
+    // ipcRenderer.on(events.CONFIRM_IAM_AUTHENTICATOR_INSTALLED, this.confirmInstallAuthenticator);
+    // ipcRenderer.on(events.HANDLE_NEW_ROLE, this.handleNewRole);
+    // ipcRenderer.on(events.HANDLE_NEW_TECH_STACK, this.handleNewTechStack);
+    // ipcRenderer.on(events.HANDLE_NEW_CLUSTER, this.handleNewCluster);
+    // ipcRenderer.on(events.HANDLE_NEW_NODES, this.handleNewNodes);
+
+    //CREATE_CLUSTER
+
+    ipcRenderer.on(events.HANDLE_STATUS_CHANGE, this.handleStatusChange);
+    ipcRenderer.on(events.HANDLE_ERRORS, this.handleError);
+
+
   }
 
   // On component unmount, we will unsubscribe to listeners
   componentWillUnmount() {
-    ipcRenderer.removeListener(events.CONFIRM_IAM_AUTHENTICATOR_INSTALLED, this.confirmInstallAuthenticator);
-    ipcRenderer.removeListener(events.HANDLE_NEW_ROLE, this.handleNewRole);
-    ipcRenderer.removeListener(events.HANDLE_NEW_TECH_STACK, this.handleNewTechStack);
-    ipcRenderer.removeListener(events.HANDLE_NEW_CLUSTER, this.handleNewCluster);
-    ipcRenderer.removeListener(events.HANDLE_NEW_NODES, this.handleNewNodes);
+    // ipcRenderer.removeListener(events.CONFIRM_IAM_AUTHENTICATOR_INSTALLED, this.confirmInstallAuthenticator);
+    // ipcRenderer.removeListener(events.HANDLE_NEW_ROLE, this.handleNewRole);
+    // ipcRenderer.removeListener(events.HANDLE_NEW_TECH_STACK, this.handleNewTechStack);
+    // ipcRenderer.removeListener(events.HANDLE_NEW_CLUSTER, this.handleNewCluster);
+    // ipcRenderer.removeListener(events.HANDLE_NEW_NODES, this.handleNewNodes);
+
+    ipcRenderer.removeListener(events.HANDLE_STATUS_CHANGE, this.handleStatusChange);
+    ipcRenderer.removeListener(events.HANDLE_ERRORS, this.handleError);
   }
 
   //**--------------EVENT HANDLERS-----------------**//
@@ -96,33 +119,34 @@ class AwsContainer extends Component {
   // Handlers to trigger events that will take place in the main thread
   //TODO: delete this one 
   //** ------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ---------- **//
-  emitInstallAuthenticator(e) {
-    e.preventDefault();
-    console.log('authenticator installed!!!');
-    ipcRenderer.send(events.INSTALL_IAM_AUTHENTICATOR, 'hello');
-  }
+  // emitInstallAuthenticator(e) {
+  //   e.preventDefault();
+  //   console.log('authenticator installed!!!');
+  //   ipcRenderer.send(events.INSTALL_IAM_AUTHENTICATOR, 'hello');
+  // }
 
-  confirmInstallAuthenticator(event, data) {
-    console.log("Data from confirmInstallAuthenticator: ", data);
-  }
+  // confirmInstallAuthenticator(event, data) {
+  //   console.log("Data from confirmInstallAuthenticator: ", data);
+  // }
 
   //** --------- CREATE AWS IAM ROLE FOR EKS --------------------- **//
-  handleCreateRole(e) {
-    e.preventDefault();
-    console.log('handleCreateRole Clicked!!!');
-    const awsIAMRoleData = {
-      iamRoleName: this.state.iamRoleName,
-      description: this.state.description,
-    }
+  // handleCreateRole(e) {
+  //   e.preventDefault();
+  //   console.log('handleCreateRole Clicked!!!');
+  //   const awsIAMRoleData = {
+  //     iamRoleName: this.state.iamRoleName,
+  //     description: this.state.description,
+  //   }
 
-    if (this.testFormValidation()) {
-      console.log("All form data passed validation");
-      this.setState({ ...this.state, iamRoleName: '', description: ''})
-      ipcRenderer.send(events.CREATE_IAM_ROLE, awsIAMRoleData);
-    } else {
-      console.log("Invalid or missing data entry");
-    }
-  }
+  //   if (this.testFormValidation()) {
+  //     console.log("All form data passed validation");
+  //     this.setState({ ...this.state, iamRoleName: '', description: ''})
+  //     ipcRenderer.send(events.CREATE_CLUSTER, awsIAMRoleData);
+  //     this.setState({ ...this.state, awsComponentSubmitted: true});
+  //   } else {
+  //     console.log("Invalid or missing data entry");
+  //   }
+  // }
 
   handleNewRole(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
@@ -132,25 +156,46 @@ class AwsContainer extends Component {
     // this.props.setNewRole(data);
   }
   
+  //** --------- CREATING CLUSTER --------------------------------- **//
+
+  handleStatusChange(event, data) {
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!data", data)
+    console.log("setting state: ", data.type, data.status)
+    this.setState({ ...this.state, [data.type]: data.status});
+  }
+
+
+
+  handleError(event, data) {
+    console.log("error message: ", data.error)
+    this.setState({ ...this.state, errorMessage: data.error});
+  }
+
+
+
+
+
   //** --------- CREATE TECH STACK --------------------------------- **//
 
   //TODO: DELETE Create tech stack logit and button
-  handleCreateTechStack(e) {
-    e.preventDefault();
-    console.log('createTechStack Clicked!!!');
-    //TODO: Dynamically intake data from form
-    const awsTechStackData = {
-      vpcStackName: this.state.vpcStackName,
-    }
+  // handleCreateTechStack(e) {
+  //   e.preventDefault();
+  //   console.log('createTechStack Clicked!!!');
+  //   //TODO: Dynamically intake data from form
+  //   const awsTechStackData = {
+  //     vpcStackName: this.state.vpcStackName,
+  //   }
 
-    if (this.testFormValidation()) {
-      console.log("All form data passed validation");
-      this.setState({ ...this.state, vpcStackName: ''});
-      ipcRenderer.send(events.CREATE_TECH_STACK, awsTechStackData);
-    } else {
-      console.log("Invalid or missing data entry");
-    }
-  }
+  //   if (this.testFormValidation()) {
+  //     console.log("All form data passed validation");
+  //     this.setState({ ...this.state, vpcStackName: ''});
+  //     ipcRenderer.send(events.CREATE_TECH_STACK, awsTechStackData);
+  //   } else {
+  //     console.log("Invalid or missing data entry");
+  //   }
+  // }
+
+
   
   handleNewTechStack(event, data) {
     console.log('incoming text:', data);
@@ -159,23 +204,23 @@ class AwsContainer extends Component {
   }
   
   //** --------- CREATE AWS CLUSTER ------------------------------------- **//
-  handleCreateCluster(e) {
-    e.preventDefault();
-    console.log('handleCreateCluster Clicked!!!');
+  // handleCreateCluster(e) {
+  //   e.preventDefault();
+  //   console.log('handleCreateCluster Clicked!!!');
 
-    //TODO: Dynamically intake data from form
-    const awsClusterData = {
-      clusterName: this.state.clusterName,
-    }
+  //   //TODO: Dynamically intake data from form
+  //   const awsClusterData = {
+  //     clusterName: this.state.clusterName,
+  //   }
 
-    if (this.testFormValidation()) {
-      console.log("All form data passed validation");
-      this.setState({ ...this.state, clusterName: ''});
-      erer.send(events.CREATE_CLUSTER, awsClusterData);
-    } else {
-      console.log("Invalid or missing data entry");
-    }  
-  }
+  //   if (this.testFormValidation()) {
+  //     console.log("All form data passed validation");
+  //     this.setState({ ...this.state, clusterName: ''});
+  //     erer.send(events.CREATE_CLUSTER, awsClusterData);
+  //   } else {
+  //     console.log("Invalid or missing data entry");
+  //   }  
+  // }
   
   handleNewCluster(event, data) {
     console.log('incoming data from cluster:', data);
@@ -183,12 +228,13 @@ class AwsContainer extends Component {
     alert(data);
   }
   
-  //TODO: Remove this portion, no longer relevant
+  //TODO: TRUEEEEEEEEE
   //** --------- Config Kubectl and Create Worker Nodes -------------- **//
   handleConfigAndMakeNodes(e) {
     e.preventDefault();
     console.log('data to send!!', this.state);
-    ipcRenderer.send(events.CREATE_IAM_ROLE, this.state);
+    ipcRenderer.send(events.CREATE_CLUSTER, this.state);
+    this.setState({ ...this.state, awsComponentSubmitted: true});
   }
 
   handleNewNodes(event, data) {
@@ -208,32 +254,60 @@ class AwsContainer extends Component {
       iamRoleName,
       vpcStackName,
       clusterName,
+
+      iamRoleStatus,
+      stackStatus,
+      clusterStatus,
+      workerNodeStatus,
+      kubectlConfigStatus,
+      errorMessage
      } = this.state;
 
     return (
-      <div>
+      <div className="aws_cluster_page_container">
 
-        <div className="aws_cluster_page_container">
-          <AWSComponent
-            handleChange={this.handleChange}
-            validator={this.validator}         
+      {this.state.awsComponentSubmitted === false && (
+        <AWSComponent 
+          text_info={this.state.text_info}
+          hideInfoHandler={this.hideInfoHandler}
+          mouseCoords={this.state.mouseCoords}
+          handleChange={this.handleChange}
+          validator={this.validator}         
 
-            iamRoleName={iamRoleName}
-            vpcStackName={vpcStackName}
-            clusterName={clusterName}
+          iamRoleName={iamRoleName}
+          vpcStackName={vpcStackName}
+          clusterName={clusterName}
 
-            handleCreateRole={this.handleCreateRole}
-            emitInstallAuthenticator={this.emitInstallAuthenticator}
-            handleCreateTechStack={this.handleCreateTechStack}
-            handleCreateCluster={this.handleCreateCluster}
-            handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
+      
+          handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
           /> 
-        </div>
+        )}
 
-          <AWSLoadingComponent />
+        {this.state.awsComponentSubmitted === true && (
+        <AWSLoadingComponent
+          
+          handleChange={this.handleChange}
+          iamRoleName={iamRoleName}
+          vpcStackName={vpcStackName}
+          clusterName={clusterName}
+
+          iamRoleStatus={iamRoleStatus}
+          stackStatus={stackStatus}
+          clusterStatus={clusterStatus}
+          workerNodeStatus={workerNodeStatus}
+          kubectlConfigStatus={kubectlConfigStatus}
+          errorMessage={errorMessage}  
+          /> 
+        )}
+          
       </div>
     );
   }
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AwsContainer));
+
+    {/* handleCreateRole={this.handleCreateRole} 
+          emitInstallAuthenticator={this.emitInstallAuthenticator}
+          handleCreateTechStack={this.handleCreateTechStack}
+          handleCreateCluster={this.handleCreateCluster} */}

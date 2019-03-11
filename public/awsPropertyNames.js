@@ -3,6 +3,9 @@ const awsPropertyNames = {};
 awsPropertyNames.AWS_CREDENTIALS_STATUS = "STATUS";
 awsPropertyNames.AWS_CREDENTIALS_STATUS_CONFIGURED = "CONFIGURED";
 
+awsPropertyNames.CREATED = "CREATED";
+
+
 
 awsPropertyNames.CLUSTER_POLICY_ARN = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
 awsPropertyNames.SERVICE_POLICY_ARN = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';

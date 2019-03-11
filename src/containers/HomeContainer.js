@@ -22,7 +22,9 @@ class HomeContainer extends Component {
       text_info:'',
       showInfo: false,
       mouseCoords: {},
-      credentialStatus: false 
+      credentialStatus: false,
+
+      
     }
 
     this.validator = new SimpleReactValidator({

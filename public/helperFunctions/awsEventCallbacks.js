@@ -224,6 +224,9 @@ awsEventCallbacks.createIAMRole = async (iamRoleName) => {
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createIAMROle:', err);
+    // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating IAM Role: ${err}`)
+    throw `Error occurred while creating IAM Role: ${err}`;
+
   }
 };
 
@@ -271,6 +274,9 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
           stackStatus = parsedStackData[0].StackStatus;
         } catch (err) {
           console.log(err);
+          // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating IAM Role: ${err}`)
+          throw `Error occurred while creating IAM Role: ${err}`;
+
         }
       }
     
@@ -298,7 +304,10 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
       } else {
 
         console.log(`Error in creating stack. Stack Status = ${stackStatus}`);
-        return `Error in creating stack. Stack Status = ${stackStatus}`;
+        //return `Error in creating stack. Stack Status = ${stackStatus}`;
+        // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Stack. Stack Status = ${stackStatus}`);
+        throw `Error occurred while creating Stack. Stack Status = ${stackStatus}`;
+
       }
 
       return `AWS Stack ${stackName} created.`
@@ -311,7 +320,8 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createTechStack:', err);
-    return `AWS Stack with the name ${stackName} already exists. Continuing with the creation process, and attaching elements to ${stackName} stack.`; 
+    // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Stack: ${err}`);
+    throw `Error occurred while creating Stack: ${err}`;
   }
 };
 
@@ -372,6 +382,9 @@ awsEventCallbacks.createCluster = async (clusterName) => {
           console.log("status in getClusterData: ", clusterCreationStatus);
         } catch (err) {
           console.log('Error from the getClusterData function from within awsEventCallbacks.createCluster:', err);
+          // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while retrieving attempting to retrieve Cluster data from AWS: ${err}`);
+          throw `Error occurred while retrieving attempting to retrieve Cluster data from AWS: ${err}`;
+
         }
       }
       
@@ -407,6 +420,9 @@ awsEventCallbacks.createCluster = async (clusterName) => {
 
       } else {
         console.log(`Error in creating cluster. Cluster Status = ${clusterStatus}`);
+        // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Cluster. Cluster Status: ${clusterStatus}`);
+        throw `Error occurred while creating Cluster. Cluster Status: ${clusterStatus}`;
+
       }
 
     } else {
@@ -416,6 +432,9 @@ awsEventCallbacks.createCluster = async (clusterName) => {
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createCluster: ', err);
+    // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Cluster: ${err}`);
+    throw `Error occurred while creating Cluster: ${err}`;
+
   }
 };
 

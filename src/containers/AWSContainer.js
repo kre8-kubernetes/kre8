@@ -8,6 +8,7 @@ import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
 import AWSComponent from '../components/AWSComponent'
+import AWSLoadingComponent from '../components/AWSLoadingComponent'
 
 const mapStateToProps = store => ({
 
@@ -211,6 +212,7 @@ class AwsContainer extends Component {
 
     return (
       <div>
+
         <div className="aws_cluster_page_container">
           <AWSComponent
             handleChange={this.handleChange}
@@ -225,8 +227,10 @@ class AwsContainer extends Component {
             handleCreateTechStack={this.handleCreateTechStack}
             handleCreateCluster={this.handleCreateCluster}
             handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
-          />
+          /> 
         </div>
+
+          <AWSLoadingComponent />
       </div>
     );
   }

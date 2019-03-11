@@ -19,6 +19,7 @@ const onDownload = require(__dirname + '/onDownloadFunctions');
 const awsHelperFunctions = require(__dirname + '/awsHelperFunctions'); 
 const awsParameters = require(__dirname + '/awsParameters');
 const awsProps = require(__dirname + '/../awsPropertyNames'); 
+const kubectlConfigFunctions = require(__dirname + '/kubectlConfigFunctions');
 
 //** --------- IMPORT DOCUMENT TEMPLATES - 
 const iamRolePolicyDocument = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/iamRoleTrustPolicy.json');
@@ -74,22 +75,26 @@ awsEventCallbacks.returnCredentialsStatus = async (data) => {
 
   try {
 
+    const kubectlStatus = await kubectlConfigFunctions.testKubectlStatus();
+
     const awsCredentialFileExists = fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json');
 
-    console.log("process.env['AWS_STORAGE'] + 'awsCredentials.json': ", process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json');
+    console.log("kubectlStatus: ", kubectlStatus)
+    console.log("awsCredentialFileExists: ", awsCredentialFileExists)
 
-      if (awsCredentialFileExists) {
-        const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
 
-        const parsedCredentialsFile = JSON.parse(readAWSCredentialsFile);
-        console.log('this is the parsed obj', parsedCredentialsFile);
-        console.log('STATUS!!!!!!', parsedCredentialsFile.STATUS);
+    if ((!kubectlStatus.includes('error')) &&  awsCredentialFileExists) {
 
-        return (parsedCredentialsFile.STATUS === awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED) ? true : false;
+      const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
 
-      } else {
-        return false;
-      }
+      const parsedCredentialsFile = JSON.parse(readAWSCredentialsFile);
+      console.log('this is the parsed obj', parsedCredentialsFile);
+      console.log('STATUS!!!!!!', parsedCredentialsFile.STATUS);
+
+      return (parsedCredentialsFile.STATUS === awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED) ? true : false;
+    } else {
+      return false;
+    }
 
     } catch (err) {
       console.log(err);
@@ -103,9 +108,9 @@ awsEventCallbacks.returnCredentialsStatus = async (data) => {
 awsEventCallbacks.configureAWSCredentials = async (data) => {
 
   //Check if AWS credentials files exists
-  if (fs.existsSync(process.env['AWS_STORAGE'] + '/awsCredentials.json')) {
+  if (fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json')) {
 
-    const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', 'utf-8');
+    const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readAWSCredentialsFile);
     console.log('Credeintial file this is the parsed obj', parsedCredentialsFile);
 
@@ -120,7 +125,7 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
     console.log("environment variables: ", process.env['AWS_ACCESS_KEY_ID'], process.env['AWS_SECRET_ACCESS_KEY'],  process.env['REGION'] )
 
     const stringifiedCredentialFile = JSON.stringify(parsedCredentialsFile, null, 2);
-    await fsp.writeFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', stringifiedCredentialFile);
+    await fsp.writeFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
 
   } else {
     process.env['AWS_ACCESS_KEY_ID'] = data.awsAccessKeyId;
@@ -137,27 +142,27 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
 
     const stringifiedCredentialFile = JSON.stringify(dataForCredentialsFile, null, 2);
 
-    await fsp.writeFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', stringifiedCredentialFile);
+    await fsp.writeFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
 
   }
 }
 
 
-//** --------- UPDATE awsCredentials FILE WITH CREDENTIAL STATUS ------------------------------ **//
-awsEventCallbacks.updateCredentialsFileWithCredentialStatus= async (data) => {
+// //** --------- UPDATE awsCredentials FILE WITH CREDENTIAL STATUS ------------------------------ **//
+// awsEventCallbacks.updateCredentialsFileWithCredentialStatus= async (data) => {
 
-  try {
-    const readCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', 'utf-8');
-    const parsedCredentialsFile = JSON.parse(readCredentialsFile);
-    parsedCredentialsFile.STATUS = 'CONFIGURED';
-    const stringifiedCredentialFile = JSON.stringify(parsedCredentialsFile, null, 2);
-    fsp.writeFile(process.env['AWS_STORAGE'] + 'awsCredentials.json', stringifiedCredentialFile);
+//   try {
+//     const readCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
+//     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
+//     parsedCredentialsFile.STATUS = 'CONFIGURED';
+//     const stringifiedCredentialFile = JSON.stringify(parsedCredentialsFile, null, 2);
+//     fsp.writeFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
 
-  } catch (err) {
-    console.log(err);
-  }
+//   } catch (err) {
+//     console.log(err);
+//   }
 
-}
+// }
 
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
 //Check if the user has already created an IAM role by this name. If not, send IAM data to 
@@ -201,6 +206,8 @@ awsEventCallbacks.createIAMRole = async (iamRoleName) => {
           iam.attachRolePolicy(clusterPolicyParam).promise(), 
           iam.attachRolePolicy(servicePolicyParam).promise()
         ])
+
+        await awsHelperFunctions.updateCredentialsFile(awsProps.IAM_ROLE_NAME, iamRoleName);
 
         return `AWS IAM Role ${iamRoleName} created with the Role ARN ${iamRoleData.iamRoleArn}.`
 
@@ -290,9 +297,6 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
 
       } else {
 
-        //TODO: remove this
-        // win.webContents.send(events.HANDLE_NEW_TECH_STACK, `Error in creating stack. Stack Status = ${stackStatus}`);
-
         console.log(`Error in creating stack. Stack Status = ${stackStatus}`);
         return `Error in creating stack. Stack Status = ${stackStatus}`;
       }
@@ -313,7 +317,8 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
 
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
 
-awsEventCallbacks.createCluster = async (clusterName, iamRoleName) => {
+//TODO, removed iamRolName from param 
+awsEventCallbacks.createCluster = async (clusterName) => {
   
   console.log("ClusterCreating: ", clusterName);
   //TODO: do we actually need to declare all of these here
@@ -337,7 +342,7 @@ awsEventCallbacks.createCluster = async (clusterName, iamRoleName) => {
 
     if (!isClusterInMasterFile) {
 
-      const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + `${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+      const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + `AWS_Private/${process.env['CLUSTER_NAME']}_MASTER_FILE.json`, 'utf-8');
 
       const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
       iamRoleArn = parsedAWSMasterFileData.iamRoleArn;

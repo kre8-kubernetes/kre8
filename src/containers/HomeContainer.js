@@ -83,8 +83,9 @@ class HomeContainer extends Component {
 
   //if credentials are saved in file, display HomeContainerPostCredentials
   processAWSCredentialStatus(event, data) {
-    console.log(data);
+    console.log("credential status: ", data);
     if (data === true) {
+      //TODO: change to true
       this.setState({ ...this.state, credentialStatus: false });
     } 
     console.log("credentials are not yet entered, send to setup page")

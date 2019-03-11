@@ -41,7 +41,7 @@ const kubectlConfigFunctions = {};
 /** 
  * @param {String} clusterName
  */
-kubectlConfigFunctions.createConfigFile = async (iamRoleName, clusterName) => {
+kubectlConfigFunctions.createConfigFile = async (clusterName) => {
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -61,7 +61,7 @@ kubectlConfigFunctions.createConfigFile = async (iamRoleName, clusterName) => {
       console.log("CONFIG FILE DID NOT EXIST")
 
       //Read Master File and grab data
-      const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+      const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
       const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
       const serverEndpoint = parsedAWSMasterFileData.serverEndPoint;
       const certificateAuthorityData = parsedAWSMasterFileData.certificateAuthorityData;
@@ -236,7 +236,9 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
  * @param {String} iamRoleName
  * @param {String} clusterName
  */
-kubectlConfigFunctions.createStackForWorkerNode = async (iamRoleName, clusterName) => {
+
+ //TODO: removed iamROleName from params
+kubectlConfigFunctions.createStackForWorkerNode = async (clusterName) => {
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -271,7 +273,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (iamRoleName, clusterNam
         console.log("aws key value pair already set");
       }
 
-      const techStackParam = awsParameters.createWorkerNodeStackParam(iamRoleName, workerNodeStackName, stackTemplateForWorkerNode);
+      const techStackParam = awsParameters.createWorkerNodeStackParam(clusterName, workerNodeStackName, stackTemplateForWorkerNode);
 
       //Send tech stack data to AWS to create stack 
       await cloudformation.createStack(techStackParam).promise();
@@ -339,7 +341,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (iamRoleName, clusterNam
  * @param {String} iamRoleName
  * @param {String} clusterName
  */
-kubectlConfigFunctions.inputNodeInstance = async (iamRoleName, clusterName) => {
+kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
 
   console.log("Inside kubectlConfigFunctions.inputNodeInstance: ", clusterName);
 
@@ -359,7 +361,7 @@ kubectlConfigFunctions.inputNodeInstance = async (iamRoleName, clusterName) => {
 
     if (!authFileExists) {
 
-      const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+      const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
     
       const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
       const nodeInstanceRoleArn = parsedAWSMasterFileData.nodeInstanceRoleArn;

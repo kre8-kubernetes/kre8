@@ -104,17 +104,16 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
  * @param {String} stackTemplateforWorkerNode 
  */
 
-awsParameters.createWorkerNodeStackParam = (iamRoleName, workerNodeStackName, stackTemplateforWorkerNode) => {
+awsParameters.createWorkerNodeStackParam = (clusterName, workerNodeStackName, stackTemplateforWorkerNode) => {
 
   console.log("CREATNG STACK PARAM");
 
-  const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + `AWS_Private/${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+  const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
 
   const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
 
   console.log('Here is the current master file data in createWorkerNodeStackParams: ', parsedAWSMasterFileData)
 
-  const clusterName = parsedAWSMasterFileData.clusterName;
   const subnetIdsString = parsedAWSMasterFileData.subnetIdsString;
   const vpcId = parsedAWSMasterFileData.vpcId;
   const securityGroupIds = parsedAWSMasterFileData.securityGroupIds;

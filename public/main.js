@@ -30,7 +30,9 @@ const events = require('../eventTypes.js')
 const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
 const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
 const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemplates');
-//const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
+const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
+const awsProps = require(__dirname + '/awsPropertyNames'); 
+
 //const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
 
 //** --------- IMPORT DOCUMENT TEMPLATES - 
@@ -98,6 +100,7 @@ ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
 
   try {
     const credentialStatusToReturn = await awsEventCallbacks.returnCredentialsStatus(data);
+    
     console.log("credentialStatusToReturn: ", credentialStatusToReturn)
     win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatusToReturn);
 
@@ -131,7 +134,8 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
     if (credentialStatus.Arn) {
       console.log("credentialStatus.Arn in yes: ", credentialStatus.Arn);
 
-      await awsEventCallbacks.updateCredentialsFileWithCredentialStatus();
+      await awsHelperFunctions.updateCredentialsFile(awsProps.AWS_CREDENTIALS_STATUS, awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED);
+
       win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
 
     } else {
@@ -166,7 +170,10 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     console.log('============  ipcMain.on(events.CREATE_IAM_ROLE)... =================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    process.env['IAM_ROLE_NAME'] = data.iamRoleName;
+    //TODO: delete 
+    // process.env['IAM_ROLE_NAME'] = data.iamRoleName;
+    process.env['CLUSTER_NAME'] = data.clusterName;
+
 
     iamRoleStatusData = await awsEventCallbacks.createIAMRole(data.iamRoleName);
 
@@ -207,7 +214,10 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('============  ipcMain.on(events.CREATE_CLUSTER),... ==============')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-    createdCluster = await awsEventCallbacks.createCluster(data.clusterName, data.iamRoleName);
+    //TODO, removed iamRolName from param : data.iamRoleName
+
+    createdCluster = await awsEventCallbacks.createCluster(data.clusterName);
+    console.log("createdCluster to return: ", createdCluster);
     win.webContents.send(events.HANDLE_NEW_CLUSTER, createdCluster);
 
   } catch (err) {
@@ -219,17 +229,17 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 
     console.log("starting kube config");
 
-    const configFileCreationStatus = await kubectlConfigFunctions.createConfigFile(data.iamRoleName, data.clusterName);
+    const configFileCreationStatus = await kubectlConfigFunctions.createConfigFile(data.clusterName);
     win.webContents.send(events.HANDLE_NEW_CLUSTER, configFileCreationStatus);
 
 
     const kubectlConfigurationStatus = await kubectlConfigFunctions.configureKubectl(data.clusterName);
     win.webContents.send(events.HANDLE_NEW_CLUSTER, kubectlConfigurationStatus);
 
-    const workerNodeStackCreationStatus = await kubectlConfigFunctions.createStackForWorkerNode(data.iamRoleName, data.clusterName);
+    const workerNodeStackCreationStatus = await kubectlConfigFunctions.createStackForWorkerNode( data.clusterName);
     win.webContents.send(events.HANDLE_NEW_CLUSTER, workerNodeStackCreationStatus);
 
-    const nodeInstanceCreationStatus = await kubectlConfigFunctions.inputNodeInstance(data.iamRoleName, data.clusterName);
+    const nodeInstanceCreationStatus = await kubectlConfigFunctions.inputNodeInstance(data.clusterName);
 
      win.webContents.send(events.HANDLE_NEW_NODES, nodeInstanceCreationStatus)
 
@@ -256,7 +266,9 @@ ipcMain.on(events.CREATE_IAM_ROLE, async (event, data) => {
 //serve HomeComponent page, else, serve HomeComponentPostCredentials
 ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
 
-  const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+  const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
+
+  //TODO add lookup in credentials file for iamrole name
 
   const dataToDisplay = {}
   const parsedAWSMasterFileData = JSON.parse(dataFromMasterFile);

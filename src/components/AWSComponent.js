@@ -13,6 +13,12 @@ const AWSComponent = props => {
       <div className='aws_cluster_form_timing_text'>
         Please input the below details to create your cluster. Once submitted, this phase takes AWS 10-15 minutes.
       </div>
+      
+      <div className='aws_cluster_form_container_input'>
+        <input id="iamRoleName" placeholder='IAM Role Name' onChange={props.handleChange} value={props.iamRoleName} type="text"/>
+        {props.validator.message('Role name', props.iamRoleName, 'required')}
+        <h6>Role name can contain alphanumeric and '+=,.@-_' characters. Maximum 64 characters.</h6>
+      </div>
 
       <div className='aws_cluster_form_input_field_area'>
         <div className='aws_cluster_form_container_input'>
@@ -41,9 +47,8 @@ const AWSComponent = props => {
       <div className='aws_cluster_form_container_button_item'>
         <button id="aws_submit_button" onClick={props.handleConfigAndMakeNodes} className='buttons'>Submit</button>
         <button id='aws_info' onClick={props.displayInfoHandler}>?</button>
-        </div>
+      </div>
 
-      
     </div>
   );
 };

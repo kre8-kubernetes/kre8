@@ -82,7 +82,7 @@ function createWindowAndSetEnvironmentVariables () {
   }
 
   // win = new BrowserWindow({width: 1080, height: 810, resizable: false });
-  win = new BrowserWindow({ height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based"});
+  win = new BrowserWindow({ height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based", title: 'Kre8'});
 
   // win = new BrowserWindow({ maxHeight: 810, maxWidth: 1080, minWidth: 900, minHeight: 700, vibrancy: "title-bar"});
 

@@ -15,7 +15,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const width = 60;
   return (
     <Group top={top} left={left}>
-      <circle
+      <circle className="pods"
         r={25}
         fill="url('#podGradient')"
         stroke="#E2F0F2" 
@@ -26,7 +26,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
           console.log('from circle', node);
         }}
       />
-      <text
+      <text className="podText"
         dy={'.33em'}
         fontSize={11}
         fontFamily="Arial"

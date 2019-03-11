@@ -9,6 +9,10 @@ import * as events from '../../eventTypes';
 
 import AWSComponent from '../components/AWSComponent'
 import AWSLoadingComponent from '../components/AWSLoadingComponent'
+import HelpInfoComponent from '../components/HelpInfoComponent';
+
+
+//TODO: Create logic for form data sanitation, ie don't accept an empty field from a user when they click submit
 
 const mapStateToProps = store => ({
 
@@ -36,6 +40,9 @@ class AwsContainer extends Component {
       kubectlConfigStatus: '—',
       errorMessage: '—',
 
+      text_info: '',
+      showInfo: false,
+      mouseCoords: {}
     }
 
     this.validator = new SimpleReactValidator({
@@ -64,6 +71,9 @@ class AwsContainer extends Component {
     this.handleNewNodes = this.handleNewNodes.bind(this);
 
     this.testFormValidation = this.testFormValidation.bind(this);
+
+    this.displayInfoHandler = this.displayInfoHandler.bind(this);
+    this.hideInfoHandler = this.hideInfoHandler.bind(this);
   }
 
 
@@ -254,6 +264,30 @@ class AwsContainer extends Component {
     }
   }
 
+
+  //** --------- More Info Component -------------- **//
+  displayInfoHandler(e){
+    const aws_info = 'Amazon Web Services Elastic Container Service for Kubernetes (EKS) Account Setup. Your Identity and Access Management (IAM) Role for EKS is the AWS identity that will have specific permissions to create and manage your Kubernetes Cluster. For the Role Name, select something that will easily identify the role’s purpose. Example: unique-EKS-Management-Role. Your AWS VPC Stack represents a collection of resources necessary to manage and run your Kubernetes cluster. For the Stack Name, select something that will easily identify the stack’s purpose. Example: unique-EKS-Stack. An EKS Cluster consists of two primary components: The Amazon EKS control plane and Amazon EKS worker nodes that run the Kubernetes etcd and the Kubernetes API server. For the Cluster Name, select something that will easily identify the stack’s purpose. Example: unique-EKS-Cluster. Once submitted, this phase takes 10-15 minutes to complete, depending on Amazon’s processing time. Kre8 cannot proceed until your EKS Account has been set up.'
+
+    const x = e.screenX;
+    const y = e.screenY;
+    const newCoords = {top: y, left: x}
+    if(e.target.id === "aws_info"){
+      this.setState({...this.state, text_info: aws_info, mouseCoords: newCoords, showInfo: true})
+    }
+    // if(buttonId === aws_info_button){
+    //   this.setState({...this.state, text_info: aws_info, showInfo: true})
+    // }
+  }
+
+  //HIDE INFO BUTTON CLICK HANDLER
+  hideInfoHandler(){
+    this.setState({...this.state, showInfo: false})
+  }
+
+
+
+
   render() {
     const { 
       iamRoleName,
@@ -270,27 +304,34 @@ class AwsContainer extends Component {
 
     return (
       <div className="aws_cluster_page_container">
-
-      {this.state.awsComponentSubmitted === false && (
-        <AWSComponent 
+        {this.state.showInfo === true && (
+        <HelpInfoComponent 
           text_info={this.state.text_info}
           hideInfoHandler={this.hideInfoHandler}
           mouseCoords={this.state.mouseCoords}
-          handleChange={this.handleChange}
-          validator={this.validator}         
-
-          iamRoleName={iamRoleName}
-          vpcStackName={vpcStackName}
-          clusterName={clusterName}
-
-      
-          handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
-          /> 
+        />
         )}
+
+        {this.state.awsComponentSubmitted === false && (
+          <AWSComponent 
+            text_info={this.state.text_info}
+            hideInfoHandler={this.hideInfoHandler}
+            mouseCoords={this.state.mouseCoords}
+            handleChange={this.handleChange}
+            validator={this.validator}         
+
+            iamRoleName={iamRoleName}
+            vpcStackName={vpcStackName}
+            clusterName={clusterName}
+      
+            handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
+            displayInfoHandler={this.displayInfoHandler}
+            grabCoords={this.grabCoords}
+            /> 
+          )}
 
         {this.state.awsComponentSubmitted === true && (
         <AWSLoadingComponent
-          
           handleChange={this.handleChange}
           iamRoleName={iamRoleName}
           vpcStackName={vpcStackName}
@@ -304,7 +345,6 @@ class AwsContainer extends Component {
           errorMessage={errorMessage}  
           /> 
         )}
-          
       </div>
     );
   }

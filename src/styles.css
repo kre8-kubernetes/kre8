@@ -5,6 +5,35 @@
 * this increases performance as well
 */
 
+
+
+  @keyframes change{
+    0%{background-color: rgb(0,117,171);}
+    12.5%{background-color: rgb(12,0,73);}
+    25%{background-color: rgb(49, 7, 86);}
+    50%{background-color: rgb(9,35,108);}
+    75%{background-color: rgb(0,74,134);}
+    100%{background-color: rgb(0,117,171);}
+  }
+  
+  body{
+    animation: change 90s infinite;
+  }
+
+  .pods{
+    animation: pods 10s infinite;
+  }
+
+  @keyframes pods{
+    0%{background-color: green;}
+    25%{background-color: yellow;}
+    50%{background-color: red;}
+    75%{background-color: blue;}
+    100%{background-color: green;}
+  }
+
+  
+
 /**************************************************/
 /*************** HTML FUNDAMENTAL *****************/
 /**************************************************/
@@ -173,14 +202,18 @@ body {
   color:#071526;
 }
 
+#home_info:hover {
+  cursor:pointer;
+}
+
 .home_page_form_container_buttons_item #home_submit_button {
   /* width: 110px;
   height: 40px; */
   background: #071526;
-  border: 1px solid #D35B51;
   margin-right: 15px;
   border-radius: 5px;
   color: #D35B51;
+  border: 1px solid #D35B51;
   font-size: 1.1em;
   font-weight: medium;
   padding: 10px;
@@ -215,6 +248,13 @@ body {
 }
 
 
+.home_page_form_container_buttons_item #home_submit_button:hover {
+  cursor: pointer;
+  background: #D35B51;
+  color: #071526;
+  transition-duration: .2s;
+}
+
 
 /**************************************************/
 /*********** HELP INFO COMPONENT STYLING **********/
@@ -222,13 +262,41 @@ body {
 
 .help_info_component {
   background-color: whitesmoke;
-  border: solid red;
-  font-family: monospace;
+  border-radius: 6px;
+  font-family: Lato;
   z-index: 1;
   position: absolute;
-  width: 50%;
-  height: 25%;
+  width: 70%;
+  height: 50%;
+  padding: 10px;
+  display: flex;
+  align-items: column;
 }
+
+.help_info_component button {
+  width: 20px;
+  height: 20px;
+  background: #D35B51;
+  /* padding: 10px; */
+  /* margin-right: px; */
+  /* border-radius: 20px; */
+  color: black;
+  font-size: .5em;
+  font-weight: 200;
+  font-family: Lato;
+  /* font-weight: medium; */
+  outline: none;
+}
+
+.help_info_component button:hover{
+  cursor: pointer;
+}
+
+.help_info_component p{
+  display: flex;
+  align-items: center;
+}
+
 
 /**************************************************/
 /************** AWS CONTAINER STYLING *************/
@@ -363,7 +431,36 @@ body {
   outline: none;
 }
 
-.aws_cluster_form_container_button button {
+.aws_cluster_form_container_button_item #aws_submit_button {
+  width: 110px;
+  height: 40px;
+  background: #071526;
+  margin-right: 15px;
+  border-radius: 5px;
+  color: #D35B51;
+  border: 1px solid #D35B51;
+  font-size: 1.1em;
+  font-weight: medium;
+}
+
+.aws_cluster_form_container_button_item button:focus {
+  outline: none;
+}
+
+.aws_cluster_form_container_button_item #aws_submit_button:active {
+  background: #D35B51;
+  opacity: 0.7;
+  color: #071526;
+}
+
+.aws_cluster_form_container_button_item #aws_submit_button:hover {
+  cursor: pointer;
+  background: #D35B51;
+  color: #071526;
+  transition-duration: .2s;
+}
+
+/* .aws_cluster_form_container_button button {
   width: 110px;
   height: 40px;
   background: #071526;
@@ -396,6 +493,34 @@ body {
 #iamRoleName {
   margin-top: 15px;
 } */
+
+
+.aws_cluster_form_container_button button:hover {
+  cursor: pointer;
+  background: #D35B51;
+  color: #071526;
+  transition-duration: .2s;
+} */
+
+
+#aws_info {
+  height: 32px;
+  width: 32px;
+  font-size: 1.1em;
+  color: #D7D7D7;
+  border-radius: 20px;
+  background: #071526;
+}
+
+#aws_info:active {
+  background: #D6D9E0;
+  color:#071526;
+}
+
+#aws_info:hover {
+  cursor:pointer;
+}
+
 
 
 /* .aws_cluster_page_container {
@@ -537,7 +662,7 @@ body {
   display: flex;
   flex-direction: row;
   align-content: space-around;
-  z-index: -2;
+  z-index: -2;  
 }
 
 /* Kubectl Component Styling */
@@ -583,6 +708,15 @@ body {
   border: 2px solid black;
 }
 
+.pods:hover{
+  cursor:pointer;
+  border: 1px solid '#C5DEEf';
+  transition-duration: .2s;
+}
+
+.podText:hover{
+  color: '#C5DEEf';
+}
 /**************************************************/
 /************* POPUP CONTAINER STYLING ************/
 /**************************************************/
@@ -606,7 +740,28 @@ body {
   top: 10%;
   bottom: 10%;
   margin: auto;
-  background: white;
+  background: #071526;
+  color: white;
+  padding: 50px;
+  border-radius: 6px;
+  font-family: Lato;
+  border: 1px solid lightgray;
+}
+
+.popup_inner button{
+  width: 110px;
+  height: 40px;
+  background: #071526;
+  border: 1px solid #D35B51;
+  margin-right: 15px;
+  border-radius: 5px;
+  color: #D35B51;
+  font-size: 1.1em;
+  font-weight: medium;
+}
+
+.popup_inner button:hover{
+  cursor: pointer;
 }
 
 /**************************************************/
@@ -642,6 +797,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center
+}
+
+#nav_drop_down:hover {
+    cursor: pointer;
 }
 
 .ham_bar {
@@ -680,7 +839,7 @@ body {
   outline: none;
 }
 .create_menu_component_container_button:hover {
-  background:#D35B51
+  background:#D35B51;
 }
   /* NAV COMPONENT LEFT */
 

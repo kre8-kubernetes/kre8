@@ -38,6 +38,12 @@ const AWSComponent = props => {
         </div>
       </div>  
 
+      <div className='aws_cluster_form_container_button_item'>
+        <button id="aws_submit_button" onClick={props.handleConfigAndMakeNodes} className='buttons'>Submit</button>
+        <button id='aws_info' onClick={props.displayInfoHandler}>?</button>
+        </div>
+
+      
     </div>
   );
 };

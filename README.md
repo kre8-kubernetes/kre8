@@ -1,4 +1,4 @@
-# kre8
+# KRE8
 
 ### KRE8 empowers DevOps engineers to manage their Kubernetes cluster on AWS from their desktop
 

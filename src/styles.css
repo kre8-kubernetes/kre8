@@ -558,7 +558,7 @@ body {
   margin: auto;
   background: #071526;
   color: white;
-  padding: 50px;
+  padding: 30px;
   border-radius: 6px;
   font-family: Lato;
   border: 1px solid lightgray;
@@ -597,12 +597,42 @@ body {
 /********** CLUSTER MORE INFO COMPONENTS **********/
 /**************************************************/
 
+/* NODE INFO COMPONENT */
 .node_info_component {
   display: flex;
   flex-direction: column;
+  font-size: 0.70em;
   width: 100%;
 }
 
+.node_info_component p {
+  margin: 1px 0;
+}
+
+.node_info_component_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.node_info_component_additional_items {
+  display: flex;
+  flex-direction: column;
+}
+
+.addtional_info_body {
+  display: flex;
+  flex-direction: column;
+}
+
+.additional_info_body_items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-left: 15px;
+}
+
+/* API SERVER INFO COMPONENT */
 .apiserver_info_component {
   display: flex;
   flex-direction: column;
@@ -626,7 +656,7 @@ body {
   display: flex;
   flex-direction: row;
   width: 100%;
-  margin-left: 15px;
+  margin-left: 20px;
 }
 
 .apiserver_info_ports_body_item {
@@ -636,6 +666,7 @@ body {
 
 #popup_info_button {
   width: 100%;
+  margin-top: 20px;
   display: flex;
   flex-direction: row;
   justify-content: center;

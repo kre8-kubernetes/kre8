@@ -14,10 +14,10 @@ const ClusterInfoComponent = (props) => {
       <div className='popup_info_inner'>
         {
             (componentType === "Node") ?
-            <NodeInfoComponent
-              data={props.nodeInfoToShow.data}
-              hideNodeInfo={props.hideNodeInfo}
-            />
+              <NodeInfoComponent
+                data={props.nodeInfoToShow.data}
+                hideNodeInfo={props.hideNodeInfo}
+              />
           : (componentType === "apiserver") ? 
               <ApiserverInfoComponent 
                 data={data}

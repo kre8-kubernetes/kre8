@@ -29,12 +29,12 @@ class AwsContainer extends Component {
       clusterName: '',
       awsComponentSubmitted: false,
 
-      iamRoleStatus: 'creating',
-      stackStatus:'creating',
-      clusterStatus:'creating',
-      workerNodeStatus: 'creating',
-      kubectlConfigStatus: 'creating',
-      errorMessage: 'ERROR',
+      iamRoleStatus: 'CREATING',
+      stackStatus:'—',
+      clusterStatus:'—',
+      workerNodeStatus: '—',
+      kubectlConfigStatus: '—',
+      errorMessage: '—',
 
     }
 
@@ -49,13 +49,13 @@ class AwsContainer extends Component {
 
 
     // this.handleCreateRole = this.handleCreateRole.bind(this);
-    this.handleNewRole = this.handleNewRole.bind(this);
+    // this.handleNewRole = this.handleNewRole.bind(this);
 
     // this.handleCreateTechStack = this.handleCreateTechStack.bind(this);
-    this.handleNewTechStack = this.handleNewTechStack.bind(this);
+    // this.handleNewTechStack = this.handleNewTechStack.bind(this);
 
     // this.handleCreateCluster = this.handleCreateCluster.bind(this);
-    this.handleNewCluster = this.handleNewCluster.bind(this);
+    // this.handleNewCluster = this.handleNewCluster.bind(this);
 
     // this.emitInstallAuthenticator = this.emitInstallAuthenticator.bind(this);
     // this.confirmInstallAuthenticator = this.confirmInstallAuthenticator.bind(this);
@@ -107,7 +107,7 @@ class AwsContainer extends Component {
   testFormValidation() {
     if (this.validator.allValid()) {
       //todo: convert alert
-      alert('Your AWS Kubernetes Cluster is being configured');
+      // alert('Your AWS Kubernetes Cluster is being configured');
       return true;
     } else {
       this.validator.showMessages();
@@ -148,30 +148,35 @@ class AwsContainer extends Component {
   //   }
   // }
 
-  handleNewRole(event, data) {
-    // The following is going to be the logic that occurs once a new role was created via the main thread process
-    console.log('incoming text:', data);
-    //TODO: Convert alert;
-    alert(data);
-    // this.props.setNewRole(data);
-  }
+  // handleNewRole(event, data) {
+  //   // The following is going to be the logic that occurs once a new role was created via the main thread process
+  //   console.log('incoming text:', data);
+  //   //TODO: Convert alert;
+  //   alert(data);
+  //   // this.props.setNewRole(data);
+  // }
   
   //** --------- CREATING CLUSTER --------------------------------- **//
 
   handleStatusChange(event, data) {
     console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!data", data)
+    console.log("state before: ", this.state);
+
     console.log("setting state: ", data.type, data.status)
     this.setState({ ...this.state, [data.type]: data.status});
+    console.log("state after: ", this.state);
+
+
   }
-
-
 
   handleError(event, data) {
-    console.log("error message: ", data.error)
-    this.setState({ ...this.state, errorMessage: data.error});
+    console.log("state from error: ", this.state);
+
+    console.log("error message: ", data)
+    this.setState({ ...this.state, errorMessage: data});
+    console.log("state after error: ", this.state);
+
   }
-
-
 
 
 
@@ -197,11 +202,11 @@ class AwsContainer extends Component {
 
 
   
-  handleNewTechStack(event, data) {
-    console.log('incoming text:', data);
-    alert(data)
-    //TODO: this.props.SOMETHING(data);
-  }
+  // handleNewTechStack(event, data) {
+  //   console.log('incoming text:', data);
+  //   alert(data)
+  //   //TODO: this.props.SOMETHING(data);
+  // }
   
   //** --------- CREATE AWS CLUSTER ------------------------------------- **//
   // handleCreateCluster(e) {
@@ -222,11 +227,11 @@ class AwsContainer extends Component {
   //   }  
   // }
   
-  handleNewCluster(event, data) {
-    console.log('incoming data from cluster:', data);
-    //TODO: convert alert;
-    alert(data);
-  }
+  // handleNewCluster(event, data) {
+  //   console.log('incoming data from cluster:', data);
+  //   //TODO: convert alert;
+  //   alert(data);
+  // }
   
   //TODO: TRUEEEEEEEEE
   //** --------- Config Kubectl and Create Worker Nodes -------------- **//

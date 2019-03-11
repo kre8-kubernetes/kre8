@@ -7,39 +7,43 @@ const AWSLoadingComponent = props => {
 
   return (
     <div className='aws_loading_form_component'>
-      <div className='aws_loading_form_component_item'>
-        <p>IAM Role {props.iamRoleName}</p>
-        <p>Status {props.iamRoleStatus}</p>
+      <div className='aws_loading_form_component_header'>
+        <h3>Cluster Status</h3>
+      </div>
 
+      <div className='aws_loading_component_explainer_text'>
+        Cluster configuration takes AWS approximately 10-15 minutes. Do not close the application, until the process completes.
+      </div>
+
+      <div className='aws_loading_form_component_items'>
+
+        <div className='aws_loading_form_component_item'>
+          <p>IAM Role {props.iamRoleName}</p>
+          <p>{props.iamRoleStatus}</p>
+        </div>
+        <div className='aws_loading_form_component_item'>
+          <p>VPC Stack {props.vpcStackName}</p>
+          <p>{props.stackStatus}</p>
+        </div>
+        <div className='aws_loading_form_component_item'>
+          <p>Cluster {props.clusterName}</p>
+          <p>{props.clusterStatus}</p>
+        </div>
+        <div className='aws_loading_form_component_item'>
+          <p>Worker Node Stack</p>
+          <p>{props.workerNodeStatus}</p>
+        </div>
+        <div className='aws_loading_form_component_item'>
+          <p>Kubectl Configuration</p>
+          <p>{props.kubectlConfigStatus}</p>
+        </div>
+      </div>
+        
+        <div className='aws_loading_component_error_text'> 
+          {props.errorMessage} 
         </div>
       
-      {/* <div className='aws_cluster_form_container_header' className='aws_loading_component_header'>
-        <h3>Cluster Status</h3>
-      </div> */}
-        {/* <div className='aws_cluster_form_timing_text' className='aws_loading_component_explainer_text'>
-          The cluster creation process takes AWS approximately 10-15 minutes. Please do not close the application, until the process is complete.
-        </div> */}
-
-        {/* <div className='aws_loading_component_text'> */}
-            {/* IAM Role {props.iamRoleName} 
-            VPC Stack {props.vpcStackName}
-            Cluster {props.clusterName}
-            Worker Nodes {`${props.clusterName}-worker-node`} */}
-            {/* Kubectl Configuration */}
-        {/* </div> */}
-
-        {/* <div className='aws_loading_component_status_text'>  */}
-          {/* {props.iamRoleStatus}
-          {props.stackStatus}
-          {props.clusterStatus}
-          {props.workerNodeStatus}
-          {props.kubectlConfigStatus} */}
-        {/* </div> */}
-        {/* <div className='aws_loading_component_error_text'> 
-          {props.errorMessage} 
-        </div> */}
-      
-    </div>
+     </div>
 
   );
 };

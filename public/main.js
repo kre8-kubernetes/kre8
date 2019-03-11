@@ -175,17 +175,19 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     // process.env['IAM_ROLE_NAME'] = data.iamRoleName;
     process.env['CLUSTER_NAME'] = data.clusterName;
 
-    iamRoleStatusData = await awsEventCallbacks.createIAMRole(data.iamRoleName);
+    const iamRoleStatusData = await awsEventCallbacks.createIAMRole(data.iamRoleName);
     console.log("iamRoleCreated data to send: ", iamRoleStatusData);
 
-    const iamRoleStatus = { type: iamRoleStatus, status: awsProps.CREATED }
+    const iamRoleStatus = { type: awsProps.IAM_ROLE_STATUS, status: awsProps.CREATED }
 
     //TODO: Do someting with the IAM Role Created Data on the front end
+    console.log("sending Iam role data:", iamRoleStatus);
     win.webContents.send(events.HANDLE_STATUS_CHANGE, iamRoleStatus);
 
   } catch (err) {
     console.log('Error from CREATE_IAM_ROLE in main.js:', err);
     win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating IAM Role: ${err}`)
+
   }
 
   //** ------ CREATE AWS STACK + SAVE RETURNED DATA IN FILE ---- **//
@@ -200,7 +202,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     const vpcStackName = data.vpcStackName;
 
     const createdStack = await awsEventCallbacks.createVPCStack(vpcStackName, data.iamRoleName);
-    const vpcStackStatus = { type: stackStatus, status: awsProps.CREATED }
+    const vpcStackStatus = { type: awsProps.VPC_STACK_STATUS, status: awsProps.CREATED }
 
     win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
 
@@ -220,7 +222,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
     createdCluster = await awsEventCallbacks.createCluster(data.clusterName);
     console.log("createdCluster to return: ", createdCluster);
-    const clusterStatus = { type: clusterStatus, status: awsProps.CREATED }
+    const clusterStatus = { type: awsProps.CLUSTER_STATUS, status: awsProps.CREATED }
 
     win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
 
@@ -235,31 +237,31 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
     const configFileCreationStatus = await kubectlConfigFunctions.createConfigFile(data.clusterName);
     //win.webContents.send(events.HANDLE_STATUS_CHANGE, configFileCreationStatus);
-
-
     const kubectlConfigurationStatus = await kubectlConfigFunctions.configureKubectl(data.clusterName);
     //win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigurationStatus);
-
     const workerNodeStackCreationStatus = await kubectlConfigFunctions.createStackForWorkerNode( data.clusterName);
-
-    const workerNodeStatus = { type: workerNodeStatus, status: awsProps.CREATED }
-
+    const workerNodeStatus = { type: awsProps.WORKER_NODE_STATUS, status: awsProps.CREATED }
     win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
 
+
+  } catch {
+      console.log('Error while creating Worker Node Stack ', err);
+      win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Worker Node Stack: ${err}`)
+
+  }
+  try {
+
     const nodeInstanceCreationStatus = await kubectlConfigFunctions.inputNodeInstance(data.clusterName);
-
-
     const kubectlConfigStatusTest = await kubectlConfigFunctions.testKubectlStatus();
     console.log("final status: ", kubectlConfigStatusTest);
-    const kubectlConfigStatus = { type: kubectlConfigStatus, status: awsProps.CREATED }
+    const kubectlConfigStatus = { type: awsProps.KUBECTL_CONFIG_STATUS, status: awsProps.CREATED }
     win.webContents.send(events.HANDLE_STATUS_CHANGES, kubectlConfigStatus)
 
    
 
   } catch (err) {
-    console.log('Error from awsEventCallbacks.createCluster: ', err);
-    win.webContents.send(events.HANDLE_ERRORS, `Error occurred: ${err}`)
-
+    console.log('Error occurred while configuring kubectl: ', err);
+    win.webContents.send(events.HANDLE_ERRORS, `Error occurred while configuring kubectl: ${err}`)
   }
 })
 

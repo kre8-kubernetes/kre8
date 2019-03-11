@@ -3,9 +3,13 @@ const awsPropertyNames = {};
 awsPropertyNames.AWS_CREDENTIALS_STATUS = "STATUS";
 awsPropertyNames.AWS_CREDENTIALS_STATUS_CONFIGURED = "CONFIGURED";
 
-awsPropertyNames.CREATED = "CREATED";
-
-
+awsPropertyNames.CREATED = 'CREATED';
+awsPropertyNames.IAM_ROLE_STATUS = 'iamRoleStatus';
+awsPropertyNames.VPC_STACK_STATUS = 'stackStatus';
+awsPropertyNames.CLUSTER_STATUS = 'clusterStatus';
+awsPropertyNames.WORKER_NODE_STATUS = 'workerNodeStatus';
+awsPropertyNames.KUBECTL_CONFIG_STATUS = 'kubectlConfigStatus';
+awsPropertyNames.ERROR_MESSAGE = 'errorMessage';
 
 awsPropertyNames.CLUSTER_POLICY_ARN = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
 awsPropertyNames.SERVICE_POLICY_ARN = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';

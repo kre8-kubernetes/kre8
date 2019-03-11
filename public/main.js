@@ -291,13 +291,32 @@ ipcMain.on(events.GET_WORKER_NODES, async (event, data) => {
     const stdout = apiNodeData.stdout.toString();
     const stdoutParsed = JSON.parse(stdout);
     const stderr = apiNodeData.stderr.toString();
-    console.log('stdout: ', stdoutParsed);
+    console.log('stdout GET_WORKER_NODES: ', stdoutParsed);
     console.log('stdout type: ', typeof stdoutParsed);
     console.log('stderr', stderr);
     win.webContents.send(events.HANDLE_WORKER_NODES, stdoutParsed);
   } catch (err) {
     console.log('error from the GET_WORKER_NODES event listener call back in main.js', err);
     win.webContents.send(events.HANDLE_WORKER_NODES, err);
+  }
+})
+
+
+//** -------------- Get the Containers and Pods -------------------- **//
+
+ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
+  try {
+    const apiNodeData = spawnSync('kubectl', ['get', 'pods', '-o=json'])
+    const stdout = apiNodeData.stdout.toString();
+    const stdoutParsed = JSON.parse(stdout);
+    const stderr = apiNodeData.stderr.toString();
+    console.log('stdout PODS: ', stdoutParsed);
+    console.log('stdout type: ', typeof stdoutParsed);
+    console.log('stderr', stderr);
+    win.webContents.send(events.HANDLE_CONTAINERS_AND_PODS, stdoutParsed);
+  } catch (err) {
+    console.log('error from the GET_CONTAINERS_AND_PODS event listener call back in main.js', err);
+    win.webContents.send(events.HANDLE_CONTAINERS_AND_PODS, err);
   }
 })
 

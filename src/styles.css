@@ -537,7 +537,7 @@ body {
 /************* POPUP CONTAINER STYLING ************/
 /**************************************************/
 
-.popup {
+.popup_info {
   position: fixed;
   width: 100%;
   height: 100%;
@@ -549,7 +549,7 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.popup_inner {
+.popup_info_inner {
   position: absolute;
   left: 25%;
   right: 25%;
@@ -564,7 +564,7 @@ body {
   border: 1px solid lightgray;
 }
 
-.popup_inner button{
+.popup_info_inner button{
   width: 110px;
   height: 40px;
   background: #071526;
@@ -576,7 +576,7 @@ body {
   font-weight: medium;
 }
 
-.popup_inner button:hover{
+.popup_info_inner button:hover{
   cursor: pointer;
 }
 

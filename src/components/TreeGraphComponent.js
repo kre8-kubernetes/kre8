@@ -61,8 +61,6 @@ const TreeGraphComponent = (props) => {
 
   const data = hierarchy(treeData);
 
-  console.log('hierarchy data from the TreeGraphComponent', data);
-
   return (
     <div className='treegraph_component'>
       <svg width={width} height={height}>
@@ -108,8 +106,8 @@ const TreeGraphComponent = (props) => {
   
                   if (node.data.type === 'apiserver') return <MasterNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i}/>
                   if (node.data.type === 'Node') return <WorkerNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
-                  if (node.data.type === 'pod') return <PodComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
-                  if (node.data.type === 'container') return <ContainerComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
+                  if (node.data.type === 'Pod') return <PodComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
+                  if (node.data.type === 'Container') return <ContainerComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
                   // if (node.data.type === 'master-component') return <ContainerComponent node={node} top={top} left={left} key={i} />
                 })}
               </Group>

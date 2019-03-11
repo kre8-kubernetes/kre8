@@ -38,19 +38,23 @@ class TreeGraphContainer extends Component {
     this.hideNodeInfo = this.hideNodeInfo.bind(this);
     this.handleMasterNode = this.handleMasterNode.bind(this);
     this.handleWorkerNodes = this.handleWorkerNodes.bind(this);
+    this.handleContainersAndPods = this.handleContainersAndPods.bind(this);
   }
 
   componentDidMount() {
     // on mount, get the master node, get the worker nodes
     ipcRenderer.on(events.HANDLE_MASTER_NODE, this.handleMasterNode);
     ipcRenderer.on(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
+    ipcRenderer.on(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
     this.getMasterNode();
     this.getWorkerNodes();
+    this.getContainersAndPods();
   };
 
   componentWillUnmount() {
     ipcRenderer.removeListener(events.HANDLE_MASTER_NODE, this.handleMasterNode);
     ipcRenderer.removeListener(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
+    ipcRenderer.removeListener(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
   }
 
   getMasterNode() {
@@ -61,7 +65,12 @@ class TreeGraphContainer extends Component {
     ipcRenderer.send(events.GET_WORKER_NODES, 'helle from the getWokerNodes call');
   }
 
+  getContainersAndPods() {
+    ipcRenderer.send(events.GET_CONTAINERS_AND_PODS, 'hello from the getContainers call')
+  }
+
   handleMasterNode(event, data) {
+    console.log('data coming back from master api node', data);
     const treeData = {
       "name": data.metadata.labels.component,
       "id": data.metadata.uid,
@@ -79,12 +88,38 @@ class TreeGraphContainer extends Component {
       node["name"] = node.metadata.name;
       node["id"] = node.metadata.uid;
       node["type"] = node.kind;
+      node["children"] = [];
       newState.treeData.children.push(node);
     });
     this.setState({ ...this.state, treeData: newState.treeData});
   }
 
+  handleContainersAndPods(event, data) {
+    console.log('container data', data);
+    debugger;
+    const newState = {...this.state, treeData: {...this.state.treeData, children: [...this.state.treeData.children]}};
+    const addressMap = newState.treeData.children.reduce((acc, ele, index) => {
+      acc[ele.name] = index;
+      return acc;
+    }, {});
+    data.items.forEach((pod) => {
+      pod["name"] = pod.metadata.name;
+      pod["id"] = pod.metadata.uid;
+      pod["type"] = pod.kind;
+      pod["children"] = [];
+      pod.spec.containers.forEach((container) => {
+        container["name"] = container.image;
+        container["type"] = "Container";
+        pod.children.push(container);
+      });
+      const nodeName = pod.spec.nodeName;
+      newState.treeData.children[addressMap[nodeName]].children.push(pod);
+    });
+    this.setState(newState);
+  }
+
   showNodeInfo(node) {
+    console.log('node coming in', node);
     this.setState({ ...this.state, showInfo: true, nodeInfoToShow: node });
   };
 
@@ -280,8 +315,6 @@ class TreeGraphContainer extends Component {
       right: 40,
       bottom: 80
     };
-
-    console.log('this.state:', this.state);
 
     return (
       <div className='treegraph_container'>

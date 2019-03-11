@@ -2,7 +2,7 @@
 
 ### KRE8 empowers DevOps engineers to manage their Kubernetes cluster on AWS from their desktop
 
- KRE8 is a desktop application for MacOS that enables DevOps teams to view and interact with their Kubernetes cluster on Amazon Web Services, right from their desktop. The app features an interactive visualizer with real-time metrics on the status of your pods, services and deployments. The days of assembling metrics from AWS and kubectl to put together reports on your cluster are over! 
+KRE8 is an Electron application for MacOS that enables DevOps teams to view and interact with their Kubernetes cluster on Amazon Web Services, right from their desktop. The app features an interactive visualizer with real-time metrics on the status of your pods, services and deployments. The days of assembling metrics from AWS and kubectl to put together reports on your cluster are over! 
 
 ### KRE8 is in active development. Please follow this repo for contribution guidelines and our development road map.
 

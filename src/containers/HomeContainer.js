@@ -59,13 +59,10 @@ class HomeContainer extends Component {
   //HANDLE CHANGE METHOD FOR FORMS
   handleChange(e) {
     e.preventDefault();
-    console.log("e.target: ", e.target);
     this.setState({ [e.target.name]: e.target.value });
   }
 
   handleFormChange(e) {
-    console.log(e.target.value);
-    console.log("state: ", this.state);
     this.setState({ "awsRegion": e.target.value });
   }
 
@@ -146,6 +143,8 @@ class HomeContainer extends Component {
   }
 
   render() { 
+
+    console.log('this.state.awsRegion', this.state.awsRegion);
 
     return (
       <div className="home_page_container">

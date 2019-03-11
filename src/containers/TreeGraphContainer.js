@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { ipcRenderer } from 'electron';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Group } from '@vx/group';
@@ -8,8 +9,10 @@ import { hierarchy } from 'd3-hierarchy';
 import { LinearGradient } from '@vx/gradient';
 import uuid from 'uuid'
 
+import * as events from '../../eventTypes';
+
 import TreeGraphComponent from '../components/TreeGraphComponent';
-import NodeInfoComponent from '../components/NodeInfoComponent';
+import NodeInfoComponent from '../components/ClusterComponentInfo';
 import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
 
 const mapStateToProps = store => ({
@@ -25,163 +28,286 @@ class TreeGraphContainer extends Component {
     super(props);
     this.state = {
       showInfo: false,
-      nodeInfoToShow: {}
+      nodeInfoToShow: {},
+      masterNodeData: {},
+      treeData: {
+
+      }
     }
     this.showNodeInfo = this.showNodeInfo.bind(this);
     this.hideNodeInfo = this.hideNodeInfo.bind(this);
+    this.handleMasterNode = this.handleMasterNode.bind(this);
+    this.handleWorkerNodes = this.handleWorkerNodes.bind(this);
+    this.handleContainersAndPods = this.handleContainersAndPods.bind(this);
+  }
+
+  componentDidMount() {
+    // on mount, get the master node, get the worker nodes
+    ipcRenderer.on(events.HANDLE_MASTER_NODE, this.handleMasterNode);
+    ipcRenderer.on(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
+    ipcRenderer.on(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
+    this.getMasterNode();
+    this.getWorkerNodes();
+    this.getContainersAndPods();
+  };
+
+  componentWillUnmount() {
+    ipcRenderer.removeListener(events.HANDLE_MASTER_NODE, this.handleMasterNode);
+    ipcRenderer.removeListener(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
+    ipcRenderer.removeListener(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
+  }
+
+  getMasterNode() {
+    ipcRenderer.send(events.GET_MASTER_NODE, 'hello from the getMasterNode call');
+  }
+
+  getWorkerNodes() {
+    ipcRenderer.send(events.GET_WORKER_NODES, 'helle from the getWokerNodes call');
+  }
+
+  getContainersAndPods() {
+    ipcRenderer.send(events.GET_CONTAINERS_AND_PODS, 'hello from the getContainers call')
+  }
+
+  handleMasterNode(event, data) {
+    console.log('data coming back from master api node', data);
+    const treeData = {
+      "name": data.metadata.labels.component,
+      "id": data.metadata.uid,
+      "type": data.metadata.labels.component,
+      "data": data,
+      "children": []
+    };
+    this.setState({ ...this.state, treeData: treeData});
+  }
+
+  handleWorkerNodes(event, data) {
+    console.log('data coming back from worker nodes', data);
+    const newState = this.state;
+    data.items.forEach((node) => {
+      node["name"] = node.metadata.name;
+      node["id"] = node.metadata.uid;
+      node["type"] = node.kind;
+      node["children"] = [];
+      newState.treeData.children.push(node);
+    });
+    this.setState({ ...this.state, treeData: newState.treeData});
+  }
+
+  handleContainersAndPods(event, data) {
+    console.log('container data', data);
+    debugger;
+    const newState = {...this.state, treeData: {...this.state.treeData, children: [...this.state.treeData.children]}};
+    const addressMap = newState.treeData.children.reduce((acc, ele, index) => {
+      acc[ele.name] = index;
+      return acc;
+    }, {});
+    data.items.forEach((pod) => {
+      pod["name"] = pod.metadata.name;
+      pod["id"] = pod.metadata.uid;
+      pod["type"] = pod.kind;
+      pod["children"] = [];
+      pod.spec.containers.forEach((container) => {
+        container["name"] = container.image;
+        container["type"] = "Container";
+        pod.children.push(container);
+      });
+      const nodeName = pod.spec.nodeName;
+      newState.treeData.children[addressMap[nodeName]].children.push(pod);
+    });
+    this.setState(newState);
   }
 
   showNodeInfo(node) {
+    console.log('node coming in', node);
     this.setState({ ...this.state, showInfo: true, nodeInfoToShow: node });
-  }
+  };
 
   hideNodeInfo() {
     this.setState({ ...this.state, showInfo: false });
-  }
+  };
 
   render() {
-    const treeData = {
-      "name": "Master Node",
-      "id": uuid(),
-      "type": "master",
-      "children": [
-        {
-          "name": "WN1",
-          "id": uuid(),
-          "worder_node_id": 0,
-          "type": "node",
-          "children": [
-            { 
-              "name": "POD1",
-              "id": uuid(),
-              "pod_id": 0,
-              "type": "pod",
-              "children": [{
-                "name": "C1",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-            { 
-              "name": "POD2",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-               "name": "C7",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-            { 
-              "name": "POD3",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-                "name": "C3",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-          ]
-        },
-        {
-          "name": "WN2",
-          "id": uuid(),
-          "worder_node_id": 1,
-          "type": "node",
-          "children": [
-            { 
-              "name": "POD4",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-               "name": "C4",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-            { 
-              "name": "POD5",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-                "name": "C5",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-            { 
-              "name": "POD6",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-                "name": "C6",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-          ]
-        },
-        {
-          "name": "WN3",
-          "id": uuid(),
-          "worder_node_id": 2,
-          "type": "node",
-          "children": [
-            { 
-              "name": "POD7",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-                "name": "C7",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-            { 
-              "name": "POD8",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-                "name": "C8",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-            { 
-              "name": "POD9",
-              "id": uuid(),
-              "type": "pod",
-              "children": [{
-                "name": "C9",
-                "id": uuid(),
-                "type": "container",
-              }]
-            },
-          ]
-        },
-        // {
-        //   "name": "kube-apiserver",
-        //   "id": uuid(),
-        //   "type": "master-component",
-        // },
-        // {
-        //   "name": "etcd",
-        //   "id": uuid(),
-        //   "type": "master-component",
-        // },
-        // {
-        //   "name": "kube-scheduler",
-        //   "id": uuid(),
-        //   "type": "master-component",
-        // },
-        // {
-        //   "name": "kube-controller-manager",
+    // const treeData = {
+    //   "name": "Master Node",
+    //   "id": uuid(),
+    //   "type": "master",
+    //   "children": [
+    //     {
+    //       "name": "Worker Node #1",
+    //       "id": uuid(),
+    //       "worder_node_id": 0,
+    //       "type": "node",
+    //       "children": [
+    //         { 
+    //           "name": "Dream POD #1",
+    //           "id": uuid(),
+    //           "pod_id": 0,
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //         { 
+    //           "name": "Dream POD #2",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //         { 
+    //           "name": "Dream POD #3",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //       ]
+    //     },
+    //     {
+    //       "name": "Worker Node #2",
+    //       "id": uuid(),
+    //       "worder_node_id": 1,
+    //       "type": "node",
+    //       "children": [
+    //         { 
+    //           "name": "Dream POD #1",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //         { 
+    //           "name": "Dream POD #2",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //         { 
+    //           "name": "Dream POD #3",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //       ]
+    //     },
+    //     {
+    //       "name": "Worker Node #3",
+    //       "id": uuid(),
+    //       "worder_node_id": 2,
+    //       "type": "node",
+    //       "children": [
+    //         { 
+    //           "name": "Dream POD #1",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //         { 
+    //           "name": "Dream POD #2",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //         { 
+    //           "name": "Dream POD #3",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //       ]
+    //     },
+    //     {
+    //       "name": "Worker Node #4",
+    //       "id": uuid(),
+    //       "worder_node_id": 3,
+    //       "type": "node",
+    //       "children": [
+    //         {
+    //           "name": "Dream POD #1",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //         {
+    //           "name": "Dream POD #2",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //         {
+    //           "name": "Dream POD #3",
+    //           "id": uuid(),
+    //           "type": "pod",
+    //           "children": [{
+    //             "name": "Dream POD Container",
+    //             "id": uuid(),
+    //             "type": "container",
+    //           }]
+    //         },
+    //       ]
+    //     },
+    //     // {
+    //     //   "name": "kube-apiserver",
+    //     //   "id": uuid(),
+    //     //   "type": "master-component",
+    //     // },
+    //     // {
+    //     //   "name": "etcd",
+    //     //   "id": uuid(),
+    //     //   "type": "master-component",
+    //     // },
+    //     // {
+    //     //   "name": "kube-scheduler",
+    //     //   "id": uuid(),
+    //     //   "type": "master-component",
+    //     // },
+    //     // {
+    //     //   "name": "kube-controller-manager",
           
-        //   "type": "master-component",
-        // },
-      ],
-    };
+    //     //   "type": "master-component",
+    //     // },
+    //   ],
+    // };
 
     const margin = {
       top: 10,
@@ -202,7 +328,7 @@ class TreeGraphContainer extends Component {
           showNodeInfo={this.showNodeInfo}
           width={1100}
           height={800}
-          treeData={treeData}
+          treeData={this.state.treeData}
           margin={margin}
         />
       </div>

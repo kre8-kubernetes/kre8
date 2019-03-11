@@ -1,4 +1,5 @@
 import React from 'react';
+import uuid from 'uuid'
 
 const CreateMenuItemComponent = (props) => {
   const { 
@@ -15,7 +16,7 @@ const CreateMenuItemComponent = (props) => {
     return (
       <div className='create_menu_item_form_item'>
         <h4>{menuItemToShow} {inputName}:</h4>
-        <input id={id} value={inputVal} onChange={handleChange} type="text" />
+        <input id={id} key={id} value={inputVal} onChange={handleChange} type="text" />
         {/* TODO: error handling in these forms? this validator seems to force a re-render, which causes issues */}
         {/* {props.validator1.message(`${menuItemToShow} name, ${inputName}, required`)} */}
       </div>

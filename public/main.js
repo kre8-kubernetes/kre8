@@ -184,6 +184,10 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     console.log("sending Iam role data:", iamRoleStatus);
     win.webContents.send(events.HANDLE_STATUS_CHANGE, iamRoleStatus);
 
+    const vpcStackStatus = { type: awsProps.VPC_STACK_STATUS, status: awsProps.CREATING }
+    win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
+
+
   } catch (err) {
     console.log('Error from CREATE_IAM_ROLE in main.js:', err);
     win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating IAM Role: ${err}`)
@@ -202,10 +206,11 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     const vpcStackName = data.vpcStackName;
 
     const createdStack = await awsEventCallbacks.createVPCStack(vpcStackName, data.iamRoleName);
-    const vpcStackStatus = { type: awsProps.VPC_STACK_STATUS, status: awsProps.CREATED }
-
+    vpcStackStatus.status = awsProps.CREATED;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
 
+    const clusterStatus = { type: awsProps.CLUSTER_STATUS, status: awsProps.CREATING }
+    win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
 
   } catch (err) {
     console.log('Error from CREATE_TECH_STACK: in main.js: ', err);
@@ -222,14 +227,20 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
     createdCluster = await awsEventCallbacks.createCluster(data.clusterName);
     console.log("createdCluster to return: ", createdCluster);
-    const clusterStatus = { type: awsProps.CLUSTER_STATUS, status: awsProps.CREATED }
-
+    
+    clusterStatus.status = awsProps.CREATED;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
+
+
+    const workerNodeStatus = { type: awsProps.WORKER_NODE_STATUS, status: awsProps.CREATING };
+    win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
 
   } catch (err) {
     console.log('Error from CREATE_CLUSTER in main.js:', err);
     win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Cluster: ${err}`)
   }
+
+  //** ----- CREATE KUBECONFIG FILE, CONFIGURE KUBECTL, CREATE WORKER NODE STACK ---------- **//
 
   try {
 
@@ -240,30 +251,38 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     const kubectlConfigurationStatus = await kubectlConfigFunctions.configureKubectl(data.clusterName);
     //win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigurationStatus);
     const workerNodeStackCreationStatus = await kubectlConfigFunctions.createStackForWorkerNode( data.clusterName);
-    const workerNodeStatus = { type: awsProps.WORKER_NODE_STATUS, status: awsProps.CREATED }
+    
+    workerNodeStatus.status = awsProps.CREATED;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
 
+    const kubectlConfigStatus = { type: awsProps.KUBECTL_CONFIG_STATUS, status: awsProps.CREATING };
+    win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigStatus);
+  
 
   } catch {
       console.log('Error while creating Worker Node Stack ', err);
       win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Worker Node Stack: ${err}`)
 
   }
+
+  //** ----- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS ---------- **//
+
   try {
 
     const nodeInstanceCreationStatus = await kubectlConfigFunctions.inputNodeInstance(data.clusterName);
     const kubectlConfigStatusTest = await kubectlConfigFunctions.testKubectlStatus();
     console.log("final status: ", kubectlConfigStatusTest);
-    const kubectlConfigStatus = { type: awsProps.KUBECTL_CONFIG_STATUS, status: awsProps.CREATED }
-    win.webContents.send(events.HANDLE_STATUS_CHANGES, kubectlConfigStatus)
 
-   
+    kubectlConfigStatus.status = awsProps.CREATED;
+    win.webContents.send(events.HANDLE_STATUS_CHANGES, kubectlConfigStatus);
+
 
   } catch (err) {
     console.log('Error occurred while configuring kubectl: ', err);
     win.webContents.send(events.HANDLE_ERRORS, `Error occurred while configuring kubectl: ${err}`)
   }
 })
+
 
 //** --------------------------------------------------------------------------- **//
 //** ----------------------- FUNCTION TO SEND CLUSTER DATA TO DISPLAY ---------- **//

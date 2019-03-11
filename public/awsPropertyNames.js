@@ -4,6 +4,8 @@ awsPropertyNames.AWS_CREDENTIALS_STATUS = "STATUS";
 awsPropertyNames.AWS_CREDENTIALS_STATUS_CONFIGURED = "CONFIGURED";
 
 awsPropertyNames.CREATED = 'CREATED';
+awsPropertyNames.CREATED = 'CREATING';
+
 awsPropertyNames.IAM_ROLE_STATUS = 'iamRoleStatus';
 awsPropertyNames.VPC_STACK_STATUS = 'stackStatus';
 awsPropertyNames.CLUSTER_STATUS = 'clusterStatus';

@@ -12,7 +12,7 @@ import uuid from 'uuid'
 import * as events from '../../eventTypes';
 
 import TreeGraphComponent from '../components/TreeGraphComponent';
-import NodeInfoComponent from '../components/NodeInfoComponent';
+import NodeInfoComponent from '../components/ClusterComponentInfo';
 import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
 
 const mapStateToProps = store => ({

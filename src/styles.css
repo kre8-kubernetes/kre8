@@ -578,7 +578,70 @@ body {
 
 .popup_info_inner button:hover{
   cursor: pointer;
+  background: #D35B51;
+  color: #071526;
+  transition-duration: .2s;
 }
+
+.popup_info_inner button:focus {
+  outline: none;
+}
+
+.popup_info_inner button:active {
+  background: #D35B51;
+  opacity: 0.7;
+  color: #071526;
+}
+
+/**************************************************/
+/********** CLUSTER MORE INFO COMPONENTS **********/
+/**************************************************/
+
+.node_info_component {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.apiserver_info_component {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.apiserver_info_component_item {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#apiserver_info_ports {
+  display: flex;
+  flex-direction: column;
+}
+
+.apiserver_info_ports_body {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-left: 15px;
+}
+
+.apiserver_info_ports_body_item {
+  display: flex;
+  flex-direction: column;
+}
+
+#popup_info_button {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+
 
 /**************************************************/
 /**************** NAVBAR COMPONENTS ***************/

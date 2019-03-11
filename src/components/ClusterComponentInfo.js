@@ -1,31 +1,28 @@
 import React from 'react';
 
-const NodeInfoComponent = (props) => {
+import ApiserverInfoComponent from './ClusterComponentsInfoComponents/ApiserverInfoComponent';
+import NodeInfoComponent from './ClusterComponentsInfoComponents/NodeInfoComponent';
+
+const ClusterInfoComponent = (props) => {
   console.log('props from node info: ', props);
   const componentType = props.nodeInfoToShow.data.type;
+  const data = props.nodeInfoToShow.data.data;
 
+  console.log('componentType: ', componentType);
   return (
     <div className='popup_info'>
       <div className='popup_info_inner'>
         {
-          (componentType === "Node") ?
-            <div className='node_info_component'>
-              <p>Name: {props.nodeInfoToShow.data.name}</p>
-              <p>ID: {props.nodeInfoToShow.data.id}</p>
-              <p>Creation Date: 2019-02-26</p>
-              <p>API Version: v1</p>
-              <p>Provider: Kubernetes</p>
-              <p>Status: Active</p>
-              <p>Disk Space: Sufficient</p>
-              <p>Memory Pressure: False</p>
-              <p>PID Pressure: False</p>
-              <button onClick={props.hideNodeInfo}>Close</button>
-            </div>
+            (componentType === "Node") ?
+            <NodeInfoComponent
+              data={props.nodeInfoToShow.data}
+              hideNodeInfo={props.hideNodeInfo}
+            />
           : (componentType === "apiserver") ? 
-              <div className='apiserver_info_component'>
-                This is the api server
-                <button onClick={props.hideNodeInfo}>Close</button>
-              </div>
+              <ApiserverInfoComponent 
+                data={data}
+                hideNodeInfo={props.hideNodeInfo}
+              />
           : (componentType === "Pod") ? 
               <div className='pod_info_component'>
                 This is the Pod Info
@@ -47,4 +44,4 @@ const NodeInfoComponent = (props) => {
   )
 }
 
-export default NodeInfoComponent;
+export default ClusterInfoComponent;

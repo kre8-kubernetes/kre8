@@ -500,7 +500,7 @@ body {
   background: #D35B51;
   color: #071526;
   transition-duration: .2s;
-} */
+} 
 
 
 #aws_info {
@@ -510,6 +510,7 @@ body {
   color: #D7D7D7;
   border-radius: 20px;
   background: #071526;
+  margin-top: 3px;
 }
 
 #aws_info:active {
@@ -520,6 +521,14 @@ body {
 #aws_info:hover {
   cursor:pointer;
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -637,7 +646,7 @@ body {
   display: flex;
   flex-direction: column;
   text-align: center;
-  line-height: 23px;
+  line-height: 13px;
   font-weight: lighter;
   color: red;
   font-size: 10px;

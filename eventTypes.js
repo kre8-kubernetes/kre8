@@ -33,7 +33,7 @@ eventTypes.HANDLE_ERRORS = 'HANDLE_ERRORS';
 // eventTypes.CREATE_CLUSTER = 'CREATE_CLUSTER';
 // eventTypes.HANDLE_NEW_CLUSTER = 'HANDLE_NEW_CLUSTER';
 
-// eventTypes.HANDLE_NEW_NODES = 'HANDLE_NEW_NODES';
+eventTypes.HANDLE_NEW_NODES = 'HANDLE_NEW_NODES';
 
 //** -------- KUBECTL EVENT TYPES -------------------------- **/
 eventTypes.CREATE_POD = 'CREATE_POD';

@@ -46,16 +46,21 @@ awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator = async () => {
     }
     await onDownload.setPATHAndAppendToBashProfile();
 
+    return;
+
   } catch (err) {
     console.log(err);
+    throw err;
   }
 }
 
 awsEventCallbacks.setEnvVarsAndMkDirsInDev = () => {
   process.env['AWS_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/AWS_Assets/';
   process.env['KUBECTL_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/KUBECTL_Assets/'
-  mkdirp.sync(process.env['AWS_STORAGE']);
+  mkdirp.sync(process.env['AWS_STORAGE'] + 'AWS_Private/');
   mkdirp.sync(process.env['KUBECTL_STORAGE']);
+
+  return;
 }
 
 
@@ -64,14 +69,16 @@ awsEventCallbacks.setEnvVarsAndMkDirsInProd = () => {
   process.env['AWS_STORAGE'] = process.env['APPLICATION_PATH'] + `/Storage/AWS_Assets/`;
   process.env['KUBECTL_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/KUBECTL_Assets'
   
-  mkdirp.sync(process.env['AWS_STORAGE']);
+  mkdirp.sync(process.env['AWS_STORAGE'] + 'AWS_Assets/');
   mkdirp.sync(process.env['KUBECTL_STORAGE']);
+
+  return;
 }
 
 
 //** ------- EXECUTES ON EVERY OPENING OF APPLICATION --------------- **//
 //** ------- Check credentials file to determine if user needs to configure the application **// 
-awsEventCallbacks.returnCredentialsStatus = async (data) => {
+awsEventCallbacks.returnKubectlAndCredentialsStatus = async (data) => {
 
   try {
 
@@ -83,7 +90,7 @@ awsEventCallbacks.returnCredentialsStatus = async (data) => {
     console.log("awsCredentialFileExists: ", awsCredentialFileExists)
 
 
-    if ((!kubectlStatus.includes('error')) &&  awsCredentialFileExists) {
+    if ((kubectlStatus === true) &&  awsCredentialFileExists) {
 
       const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
 
@@ -98,6 +105,7 @@ awsEventCallbacks.returnCredentialsStatus = async (data) => {
 
     } catch (err) {
       console.log(err);
+      return false;
     }
 }
 
@@ -107,12 +115,11 @@ awsEventCallbacks.returnCredentialsStatus = async (data) => {
 //AWS credentials and region.
 awsEventCallbacks.configureAWSCredentials = async (data) => {
 
-  //Check if AWS credentials files exists
   if (fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json')) {
 
-    const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
-    const parsedCredentialsFile = JSON.parse(readAWSCredentialsFile);
-    console.log('Credeintial file this is the parsed obj', parsedCredentialsFile);
+    const awsCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
+    const parsedCredentialsFile = JSON.parse(awsCredentialsFile);
+    console.log('Credential file this is the parsed obj', parsedCredentialsFile);
 
     parsedCredentialsFile.AWS_ACCESS_KEY_ID = data.awsAccessKeyId;
     parsedCredentialsFile.AWS_SECRET_ACCESS_KEY = data.awsSecretAccessKey;
@@ -120,7 +127,7 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
 
     process.env['AWS_ACCESS_KEY_ID'] = data.awsAccessKeyId;
     process.env['AWS_SECRET_ACCESS_KEY'] = data.awsSecretAccessKey;
-    process.env['AWS_REGION'] = data.awsRegion;
+    process.env['REGION'] = data.awsRegion;
 
     console.log("environment variables: ", process.env['AWS_ACCESS_KEY_ID'], process.env['AWS_SECRET_ACCESS_KEY'],  process.env['REGION'] )
 
@@ -147,23 +154,6 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
   }
 }
 
-
-// //** --------- UPDATE awsCredentials FILE WITH CREDENTIAL STATUS ------------------------------ **//
-// awsEventCallbacks.updateCredentialsFileWithCredentialStatus= async (data) => {
-
-//   try {
-//     const readCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
-//     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
-//     parsedCredentialsFile.STATUS = 'CONFIGURED';
-//     const stringifiedCredentialFile = JSON.stringify(parsedCredentialsFile, null, 2);
-//     fsp.writeFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
-
-//   } catch (err) {
-//     console.log(err);
-//   }
-
-// }
-
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
 //Check if the user has already created an IAM role by this name. If not, send IAM data to 
 //AWS via the iamParams object to create an IAM Role, and save the data to the file.
@@ -186,16 +176,16 @@ awsEventCallbacks.createIAMRole = async (iamRoleName) => {
 
     if (!isIAMRoleNameInMasterFile) {
       const iamParams = awsParameters.createIAMRoleParam(iamRoleName, iamRolePolicyDocument);
-      const role = await iam.createRole(iamParams).promise();
+      const iamRoleDataReturnedFromAWS = await iam.createRole(iamParams).promise();
 
       //TODO: handle error info from AWS
-      if (role.Role.CreateDate) {
-        console.log("Data that comes back from AWS after creating a role", role);
+      if (iamRoleDataReturnedFromAWS.Role.CreateDate) {
+        console.log("Data that comes back from AWS after creating a role", iamRoleDataReturnedFromAWS);
 
         const iamRoleData = {
-          createDate: role.Role.CreateDate,
-          iamRoleName: role.Role.RoleName,
-          iamRoleArn: role.Role.Arn,
+          createDate: iamRoleDataReturnedFromAWS.Role.CreateDate,
+          iamRoleName: iamRoleDataReturnedFromAWS.Role.RoleName,
+          iamRoleArn: iamRoleDataReturnedFromAWS.Role.Arn,
         }
 
         await awsHelperFunctions.appendAWSMasterFile(iamRoleData);
@@ -212,9 +202,8 @@ awsEventCallbacks.createIAMRole = async (iamRoleName) => {
         return `AWS IAM Role ${iamRoleName} created with the Role ARN ${iamRoleData.iamRoleArn}.`
 
       } else {
-        //TODO: address this error situation
-        console.log("AWS IAM Role already exists.");
-        return `AWS IAM Role with the name ${iamRoleName} already exists. Continuing with the creation process, and attaching elements to ${iamRoleName} IAM Role.`;
+        console.log("Error in creating IAM role: ", iamRoleDataReturnedFromAWS);
+        throw iamRoleDataReturnedFromAWS;
       }
 
     } else {
@@ -224,9 +213,7 @@ awsEventCallbacks.createIAMRole = async (iamRoleName) => {
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createIAMROle:', err);
-    // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating IAM Role: ${err}`)
-    throw `Error occurred while creating IAM Role: ${err}`;
-
+    throw `${err}`;
   }
 };
 
@@ -274,9 +261,7 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
           stackStatus = parsedStackData[0].StackStatus;
         } catch (err) {
           console.log(err);
-          // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating IAM Role: ${err}`)
-          throw `Error occurred while creating IAM Role: ${err}`;
-
+          throw `${err}`;
         }
       }
     
@@ -300,13 +285,9 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
 
         await awsHelperFunctions.appendAWSMasterFile(stackDataForMasterFile);
 
-
       } else {
-
         console.log(`Error in creating stack. Stack Status = ${stackStatus}`);
-        //return `Error in creating stack. Stack Status = ${stackStatus}`;
-        // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Stack. Stack Status = ${stackStatus}`);
-        throw `Error occurred while creating Stack. Stack Status = ${stackStatus}`;
+        throw `Stack Status: ${stackStatus}`;
 
       }
 
@@ -320,8 +301,7 @@ awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createTechStack:', err);
-    // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Stack: ${err}`);
-    throw `Error occurred while creating Stack: ${err}`;
+    throw `${err}`;
   }
 };
 
@@ -382,8 +362,8 @@ awsEventCallbacks.createCluster = async (clusterName) => {
           console.log("status in getClusterData: ", clusterCreationStatus);
         } catch (err) {
           console.log('Error from the getClusterData function from within awsEventCallbacks.createCluster:', err);
-          // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while retrieving attempting to retrieve Cluster data from AWS: ${err}`);
-          throw `Error occurred while retrieving attempting to retrieve Cluster data from AWS: ${err}`;
+
+          throw `${err}`;
 
         }
       }
@@ -420,8 +400,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
 
       } else {
         console.log(`Error in creating cluster. Cluster Status = ${clusterStatus}`);
-        // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Cluster. Cluster Status: ${clusterStatus}`);
-        throw `Error occurred while creating Cluster. Cluster Status: ${clusterStatus}`;
+        throw `Cluster Status: ${clusterStatus}`;
 
       }
 
@@ -432,9 +411,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createCluster: ', err);
-    // win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Cluster: ${err}`);
-    throw `Error occurred while creating Cluster: ${err}`;
-
+    throw `${err}`;
   }
 };
 

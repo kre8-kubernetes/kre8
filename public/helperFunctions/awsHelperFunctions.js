@@ -73,10 +73,9 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
 
     if (fileExists) {
 
-      //TODO CAHNGE I AM ROLE TO CLUSTER NAME
       const awsMasterFileContents = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${process.env['CLUSTER_NAME']}_MASTER_FILE.json`, 'utf-8');
       const parsedAWSMasterFileContents = JSON.parse(awsMasterFileContents);
-      console.log("Master file exits and here are the contents:", parsedAWSMasterFileContents);
+      console.log("Master file exits");
 
       if (parsedAWSMasterFileContents[key] === value) {
         console.log("key and value already exists in the parsed master file")

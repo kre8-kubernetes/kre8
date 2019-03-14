@@ -55,11 +55,14 @@ let win;
 //creates application window, serves either dev or production version of app and
 function createWindowAndSetEnvironmentVariables () {
 
+  console.log("TOP:   process.env['KUBECONFIG'] at beginning: ", process.env['KUBECONFIG']);
+
   awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator();
   
   if (isDev) {
     BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
     process.env['APPLICATION_PATH'] = __dirname;
+
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
 
   } else {
@@ -73,20 +76,17 @@ function createWindowAndSetEnvironmentVariables () {
     const readCredentialsFile = fs.readFileSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
 
-    Object.entries(parsedCredentialsFile).forEach((arr) => {
-      process.env[arr[0]] = arr[1];
-      console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
+    Object.entries(parsedCredentialsFile).forEach((arr, index) => {
+      if (index < 3) {
+        process.env[arr[0]] = arr[1];
+        console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
+      }
     });
 
-    console.log("process.env['AWS_REGION']: ", process.env['AWS_REGION'])
+    console.log("process.env['KUBECONFIG']: ", process.env['KUBECONFIG']);
   }
 
-  // win = new BrowserWindow({width: 1080, height: 810, resizable: false });
   win = new BrowserWindow({ height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based", title: 'Kre8'});
-
-  // win = new BrowserWindow({ maxHeight: 810, maxWidth: 1080, minWidth: 900, minHeight: 700, vibrancy: "title-bar"});
-
-  //, titleBarStyle: "hiddenInset" 
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
   win.on('closed', () => win = null)
@@ -95,14 +95,15 @@ function createWindowAndSetEnvironmentVariables () {
 
 //** ------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------------- **//
 //** ------- Check credentials file to determine if user needs to configure the application **// 
-//If credential's file hasn't been created yet (meaning user hasn't entered credentials previously), 
+
+//If kubectl has not yet been configured and/or the credential's file hasn't been created yet (meaning user hasn't entered credentials previously), 
 //serve HomeComponent page, else, serve HomeComponentPostCredentials
 ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
 
   try {
-    const credentialStatusToReturn = await awsEventCallbacks.returnCredentialsStatus(data);
+    const credentialStatusToReturn = await awsEventCallbacks.returnKubectlAndCredentialsStatus(data);
     
-    console.log("credentialStatusToReturn: ", credentialStatusToReturn)
+    console.log("Kubectl + Credential Status: ", credentialStatusToReturn)
     win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatusToReturn);
 
   } catch (err) {
@@ -136,7 +137,6 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
       console.log("credentialStatus.Arn in yes: ", credentialStatus.Arn);
 
       await awsHelperFunctions.updateCredentialsFile(awsProps.AWS_CREDENTIALS_STATUS, awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED);
-
       win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
 
     } else {
@@ -151,11 +151,7 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
   }
 })
 
-//** --------------------------------------------------------------------------- **//
-//** ----------------------- AWS SDK EVENTS ------------------------------------ **//
-//** --------------------------------------------------------------------------- **//
-
-
+//** --------- AWS SDK EVENTS-------------------------------------------------------------------------------- **//
 //** --------- EXECUTES ON FIRST INTERACTION WITH APP WHEN USER SUBMITS DATA FROM PAGE 2, AWS CONTAINER ----- **//
 //** --------- Takes 10 - 15 minutes to complete ------------------------------------------------------------ **//
 //** --------- Creates AWS account components: IAM Role, Stack, Cluster, Worker Node Stack ------------------ **//
@@ -163,6 +159,12 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
 
 ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
+  const iamRoleStatus = {};
+  const vpcStackStatus = {};
+  const clusterStatus = {};
+  const workerNodeStatus = {};
+  const kubectlConfigStatus = {};
+  const errorData = {};
 
   try {
 
@@ -170,60 +172,81 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('============  ipcMain.on(events.CREATE_IAM_ROLE)... =================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-
-    //TODO: delete 
-    // process.env['IAM_ROLE_NAME'] = data.iamRoleName;
+    
+    //Set CLUSTER_NAME environment variable based on user input
     process.env['CLUSTER_NAME'] = data.clusterName;
 
+    //Send data to AWS to create IAM Role, timing: 10 - 30 seconds
     const iamRoleStatusData = await awsEventCallbacks.createIAMRole(data.iamRoleName);
     console.log("iamRoleCreated data to send: ", iamRoleStatusData);
 
-    const iamRoleStatus = { type: awsProps.IAM_ROLE_STATUS, status: awsProps.CREATED }
+    iamRoleStatus.type = awsProps.IAM_ROLE_STATUS;
+    iamRoleStatus.status = awsProps.CREATED;
 
-    //TODO: Do someting with the IAM Role Created Data on the front end
+    //Send status to front end to display
     console.log("sending Iam role data:", iamRoleStatus);
     win.webContents.send(events.HANDLE_STATUS_CHANGE, iamRoleStatus);
 
-    const vpcStackStatus = { type: awsProps.VPC_STACK_STATUS, status: awsProps.CREATING }
+    vpcStackStatus.type = awsProps.VPC_STACK_STATUS;
+    vpcStackStatus.status = awsProps.CREATING;
+
+    console.log("sending VPC Stack data:", vpcStackStatus);
     win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
 
 
   } catch (err) {
     console.log('Error from CREATE_IAM_ROLE in main.js:', err);
-    win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating IAM Role: ${err}`)
 
+    errorData.type = awsProps.IAM_ROLE_STATUS;
+    errorData.status = awsProps.ERROR;
+    errorData.errorMessage = `Error occurred while creating IAM Role: ${err}`
+
+    console.log("errorMessage: ", errorData);
+
+    win.webContents.send(events.HANDLE_ERRORS, errorData);
   }
 
-  //** ------ CREATE AWS STACK + SAVE RETURNED DATA IN FILE ---- **//
+  // //** ------ CREATE AWS STACK + SAVE RETURNED DATA IN FILE ---- **//
   //Takes approx 1 - 1.5 mins to create stack and get data back from AWS
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('============  ipcMain.on(events.CREATE_TECH_STACK),... ==============')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-    // FIXME: should the stack template be stringified inside of the awsParameters just like
-    // the iamCreateRole process like above?
+   
     const vpcStackName = data.vpcStackName;
 
     const createdStack = await awsEventCallbacks.createVPCStack(vpcStackName, data.iamRoleName);
+
     vpcStackStatus.status = awsProps.CREATED;
+    console.log("vpcStackStatus: ", vpcStackStatus);
     win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
 
-    const clusterStatus = { type: awsProps.CLUSTER_STATUS, status: awsProps.CREATING }
+
+    clusterStatus.type = awsProps.CLUSTER_STATUS;
+    clusterStatus.status = awsProps.CREATING;
+
     win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
 
   } catch (err) {
+
     console.log('Error from CREATE_TECH_STACK: in main.js: ', err);
-    win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Stack: ${err}`)
+
+    errorData.type = awsProps.VPC_STACK_STATUS;
+    errorData.status = awsProps.ERROR;
+    errorData.errorMessage = `Error occurred while creating VPC Stack: ${err}`
+
+    console.log("errorMessage: ", errorData);
+    win.webContents.send(events.HANDLE_ERRORS, errorData);
+
   }
 
-  //** --------- CREATE AWS CLUSTER ---------------------------------- **//
+  // //** --------- CREATE AWS CLUSTER ---------------------------------- **//
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('============  ipcMain.on(events.CREATE_CLUSTER),... ==============')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-    //TODO, removed iamRolName from param : data.iamRoleName
 
     createdCluster = await awsEventCallbacks.createCluster(data.clusterName);
     console.log("createdCluster to return: ", createdCluster);
@@ -232,12 +255,20 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
 
 
-    const workerNodeStatus = { type: awsProps.WORKER_NODE_STATUS, status: awsProps.CREATING };
+    workerNodeStatus.type = awsProps.WORKER_NODE_STATUS,
+    workerNodeStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
 
   } catch (err) {
-    console.log('Error from CREATE_CLUSTER in main.js:', err);
-    win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Cluster: ${err}`)
+
+    console.log('Error from CREATE_TECH_STACK: in main.js: ', err);
+
+    errorData.type = awsProps.CLUSTER_STATUS;
+    errorData.status = awsProps.ERROR;
+    errorData.errorMessage = `Error occurred while creating Cluster: ${err}`;
+
+    console.log("errorMessage: ", errorData);
+    win.webContents.send(events.HANDLE_ERRORS, errorData);
   }
 
   //** ----- CREATE KUBECONFIG FILE, CONFIGURE KUBECTL, CREATE WORKER NODE STACK ---------- **//
@@ -247,39 +278,68 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     console.log("starting kube config");
 
     const configFileCreationStatus = await kubectlConfigFunctions.createConfigFile(data.clusterName);
-    //win.webContents.send(events.HANDLE_STATUS_CHANGE, configFileCreationStatus);
     const kubectlConfigurationStatus = await kubectlConfigFunctions.configureKubectl(data.clusterName);
-    //win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigurationStatus);
     const workerNodeStackCreationStatus = await kubectlConfigFunctions.createStackForWorkerNode( data.clusterName);
     
     workerNodeStatus.status = awsProps.CREATED;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
 
-    const kubectlConfigStatus = { type: awsProps.KUBECTL_CONFIG_STATUS, status: awsProps.CREATING };
+    kubectlConfigStatus.type = awsProps.KUBECTL_CONFIG_STATUS;
+    kubectlConfigStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigStatus);
   
 
-  } catch {
-      console.log('Error while creating Worker Node Stack ', err);
-      win.webContents.send(events.HANDLE_ERRORS, `Error occurred while creating Worker Node Stack: ${err}`)
+  } catch (err) {
+
+    console.log('Error from CREATE_TECH_STACK: in main.js: ', err);
+
+    errorData.type = awsProps.WORKER_NODE_STATUS;
+    errorData.status = awsProps.ERROR;
+    errorData.errorMessage = `Error occurred while creating Worker Node Stack: ${err}`;
+
+    console.log("errorMessage: ", errorData);
+    win.webContents.send(events.HANDLE_ERRORS, errorData);
 
   }
 
-  //** ----- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS ---------- **//
+  // //** ----- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS ---------- **//
 
   try {
 
     const nodeInstanceCreationStatus = await kubectlConfigFunctions.inputNodeInstance(data.clusterName);
+
+
     const kubectlConfigStatusTest = await kubectlConfigFunctions.testKubectlStatus();
     console.log("final status: ", kubectlConfigStatusTest);
 
-    kubectlConfigStatus.status = awsProps.CREATED;
-    win.webContents.send(events.HANDLE_STATUS_CHANGES, kubectlConfigStatus);
+    if (kubectlConfigStatusTest === true) {
+      kubectlConfigStatus.status = awsProps.CREATED;
+
+      console.log('kubectlConfigStatus.status: ', kubectlConfigStatus.status);
+
+      win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigStatus);
+
+      console.log("moving along");
+
+      win.webContents.send(events.HANDLE_NEW_NODES, kubectlConfigStatusTest);
+
+
+    } else {
+      win.webContents.send(events.HANDLE_ERRORS, "An error ocurred while configuring kubectl");
+    }
 
 
   } catch (err) {
-    console.log('Error occurred while configuring kubectl: ', err);
-    win.webContents.send(events.HANDLE_ERRORS, `Error occurred while configuring kubectl: ${err}`)
+
+    console.log('Error from configuring Kubectl', err);
+
+    errorData.type = awsProps.KUBECTL_CONFIG_STATUS;
+    errorData.status = awsProps.ERROR;
+    errorData.errorMessage = `Error occurred while configuring kubectl: ${err}`;
+
+    console.log("errorMessage: ", errorData);
+    win.webContents.send(events.HANDLE_ERRORS, errorData);
+
   }
 })
 

@@ -4,7 +4,8 @@ awsPropertyNames.AWS_CREDENTIALS_STATUS = "STATUS";
 awsPropertyNames.AWS_CREDENTIALS_STATUS_CONFIGURED = "CONFIGURED";
 
 awsPropertyNames.CREATED = 'CREATED';
-awsPropertyNames.CREATED = 'CREATING';
+awsPropertyNames.CREATING = 'CREATING';
+awsPropertyNames.ERROR = 'ERROR';
 
 awsPropertyNames.IAM_ROLE_STATUS = 'iamRoleStatus';
 awsPropertyNames.VPC_STACK_STATUS = 'stackStatus';
@@ -27,10 +28,9 @@ awsPropertyNames.SECURITY_GROUP_IDS = 'securityGroupIds';
 awsPropertyNames.SUBNET_IDS_STRING = 'subnetIdsString';
 awsPropertyNames.SUBNET_IDS_ARRAY = 'subnetIdsArray';
 
-awsPropertyNames.KUBECONFIG_FILE_STATUS = "KubeConfigFileStatus";
+// awsPropertyNames.KUBECONFIG_FILE_STATUS = "KubeConfigFileStatus";
 awsPropertyNames.KUBECONFIG_FILE_STATUS_CREATED = "Created";
 
-awsPropertyNames.KUBECTL_CONFIG_STATUS = "KubectlConfigStatus";
 awsPropertyNames.KUBECTL_CONFIG_STATUS_CONFIGURED = "Configured";
 
 

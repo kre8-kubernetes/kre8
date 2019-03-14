@@ -91,6 +91,7 @@ onDownload.setPATHAndAppendToBashProfile = async () => {
 
   } catch (err) {
     console.log(err);
+    throw err;
   }
 }
 

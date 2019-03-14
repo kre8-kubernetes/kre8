@@ -72,7 +72,7 @@ class HomeContainer extends Component {
 
   testFormValidation() {
     if (this.validator.allValid()) {
-      alert(`Your credentials are being validated by Amazon Web Services. This can take up to one minute. Please click ok to continue.`);
+      // alert(`Your credentials are being validated by Amazon Web Services. This can take up to one minute. Please click ok to continue.`);
       return true;
     } else {
       this.validator.showMessages();
@@ -128,7 +128,7 @@ class HomeContainer extends Component {
       this.props.history.push('/aws')
 
       //TODO: Convert alert
-      alert(`Signed in with the Role Arn: ${data.Arn}`);
+      // alert(`Signed in with the Role Arn: ${data.Arn}`);
 
     } else {
       alert('The credentials you entered are incorrect. Please check your entries and try again.');

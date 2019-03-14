@@ -85,68 +85,14 @@ kubectlConfigFunctions.createConfigFile = async (clusterName) => {
 
       return `The kubeclt config file has been created in the .kube folder in the root directory. Proceeding with the process.`;
 
-      //write to Masterfile that Config file was created
-      // const dataForAWSMasterDataFile = { [awsProps.KUBECONFIG_FILE_STATUS]: KUBECONFIG_FILE_STATUS_CREATED };
-      // await awsHelperFunctions.appendAWSMasterFile(dataForAWSMasterDataFile);
-      // console.log("added Config File Status to Masterfile");
-
     } else {
       console.log("Config file alreadu created");
       return `The kubeclt config file was already created in the .kube folder in the root directory. Proceeding with the process.`;
     }
-
-
-
-    // const isConfigFileStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile(awsProps.KUBECONFIG_FILE_STATUS, awsProps.KUBECONFIG_FILE_STATUS_CREATED);
-
-    // console.log("isConfigFileStatusInMasterFile: ", isConfigFileStatusInMasterFile);
-
-    // if (!isConfigFileStatusInMasterFile) {
-      //Access data from cluster data file
-      // const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `${iamRoleName}_MASTER_FILE.json`, 'utf-8');
-
-      
-      //Gather required data 
-      // const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
-      // const serverEndpoint = parsedAWSMasterFileData.serverEndPoint;
-      // //const clusterArn = parsedAWSMasterFileData.clusterArn;
-      // const certificateAuthorityData = parsedAWSMasterFileData.certificateAuthorityData;
-    
-      // //Generate parameter with gathered data
-      // const AWSClusterConfigFileData = awsParameters.createConfigParam(clusterName, serverEndpoint, certificateAuthorityData);
-      
-      // //Format data from the AWSClusterConfigFileData object into YAML to save in user's filesystem 
-      // let stringifiedAWSClusterConfigFile = JSON.stringify(AWSClusterConfigFileData);
-      // let parsedAWSClusterConfigFile = JSON.parse(stringifiedAWSClusterConfigFile);
-      // let yamledAWSClusterConfigFile = YAML.stringify(parsedAWSClusterConfigFile, 6);
-      // let regexCharToRemove = /(['])+/g;
-      // let yamledAWSClusterConfigFileWithoutRegex = yamledAWSClusterConfigFile.replace(regexCharToRemove, "");
-    
-      // //Check if user has a .kube folder in root directory, if not, make one
-      // // const folderName = ".kube";
-      // // awsHelperFunctions.checkFileSystemForDirectoryAndMkDir(folderName);
-    
-      // //Save file in users .kube directory
-      // await fsp.writeFile(process.env['HOME']+ `/.kube/config-${clusterName}`, yamledAWSClusterConfigFileWithoutRegex));
-
-    
-      // //write to Masterfile that Config file was created
-      // const dataForAWSMasterDataFile = { [awsProps.KUBECONFIG_FILE_STATUS]: KUBECONFIG_FILE_STATUS_CREATED };
-
-
-
-      // await awsHelperFunctions.appendAWSMasterFile(dataForAWSMasterDataFile);
-      // console.log("added Config File Status to Masterfile");
-
-    // } else {
-    //   console.log("Config file alreade created");
-    // }
     
   } catch (err) {
     console.log('There was an error in creating the kubectl config file in .kube folder in root directory: ', err);
-    throw(`An error occurred while creating the kubectl config file in the .kube folder in root directory: ${err}`);
-    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while creating the kubectl config file in the .kube folder in root directory: ${err}`);
-
+    throw(`${err}`);
   }
 };
 
@@ -164,71 +110,58 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log("process.env['KUBECONFIG'] before: ", process.env['KUBECONFIG']);
 
-    // const isKubectlConfigStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile(awsProps.KUBECTL_CONFIG_STATUS, awsProps.KUBECTL_CONFIG_STATUS_CONFIGURED);
 
-    // console.log("isKubectlConfigStatusInMasterFile: ", isKubectlConfigStatusInMasterFile);
+    if (process.env['KUBECONFIG'] !== undefined) {
+      console.log("KUBECONFIG is not undefined");
 
-    // if (!isKubectlConfigStatusInMasterFile) {
-
-      if (process.env['KUBECONFIG'] !== undefined) {
-        console.log("KUBECONFIG is not undefined");
-
-        if (!process.env['KUBECONFIG'].includes(clusterName)) {
-          
-          console.log("KUBECONFIG env var exists, but not the same");
-          process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
-
-          console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
-
-
-          //read the bash profile and replace data in bash profile to reflect accurate location
-          let bashRead = await fsp.readFile(process.env['HOME'] + '/.bash_profile', 'utf-8')
-          bashRead = bashRead.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`)
-          await fsp.writeFile(process.env['HOME'] + '/.bash_profile', bashRead, 'utf-8');
-
-          console.log('re-wrote .bash_profile to set KUBECONFIG env var to the new cluster config file')
-        } else {
-          console.log("kubeconfig exists and is the same");
-        }
-
-      } else {
-        console.log("if KUBECONFIG env var doesn't exist");
-
+      if (!process.env['KUBECONFIG'].includes(clusterName)) {
+        
+        console.log("KUBECONFIG env var exists, but not the same");
         process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
-        let textToAppendToBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
-        await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToAppendToBashProfile);
+
+        console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
+
+        //read the bash profile and replace data in bash profile to reflect accurate location
+        let bashRead = await fsp.readFile(process.env['HOME'] + '/.bash_profile', 'utf-8')
+        bashRead = bashRead.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`)
+        console.log("bashRead: ", bashRead)
+        await fsp.writeFile(process.env['HOME'] + '/.bash_profile', bashRead, 'utf-8');
+
+        console.log('re-wrote .bash_profile to set KUBECONFIG env var to the new cluster config file')
+      } else {
+        console.log("kubeconfig exists and is the same");
       }
 
-      console.log('this is the current KUBECONFIG at kubectl get svc time:', process.env['KUBECONFIG'])
+    } else {
+      console.log("if KUBECONFIG env var doesn't exist");
 
-      const child = spawnSync('kubectl', ['get', 'svc']);
-      const stdout = child.stdout.toString();
-      const stderr = child.stderr.toString();
+      process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
 
-      console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! kubectl status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-      console.log('stdout', stdout, 'stderr', stderr);
+      let textToAppendToBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
+      await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToAppendToBashProfile);
+    }
 
-      if (!stderr) {
-        console.log(`Kubectl has been configured. Here is the service data: ${stdout}`)
-        return (`Kubectl has been configured. Here is the service data: ${stdout}`)
-      }
+    console.log('this is the current KUBECONFIG at kubectl get svc time:', process.env['KUBECONFIG'])
 
-      if (stderr) {
-        throw stderr;
-      }
+    const child = spawnSync('kubectl', ['get', 'svc']);
+    const stdout = child.stdout.toString();
+    const stderr = child.stderr.toString();
 
-      // const dataForAWSMasterDataFile = { [awsProps.KUBECTL_CONFIG_STATUS]: awsProps.KUBECTL_CONFIG_STATUS_CONFIGURED };
-      // // const stringifiedDataForAWSMasterDataFile = JSON.stringify(dataForAWSMasterDataFile);
-      // await awsHelperFunctions.appendAWSMasterFile(dataForAWSMasterDataFile);
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! kubectl status !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    console.log('stdout', stdout, 'stderr', stderr);
 
-    // } else {
-    //   console.log("Kubectl already configured");
-    // } 
+    if (!stderr) {
+      console.log(`Kubectl has been configured. Here is the service data: ${stdout}`)
+      return (`Kubectl has been configured. Here is the service data: ${stdout}`)
+    }
+
+    if (stderr) {
+      throw stderr;
+    }
 
   } catch (err) {
     console.log('Error coming from kubectlConfigFunctions.configureKubectl: ', err);
-    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while when configuring kubectl: ${err}`);
-    throw `An error occurred while when configuring kubectl: ${err}`;
+    throw `${err}`;
   }
 
 }
@@ -295,10 +228,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (clusterName) => {
           parsedStackData = JSON.parse(stringifiedStackData);
           stackStatus = parsedStackData[0].StackStatus;
         } catch (err) {
-
-          // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while retrieving Stack data: ${err}`);
-          throw `An error occurred while retrieving Stack data: ${err}`;
-          console.log(err);
+          throw ` ${err}`;
         }
       }
     
@@ -323,7 +253,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (clusterName) => {
       } else {
         
         console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
-        return `Error in creating stack. Stack Status = ${stackStatus}`;
+        throw `${stackStatus}`;
 
       }
     } else {
@@ -334,9 +264,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (clusterName) => {
 
   } catch (err) {
     console.log('Error coming from within kubectlConfigFunctions.createStackForWorkerNode', err);
-    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while creating the Worker Node Stack: ${err}`);
-
-    throw `An error occurred while creating the Worker Node Stack: ${err}`;
+    throw `${err}`;
 
     
   }
@@ -361,118 +289,61 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
 
     //check env variable
     if (process.env['KUBECONFIG'] !== `:${process.env['HOME']}/.kube/config-${clusterName}`) {
+      console.log("process.env was not set", process.env['KUBECONFIG'])
       process.env['KUBECONFIG'] = `:${process.env['HOME']}/.kube/config-${clusterName}`;
     }
   
-    const authFileExists = fs.existsSync(process.env['KUBECTL_STORAGE'] + `AUTH_FILE_${workerNodeStackName}.yaml`);
+    // const authFileExists = fs.existsSync(process.env['KUBECTL_STORAGE'] + `AUTH_FILE_${workerNodeStackName}.yaml`);
 
-    if (!authFileExists) {
+    // if (!authFileExists) {
 
-      const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
+    console.log('!!!!!!!!!!!!!!!!!!!!!--------auth file time--------------!!!!!!!!!!!!!!!!!!!!!!!!!!')
+
+    const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
+  
+    const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
+    const nodeInstanceRoleArn = parsedAWSMasterFileData.nodeInstanceRoleArn;
+
+    console.log("node instance role arn from master file: ", nodeInstanceRoleArn);
     
-      const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
-      const nodeInstanceRoleArn = parsedAWSMasterFileData.nodeInstanceRoleArn;
-      
-      
+    const nodeInstanceTemplateRead = await fsp.readFile(process.env['AWS_STORAGE'] + 'Policy_Documents/node-instance-template.yaml', 'utf-8');
 
-      const nodeInstanceTemplateRead = await fsp.readFile(process.env['AWS_STORAGE'] + 'Policy_Documents/node-instance-template.yaml', 'utf-8');
+    const updatedNodeInstanceTemplate = nodeInstanceTemplateRead.replace(/<NodeInstanceARN>/, nodeInstanceRoleArn);
 
-      const newFileString = nodeInstanceTemplateRead.replace(/<NodeInstanceARN>/, nodeInstanceRoleArn);
-
-      await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `AUTH_FILE_${workerNodeStackName}.yaml`, newFileString);
-
-      const filePathToAuthFile = path.join(process.env['KUBECTL_STORAGE'], `AUTH_FILE_${workerNodeStackName}.yaml`);
-
-      console.log("filepath: ", filePathToAuthFile);
-      
-      //Command Kubectl to configure by applying the Auth File
-      const kubectlApplyChild = spawnSync('kubectl', ['apply', '-f', filePathToAuthFile]);
-      let stdout = kubectlApplyChild.stdout.toString();
-      let stderr = kubectlApplyChild.stderr.toString();
-      console.log('stdout', stdout, 'stderr', stderr);
-
-      // const nodeInstanceDataForAWSMasterFile = { [awsProps.NODE_INSTANCE]: awsProps.NODE_INSTANCE_STATUS_CONFIGURED }
-
-      // await awsHelperFunctions.appendAWSMasterFile(nodeInstanceDataForAWSMasterFile);
-
-      // set a short timeout here to allow for the kubectl apply to take place
-      console.log('waiting 5 seconds')
-      await awsHelperFunctions.timeout(5000);
-
-      const kubectlGetChild = spawnSync('kubectl', ['get', 'nodes']);
-      stdout = kubectlGetChild.stdout.toString();
-      stderr = kubectlGetChild.stderr.toString();
-      console.log('stdout', stdout, 'stderr', stderr);
-
-      if (stderr) {
-        throw `An error occurred while retrieving the Worker Nodes: ${stderr}`
-      }
-
-      // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while retrieving the Worker Nodes: ${stderr}`);
-
-      console.log('Kubectl configured');
-      return 'Kubectl configured';
-      
-    } else {
-      console.log("node instance already input");
-    }
+    console.log("updatedNodeInstanceTemplate", updatedNodeInstanceTemplate);
 
 
+    await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `AUTH_FILE_${workerNodeStackName}.yaml`, updatedNodeInstanceTemplate);
 
+    const filePathToAuthFile = path.join(process.env['KUBECTL_STORAGE'], `AUTH_FILE_${workerNodeStackName}.yaml`);
 
-    // const isNodeInstanceInMasterFile = await awsHelperFunctions.checkAWSMasterFile(awsProps.NODE_INSTANCE, awsProps.NODE_INSTANCE_STATUS_CONFIGURED);
-
-    // console.log("isNodeInstanceMasterFile: ", isNodeInstanceInMasterFile);
-
-    // if (!isNodeInstanceInMasterFile) {
-
-      // process.env['KUBECONFIG'] = `:${process.env['HOME']}/.kube/config-${clusterName}`;
-
-      // const awsMasterFileData = await fsp.readFile(process.env['AWS_STORAGE'] + `${iamRoleName}_MASTER_FILE.json`, 'utf-8');
+    console.log("filepath: ", filePathToAuthFile);
     
-      // const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
-      // const nodeInstanceRoleArn = parsedAWSMasterFileData.nodeInstanceRoleArn;
-      
-      // const workerNodeStackName = `${clusterName}-worker-node`;
+    //Command Kubectl to configure by applying the Auth File
+    const kubectlApplyChild = spawnSync('kubectl', ['apply', '-f', filePathToAuthFile]);
+    let stdout = kubectlApplyChild.stdout.toString();
+    let stderr = kubectlApplyChild.stderr.toString();
+    console.log('stdout', stdout, 'stderr', stderr);
 
-      // const nodeInstanceTemplateRead = await fsp.readFile(process.env['AWS_STORAGE'] + 'Policy_Documents/node-instance-template.yaml', 'utf-8');
-      // const newFileString = nodeInstanceTemplateRead.replace(/<NodeInstanceARN>/, nodeInstanceRoleArn);
+    // set a short timeout here to allow for the kubectl apply to take place
+    console.log('waiting 5 seconds')
+    await awsHelperFunctions.timeout(5000);
 
-    //   await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `AUTH_FILE_${workerNodeStackName}.yaml`, newFileString);
+    // const kubectlGetChild = spawnSync('kubectl', ['get', 'nodes']);
+    // stdout = kubectlGetChild.stdout.toString();
+    // stderr = kubectlGetChild.stderr.toString();
+    // console.log('stdout', stdout, 'stderr', stderr);
 
-    //   const filePathToAuthFile = path.join(process.env['KUBECTL_STORAGE'], `AUTH_FILE_${workerNodeStackName}.yaml`);
-
-    //   console.log("filepath: ", filePathToAuthFile);
-      
-    //   //Command Kubectl to configure by applying the Auth File
-    //   const kubectlApplyChild = spawnSync('kubectl', ['apply', '-f', filePathToAuthFile]);
-    //   let stdout = kubectlApplyChild.stdout.toString();
-    //   let stderr = kubectlApplyChild.stderr.toString();
-    //   console.log('stdout', stdout, 'stderr', stderr);
-
-    //   const nodeInstanceDataForAWSMasterFile = { [awsProps.NODE_INSTANCE]: awsProps.NODE_INSTANCE_STATUS_CONFIGURED }
-    //   await awsHelperFunctions.appendAWSMasterFile(nodeInstanceDataForAWSMasterFile);
-
-    //   // set a short timeout here to allow for the kubectl apply to take place
-    //   console.log('waiting 5 seconds')
-    //   await awsHelperFunctions.timeout(5000);
-
-    //   const kubectlGetChild = spawnSync('kubectl', ['get', 'nodes']);
-    //   stdout = kubectlGetChild.stdout.toString();
-    //   stderr = kubectlGetChild.stderr.toString();
-    //   console.log('stdout', stdout, 'stderr', stderr);
-
-    //   console.log('Kubectl configured');
-    //   return 'Kubectl configured';
-      
-    // } else {
-    //   console.log("node instance already input");
+    // if (stderr) {
+    //   throw `${stderr}`
     // }
+    // console.log('Kubectl configured');
+    // return 'Kubectl configured';
+    
 
   } catch (err) {
-    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while configuring kubectl with the Node Instances: ${err}`);
-    throw `An error occurred while configuring kubectl with the Node Instances: ${err}`;
     console.log('Error coming from within kubectlConfigFunctions.inputNodeInstance: ', err);
+    throw `${err}`;
   }
 
 }
@@ -486,50 +357,41 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
     let successfulOutput;
     let errorMessage;
 
-    let getKubectlStatus = () => {
+    const getKubectlStatus = () => {
       const kubectlStatus = spawnSync('kubectl', ['get', 'nodes']);
       successfulOutput = kubectlStatus.stdout.toString();
       errorMessage = kubectlStatus.stderr.toString();
+
       console.log('successfulOutput: ', successfulOutput, 'errorMessage: ', errorMessage);
 
-
-      if (!errorMessage) {
-        return `${successfulOutput}`;
-      } else {
-        // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while configuring kubectl: ${errorMessage}`);
-        throw `An error occurred while configuring kubectl: ${errorMessage}`;
-        // return `${errorMessage}`
-
-      }
+      // if (!errorMessage) {
+      //   return `${successfulOutput}`;
+      // } else {
+      //   throw `${errorMessage}`;
+      // }
     }
 
     getKubectlStatus();
 
-    if ((successfulOutput.includes('Ready')) && (!successfulOutput.includes('Not'))) {
+    while (successfulOutput.includes('NotReady')) {
       console.log("successfulOutput status: ", successfulOutput)
-
-      while (successfulOutput.includes('NotReady')) {
-        console.log("successfulOutput status: ", successfulOutput)
-          // wait 30 seconds before rerunning function
-        await awsHelperFunctions.timeout(1000 * 30)
-        getKubectlStatus();
-      }
-
-      console.log(`Kubectl successfully configured: ${successfulOutput}, errorMessage: ${errorMessage}`)
-      return `Kubectl successfully configured: ${successfulOutput}`;
-
-      
-    } else {
-      console.log(`An error ocurred when configuring kubectl: ${errorMessage}`)
-      // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while configuring kubectl: ${errorMessage}`);
-      throw `An error occurred while configuring kubectl: ${errorMessage}`;
-      
+        // wait 30 seconds before rerunning function
+      await awsHelperFunctions.timeout(1000 * 30)
+      getKubectlStatus();
     }
 
+    if ((successfulOutput.includes('Ready')) && (!successfulOutput.includes('Not'))) {
+     console.log(`Kubectl successfully configured: ${successfulOutput}, errorMessage: ${errorMessage}`);
+     return true;
+
+    } else {
+      return false;
+    }
+ 
+  
   } catch (err) {
     console.log(err)
-    throw `An error occurred while configuring kubectl: ${err}`;
-    // win.webContents.send(events.HANDLE_ERRORS, `An error occurred while configuring kubectl: ${err}`);
+    return false;
   }
 
 }

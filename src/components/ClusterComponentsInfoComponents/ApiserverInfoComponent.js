@@ -5,9 +5,9 @@ const ApiserverInfoComponet = (props) => {
 
   const ports = data.spec.ports.map((port) => {
     return (
-      Object.entries(port).map((item) => {
+      Object.entries(port).map((item, i) => {
         return (
-          <div className='additional_info_body_item'>
+          <div key={i} className='additional_info_body_item'>
             <p>{item[0]}</p>
             <p>{item[1]}</p>
           </div>
@@ -46,8 +46,8 @@ const ApiserverInfoComponet = (props) => {
         </div>
       </div>
 
-      <div className='apiserver_info_component_item' id='popup_info_button'>
-        <button onClick={props.hideNodeInfo}>Close</button>
+      <div className='more_info_button_item'>
+        <button onClick={props.hideNodeInfo} className='popup_info_button'>Close</button>
       </div>
 
     </div>

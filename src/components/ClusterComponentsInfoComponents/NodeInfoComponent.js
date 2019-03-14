@@ -1,5 +1,4 @@
 import React from 'react';
-import uuid from 'uuid'
 
 const NodeInfoComponent = (props) => {
   const { data } = props;
@@ -79,8 +78,8 @@ const NodeInfoComponent = (props) => {
           {nodeInfo}
         </div>
       </div>
-      <div className='node_info_component_item' id='popup_info_button'>
-        <button onClick={props.hideNodeInfo}>Close</button>
+      <div className='more_info_button_item'>
+        <button onClick={props.hideNodeInfo} className='popup_info_button'>Close</button>
       </div>
     </div>
   )

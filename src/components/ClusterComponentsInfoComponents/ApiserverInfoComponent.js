@@ -1,20 +1,12 @@
 import React from 'react';
+import { makeInfoItemFromObjectProperties, makeAddtionalInfoFromArrayOfObjects } from '../../helperFunctions/renderFunctions'
 
 const ApiserverInfoComponet = (props) => {
   const { data } = props;
 
-  const ports = data.spec.ports.map((port) => {
-    return (
-      Object.entries(port).map((item) => {
-        return (
-          <div className='additional_info_body_item'>
-            <p>{item[0]}</p>
-            <p>{item[1]}</p>
-          </div>
-        );
-      })
-    )
-  })
+  const properties = makeInfoItemFromObjectProperties(data, 'apiserver_info_component_item');
+  const ports = makeAddtionalInfoFromArrayOfObjects(data.spec.ports,'Ports' , 'apiserver_info_component_additional_items');
+
   return (
     <div className='apiserver_info_component'>
 
@@ -39,15 +31,12 @@ const ApiserverInfoComponet = (props) => {
         <p>{data.spec.clusterIP}</p>
       </div>
 
-      <div className='apiserver_info_component_additional_items'>
-        <p>Ports -- </p>
-        <div className='additional_info_body'>
-          {ports}
-        </div>
-      </div>
+      {properties}
 
-      <div className='apiserver_info_component_item' id='popup_info_button'>
-        <button onClick={props.hideNodeInfo}>Close</button>
+      {ports}
+
+      <div className='more_info_button_item'>
+        <button onClick={props.hideNodeInfo} className='popup_info_button'>Close</button>
       </div>
 
     </div>

@@ -12,7 +12,7 @@ import uuid from 'uuid'
 import * as events from '../../eventTypes';
 
 import TreeGraphComponent from '../components/TreeGraphComponent';
-import NodeInfoComponent from '../components/ClusterComponentInfo';
+import ClusterInfoComponent from '../components/ClusterComponentInfo';
 import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
 
 const mapStateToProps = store => ({
@@ -83,8 +83,7 @@ class TreeGraphContainer extends Component {
 
   handleWorkerNodes(event, data) {
     console.log('data coming back from worker nodes', data);
-    const newState = this.state;
-
+    const newState = {...this.state, treeData: {...this.state.treeData}};
     data.items.forEach((node) => {
       node["name"] = node.metadata.name;
       node["id"] = node.metadata.uid;
@@ -327,7 +326,7 @@ class TreeGraphContainer extends Component {
     return (
       <div className='treegraph_container'>
         {this.state.showInfo === true && (
-          <NodeInfoComponent
+          <ClusterInfoComponent
             nodeInfoToShow={this.state.nodeInfoToShow}
             hideNodeInfo={this.hideNodeInfo}
           />

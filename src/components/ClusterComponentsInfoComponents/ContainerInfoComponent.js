@@ -1,19 +1,10 @@
 import React from 'react';
+import { makeInfoItemFromObjectProperties, makeAddtionalInfoFromArrayOfObjects } from '../../helperFunctions/renderFunctions'
 
 const ContainerInfoComponent = (props) => {
   const { data } = props;
 
-  const status = Object.entries(data).reduce((acc, item, i) => {
-    if (typeof item[1] !== 'object') {
-      acc.push(
-        <div className='container_info_component_item'>
-          <p>{item[0]}</p>
-          <p>{item[1]}</p>
-        </div>
-      )
-    }
-    return acc;
-  }, []);
+  const status = makeInfoItemFromObjectProperties(data, 'container_info_component_item');
 
   return (
     <div className='container_info_component'>

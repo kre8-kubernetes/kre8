@@ -83,7 +83,7 @@ class TreeGraphContainer extends Component {
 
   handleWorkerNodes(event, data) {
     console.log('data coming back from worker nodes', data);
-    const newState = this.state;
+    const newState = {...this.state, treeData: {...this.state.treeData}};
     data.items.forEach((node) => {
       node["name"] = node.metadata.name;
       node["id"] = node.metadata.uid;

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { makeInfoItemFromObjectProperties, makeAddtionalInfoFromArrayOfObjects } from '../../helperFunctions/renderFunctions'
 
 const PodInfoComponent = (props) => {
   const { data } = props;

@@ -1,4 +1,5 @@
 import React from 'react';
+import { makeInfoItemFromObjectProperties, makeAddtionalInfoFromArrayOfObjects } from '../../helperFunctions/renderFunctions'
 
 const NodeInfoComponent = (props) => {
   const { data } = props;

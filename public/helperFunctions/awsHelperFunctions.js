@@ -33,6 +33,7 @@ awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = async (folderName) => {
     if (!fileExists) await fsp.mkdir(process.env['HOME'] + `/${folderName}`);
   } catch (err) {
     console.log(err);
+    throw err;
   }
 }
 
@@ -49,6 +50,7 @@ awsHelperFunctions.updateCredentialsFile = async (key, value) => {
 
   } catch (err) {
     console.log(err);
+    throw err;
   }
 
 }
@@ -103,6 +105,7 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
     
   } catch (err) {
     console.log('Error from awsHelperFunctions.checkAWSMasterFile:', err);
+    throw err;
   }
 
 
@@ -136,6 +139,7 @@ awsHelperFunctions.appendAWSMasterFile = async (awsDataObject) => {
 
   } catch (err) {
     console.log('Error from awsHelperFunctions.appendAWSMaster File: ', err);
+    throw err;
   }
 }
 

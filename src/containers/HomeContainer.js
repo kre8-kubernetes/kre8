@@ -87,8 +87,7 @@ class HomeContainer extends Component {
   processAWSCredentialStatus(event, data) {
     console.log("credential status: ", data);
     if (data === true) {
-      //TODO: change to true
-      this.setState({ ...this.state, credentialStatus: false });
+      this.setState({ ...this.state, credentialStatus: true });
     } 
     console.log("credentials are not yet entered, send to setup page")
   }
@@ -126,9 +125,6 @@ class HomeContainer extends Component {
     
     if (data.Arn) {
       this.props.history.push('/aws')
-
-      //TODO: Convert alert
-      // alert(`Signed in with the Role Arn: ${data.Arn}`);
 
     } else {
       alert('The credentials you entered are incorrect. Please check your entries and try again.');

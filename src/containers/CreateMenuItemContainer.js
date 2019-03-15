@@ -90,9 +90,7 @@ class CreateMenuItemContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_NEW_POD, this.handleNewPod);
     ipcRenderer.removeListener(events.HANDLE_NEW_SERVICE, this.handleNewService);
     ipcRenderer.removeListener(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment);
-    //TODO: Braden do we need this one?
-    ipcRenderer.on(events.SEND_CLUSTER_DATA, this.displayClusterData)
-
+    ipcRenderer.removeListener(events.SEND_CLUSTER_DATA, this.displayClusterData)
   }
 
   //**--------------EVENT HANDLERS-----------------**//
@@ -219,6 +217,8 @@ class CreateMenuItemContainer extends Component {
   }
 
   displayClusterData(event, data) {
+
+
     
 
 

@@ -7,7 +7,6 @@ const initialState = {
   menuItemToShow: 'none',
   showClusterInfo: false,
   clusterInfo: {
-    'Cluster Name': 'Cluster Name',
     clusterName: '',
     clusterArn: '',
     iamRoleName: '',

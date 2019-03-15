@@ -197,8 +197,6 @@ awsEventCallbacks.createIAMRole = async (iamRoleName) => {
           iam.attachRolePolicy(servicePolicyParam).promise()
         ])
 
-        await awsHelperFunctions.updateCredentialsFile(awsProps.IAM_ROLE_NAME, iamRoleName);
-
         return `AWS IAM Role ${iamRoleName} created with the Role ARN ${iamRoleData.iamRoleArn}.`
 
       } else {

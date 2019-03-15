@@ -168,13 +168,18 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   try {
 
+     //Set CLUSTER_NAME environment variable based on user input and save to credentials file
+     process.env['CLUSTER_NAME'] = data.clusterName;
+
+     await awsHelperFunctions.updateCredentialsFile(awsProps.CLUSTER_NAME, data.clusterName);
+
+
     //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------------------------
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('============  ipcMain.on(events.CREATE_IAM_ROLE)... =================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     
-    //Set CLUSTER_NAME environment variable based on user input
-    process.env['CLUSTER_NAME'] = data.clusterName;
+   
 
     //Send data to AWS to create IAM Role, timing: 10 - 30 seconds
     const iamRoleStatusData = await awsEventCallbacks.createIAMRole(data.iamRoleName);

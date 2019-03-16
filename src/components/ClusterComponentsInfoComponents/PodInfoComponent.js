@@ -1,50 +1,58 @@
 import React from 'react';
-import { makeInfoItemFromObjectProperties, makeAddtionalInfoFromArrayOfObjects } from '../../helperFunctions/renderFunctions'
+import { makeInfoItemFromObjectProperties, makeAddtionalInfoFromArrayOfObjects, makeInfoComponentBody } from '../../helperFunctions/renderFunctions'
 
 const PodInfoComponent = (props) => {
   const { data } = props;
 
-  const ownerReferences = data.metadata.ownerReferences.map((ownerRefObj, i) => {
-    console.log('ownerRef', ownerRefObj);
-    return (
-      Object.entries(ownerRefObj).map((item, i) => {
-        return (
-          <div key={i} className='additional_info_body_item'>
-            <p>{item[0]}</p>
-            <p>{item[1]}</p>
-          </div>
-        );
-      })
-    );
-  });
+  console.log('data from PodInfoComponent', data);
 
-  const status = Object.entries(data.status).reduce((acc, item, i) => {
-    if (typeof item[1] !== 'object') {
-      acc.push(
-        <div key={i} className='additional_info_body_item'>
-          <p>{item[0]}</p>
-          <p>{item[1]}</p>
-        </div>
-      )
-    }
-    return acc;
-  }, []);
 
-  const specs = Object.entries(data.spec).reduce((acc, item, i) => {
-    if (typeof item[1] !== 'object') {
-      acc.push(
-        <div key={i} className='additional_info_body_item'>
-          <p>{item[0]}</p>
-          <p>{item[1]}</p>
-        </div>
-      )
-    }
-    return acc;
-  }, []);
+
+  // const ownerReferences = data.metadata.ownerReferences.map((ownerRefObj, i) => {
+  //   console.log('ownerRef', ownerRefObj);
+  //   return (
+  //     Object.entries(ownerRefObj).map((item, i) => {
+  //       return (
+  //         <div key={i} className='additional_info_body_item'>
+  //           <p>{item[0]}</p>
+  //           <p>{item[1]}</p>
+  //         </div>
+  //       );
+  //     })
+  //   );
+  // });
+
+  // const status = Object.entries(data.status).reduce((acc, item, i) => {
+  //   if (typeof item[1] !== 'object') {
+  //     acc.push(
+  //       <div key={i} className='additional_info_body_item'>
+  //         <p>{item[0]}</p>
+  //         <p>{item[1]}</p>
+  //       </div>
+  //     )
+  //   }
+  //   return acc;
+  // }, []);
+
+  // const specs = Object.entries(data.spec).reduce((acc, item, i) => {
+  //   if (typeof item[1] !== 'object') {
+  //     acc.push(
+  //       <div key={i} className='additional_info_body_item'>
+  //         <p>{item[0]}</p>
+  //         <p>{item[1]}</p>
+  //       </div>
+  //     )
+  //   }
+  //   return acc;
+  // }, []);
+
+  const info = makeInfoComponentBody(data);
+
+  console.log('info from podInfoComponent', info);
 
   return (
     <div className='pod_info_component'>
-      <div className='pod_info_component_item'>
+      {/* <div className='pod_info_component_item'>
         <p>ID</p>
         <p>{data.metadata.uid}</p>
       </div>
@@ -77,7 +85,9 @@ const PodInfoComponent = (props) => {
         <div className='additional_info_body'>
           {status}
         </div>
-      </div>
+      </div> */}
+
+      {info}
       <div className='more_info_button_item'>
         <button onClick={props.hideNodeInfo} className='popup_info_button'>Close</button>
       </div>

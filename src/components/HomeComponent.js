@@ -1,9 +1,6 @@
 import React from "react";
 import '../styles.css'
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
-
 
 const HomeComponent = props => {
   return (
@@ -51,8 +48,6 @@ const HomeComponent = props => {
           <div className='home_page_form_container_buttons_item'>
             <button id='home_submit_button' onClick={props.setAWSCredentials}>Submit</button>
             <button id='home_info' onClick={props.displayInfoHandler}>
-              {/* TODO: remove FontAwesome if we dont need it!!! */}
-              {/* <FontAwesomeIcon icon="question-circle" id="home_info" styles={props.mouseCoords}/> */}
               ?
             </button>
           </div>

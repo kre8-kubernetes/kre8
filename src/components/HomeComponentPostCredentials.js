@@ -6,22 +6,22 @@ import { Link } from 'react-router-dom';
 
 const HomeComponent = props => {
   return (
-    <div className='home_page_item'>
-      
-      <div className='home_page_form_container'>
-
-        <h1>Kre8</h1>
-          <h2>Create and Deploy your Kubernetes Cluster to the Cloud</h2>
-          <div className="p_container">
-          <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. 
-            Kre8 is here to simplify everything for you. Let's get started!</p>
-            </div>
-            {/* <button id="" onClick={this.props.displayInfoHandler(id)}></button> */}
-            <br></br>
-            <button onClick={props.handleButtonClickOnHomeComponentPostCredentials} className="buttons">Submit</button>
-       
+    <div className='home_page_post_config_form_container'>
+      <div className='home_page_form_container_header'>
+        <h3>Manage your Kubernetes Cluster</h3>
+      </div>
+      <div className='home_page_form_container_text'>
+        <p>Managing your Kubernetes cluster on the AWS cloud can be a complicated process. KRE8 is here to simplify everything for you.</p>
         </div>
+            <br></br>
 
+            {/* <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            </div> */}
+
+        <div className='home_page_form_container_buttons_item'>
+            <button id='home_submit_button' onClick={props.handleButtonClickOnHomeComponentPostCredentials}>View Cluster</button>
+        </div>
+       
     </div>
     );
   };

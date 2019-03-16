@@ -1,189 +1,265 @@
-const awsHelperFunctions = require(__dirname + '/awsHelperFunctions'); 
-const awsParameters = require(__dirname + '/awsParameters');
-const kubectlConfigFunctions = require(__dirname + '/kubectlConfigFunctions');
+//** --------- NODE APIS ---------------- 
+const fs = require('fs');
+const fsp = require('fs').promises;
+const mkdirp = require('mkdirp');
+//const { spawn } = require('child_process');
 
+//** --------- AWS SDK ELEMENTS --------- 
 const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 
-const fs = require('fs');
-const fsp = require('fs').promises;
-const { spawn } = require('child_process');
-
-//**.ENV Variables */
-const REGION = process.env.REGION;
-
-//** --------- INITIALIZE IMPORTS --------- 
+//** --------- INSTANTIATE AWS CLASSES --- 
 const iam = new IAM();
-const eks = new EKS({ region: REGION});
-const cloudformation = new CloudFormation({ region: REGION });
+const eks = new EKS({ region: process.env.REGION });
+const cloudformation = new CloudFormation({ region: process.env.REGION });
 
+//** --------- IMPORT MODULES ----------- 
+const onDownload = require(__dirname + '/onDownloadFunctions');
+const awsHelperFunctions = require(__dirname + '/awsHelperFunctions'); 
+const awsParameters = require(__dirname + '/awsParameters');
+const awsProps = require(__dirname + '/../awsPropertyNames'); 
+const kubectlConfigFunctions = require(__dirname + '/kubectlConfigFunctions');
+
+//** --------- IMPORT DOCUMENT TEMPLATES - 
+const iamRolePolicyDocument = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/iamRoleTrustPolicy.json');
+const stackTemplate = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/amazon-stack-template-eks-vpc-real.json');
+
+//** --------- DECLARE EXPORT OBJECT ---------------------------------- 
 const awsEventCallbacks = {};
 
+//** --------- EXECUTES ON DOWNLOAD -------------------------------------------- **//
+//** --------- Check for & install aws-iam-authenticator ----------------------- **//
+//To communicate with AWS, user must have the aws-iam-authenticator installed
+//These functions check if authenticator is already installed in user's bin folder
+//If not, the authenticator will be installed, and the path will be defined in the user's 
+//.bash_profile file, which is where AWS specifies it should be
+awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator = async () => {
+
+  try {
+    const iamAuthenticatorExists = fs.existsSync(process.env['HOME'] + '/bin/aws-iam-authenticator');
+
+    if (!iamAuthenticatorExists) {
+      onDownload.installIAMAuthenticator();
+      onDownload.enableIAMAuthenticator();
+      onDownload.copyIAMAuthenticatorToBinFolder();
+    }
+    await onDownload.setPATHAndAppendToBashProfile();
+
+    return;
+
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+awsEventCallbacks.setEnvVarsAndMkDirsInDev = () => {
+  process.env['AWS_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/AWS_Assets/';
+  process.env['KUBECTL_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/KUBECTL_Assets/'
+  mkdirp.sync(process.env['AWS_STORAGE'] + 'AWS_Private/');
+  mkdirp.sync(process.env['KUBECTL_STORAGE']);
+
+  return;
+}
+
+
+awsEventCallbacks.setEnvVarsAndMkDirsInProd = () => {
+  process.env['APPLICATION_PATH'] = process.env['HOME'] + '/Library/Application\ Support/KRE8';
+  process.env['AWS_STORAGE'] = process.env['APPLICATION_PATH'] + `/Storage/AWS_Assets/`;
+  process.env['KUBECTL_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/KUBECTL_Assets'
+  
+  mkdirp.sync(process.env['AWS_STORAGE'] + 'AWS_Assets/');
+  mkdirp.sync(process.env['KUBECTL_STORAGE']);
+
+  return;
+}
+
+
+//** ------- EXECUTES ON EVERY OPENING OF APPLICATION --------------- **//
+//** ------- Check credentials file to determine if user needs to configure the application **// 
+awsEventCallbacks.returnKubectlAndCredentialsStatus = async (data) => {
+
+  try {
+
+    const kubectlStatus = await kubectlConfigFunctions.testKubectlStatus();
+
+    const awsCredentialFileExists = fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json');
+
+    console.log("kubectlStatus: ", kubectlStatus)
+    console.log("awsCredentialFileExists: ", awsCredentialFileExists)
+
+
+    if ((kubectlStatus === true) &&  awsCredentialFileExists) {
+
+      const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
+
+      const parsedCredentialsFile = JSON.parse(readAWSCredentialsFile);
+      console.log('this is the parsed obj', parsedCredentialsFile);
+      console.log('STATUS!!!!!!', parsedCredentialsFile.STATUS);
+
+      return (parsedCredentialsFile.STATUS === awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED) ? true : false;
+    } else {
+      return false;
+    }
+
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+}
 
 //** --------- CONFIGURE AWS CREDENTIALS ------------------------------ **//
-
+//Check if awsCredentials.json file exits, meaning user has configured KRE8 application
+//previously. If not, create the file, adding user input, and setting environment variables for
+//AWS credentials and region.
 awsEventCallbacks.configureAWSCredentials = async (data) => {
 
-  // Check if AWS credentials files exists
-  if (fs.existsSync(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json')) {
-    
-    //if so, update the file to reflect user input
-    const readCredentialsFile = await fsp.readFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', 'utf-8');
-    const parsedCredentialsFile = JSON.parse(readCredentialsFile);
-    console.log('this is the parsed obj', parsedCredentialsFile);
+  if (fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json')) {
+
+    const awsCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
+    const parsedCredentialsFile = JSON.parse(awsCredentialsFile);
+    console.log('Credential file this is the parsed obj', parsedCredentialsFile);
 
     parsedCredentialsFile.AWS_ACCESS_KEY_ID = data.awsAccessKeyId;
     parsedCredentialsFile.AWS_SECRET_ACCESS_KEY = data.awsSecretAccessKey;
     parsedCredentialsFile.REGION = data.awsRegion;
 
-    //Explicitly set the environment variables to match user input
     process.env['AWS_ACCESS_KEY_ID'] = data.awsAccessKeyId;
     process.env['AWS_SECRET_ACCESS_KEY'] = data.awsSecretAccessKey;
     process.env['REGION'] = data.awsRegion;
 
-    const stringedCredentialFiles = JSON.stringify(parsedCredentialsFile, null, 2);
+    console.log("environment variables: ", process.env['AWS_ACCESS_KEY_ID'], process.env['AWS_SECRET_ACCESS_KEY'],  process.env['REGION'] )
 
-    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+    const stringifiedCredentialFile = JSON.stringify(parsedCredentialsFile, null, 2);
+    await fsp.writeFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
 
   } else {
-    //If the file does not exist, set the environment variables and write the file
     process.env['AWS_ACCESS_KEY_ID'] = data.awsAccessKeyId;
     process.env['AWS_SECRET_ACCESS_KEY'] = data.awsSecretAccessKey;
     process.env['REGION'] = data.awsRegion;
 
-    const credentialsObjToWrite = {
+    console.log("environment variables: ", process.env['AWS_ACCESS_KEY_ID'], process.env['AWS_SECRET_ACCESS_KEY'],  process.env['REGION'] )
+
+    const dataForCredentialsFile = {
       AWS_ACCESS_KEY_ID: data.awsAccessKeyId,
       AWS_SECRET_ACCESS_KEY: data.awsSecretAccessKey,
       REGION: data.awsRegion
     };
 
-    const stringedCredentialFiles = JSON.stringify(credentialsObjToWrite, null, 2);
+    const stringifiedCredentialFile = JSON.stringify(dataForCredentialsFile, null, 2);
 
-    await fsp.writeFile(process.env['APPLICATION_PATH'] + '/sdkAssets/private/awsCredentials.json', stringedCredentialFiles);
+    await fsp.writeFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
 
   }
 }
 
-
 //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS --------------- **//
+//Check if the user has already created an IAM role by this name. If not, send IAM data to 
+//AWS via the iamParams object to create an IAM Role, and save the data to the file.
+//After role is created, send Cluster + Service Policies to AWS to grant IAM Role
+//permission to operate cluster
 /**
- * @param {String} iamRoleName
- * @param {String} iamRoleDescription
+ * @param {Object} data
  * @param {Object} iamRolePolicyDoc this is a JSON object that has been required in main.js
  */
-awsEventCallbacks.createIAMRole = async (iamRoleName, roleDescription, iamRolePolicyDoc) => {
-
-  let awsMasterFile;
+awsEventCallbacks.createIAMRole = async (iamRoleName) => {
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('================  awsEventCallbacks.createIAMRole ===================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    const key = "iamRoleName";
-
-    //test to see if the role by this name already exists. If false, do this:
-    const isIAMRoleNameInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, iamRoleName);
+    const isIAMRoleNameInMasterFile = await awsHelperFunctions.checkAWSMasterFile(awsProps.IAM_ROLE_NAME, iamRoleName);
 
     console.log("isIAMRoleNameInMasterFile: ", isIAMRoleNameInMasterFile);
 
     if (!isIAMRoleNameInMasterFile) {
+      const iamParams = awsParameters.createIAMRoleParam(iamRoleName, iamRolePolicyDocument);
+      const iamRoleDataReturnedFromAWS = await iam.createRole(iamParams).promise();
 
-      const iamParams = awsParameters.createIAMRoleParam(iamRoleName, roleDescription, iamRolePolicyDoc);
+      //TODO: handle error info from AWS
+      if (iamRoleDataReturnedFromAWS.Role.CreateDate) {
+        console.log("Data that comes back from AWS after creating a role", iamRoleDataReturnedFromAWS);
 
-      //Send IAM data to AWS via the iamParams object to create an IAM Role*/
-      const role = await iam.createRole(iamParams).promise();
-      console.log("Data that comes back from AWS after creating a role", role);
+        const iamRoleData = {
+          createDate: iamRoleDataReturnedFromAWS.Role.CreateDate,
+          iamRoleName: iamRoleDataReturnedFromAWS.Role.RoleName,
+          iamRoleArn: iamRoleDataReturnedFromAWS.Role.Arn,
+        }
 
-      //Collect the relevant IAM data returned from AWS
-      const iamRoleDataFromForm = {
-        iamRoleName: role.Role.RoleName,
-        roleID: role.Role.RoleId,
-        iamRoleArn: role.Role.Arn,
-        createDate: role.Role.CreateDate,
-        path: role.Role.Path
+        await awsHelperFunctions.appendAWSMasterFile(iamRoleData);
+
+        const clusterPolicyParam = { RoleName: iamRoleName, PolicyArn: awsProps.CLUSTER_POLICY_ARN };
+        const servicePolicyParam = { RoleName: iamRoleName, PolicyArn: awsProps.SERVICE_POLICY_ARN };
+        await Promise.all([
+          iam.attachRolePolicy(clusterPolicyParam).promise(), 
+          iam.attachRolePolicy(servicePolicyParam).promise()
+        ])
+
+        return `AWS IAM Role ${iamRoleName} created with the Role ARN ${iamRoleData.iamRoleArn}.`
+
+      } else {
+        console.log("Error in creating IAM role: ", iamRoleDataReturnedFromAWS);
+        throw iamRoleDataReturnedFromAWS;
       }
-
-      const iamRoleDataforMasterFile = {
-        createDate: role.Role.CreateDate,
-        iamRoleName: role.Role.RoleName,
-        iamRoleArn: role.Role.Arn,
-      }
-
-      const stringifiedIamRoleDataFromForm = JSON.stringify(iamRoleDataFromForm, null, 2);
-      // const stringifiedIamRoleDataforMasterFile = JSON.stringify(iamRoleDataforMasterFile);
-      
-      //Create file named for IAM Role and save in assets folder 
-      // FIXME: Do we need this file anymore???
-      await fsp.writeFile(__dirname + `/../sdkAssets/private/IAM_ROLE_${iamRoleName}.json`, stringifiedIamRoleDataFromForm);
-
-      awsMasterFile = awsHelperFunctions.appendAWSMasterFile(iamRoleDataforMasterFile);
-
-      //Send Cluster + Service Policies to AWS to attach to created IAM Role
-      // FIXME: Can we move these outside of the function? Possibly as a string const that we import
-      const clusterPolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
-      const servicePolicyArn = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
-
-      const clusterPolicyParam = { RoleName: iamRoleName, PolicyArn: clusterPolicyArn }
-      const servicePolicyParam = { RoleName: iamRoleName, PolicyArn: servicePolicyArn }
-
-      await Promise.all([iam.attachRolePolicy(clusterPolicyParam).promise(), iam.attachRolePolicy(servicePolicyParam).promise()])
 
     } else {
-      console.log("Returned True. Text found in Master File, Role already exists");
+      console.log("AWS IAM Role already exists.");
+      return `AWS IAM Role with the name ${iamRoleName} already exists. Continuing with the creation process, and attaching elements to ${iamRoleName} IAM Role.`;
     }
 
   } catch (err) {
     console.log('Error from awsEventCallbacks.createIAMROle:', err);
+    throw `${err}`;
   }
-
-  return awsMasterFile;
 };
 
 
 //** --------- CREATE AWS STACK ------------------------------------ **//
 /**
  * @param {String} stackName
- * @param {String} stackTemplateStringified this is a JSON object that was stringified right before being passed in as an argument
+ * @param {String} iamRoleName
  */
-awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) => {
+awsEventCallbacks.createVPCStack = async (stackName, iamRoleName) => {
 
-  let parsedStackData;
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-    console.log('================  awsEventCallbacks.createTechStack =================')
+    console.log('================  awsEventCallbacks.createVPCStack =================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    // FIXME: should we move these master file property names to a constants page and require the object in?
-    const key = "stackName";
+    const isVPCStackInMasterFile = await awsHelperFunctions.checkAWSMasterFile(awsProps.VPC_STACK_NAME, stackName);
 
-    const isTechStackInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, stackName);
+    console.log("isVPCStackInMasterFile: ", isVPCStackInMasterFile);
 
-    console.log("isTechStackInMasterFile: ", isTechStackInMasterFile);
+    let parsedStackData;
 
-    if (!isTechStackInMasterFile) {
+    if (!isVPCStackInMasterFile) {
 
-      const techStackParam = await awsParameters.createTechStackParam(stackName, stackTemplateStringified); 
+      const vpcStackParam = await awsParameters.createVPCStackParam(stackName, stackTemplate); 
 
       //Send tech stack data to AWS to create stack 
-      const stack = await cloudformation.createStack(techStackParam).promise();
+      console.log("process.env['AWS_DEFAULT_REGION'] in stack function: ", process.env['AWS_DEFAULT_REGION'])
 
-      const getStackDataParam = { StackName: stackName };
+      await cloudformation.createStack(vpcStackParam).promise();
+
 
       let stringifiedStackData;
-      // TODO:, remove if below works: let stackStatus = "CREATE_IN_PROGRESS";
+
       let stackStatus = "CREATE_IN_PROGRESS";
 
+      const getStackDataParam = { StackName: stackName };
       const getStackData = async () => {
         try {
+          
           const stackData = await cloudformation.describeStacks(getStackDataParam).promise();
           stringifiedStackData = JSON.stringify(stackData.Stacks, null, 2);
           parsedStackData = JSON.parse(stringifiedStackData);
           stackStatus = parsedStackData[0].StackStatus;
         } catch (err) {
           console.log(err);
+          throw `${err}`;
         }
       }
     
@@ -195,9 +271,7 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
         getStackData();
       }
 
-      if (stackStatus === "CREATE_COMPLETE") {
-        // FIXME: do we need this now that we have a master file for this data
-        const createStackFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/STACK_${stackName}.json`, stringifiedStackData);
+      if (stackStatus === "CREATE_COMPLETE") {        
         
         const stackDataForMasterFile = {
           stackName: parsedStackData[0].StackName,
@@ -210,23 +284,28 @@ awsEventCallbacks.createTechStack = async (stackName, stackTemplateStringified) 
         await awsHelperFunctions.appendAWSMasterFile(stackDataForMasterFile);
 
       } else {
-        console.log(`Error in creating stack. Stack Status = ${stackStatus}`)
+        console.log(`Error in creating stack. Stack Status = ${stackStatus}`);
+        throw `Stack Status: ${stackStatus}`;
+
       }
+
+      return `AWS Stack ${stackName} created.`
 
     } else {
       console.log("Stack already exists");
+      return `AWS Stack with the name ${stackName} already exists. Continuing with the creation process, and attaching elements to ${stackName} stack.`;
+
     }
 
   } catch (err) {
-    console.log('Error from awsEventCallbacks.createTechStack:', err); 
+    console.log('Error from awsEventCallbacks.createTechStack:', err);
+    throw `${err}`;
   }
-
-  //TODO: Decide what to return to user
-  return parsedStackData;
 };
 
 //** --------- CREATE AWS CLUSTER ------------------------------------- **//
 
+//TODO, removed iamRolName from param 
 awsEventCallbacks.createCluster = async (clusterName) => {
   
   console.log("ClusterCreating: ", clusterName);
@@ -243,31 +322,27 @@ awsEventCallbacks.createCluster = async (clusterName) => {
     console.log('=================  awsEventCallbacks.createCluster ==================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
 
-    console.log('The process.env:', process.env);
-
-    // FIXME: should we move these master file property names to a constants page and require the object in?
-    const key = "clusterName";
     
-    //Check if cluster has been created. If not:
-    const isClusterInMasterFile = await awsHelperFunctions.checkAWSMasterFile(key, clusterName);
+    //Check if cluster has been created
+    const isClusterInMasterFile = await awsHelperFunctions.checkAWSMasterFile(awsProps.CLUSTER_NAME, clusterName);
 
     console.log("isClusterInMasterFile: ", isClusterInMasterFile);
 
     if (!isClusterInMasterFile) {
 
-      const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+      const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + `AWS_Private/${process.env['CLUSTER_NAME']}_MASTER_FILE.json`, 'utf-8');
 
-      const parsedaAWSMasterFileData = JSON.parse(awsMasterFileData);
-      iamRoleArn = parsedaAWSMasterFileData.iamRoleArn;
-      subnetIdsString = parsedaAWSMasterFileData.subnetIdsString;
-      subnetIdsArray = parsedaAWSMasterFileData.subnetIdsArray;
-      securityGroupIds = parsedaAWSMasterFileData.securityGroupIds;
-      vpcId = parsedaAWSMasterFileData.vpcId;
+      const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
+      iamRoleArn = parsedAWSMasterFileData.iamRoleArn;
+      subnetIdsString = parsedAWSMasterFileData.subnetIdsString;
+      subnetIdsArray = parsedAWSMasterFileData.subnetIdsArray;
+      securityGroupIds = parsedAWSMasterFileData.securityGroupIds;
+      vpcId = parsedAWSMasterFileData.vpcId;
 
       const clusterParam = awsParameters.createClusterParam(clusterName, subnetIdsArray, securityGroupIds, iamRoleArn);
 
       //Send cluster data to AWS via clusterParmas to create a cluster 
-      const cluster = await eks.createCluster(clusterParam).promise();
+      await eks.createCluster(clusterParam).promise();
         
       const getClusterDataParam = { name: clusterName };
 
@@ -285,6 +360,9 @@ awsEventCallbacks.createCluster = async (clusterName) => {
           console.log("status in getClusterData: ", clusterCreationStatus);
         } catch (err) {
           console.log('Error from the getClusterData function from within awsEventCallbacks.createCluster:', err);
+
+          throw `${err}`;
+
         }
       }
       
@@ -301,11 +379,8 @@ awsEventCallbacks.createCluster = async (clusterName) => {
         getClusterData();
       }
 
-      //Once Cluster is creted:
+      //Once Cluster is created:
       if (clusterCreationStatus === "ACTIVE") {
-      
-        //Create a file holding the cluster data from AWS
-        const createClusterFile = await fsp.writeFile(__dirname + `/../sdkAssets/private/CLUSTER_${clusterName}.json`, stringifiedClusterData); 
         console.log("parsedClusterData: ", parsedClusterData)
 
         //Append relavant cluster data to AWS_MASTER_DATA file
@@ -315,69 +390,27 @@ awsEventCallbacks.createCluster = async (clusterName) => {
           serverEndPoint: parsedClusterData.cluster.endpoint,
           certificateAuthorityData: parsedClusterData.cluster.certificateAuthority.data,
         }
-        awsHelperFunctions.appendAWSMasterFile(clusterDataforMasterFile);
+        
+        await awsHelperFunctions.appendAWSMasterFile(clusterDataforMasterFile);
+
+        console.log("Cluster created");
+        return `AWS Cluster ${clusterName} created.`
+
       } else {
         console.log(`Error in creating cluster. Cluster Status = ${clusterStatus}`);
+        throw `Cluster Status: ${clusterStatus}`;
+
       }
+
     } else {
       console.log("Cluster already exists");
-    }
-    // FIXME: write a file to hold the string of the master file property names
-    const isConfigFileStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile("ConfigFileStatus", "Created");
-
-    console.log("isConfigFileStatusInMasterFile: ", isConfigFileStatusInMasterFile);
-
-    if (!isConfigFileStatusInMasterFile) {
-      await kubectlConfigFunctions.createConfigFile(clusterName);
-    } else {
-      console.log("Config file alreade created");
+      return `AWS Cluster with the name ${clusterName} already exists. Continuing with the creation process, and attaching elements to ${clusterName} cluster.`;
     }
 
-    // FIXME: write a file to hold the string of the master file property names
-    const isKubectlConfigStatusInMasterFile = await awsHelperFunctions.checkAWSMasterFile("KubectlConfigStatus", "Configured");
-
-    console.log("isKubectlConfigStatusInMasterFile: ", isKubectlConfigStatusInMasterFile);
-
-    if (!isKubectlConfigStatusInMasterFile) {
-      await kubectlConfigFunctions.configureKubectl(clusterName);
-    } else {
-      console.log("Kubectl already configured");
-    }
-
-    const workerNodeStackName = `${clusterName}-worker-node`;
-    console.log("CHECKING WORKER NODE STATUS")
-
-    // FIXME: write a file to hold the string of the master file property names
-    const isWorkerNodeInMasterFile = await awsHelperFunctions.checkAWSMasterFile("workerNodeStackName", workerNodeStackName);
-
-    console.log("isWorkerNodeInMasterFile: ", isWorkerNodeInMasterFile);
-
-    if (!isWorkerNodeInMasterFile) {
-      console.log("CREATING WORKER NODE")
-
-      await kubectlConfigFunctions.createStackForWorkerNode(workerNodeStackName, clusterName, subnetIdsString, vpcId, securityGroupIds);
-
-    } else {
-      console.log("Workernode stack already created")
-    }
-    // FIXME: write a file to hold the string of the master file property names
-    const isNodeInstanceMasterFile = await awsHelperFunctions.checkAWSMasterFile("nodeInstance", "created");
-
-    console.log("isNodeInstanceMasterFile: ", isNodeInstanceMasterFile);
-
-    if (!isNodeInstanceMasterFile) {
-      process.env['KUBECONFIG'] = `:${process.env['HOME']}/.kube/config-${clusterName}`
-      await kubectlConfigFunctions.inputNodeInstance(workerNodeStackName, clusterName);
-    } else {
-      console.log("node instance already input");
-    }
-  
   } catch (err) {
     console.log('Error from awsEventCallbacks.createCluster: ', err);
+    throw `${err}`;
   }
-  //TODO: what to return to User
-  return parsedClusterData;
 };
-
 
 module.exports = awsEventCallbacks;

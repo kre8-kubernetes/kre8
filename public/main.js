@@ -76,17 +76,23 @@ function createWindowAndSetEnvironmentVariables () {
     const readCredentialsFile = fs.readFileSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
 
+    console.log("process.env['KUBECONFIG']: ", process.env['KUBECONFIG']);
+
     Object.entries(parsedCredentialsFile).forEach((arr, index) => {
       if (index < 3) {
         process.env[arr[0]] = arr[1];
         console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
       }
-      // if (index === 4) {
-      //   process.env['KUBECONFIG'] = arr[4];
-      // }
+      if (index === 4) {
+
+        console.log("arr[0]:", arr[0]);
+        console.log("arr[1]", arr[1]);
+
+        process.env['KUBECONFIG'] = process.env['HOME'] + `/.kube/config-${arr[1]}`;
+      }
     });
 
-    console.log("process.env['KUBECONFIG']: ", process.env['KUBECONFIG']);
+    console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
   }
 
   win = new BrowserWindow({ height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based", title: 'Kre8'});

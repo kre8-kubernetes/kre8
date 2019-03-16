@@ -14,6 +14,10 @@ const HomeComponent = props => {
         <p>Managing your Kubernetes cluster on the AWS cloud can be a complicated process. KRE8 is here to simplify everything for you.</p>
         </div>
             <br></br>
+
+            {/* <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+            </div> */}
+
         <div className='home_page_form_container_buttons_item'>
             <button id='home_submit_button' onClick={props.handleButtonClickOnHomeComponentPostCredentials}>View Cluster</button>
         </div>

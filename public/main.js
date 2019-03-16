@@ -81,6 +81,9 @@ function createWindowAndSetEnvironmentVariables () {
         process.env[arr[0]] = arr[1];
         console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
       }
+      // if (index === 4) {
+      //   process.env['KUBECONFIG'] = arr[4];
+      // }
     });
 
     console.log("process.env['KUBECONFIG']: ", process.env['KUBECONFIG']);

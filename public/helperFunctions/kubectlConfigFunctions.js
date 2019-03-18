@@ -110,36 +110,67 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log("process.env['KUBECONFIG'] before: ", process.env['KUBECONFIG']);
 
+    process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
 
-    if (process.env['KUBECONFIG'] !== undefined) {
-      console.log("KUBECONFIG is not undefined");
+    console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
 
-      if (!process.env['KUBECONFIG'].includes(clusterName)) {
-        
-        console.log("KUBECONFIG env var exists, but not the same");
-        process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
+    let bashRead = await fsp.readFile(process.env['HOME'] + '/.bash_profile', 'utf-8');
 
-        console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
-
-        //read the bash profile and replace data in bash profile to reflect accurate location
-        let bashRead = await fsp.readFile(process.env['HOME'] + '/.bash_profile', 'utf-8')
-        bashRead = bashRead.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`)
+    if (bashRead.includes(`export KUBECONFIG`)) {
+      if (!bashRead.includes(clusterName)) {
+        bashRead = bashRead.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`);
         console.log("bashRead: ", bashRead)
+
         await fsp.writeFile(process.env['HOME'] + '/.bash_profile', bashRead, 'utf-8');
 
-        console.log('re-wrote .bash_profile to set KUBECONFIG env var to the new cluster config file')
-      } else {
-        console.log("kubeconfig exists and is the same");
+        console.log('re-wrote .bash_profile to set KUBECONFIG env var to the new cluster config file');
       }
-
     } else {
-      console.log("if KUBECONFIG env var doesn't exist");
-
-      process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
-
-      let textToAppendToBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
+      const textToAppendToBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
       await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToAppendToBashProfile);
     }
+
+
+    // if (process.env['KUBECONFIG'] !== undefined) {
+    //   console.log("KUBECONFIG is not undefined");
+
+    //   if (!process.env['KUBECONFIG'].includes(clusterName)) {
+        
+    //     console.log("KUBECONFIG env var exists, but not the same");
+    //     process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
+
+    //     console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
+
+    //     //read the bash profile and replace data in bash profile to reflect accurate location
+    //     let bashRead = await fsp.readFile(process.env['HOME'] + '/.bash_profile', 'utf-8')
+    //     bashRead = bashRead.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`)
+    //     console.log("bashRead: ", bashRead)
+    //     await fsp.writeFile(process.env['HOME'] + '/.bash_profile', bashRead, 'utf-8');
+
+    //     console.log('re-wrote .bash_profile to set KUBECONFIG env var to the new cluster config file')
+    //   } else {
+    //     console.log("kubeconfig exists and is the same");
+    //   }
+
+    // } else {
+    //   console.log("if KUBECONFIG env var doesn't exist");
+
+    //   process.env['KUBECONFIG'] = `${process.env['HOME']}/.kube/config-${clusterName}`;
+
+    //   let textToAppendToBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
+    //   await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToAppendToBashProfile);
+    // }
+
+  } catch (err) {
+    console.log('Error coming from kubectlConfigFunctions.configureKubectl: ', err);
+    throw `${err}`;
+  }
+}
+
+
+kubectlConfigFunctions.testKubectlGetSvc = (clusterName) => {
+
+  try {
 
     console.log('this is the current KUBECONFIG at kubectl get svc time:', process.env['KUBECONFIG'])
 
@@ -153,14 +184,12 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
     if (!stderr) {
       console.log(`Kubectl has been configured. Here is the service data: ${stdout}`)
       return (`Kubectl has been configured. Here is the service data: ${stdout}`)
-    }
-
-    if (stderr) {
+    } else {
       throw stderr;
     }
 
   } catch (err) {
-    console.log('Error coming from kubectlConfigFunctions.configureKubectl: ', err);
+    console.log('Error coming from kubectlConfigFunctions.testKubectlGetSvc: ', err);
     throw `${err}`;
   }
 
@@ -287,11 +316,13 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
 
     const workerNodeStackName = `${clusterName}-worker-node`;
 
+    console.log("process.env['KUBECONFIG']: ", process.env['KUBECONFIG'])
+
     //check env variable
-    if (process.env['KUBECONFIG'] !== `:${process.env['HOME']}/.kube/config-${clusterName}`) {
-      console.log("process.env was not set", process.env['KUBECONFIG'])
-      process.env['KUBECONFIG'] = `:${process.env['HOME']}/.kube/config-${clusterName}`;
-    }
+    // if (process.env['KUBECONFIG'] !== `:${process.env['HOME']}/.kube/config-${clusterName}`) {
+    //   console.log("process.env was not set", process.env['KUBECONFIG'])
+    //   process.env['KUBECONFIG'] = `:${process.env['HOME']}/.kube/config-${clusterName}`;
+    // }
   
     // const authFileExists = fs.existsSync(process.env['KUBECTL_STORAGE'] + `AUTH_FILE_${workerNodeStackName}.yaml`);
 
@@ -324,6 +355,8 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
     let stdout = kubectlApplyChild.stdout.toString();
     let stderr = kubectlApplyChild.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);
+
+    if (stderr) throw stderr;
 
     // set a short timeout here to allow for the kubectl apply to take place
     console.log('waiting 5 seconds')
@@ -364,19 +397,15 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
 
       console.log('successfulOutput: ', successfulOutput, 'errorMessage: ', errorMessage);
 
-      // if (!errorMessage) {
-      //   return `${successfulOutput}`;
-      // } else {
-      //   throw `${errorMessage}`;
-      // }
+      if (errorMessage) throw errorMessage;
     }
 
     getKubectlStatus();
 
     while (successfulOutput.includes('NotReady')) {
       console.log("successfulOutput status: ", successfulOutput)
-        // wait 30 seconds before rerunning function
-      await awsHelperFunctions.timeout(1000 * 30)
+        // wait 10 seconds before rerunning function
+      await awsHelperFunctions.timeout(10000)
       getKubectlStatus();
     }
 

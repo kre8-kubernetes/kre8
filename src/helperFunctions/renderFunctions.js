@@ -52,7 +52,7 @@ export const makeInfoComponentBody = (data) => {
     }
 
     // if property value is an array then create a list and nest it inside of div (insertComponent)_info_component_additional_items
-    if (Array.isArray(item[1]) && item[0] !== 'children' && item[0] !== 'containers') {
+    if (Array.isArray(item[1]) && item[0] !== 'children' && item[0] !== 'containers' && item[0] !== 'containerStatuses' && item[0] !== 'conditions' && item[0] !== 'tolerations') {
       const additionalData = item[1].map((obj) => {
         
         const items = Object.entries(obj).map((prop, i) => {

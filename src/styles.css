@@ -604,6 +604,53 @@ body {
 /********** CLUSTER MORE INFO COMPONENTS **********/
 /**************************************************/
 
+/* Univeral INFO COMPONENT */
+
+.info_component_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.info_component_additional_items {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.additional_info_body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 15px;
+  width: 100%
+}
+
+.additional_info_body_container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.additional_info_body_container p:nth-child(2) {
+  padding-right: 15px;
+}
+
+.additional_info_body_item {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.additional_info_body_item_row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 15px;
+  width: 100%
+}
+
 /* API SERVER INFO COMPONENT */
 .apiserver_info_component {
   display: flex;
@@ -615,25 +662,6 @@ body {
 
 .apiserver_info_component p {
   margin: 3px 0;
-}
-
-.apiserver_info_component_item {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.apiserver_info_component_additional_items {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.apiserver_info_ports_body_item {
-  display: flex;
-  flex-direction: column;
-  padding-left: 15px;
 }
 
 /* NODE INFO COMPONENT */
@@ -654,34 +682,6 @@ body {
   justify-content: space-between;
 }
 
-.node_info_component_additional_items {
-  display: flex;
-  flex-direction: column;
-}
-
-.additional_info_body_container {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-}
-
-.additional_info_body_container p:nth-child(2) {
-  padding-right: 15px;
-}
-
-.additional_info_body_item {
-  display: flex;
-  flex-direction: row;
-}
-
-.additional_info_body_item_row {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-left: 15px;
-  width: 100%
-}
-
 /* POD INFO COMPONENT */
 .pod_info_component {
   display: flex;
@@ -692,17 +692,6 @@ body {
 
 .pod_info_component p {
   margin: 1px 0;
-}
-
-.pod_info_component_item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.pod_info_component_additional_items {
-  display: flex;
-  flex-direction: column;
 }
 
 /* CONTAINER INFO COMPONENT */
@@ -716,31 +705,6 @@ body {
 .container_info_component p {
   margin: 1px 0;
 }
-
-.container_info_component_item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-/* Univeral INFO COMPONENT */
-
-.info_component_item {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.info_component_additional_items {
-  display: flex;
-  flex-direction: column;
-}
-
-
-
-
-
 
 /**************************************************/
 /**************** NAVBAR COMPONENTS ***************/

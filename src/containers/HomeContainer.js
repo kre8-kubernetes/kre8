@@ -88,6 +88,7 @@ class HomeContainer extends Component {
     console.log("credential status: ", data);
     if (data === true) {
       this.setState({ ...this.state, credentialStatus: true });
+      this.props.history.push('/cluster');
     } 
     console.log("credentials are not yet entered, send to setup page")
   }

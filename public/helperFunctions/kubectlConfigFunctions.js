@@ -391,7 +391,9 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
     let errorMessage;
 
     const getKubectlStatus = () => {
-      const kubectlStatus = spawnSync('kubectl', ['get', 'nodes']);
+
+      console.log("getting status");
+      const kubectlStatus = spawnSync('kubectl', ['get', 'nodes'], { 'timeout': 15000 } );
       successfulOutput = kubectlStatus.stdout.toString();
       errorMessage = kubectlStatus.stderr.toString();
 
@@ -400,12 +402,14 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
       if (errorMessage) throw errorMessage;
     }
 
+    console.log("get status");
+
     getKubectlStatus();
 
     while (successfulOutput.includes('NotReady')) {
       console.log("successfulOutput status: ", successfulOutput)
         // wait 10 seconds before rerunning function
-      await awsHelperFunctions.timeout(10000)
+      await awsHelperFunctions.timeout(10000);
       getKubectlStatus();
     }
 

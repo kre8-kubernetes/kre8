@@ -60,6 +60,7 @@ const TreeGraphComponent = (props) => {
 
   // const innerWidth = 2 * Math.PI;
   // const innerHeight = Math.min(yMax, xMax) / 2;
+  // {/* filter="url(#shadow)" */}
 
   const innerWidth = 2 * Math.PI;
   const innerHeight = Math.min(yMax, xMax) / 2;
@@ -98,7 +99,7 @@ const TreeGraphComponent = (props) => {
                       //stroke="url('#lines')"
                       strokeWidth="1"
                       fill="none"
-                      filter="url(#shadow)"
+                     
                       // radius={d => d.y}
 
                     />

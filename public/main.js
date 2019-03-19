@@ -46,6 +46,7 @@ const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 
 //Declare window object
 let win;
+let childWin;
 
 
 //** --------- CREATE WINDOW OBJECT -------------------------------------------- **//
@@ -54,8 +55,6 @@ let win;
 //sets necessary environment variables
 //creates application window, serves either dev or production version of app and
 function createWindowAndSetEnvironmentVariables () {
-
-  console.log("TOP:   process.env['KUBECONFIG'] at beginning: ", process.env['KUBECONFIG']);
 
   awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator();
   
@@ -95,11 +94,37 @@ function createWindowAndSetEnvironmentVariables () {
     console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
   }
 
-  win = new BrowserWindow({ height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based", title: 'Kre8'});
+  win = new BrowserWindow({ show: false, height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based"});
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
+
+  win.once('ready-to-show', () => {
+    win.show();
+    childWin.close();
+  })
+
   win.on('closed', () => win = null)
+
+  childWin = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: true, frame: false,  vibrancy: "appearance-based" });
+
+  // childWin.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index_child.html')}`);
+
+  childWin.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
+
+
+  // childWin.loadURL(`file://${path.join(__dirname, 'dist/index_child.html')}`);
+
+  childWin.once('ready-to-show', () => {
+    childWin.show()
+  })
+
+  childWin.on('closed', () => {
+    childWin = null;
+  })
+
 }
+
+
 
 
 //** ------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------------- **//
@@ -292,8 +317,13 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     console.log("starting kube config");
 
     const configFileCreationStatus = await kubectlConfigFunctions.createConfigFile(data.clusterName);
+
     const kubectlConfigurationStatus = await kubectlConfigFunctions.configureKubectl(data.clusterName);
-    const workerNodeStackCreationStatus = await kubectlConfigFunctions.createStackForWorkerNode( data.clusterName);
+
+    const kubectlStatusTest = kubectlConfigFunctions.testKubectlGetSvc(data.clusterName);
+
+    const workerNodeStackCreationStatus = await kubectlConfigFunctions.createStackForWorkerNode(data.clusterName);
+
     
     workerNodeStatus.status = awsProps.CREATED;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
@@ -316,12 +346,11 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   }
 
-  // //** ----- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS ---------- **//
+  //** ----- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS ---------- **//
 
   try {
 
     const nodeInstanceCreationStatus = await kubectlConfigFunctions.inputNodeInstance(data.clusterName);
-
 
     const kubectlConfigStatusTest = await kubectlConfigFunctions.testKubectlStatus();
     console.log("final status: ", kubectlConfigStatusTest);

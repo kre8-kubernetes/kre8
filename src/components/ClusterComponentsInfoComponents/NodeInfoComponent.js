@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeInfoItemFromObjectProperties, makeInfoComponentBody } from '../../helperFunctions/renderFunctions'
+import ActionButton from '../Buttons/ActionButton'
 
 const NodeInfoComponent = (props) => {
   const { data } = props;
@@ -49,7 +50,7 @@ const NodeInfoComponent = (props) => {
       {capacity}
       {nodeInfo}
       <div className='more_info_button_item'>
-        <button onClick={props.hideNodeInfo} className='popup_info_button'>Close</button>
+        <ActionButton clickHandler={props.hideNodeInfo} buttonText={`Close`} /> 
       </div>
     </div>
   )

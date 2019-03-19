@@ -1,5 +1,7 @@
 import React from "react";
 import '../styles.css'
+import ActionButton from './Buttons/ActionButton'
+import HelpInfoButton from './Buttons/HelpInfoButton'
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
@@ -14,7 +16,7 @@ const HomeComponent = props => {
         </div>
         {/* TEXT JUST BELOW THE HEADER */}
         <div className='home_page_form_container_text'>
-        <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. Kre8 is here to simplify everything for you. Let’s get started!</p>
+          <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. Kre8 is here to simplify everything for you. Let’s get started!</p>
         </div>
         {/* INPUT FORM CONTAINER */}
         <div className='home_page_form_container_inputs'>
@@ -23,7 +25,7 @@ const HomeComponent = props => {
             {props.validator.message('Access Key id', props.awsAccessKeyId, 'required|min:15|max:40')}
           </div>
           <div className='home_page_form_container_inputs_item'>
-          <input id='awsSecretAccessKey' onChange={props.handleChange} placeholder='Secret Access Key' value={props.awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
+            <input id='awsSecretAccessKey' onChange={props.handleChange} placeholder='Secret Access Key' value={props.awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
             {props.validator.message('Secret Access Key', props.awsSecretAccessKey, 'required|min:30|max:50')}
           </div>
 
@@ -49,12 +51,8 @@ const HomeComponent = props => {
             </select>
           </div>
           <div className='home_page_form_container_buttons_item'>
-            <button id='home_submit_button' onClick={props.setAWSCredentials}>Submit</button>
-            <button id='home_info' onClick={props.displayInfoHandler}>
-              {/* TODO: remove FontAwesome if we dont need it!!! */}
-              {/* <FontAwesomeIcon icon="question-circle" id="home_info" styles={props.mouseCoords}/> */}
-              ?
-            </button>
+            <ActionButton clickHandler={props.setAWSCredentials} buttonText={`Submit`} />
+            <HelpInfoButton clickHandler={props.displayInfoHandler} />
           </div>
         </div>
       </div>

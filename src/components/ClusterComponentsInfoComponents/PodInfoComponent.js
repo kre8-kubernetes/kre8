@@ -1,5 +1,6 @@
 import React from 'react';
-import InfoBodyComponent from './InfoBodyComponent'
+import InfoBodyComponent from './InfoBodyComponent';
+import ActionButton from '../Buttons/ActionButton'
 
 const PodInfoComponent = (props) => {
   const { data } = props;
@@ -10,7 +11,7 @@ const PodInfoComponent = (props) => {
     <div className='pod_info_component'>
       <InfoBodyComponent data={data} />
       <div className='more_info_button_item'>
-        <button onClick={props.hideNodeInfo} className='popup_info_button'>Close</button>
+        <ActionButton clickHandler={props.hideNodeInfo} buttonText={`Close`} /> 
       </div>
     </div>
   )

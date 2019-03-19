@@ -1,6 +1,5 @@
 import React from 'react';
-import ActionButton from './Buttons/ActionButtonComponent';
-import uuid from 'uuid'
+import ActionButton from './Buttons/ActionButton';
 
 const CreateMenuItemComponent = (props) => {
   const { 
@@ -17,7 +16,6 @@ const CreateMenuItemComponent = (props) => {
     const id = `${menuItemToShow}_${inputName}`;
     return (
       <div className='create_menu_item_component_inputs_item'>
-        {/* <h4>{menuItemToShow} {inputName}:</h4> */}
         <input id={id} key={i} value={inputVal} placeholder={`${menuItemToShow}-${inputName}`} onChange={handleChange} type="text" />
         {/* TODO: error handling in these forms? this validator seems to force a re-render, which causes issues */}
         {/* {props.validator1.message(`${menuItemToShow} name, ${inputName}, required`)} */}
@@ -27,6 +25,7 @@ const CreateMenuItemComponent = (props) => {
   return (
     <div onClick={handleCloseFormItem} className="popup_form">
       <div className='popup_form_inner'>
+        <button onClick={toggleCreateMenuItem} className='close_popup_button'>X</button>
         <div className='create_menu_item_component_container'>
           {/**** TITLE  ****/}
           <div className='create_menu_item_component_title'>
@@ -38,9 +37,7 @@ const CreateMenuItemComponent = (props) => {
           </div>
           {/**** BUTTONS ****/}
           <div className='create_menu_item_component_buttons'>
-            {/* <button onClick={handleCreateDeployment}>Create a {componentNameFormatted}</button> */}
             <ActionButton clickHandler={handleCreateDeployment} buttonText={`Create`}/>
-            <button onClick={toggleCreateMenuItem}>Close</button>
           </div>
         </div>
       </div>

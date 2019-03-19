@@ -105,9 +105,15 @@ function createWindowAndSetEnvironmentVariables () {
 
   win.on('closed', () => win = null)
 
-  childWin = new BrowserWindow({ height: 400, width: 400, parent: win, show: true, frame: false,  vibrancy: "appearance-based" });
+  childWin = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: true, frame: false,  vibrancy: "appearance-based" });
 
-  childWin.loadURL('dist/loadingWindow.html')
+  // childWin.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index_child.html')}`);
+
+  childWin.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
+
+
+  // childWin.loadURL(`file://${path.join(__dirname, 'dist/index_child.html')}`);
+
   childWin.once('ready-to-show', () => {
     childWin.show()
   })

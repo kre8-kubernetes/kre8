@@ -1,3 +1,6 @@
+@import "theme";
+
+
 /*
 * Label sections of the CSS to determine what styling goes where.
 * If the styling starts to get to be a lot then move the styling into
@@ -7,7 +10,7 @@
 
 
 
-@keyframes change{
+@keyframes change {
   0%{background-color: rgb(0,117,171);}
   12.5%{background-color: rgb(12,0,73);}
   25%{background-color: rgb(49, 7, 86);}
@@ -16,15 +19,15 @@
   100%{background-color: rgb(0,117,171);}
 }
 
-body{
+body {
   animation: change 90s infinite;
 }
 
-.pods{
+.pods {
   animation: pods 10s infinite;
 }
 
-@keyframes pods{
+@keyframes pods {
   0%{background-color: green;}
   25%{background-color: yellow;}
   50%{background-color: red;}
@@ -39,11 +42,11 @@ body{
 /**************************************************/
 
 svg:hover {
-fill: red;
+  fill: red;
 }
 
 body {
-margin: 0px;
+  margin: 0px;
 }
 
 @font-face {
@@ -60,7 +63,7 @@ src: url("https://fonts.googleapis.com/css?family=Ubuntu");
 }
 
 .errorClass {
-color: red;
+color: $error-red;
 font-size: 10px;
 }
 
@@ -75,9 +78,9 @@ justify-content: center;
 align-items: center;
 width: 100%;
 height: 100vh;
-background: #141E30;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #243B55, #141E30);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+// background: $bg-color-main;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 font-family: Lato;
 }
 
@@ -92,7 +95,7 @@ max-width: 525px;
 min-height: 380px;
 max-height: 390px;
 height: 50%;
-background: #071526;
+background: $modal-bg-color;
 border-radius: 6px;
 padding-bottom: 20px;
 box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
@@ -102,7 +105,7 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 display: flex;
 flex-direction: row;
 justify-content: center;
-color: #D7D7D7;
+color: $light-font;
 width: 100%;
 font-size: 20px;
 font-weight: bold;
@@ -115,7 +118,7 @@ justify-content: center;
 font-size: 16px;
 line-height: 23px;
 font-weight: lighter;
-color: #D7D7D7;
+color: $light-font;
 width: 83%;
 }
 
@@ -138,9 +141,9 @@ padding: 8px 0;
 width: 100%;
 height: 33px;
 border-radius: 5px;
-background: #071526;
-color: #D6D9E0;
-border: 1px solid #D6D9E0;
+background: $modal-bg-color;
+color: $input-color;
+border: 1px solid $input-color;
 font-size: 14px;
 font-weight: thin;
 }
@@ -150,7 +153,7 @@ padding-left: 10px;
 }
 
 .home_page_form_container_inputs_item input::placeholder {
-color: #D6D9E0;
+color:$input-color;
 }
 
 .home_page_form_container_inputs_item input:focus {
@@ -176,9 +179,9 @@ flex-direction: row;
 width: 200px;
 height: 33px;
 background: hsl(213, 69%, 9%);
-border: 1px solid #D6D9E0;
+border: 1px solid $input-color;
 border-radius: 5px;
-color: #D6D9E0;
+color: $input-color;
 font-size: 14px;
 opacity: 0.7;
 }
@@ -191,15 +194,15 @@ outline: none;
 height: 32px;
 width: 32px;
 font-size: 1.1em;
-color: #D7D7D7;
+color: $light-font;
 border-radius: 20px;
-background: #071526;
+background: $modal-bg-color;
 margin-top: 3px;
 }
 
 #home_info:active {
-background: #D6D9E0;
-color:#071526;
+background: $input-color;
+color:$modal-bg-color;
 }
 
 #home_info:hover {
@@ -209,11 +212,11 @@ cursor:pointer;
 .home_page_form_container_buttons_item #home_submit_button {
 /* width: 110px;
 height: 40px; */
-background: #071526;
+background: $modal-bg-color;
 margin-right: 15px;
 border-radius: 5px;
-color: #D35B51;
-border: 1px solid #D35B51;
+color: $button-background;
+border: 1px solid $button-background;
 font-size: 1.1em;
 font-weight: medium;
 padding: 10px;
@@ -224,9 +227,9 @@ outline: none;
 }
 
 .home_page_form_container_buttons_item #home_submit_button:active {
-background: #D35B51;
+background: $button-background;
 opacity: 0.7;
-color: #071526;
+color: $modal-bg-color;
 }
 
 .home_page_post_config_form_container {
@@ -240,7 +243,7 @@ max-width: 525px;
 min-height: 300px;
 max-height: 325px;
 height: 50%;
-background: #071526;
+background: $modal-bg-color;
 border-radius: 6px;
 padding-bottom: 20px;
 
@@ -250,8 +253,8 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 
 .home_page_form_container_buttons_item #home_submit_button:hover {
 cursor: pointer;
-background: #D35B51;
-color: #071526;
+background: $button-background;
+color: $modal-bg-color;
 transition-duration: .2s;
 }
 
@@ -261,7 +264,7 @@ transition-duration: .2s;
 /**************************************************/
 
 .help_info_component {
-background-color: whitesmoke;
+background-color: $help-info-background-color;
 border-radius: 6px;
 font-family: Lato;
 z-index: 1;
@@ -276,11 +279,11 @@ align-items: column;
 .help_info_component button {
 width: 20px;
 height: 20px;
-background: #D35B51;
+background: $button-background;
 /* padding: 10px; */
 /* margin-right: px; */
 /* border-radius: 20px; */
-color: black;
+color: $help-info-font-color;
 font-size: .5em;
 font-weight: 200;
 font-family: Lato;
@@ -309,28 +312,28 @@ justify-content: center;
 align-items: center;
 width: 100%;
 height: 100vh;
-background: #141E30;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #243B55, #141E30);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background: $bg-color-main;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 font-family: Lato;
 }
 
 .aws_cluster_form_container {
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-width: 55%;
-height: 50%;
-min-width: 500px;
-max-width: 525px;
-min-height: 380px;
-max-height: 390px;
-background: #071526;
-border-radius: 6px;
-padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 55%;
+  height: 50%;
+  min-width: 500px;
+  max-width: 525px;
+  min-height: 380px;
+  max-height: 390px;
+  background: $modal-bg-color;
+  border-radius: 6px;
+  padding-bottom: 20px;
 
-box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 /* 
 .aws_cluster_form_container:hover {
@@ -341,7 +344,7 @@ box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 display: flex;
 flex-direction: column;
 align-items: center;
-color: #D7D7D7;
+color: $light-font;
 width: 90%;
 font-size: 20px;
 font-weight: bold;
@@ -356,7 +359,7 @@ justify-content: center;
 font-size: 16px;
 line-height: 23px;
 font-weight: lighter;
-color: #D7D7D7;
+color: $light-font;
 width: 83%;
 margin-bottom: 20px;
 
@@ -367,7 +370,7 @@ justify-content: center;
 font-size: 12px;
 line-height: 13px;
 font-weight: lighter;
-color: #D7D7D7;
+color: $light-font;
 width: 85%;
 text-align: center; */
 }
@@ -383,7 +386,7 @@ width: 83%;
 display: flex;
 flex-direction: column;
 align-items: flex-start;
-color: #D7D7D7;
+color: $light-font;
 /* width: 80%; */
 margin-right: 10px;
 min-height: 38px;
@@ -398,7 +401,7 @@ width: 250px; */
 font-size: 10px;
 font-weight: lighter;
 /* color: #E2F0F2; */
-color: #D6D9E0;
+color: $input-color;
 opacity: 30%;
 margin-left: 6px;
 margin-bottom: 5px;
@@ -411,9 +414,9 @@ font-style: italic;
 width: 100%;
 height: 33px;
 border-radius: 5px;
-background: #071526;
-color: #D6D9E0;
-border: 1px solid #D6D9E0;
+background: $modal-bg-color;
+color: $input-color;
+border: 1px solid $input-color;
 font-size: 14px;
 font-weight: thin;
 opacity: 0.7;
@@ -424,7 +427,7 @@ padding-left: 10px;
 }
 
 .aws_cluster_form_container_input input::placeholder {
-color: #D6D9E0;
+color: $input-color;
 }
 
 .aws_cluster_form_container_input input:focus {
@@ -434,11 +437,11 @@ outline: none;
 .aws_cluster_form_container_button_item #aws_submit_button {
 width: 110px;
 height: 40px;
-background: #071526;
+background: $modal-bg-color;
 margin-right: 15px;
 border-radius: 5px;
-color: #D35B51;
-border: 1px solid #D35B51;
+color: $button-background;
+border: 1px solid $button-background;
 font-size: 1.1em;
 font-weight: medium;
 }
@@ -448,26 +451,26 @@ outline: none;
 }
 
 .aws_cluster_form_container_button_item #aws_submit_button:active {
-background: #D35B51;
+background: $button-background;
 opacity: 0.7;
-color: #071526;
+color: $modal-bg-color;
 }
 
 .aws_cluster_form_container_button_item #aws_submit_button:hover {
 cursor: pointer;
-background: #D35B51;
-color: #071526;
+background: $button-background;
+color: $modal-bg-color;
 transition-duration: .2s;
 }
 
 /* .aws_cluster_form_container_button button {
 width: 110px;
 height: 40px;
-background: #071526;
-border: 1px solid #D35B51;
+background: $modal-bg-color;
+border: 1px solid $button-background;
 margin-right: 15px;
 border-radius: 5px;
-color: #D35B51;
+color: $button-background;
 font-size: 1.1em;
 font-weight: medium;
 }
@@ -477,9 +480,9 @@ outline: none;
 }
 
 .aws_cluster_form_container_button button:active {
-background: #D35B51;
+background: $button-background;
 opacity: 0.7;
-color: #071526;
+color: $modal-bg-color;
 }
 /* 
 #clusterName {
@@ -497,8 +500,8 @@ margin-top: 15px;
 
 .aws_cluster_form_container_button button:hover {
 cursor: pointer;
-background: #D35B51;
-color: #071526;
+background: $button-background;
+color: $modal-bg-color;
 transition-duration: .2s;
 } 
 
@@ -507,15 +510,15 @@ transition-duration: .2s;
 height: 32px;
 width: 32px;
 font-size: 1.1em;
-color: #D7D7D7;
+color: $light-font;
 border-radius: 20px;
-background: #071526;
+background: $modal-bg-color;
 margin-top: 3px;
 }
 
 #aws_info:active {
-background: #D6D9E0;
-color:#071526;
+background: $input-color;
+color:$modal-bg-color;
 }
 
 #aws_info:hover {
@@ -564,7 +567,7 @@ border: solid black;
 border-width: thin;
 border-radius: 5px;
 padding: 10px;
-background-color: whitesmoke;
+background-color: $cluster-element-text-colorsmoke;
 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
@@ -591,8 +594,8 @@ min-width: 500px;
 max-width: 525px;
 min-height: 380px;
 max-height: 390px;
-background: #071526;
-color: #D7D7D7;
+background: $modal-bg-color;
+color: $light-font;
 border-radius: 6px;
 box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
@@ -601,7 +604,7 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 display: flex;
 flex-direction: column;
 text-align: center;
-color: #D7D7D7;
+color: $light-font;
 font-size: 20px;
 font-weight: bold;
 padding-top: 20px;
@@ -615,7 +618,7 @@ text-align: center;
 font-size: 16px;
 line-height: 23px;
 font-weight: lighter;
-color: #D7D7D7;
+color: $light-font;
 margin-top: 20px;
 margin-bottom: 20px;
 padding-left: 40px;
@@ -639,7 +642,7 @@ justify-content: right;
 font-size: 16px;
 line-height: 23px;
 font-weight: lighter;
-color: #D7D7D7;
+color: $light-font;
 } 
 
 .aws_loading_component_error_text {
@@ -710,17 +713,17 @@ width: 100%;
 display: flex;
 flex-direction: column;
 flex-basis: 8;
-border: 2px solid black;
+border: 2px solid $treegraph-border-color;
 }
 
 .pods:hover{
 cursor:pointer;
-border: 1px solid '#C5DEEf';
+border: 1px solid $pods-color-hover;
 transition-duration: .2s;
 }
 
 .podText:hover{
-color: '#C5DEEf';
+color: $pods-color-hover;
 }
 /**************************************************/
 /************* POPUP CONTAINER STYLING ************/
@@ -746,8 +749,8 @@ top: 10%;
 bottom: 10%;
 min-width: 350px;
 margin: auto;
-background: #071526;
-color: white;
+background: $modal-bg-color;
+color: $cluster-element-text-color;
 padding: 30px;
 border-radius: 6px;
 font-family: Lato;
@@ -765,18 +768,18 @@ justify-content: center;
 .popup_info_button {
 width: 110px;
 height: 40px;
-background: #071526;
-border: 1px solid #D35B51;
+background: $modal-bg-color;
+border: 1px solid $button-background;
 border-radius: 5px;
-color: #D35B51;
+color: $button-background;
 font-size: 16px;
 font-weight: medium;
 }
 
 .popup_info_button:hover{
 cursor: pointer;
-background: #D35B51;
-color: #071526;
+background: $button-background;
+color: $modal-bg-color;
 transition-duration: .2s;
 }
 
@@ -785,9 +788,9 @@ outline: none;
 }
 
 .popup_info_button:active {
-background: #D35B51;
+background: $button-background;
 opacity: 0.7;
-color: #071526;
+color: $modal-bg-color;
 }
 
 /**************************************************/
@@ -919,7 +922,7 @@ flex-direction: row;
 width: 100%;
 height: 40px;
 /* background-color: #090927; */
-background-color: #071526;
+background-color: $modal-bg-color;
 box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
@@ -953,7 +956,7 @@ height: 3px;
 width: 30px;
 margin: 2px 0;
 border-radius: 2px;
-background: white;
+background: $cluster-element-text-color;
 }
 
 
@@ -975,7 +978,7 @@ width:100%;
 height:33%;
 border: none;
 background:#090927;
-color: #D6D9E0;
+color: $input-color;
 font-size: 14px;
 font-weight: bold;
 }
@@ -984,7 +987,7 @@ font-weight: bold;
 outline: none;
 }
 .create_menu_component_container_button:hover {
-background:#D35B51;
+background:$button-background;
 }
 /* NAV COMPONENT LEFT */
 
@@ -995,7 +998,7 @@ right: 25%;
 top: 25%;
 bottom: 25%;
 margin: auto;
-background: white;
+background: $cluster-element-text-color;
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -1025,7 +1028,7 @@ flex-direction: row;
 
 .nav_component_cluster_button {
 font-family: Lato;
-color:white;
+color:$cluster-element-text-color;
 background: rgb(2,18,41);
 border: none;
 margin-right: 10px;
@@ -1040,18 +1043,18 @@ left: 80%;
 top: 50px;
 width: 200px;
 height: 200px;
-background: #141E30;
+background: $bg-color-main;
 }
 
 .cluster_info_major {
 font-size: 0.70em;
-color: white;
+color: $cluster-element-text-color;
 font-family: Lato;
 }
 
 .cluster_info_minor {
 font-size: 0.60em;
-color: white;
+color: $cluster-element-text-color;
 font-family: Lato;
 }
 
@@ -1067,7 +1070,7 @@ width: 8%;
 outline:none;
 } */
 /* .barsButton:hover{
-border: solid white;
+border: solid $cluster-element-text-color;
 } */
 
 /**************************************************/

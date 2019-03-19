@@ -1,42 +1,59 @@
 import React from 'react'
 
-export const makeInfoItemFromObjectProperties = (data, className) => {
-  return Object.entries(data).reduce((acc, item, i) => {
+export const makeInfoItemFromObjectProperties = (dataObject, title) => {
+  const additionalData = Object.entries(dataObject).reduce((acc, item, i) => {
     if (typeof item[1] !== 'object') {
       acc.push(
-        <div key={i} className={className}>
-          <p>{item[0][0].toUpperCase() + item[0].slice(1)}</p>
-          <p>{item[1]}</p>
+        <div key={i} className='additional_info_body_item'>
+          <div className='additional_info_body_item_row'>
+            <p>{item[0][0].toUpperCase() + item[0].slice(1)}</p>
+            <p>{item[1]}</p>
+          </div>
         </div>
       )
     }
     return acc;
   }, []);
-}
-
-export const makeAddtionalInfoFromArrayOfObjects = (data, title, className) => {
-  const additionalData = data.map((object) => {
-    return (
-      Object.entries(object).map((prop, i) => {
-        return (
-          <div key={i} className='additional_info_body_item'>
-            <p>{prop[0]}</p>
-            <p>{prop[1]}</p>
-          </div>
-        );
-      })
-    )
-  })
 
   return (
-    <div className={className}>
+    <div className='info_component_additional_items'>
       <p>{title} -- </p>
-      <div className='additional_info_body'>
-        {additionalData}
+      <div className='additional_info_body_container'>
+        <div className='additional_info_body_item'>
+          {additionalData}
+        </div>
       </div>
     </div>
   )
 }
+
+// export const makeAddtionalInfoFromArrayOfObjects = (data, title) => {
+//   const additionalData = data.map((object) => {
+//     return (
+//       Object.entries(object).map((prop, i) => {
+//         return (
+//           <div key={i} className='additional_info_body_item'>
+//             <div className='additional_info_body_item_row'>
+//               <p>{prop[0]}</p>
+//               <p>{prop[1]}</p>
+//             </div>
+//           </div>
+//         );
+//       })
+//     )
+//   })
+
+//   return (
+//     <div className='info_component_additional_items'>
+//       <p>{title} -- </p>
+//       <div className='additional_info_body_container'>
+//         <div className='additional_info_body_item'>
+//           {additionalData}
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
 
 export const makeInfoComponentBody = (data) => {
   // take data (object) and iterate over the properties
@@ -71,7 +88,6 @@ export const makeInfoComponentBody = (data) => {
             {items}
           </div>
         )
-
       });
 
       acc.push(
@@ -89,8 +105,6 @@ export const makeInfoComponentBody = (data) => {
       acc.push(makeInfoComponentBody(item[1]))
     }
 
-
     return acc;
   }, []);
-
 }

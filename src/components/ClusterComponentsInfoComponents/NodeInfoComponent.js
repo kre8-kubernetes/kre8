@@ -1,13 +1,13 @@
 import React from 'react';
-import { makeInfoItemFromObjectProperties, makeAddtionalInfoFromArrayOfObjects, makeInfoComponentBody } from '../../helperFunctions/renderFunctions'
+import { makeInfoItemFromObjectProperties, makeInfoComponentBody } from '../../helperFunctions/renderFunctions'
 
 const NodeInfoComponent = (props) => {
   const { data } = props;
 
   const addresses = data.status.addresses.map((address, i) => {
     return (
-      <div className='additional_info_body_item'>
-        <div key={i} className='additional_info_body_item_row'>
+      <div key={i} className='additional_info_body_item'>
+        <div className='additional_info_body_item_row'>
           <p>{address.type}</p>
           <p>{address.address}</p>
         </div>
@@ -15,38 +15,9 @@ const NodeInfoComponent = (props) => {
     )
   });
 
-  const allocatable = Object.entries(data.status.allocatable).map((pair, i) => {
-    return (
-      <div className='additional_info_body_item'>
-        <div key={i} className='additional_info_body_item_row'>
-          <p>{pair[0]}</p>
-          <p>{pair[1]}</p>
-        </div>
-      </div>
-    )
-  });
-
-  const capacity = Object.entries(data.status.capacity).map((pair, i) => {
-    return (
-      <div className='additional_info_body_item'>
-        <div key={i} className='additional_info_body_item_row'>
-          <p>{pair[0]}</p>
-          <p>{pair[1]}</p>
-        </div>
-      </div>
-    )
-  });
-
-  const nodeInfo = Object.entries(data.status.nodeInfo).map((pair, i) => {
-    return (
-      <div className='additional_info_body_item'>
-        <div key={i} className='additional_info_body_item_row'>
-          <p>{pair[0]}</p>
-          <p>{pair[1]}</p>
-        </div>
-      </div>
-    )
-  });
+  const allocatable = makeInfoItemFromObjectProperties(data.status.allocatable, 'Allocatable');
+  const capacity = makeInfoItemFromObjectProperties(data.status.capacity, 'Capacity')
+  const nodeInfo = makeInfoItemFromObjectProperties(data.status.nodeInfo, 'NodeInfo');
 
   return (
     <div className='node_info_component'>
@@ -74,30 +45,9 @@ const NodeInfoComponent = (props) => {
           </div>
         </div>
       </div>
-      <div className='info_component_additional_items'>
-        <p>Allocatable -- </p>
-        <div className='additional_info_body_container'>
-          <div className='additional_info_body_item'>
-            {allocatable}
-          </div>
-        </div>
-      </div>
-      <div className='info_component_additional_items'>
-        <p>Capacity -- </p>
-        <div className='additional_info_body_container'>
-          <div className='additional_info_body_item'>
-            {capacity}
-          </div>
-        </div>
-      </div>
-      <div className='info_component_additional_items'>
-        <p>NodeInfo -- </p>
-        <div className='additional_info_body_container'>
-          <div className='additional_info_body_item'>
-            {nodeInfo}
-          </div>
-        </div>
-      </div>
+      {allocatable}
+      {capacity}
+      {nodeInfo}
       <div className='more_info_button_item'>
         <button onClick={props.hideNodeInfo} className='popup_info_button'>Close</button>
       </div>

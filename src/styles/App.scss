@@ -19,7 +19,6 @@
 }
 
 
-
 @keyframes change {
   0%{background-color: rgb(0,117,171);}
   12.5%{background-color: rgb(12,0,73);}
@@ -29,14 +28,13 @@
   100%{background-color: rgb(0,117,171);}
 }
 
-.root {
-  animation: fadein 2s;
-  // animation: change 90s infinite;
-}
+// .root {
+//   // animation: fadein 2s;
+//   animation: change 90s infinite;
+// }
 
 body {
   animation: fadein 2s;
-  // animation: change 90s infinite;
 }
 
 .pods {
@@ -698,12 +696,8 @@ padding-top: 20px;
 
   /* Cover the whole window */
   height: 100%;
+  animation: fadein 2s, change 90s infinite;
 
-  background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, $bg-color-right, $bg-color-main);
-  
-  /* Smoother startup */
-  animation: fadein 2s;
 
 }
 

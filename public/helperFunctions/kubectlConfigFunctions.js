@@ -118,7 +118,7 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
 
     if (bashRead.includes(`export KUBECONFIG`)) {
       if (!bashRead.includes(clusterName)) {
-        bashRead = bashRead.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`);
+        bashRead = bashRead.replace(/export KUBECONFIG\S*/g, `export KUBECONFIG=$HOME/.kube/config-${clusterName}`);
         console.log("bashRead: ", bashRead)
 
         await fsp.writeFile(process.env['HOME'] + '/.bash_profile', bashRead, 'utf-8');
@@ -126,7 +126,7 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
         console.log('re-wrote .bash_profile to set KUBECONFIG env var to the new cluster config file');
       }
     } else {
-      const textToAppendToBashProfile = `\nexport KUBECONFIG=$KUBECONFIG:~/.kube/config-${clusterName}`;
+      const textToAppendToBashProfile = `\nexport KUBECONFIG=$HOME/.kube/config-${clusterName}`;
       await fsp.appendFile(process.env['HOME'] + '/.bash_profile', textToAppendToBashProfile);
     }
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import { makeInfoItemFromObjectProperties, makeAddtionalInfoFromArrayOfObjects } from '../../helperFunctions/renderFunctions'
+import { makeInfoItemFromObjectProperties, makeInfoComponentBody } from '../../helperFunctions/renderFunctions'
+import ActionButton from '../Buttons/ActionButton'
 
 const NodeInfoComponent = (props) => {
   const { data } = props;
@@ -7,35 +8,17 @@ const NodeInfoComponent = (props) => {
   const addresses = data.status.addresses.map((address, i) => {
     return (
       <div key={i} className='additional_info_body_item'>
-        <p>{address.type}</p>
-        <p>{address.address}</p>
+        <div className='additional_info_body_item_row'>
+          <p>{address.type}</p>
+          <p>{address.address}</p>
+        </div>
       </div>
     )
   });
-  const allocatable = Object.entries(data.status.allocatable).map((pair, i) => {
-    return (
-      <div key={i} className='additional_info_body_item'>
-        <p>{pair[0]}</p>
-        <p>{pair[1]}</p>
-      </div>
-    )
-  });
-  const capacity = Object.entries(data.status.capacity).map((pair, i) => {
-    return (
-      <div key={i} className='additional_info_body_item'>
-        <p>{pair[0]}</p>
-        <p>{pair[1]}</p>
-      </div>
-    )
-  });
-  const nodeInfo = Object.entries(data.status.nodeInfo).map((pair, i) => {
-    return (
-      <div key={i} className='additional_info_body_item'>
-        <p>{pair[0]}</p>
-        <p>{pair[1]}</p>
-      </div>
-    )
-  });
+
+  const allocatable = makeInfoItemFromObjectProperties(data.status.allocatable, 'Allocatable');
+  const capacity = makeInfoItemFromObjectProperties(data.status.capacity, 'Capacity')
+  const nodeInfo = makeInfoItemFromObjectProperties(data.status.nodeInfo, 'NodeInfo');
 
   return (
     <div className='node_info_component'>
@@ -55,32 +38,19 @@ const NodeInfoComponent = (props) => {
         <p>Created At</p>
         <p>{data.metadata.creationTimestamp}</p>
       </div>
-      <div className='node_info_component_additional_items'>
+      <div className='info_component_additional_items'>
         <p>Addresses -- </p>
-        <div className='additional_info_body'>
-          {addresses}
+        <div className='additional_info_body_container'>
+          <div className='additional_info_body_item'>
+            {addresses}
+          </div>
         </div>
       </div>
-      <div className='node_info_component_additional_items'>
-        <p>Allocatable -- </p>
-        <div className='additional_info_body'>
-          {allocatable}
-        </div>
-      </div>
-      <div className='node_info_component_additional_items'>
-        <p>Capacity -- </p>
-        <div className='additional_info_body'>
-          {capacity}
-        </div>
-      </div>
-      <div className='node_info_component_additional_items'>
-        <p>NodeInfo -- </p>
-        <div className='additional_info_body'>
-          {nodeInfo}
-        </div>
-      </div>
+      {allocatable}
+      {capacity}
+      {nodeInfo}
       <div className='more_info_button_item'>
-        <button onClick={props.hideNodeInfo} className='popup_info_button'>Close</button>
+        <ActionButton clickHandler={props.hideNodeInfo} buttonText={`Close`} /> 
       </div>
     </div>
   )

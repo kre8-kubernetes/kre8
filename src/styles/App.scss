@@ -19,19 +19,23 @@
 }
 
 
-@keyframes change {
-  0%{background-color: rgb(0,117,171);}
-  12.5%{background-color: rgb(12,0,73);}
-  25%{background-color: rgb(49, 7, 86);}
-  50%{background-color: rgb(9,35,108);}
-  75%{background-color: rgb(0,74,134);}
-  100%{background-color: rgb(0,117,171);}
-}
+// @keyframes change {
+//   0%{background-color: rgb(0,117,171);}
+//   12.5%{background-color: rgb(12,0,73);}
+//   25%{background-color: rgb(49, 7, 86);}
+//   50%{background-color: rgb(9,35,108);}
+//   75%{background-color: rgb(0,74,134);}
+//   100%{background-color: rgb(0,117,171);}
+// }
 
 // .root {
 //   // animation: fadein 2s;
 //   animation: change 90s infinite;
 // }
+
+body::-webkit-scrollbar {
+  display: none;
+}
 
 body {
   animation: fadein 2s;
@@ -684,6 +688,28 @@ padding-top: 20px;
 /************ KubectlContainer Styling ************/
 /**************************************************/
 
+
+//color change animation
+// @keyframes change {
+//   0%{background-color: rgb(0,117,171);}
+//   12.5%{background-color: rgb(12,0,73);}
+//   25%{background-color: rgb(49, 7, 86);}
+//   50%{background-color: rgb(9,35,108);}
+//   75%{background-color: rgb(0,74,134);}
+//   100%{background-color: rgb(0,117,171);}
+// }
+
+@keyframes change {
+  12.5%{background-color: #2D5481;}
+  25%{background-color: #274B74;}
+  37.5%{background-color: #243B55;}
+  50%{background-color: #1F2D46;}
+  62.5%{background-color: #141E30;}
+  75%{background-color: #1F2D46;}
+  87.5%{background-color: #243B55;}
+  100%{background-color: #274B74;}
+}
+
 .kubectl_container {
   display: flex;
   flex-direction: row;
@@ -697,8 +723,6 @@ padding-top: 20px;
   /* Cover the whole window */
   height: 100%;
   animation: fadein 2s, change 90s infinite;
-
-
 }
 
 /* Kubectl Component Styling */

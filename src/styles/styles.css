@@ -21,6 +21,10 @@ body {
   /* align-items: center; */
 }
 
+body::-webkit-scrollbar {
+  display: none;
+}
+
 .loading_page_container {
   /* background: #141E30;  */
   width: 325px;

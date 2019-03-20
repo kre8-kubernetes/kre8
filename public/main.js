@@ -95,7 +95,9 @@ function createWindowAndSetEnvironmentVariables () {
     console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
   }
 
-  win = new BrowserWindow({ show: false, height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, backgroundColor: '#243B55', center: true });
+  // maxHeight: 800, maxWidth: 1000, 
+
+  win = new BrowserWindow({ show: false, height: 720, width: 930, minHeight: 550, minWidth: 700,  backgroundColor: '#243B55', center: true });
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
   

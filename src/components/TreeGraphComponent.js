@@ -58,8 +58,6 @@ const TreeGraphComponent = (props) => {
   const yMax = height - margin.top - margin.bottom;
   const xMax = width - margin.left - margin.right;
 
-  // const innerWidth = 2 * Math.PI;
-  // const innerHeight = Math.min(yMax, xMax) / 2;
   // {/* filter="url(#shadow)" */}
           {/* <rect width={width} height={height} rx={0} fill="url('#back')" /> */}
           {/* <LinearGradient id="back" from={'#141E30'} to={'#243B55'} /> */}

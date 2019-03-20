@@ -1,6 +1,8 @@
 # Documents
 /public/sdkAssets/private
 /public/yamlAssets/private
+/public/Storage/AWS_Assets/AWS_Private
+/public/Storage/KUBECTL_Assets
 
 
 # Logs

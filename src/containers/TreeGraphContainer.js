@@ -91,7 +91,9 @@ class TreeGraphContainer extends Component {
       node["children"] = [];
       newState.treeData.children.push(node);
     });
+    console.log("newState: ", newState);
     this.setState({ ...this.state, treeData: newState.treeData});
+
   }
 
   handleContainersAndPods(event, data) {
@@ -311,10 +313,15 @@ class TreeGraphContainer extends Component {
 
     const margin = {
       top: 10,
-      left: 30,
-      right: 40,
-      bottom: 80
+      left: 20,
+      right: 20,
+      bottom: 30
     };
+
+     {/* width={1100}
+          height={800} */}
+
+          console.log("this.state: ", this.state);
 
     return (
       <div className='treegraph_container'>
@@ -326,7 +333,7 @@ class TreeGraphContainer extends Component {
         )}
         <TreeGraphComponent
           showNodeInfo={this.showNodeInfo}
-          width={1100}
+          width={1000}
           height={800}
           treeData={this.state.treeData}
           margin={margin}

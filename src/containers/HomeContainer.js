@@ -171,24 +171,19 @@ class HomeContainer extends Component {
           mouseCoords={this.state.mouseCoords}
         />
         )}
-        { (this.state.credentialStatus === true) ?
-          <HomeComponentPostCredentials
-            handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
-          /> 
-          :
-          <HomeComponent 
-            handleChange={this.handleChange}
-            handleFormChange={this.handleFormChange}
-            validator={this.validator}
-            awsAccessKeyId={this.state.awsAccessKeyId}
-            awsSecretAccessKey={this.state.awsSecretAccessKey}
-            awsRegion={this.state.awsRegion}
-            setAWSCredentials={this.setAWSCredentials}
-            
-            displayInfoHandler={this.displayInfoHandler}
-            grabCoords={this.grabCoords}
-          />
-        }
+        
+        <HomeComponent 
+          handleChange={this.handleChange}
+          handleFormChange={this.handleFormChange}
+          validator={this.validator}
+          awsAccessKeyId={this.state.awsAccessKeyId}
+          awsSecretAccessKey={this.state.awsSecretAccessKey}
+          awsRegion={this.state.awsRegion}
+          setAWSCredentials={this.setAWSCredentials}
+          
+          displayInfoHandler={this.displayInfoHandler}
+          grabCoords={this.grabCoords}
+        />
     </div>
     );
   }
@@ -197,3 +192,11 @@ class HomeContainer extends Component {
 
 
 export default withRouter(connect(null, null)(HomeContainer));
+
+{/* { (this.state.credentialStatus === true) ?
+          <HomeComponentPostCredentials
+            handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
+          /> 
+          : */}
+
+              {/* } */}

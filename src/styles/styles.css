@@ -6,11 +6,18 @@
   src: local('Lato'), local('Lato'), url('./Lato/Lato-Black.ttf') format('truetype');
 }
 
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 body {
   background:#071526;
   background: -webkit-linear-gradient(to right, #243B55, #141E30);  
   background: linear-gradient(to right, #243B55, #141E30);
   font-family: Lato;
+  animation: fadein 2s;
+
   /* align-items: center; */
 }
 

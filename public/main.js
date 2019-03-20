@@ -48,6 +48,7 @@ const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
 let win;
 let childWin;
 
+console.time('init')
 
 //** --------- CREATE WINDOW OBJECT -------------------------------------------- **//
 //Invoked with app.on('ready'): 
@@ -94,18 +95,19 @@ function createWindowAndSetEnvironmentVariables () {
     console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
   }
 
-  win = new BrowserWindow({ show: false, height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, vibrancy: "appearance-based"});
+  win = new BrowserWindow({ show: false, height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, backgroundColor: '#243B55', center: true });
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
-
+  
   win.once('ready-to-show', () => {
     win.show();
     childWin.close();
+    console.timeEnd('init');
   })
 
   win.on('closed', () => win = null)
 
-  childWin = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: true, frame: false,  vibrancy: "appearance-based" });
+  childWin = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: true, frame: false, backgroundColor: '#243B55', center: true  });
 
   // childWin.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index_child.html')}`);
 

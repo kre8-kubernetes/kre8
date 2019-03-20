@@ -20,6 +20,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
         fill="url('#containerGradient')"
         stroke="#E2F0F2"
         strokeWidth="0"
+        filter="url(#shadow)"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);

@@ -4,6 +4,9 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 import NavComponent from '../components/NavComponent.js';
 
 import * as actions from '../store/actions/actions.js';
+import * as events from '../../eventTypes';
+
+
 
 const mapStateToProps = store => ({
   showCreateButton: store.navbar.showCreateButton,

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from 'react-router-dom';
 import ActionButton from './Buttons/ActionButton'
 import HelpInfoButton from './Buttons/HelpInfoButton'
-import "../styles.css";
+// import "../styles.css";
 
 
 const AWSComponent = props => {
@@ -10,26 +10,32 @@ const AWSComponent = props => {
     <div className="aws_cluster_form_container">
 
       <div className='aws_cluster_form_container_header'>
-        <h2>Setup Cluster to AWS</h2> 
+        <h3>Configure your Kubernetes Cluster</h3>
       </div>
-      
-      <div className='aws_cluster_form_container_input'>
-        <input id="iamRoleName" placeholder='IAM Role Name' onChange={props.handleChange} value={props.iamRoleName} type="text"/>
-        {props.validator.message('Role name', props.iamRoleName, 'required')}
-        <h6>Role name can contain alphanumeric and '+=,.@-_' characters. Maximum 64 characters.</h6>
+      <div className='aws_cluster_form_timing_text'>
+        Please input the below details to create your cluster. Once submitted, this phase takes AWS 10-15 minutes.
       </div>
 
-      <div className='aws_cluster_form_container_input'>
-        <input id="vpcStackName" placeholder='VPC Stack Name' onChange={props.handleChange} value={props.vpcStackName} type="text"/>
-        {props.validator.message('Stack name', props.vpcStackName, 'required')}
-        <h6>Stack name can contain only alphanumeric characters and dashes '-'. Maximum 128 characters.</h6>
-      </div>
+      <div className='aws_cluster_form_input_field_area'>
+        <div className='aws_cluster_form_container_input'>
+          <input id="iamRoleName" placeholder='IAM Role Name' onChange={props.handleChange} value={props.iamRoleName} type="text"/>
+          {props.validator.message('Role name', props.iamRoleName, 'required')}
+          <div className='aws_cluster_form_container_explainer_text'>64 character max, alphanumeric chars and '+=,.@-_'.</div>
+        </div>
 
-      <div className='aws_cluster_form_container_input'>
-        <input id="clusterName" placeholder='Cluster Name' onChange={props.handleChange} value={props.clusterName} type="text"/>
-        {props.validator.message('Cluster name', props.clusterName, 'required')}
-        <h6>Cluster name can contain only alphanumeric characters, dashes '-' and underscores '_'. Maximum 100 characters.</h6>
-      </div>
+        <div className='aws_cluster_form_container_input'>
+          <input id="vpcStackName" placeholder='VPC Stack Name' onChange={props.handleChange} value={props.vpcStackName} type="text"/>
+          {props.validator.message('Stack name', props.vpcStackName, 'required')}
+          <div className='aws_cluster_form_container_explainer_text'>*128 character max, alphanumeric chars and dashes '-'.</div>
+        </div>
+
+        <div className='aws_cluster_form_container_input'>
+          <input id="clusterName" placeholder='Cluster Name' onChange={props.handleChange} value={props.clusterName} type="text"/>
+          {props.validator.message('Cluster name', props.clusterName, 'required')}
+          <div className='aws_cluster_form_container_explainer_text'>100 character max, alphanumeric chars, dashes '-' and underscores '_'.</div>
+        </div>
+
+      </div>  
 
       <div className='aws_cluster_form_container_button_item'>
         <ActionButton clickHandler={props.handleConfigAndMakeNodes} buttonText={`Submit`} />

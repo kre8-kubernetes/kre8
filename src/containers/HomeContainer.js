@@ -22,7 +22,9 @@ class HomeContainer extends Component {
       text_info:'',
       showInfo: false,
       mouseCoords: {},
-      credentialStatus: false 
+      credentialStatus: false,
+
+      
     }
 
     this.validator = new SimpleReactValidator({
@@ -70,7 +72,7 @@ class HomeContainer extends Component {
 
   testFormValidation() {
     if (this.validator.allValid()) {
-      alert('Your credentials are bring validated by Amazon Web Services. This can take up to one minute.');
+      // alert(`Your credentials are being validated by Amazon Web Services. This can take up to one minute. Please click ok to continue.`);
       return true;
     } else {
       this.validator.showMessages();
@@ -83,13 +85,18 @@ class HomeContainer extends Component {
 
   //if credentials are saved in file, display HomeContainerPostCredentials
   processAWSCredentialStatus(event, data) {
-    console.log(data);
+    console.log("credential status: ", data);
     if (data === true) {
-      this.setState({ ...this.state, credentialStatus: false });
-    }
+      this.setState({ ...this.state, credentialStatus: true });
+      this.props.history.push('/cluster');
+    } 
+    console.log("credentials are not yet entered, send to setup page")
   }
 
   //** ------- CONFIGURE AWS CREDENTIALS ----------------------------- **//
+  //Activates when user enters AWS credentials. If the credentials pass error handlers, 
+  //reset values in state, and send data to the main thread to verify entry data with AWS
+
   setAWSCredentials(e) {
     e.preventDefault();
   
@@ -103,21 +110,30 @@ class HomeContainer extends Component {
       console.log("All form data passed validation");
       this.setState({ ...this.state, awsAccessKeyId: '', awsSecretAccessKey: '', awsRegion: ''});
       ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsConfigData);
+    } else {
+      console.log("Invalid or missing data entry");
     }
-
-    console.log("Invalid or missing data entry");
+    
   }
 
+  //Based on AWS response, either move the user on to the AWS entry page, or send error alert, for user to reenter credentials
   handleAWSCredentials(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
+    console.log("hellllllloooooooo");
+
     console.log('incoming text:', data);
-    if (data.UserId) {
+    console.log('incoming text:', data.Arn);
+    
+    if (data.Arn) {
       this.props.history.push('/aws')
+
+    } else {
+      alert('The credentials you entered are incorrect. Please check your entries and try again.');
     }
   }
 
   handleButtonClickOnHomeComponentPostCredentials(e) {
-    console.log('button pushed:', e);
+    console.log('button pushed:');
     this.props.history.push('/cluster')
   }
 
@@ -149,24 +165,19 @@ class HomeContainer extends Component {
           mouseCoords={this.state.mouseCoords}
         />
         )}
-        { (this.state.credentialStatus === true) ?
-          <HomeComponentPostCredentials
-            handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
-          /> 
-          :
-          <HomeComponent 
-            handleChange={this.handleChange}
-            handleFormChange={this.handleFormChange}
-            validator={this.validator}
-            awsAccessKeyId={this.state.awsAccessKeyId}
-            awsSecretAccessKey={this.state.awsSecretAccessKey}
-            awsRegion={this.state.awsRegion}
-            setAWSCredentials={this.setAWSCredentials}
-            
-            displayInfoHandler={this.displayInfoHandler}
-            grabCoords={this.grabCoords}
-          />
-        }
+        
+        <HomeComponent 
+          handleChange={this.handleChange}
+          handleFormChange={this.handleFormChange}
+          validator={this.validator}
+          awsAccessKeyId={this.state.awsAccessKeyId}
+          awsSecretAccessKey={this.state.awsSecretAccessKey}
+          awsRegion={this.state.awsRegion}
+          setAWSCredentials={this.setAWSCredentials}
+          
+          displayInfoHandler={this.displayInfoHandler}
+          grabCoords={this.grabCoords}
+        />
     </div>
     );
   }
@@ -175,3 +186,11 @@ class HomeContainer extends Component {
 
 
 export default withRouter(connect(null, null)(HomeContainer));
+
+{/* { (this.state.credentialStatus === true) ?
+          <HomeComponentPostCredentials
+            handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
+          /> 
+          : */}
+
+              {/* } */}

@@ -1,10 +1,14 @@
-const fs = require('fs');
-const fsp = require('fs').promises;
+//** --------- NODE APIS ---------------- 
+// const fs = require('fs');
+// const fsp = require('fs').promises;
 
+//** --------- DECLARE EXPORT OBJECT ---------------------------------- 
 const kubernetesTemplates = {};
 
-
-//** Template for Create Pod Yaml 
+//** --------- GENERATES TEMPLATE FOR CREATING POD YAML FILE---------- **//
+/** 
+ * @param {Object} data
+ */
 kubernetesTemplates.createPodYamlTemplate = (data) => {
 
   const podYamlTemplate = {
@@ -24,8 +28,8 @@ kubernetesTemplates.createPodYamlTemplate = (data) => {
             imagePullPolicy: "Always",
             env: [
               // {
-              //   name: "DEMO_GREETING",
-              //   value: "Hello from the environment"
+              //   name: '',
+              //   value: '',
               // }
             ],
             command: ["sh", "-c", "echo Hello Kubernetes! && sleep 3600"]
@@ -38,7 +42,11 @@ kubernetesTemplates.createPodYamlTemplate = (data) => {
   return podYamlTemplate;
 }
 
-//** Template for Create Service Yaml
+
+//** --------- GENERATES TEMPLATE FOR CREATING SERVICE YAML FILE---------- **//
+/** 
+ * @param {Object} data
+ */
 kubernetesTemplates.createServiceYamlTemplate = (data) => {
 
   const serviceYamlTemplate = {
@@ -64,8 +72,10 @@ kubernetesTemplates.createServiceYamlTemplate = (data) => {
 }
 
 
-//** Template for Create Deployment Yaml
-
+//** --------- GENERATES TEMPLATE FOR CREATING DEPLOYMENT YAML FILE ---- **//
+/** 
+ * @param {Object} data
+ */
 kubernetesTemplates.createDeploymentYamlTemplate = (data) => {
 
   const deploymentTemplate = {

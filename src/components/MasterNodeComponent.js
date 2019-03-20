@@ -22,6 +22,7 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
         r={52}
         fill="url('#lg')"
         stroke='#E2F0F2'
+        filter="url(#shadow)"
         strokeWidth="0"
         onClick={() => {
           showNodeInfo(node);

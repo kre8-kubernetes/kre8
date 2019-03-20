@@ -2,8 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import CreateMenuComponent from './CreateMenuComponent'
 import ClusterInfoComponent from './ClusterInfoComponent'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 
 const NavComponent = (props) => {
@@ -22,10 +20,6 @@ const NavComponent = (props) => {
             <div className='ham_bar'></div>
             <div className='ham_bar'></div>
             <div className='ham_bar'></div>
-            {/* TODO: should we get rid of FontAwesome? */}
-            {/* <div onClick={props.toggleCreateMenu} className='nav_item2'>
-              <button className="barsButton"><FontAwesomeIcon icon="bars" id="bars" /></button>
-            </div> */}
           </div>
         )}
         <div className='nav_left_container_item'>

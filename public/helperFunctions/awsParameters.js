@@ -1,29 +1,32 @@
+//** --------- NODE APIS ---------------- 
 const fs = require('fs');
 const fsp = require('fs').promises;
+
+//** --------- DECLARE EXPORT OBJECT ---------------------------------- 
 const awsParameters = {};
 
+//** --------- GENERATES PARAMETER FOR CREATING IAM ROLE--------------- **//
 /** Parameter for CREATE_IAM_ROLE 
  * @param {String} rolename
- * @param {String} roleDescription
- * @param {Object} iamRolePolicyDocument This is the JSON object for the IAM role policy 
+ * @param {Object} iamRolePolicyDocumen JSON object for the IAM role policy 
  */
-awsParameters.createIAMRoleParam = (roleName, roleDescription, iamRolePolicyDocument) => {
+awsParameters.createIAMRoleParam = (roleName, iamRolePolicyDocument) => {
   const iamRoleParam = {
     AssumeRolePolicyDocument: JSON.stringify(iamRolePolicyDocument),
     RoleName: roleName,
-    Description: roleDescription,
     Path: '/', 
   };
   return iamRoleParam;
 }
 
+//** --------- GENERATES PARAMETER FOR CREATING TECH STACK-------------- **//
 /** Parameter for CREATE_TECH_STACK 
  * @param {String} stackName
- * @param {String} stackTemplateStringified this has already been stringified
+ * @param {String} stackTemplate 
  */
-awsParameters.createTechStackParam = (stackName, stackTemplateStringified) => {
-  const techStackParam = {
-    StackName: stackName,
+awsParameters.createVPCStackParam = (vpcStackName, stackTemplate) => {
+  const vpcStackParam = {
+    StackName: vpcStackName,
     DisableRollback: false,
     EnableTerminationProtection: false,
     Parameters: [
@@ -32,12 +35,19 @@ awsParameters.createTechStackParam = (stackName, stackTemplateStringified) => {
       { ParameterKey: 'Subnet02Block', ParameterValue: '192.168.128.0/18', },
       { ParameterKey: 'Subnet03Block', ParameterValue: '192.168.192.0/18', }
     ],
-    TemplateBody: stackTemplateStringified,
+    TemplateBody: JSON.stringify(stackTemplate),
   };
-  return techStackParam;
+  return vpcStackParam;
 }
 
-//** Parameter for CREATE_CLUSTER 
+//** --------- GENERATES PARAMETER FOR CREATING CLUSTER -------------- **//
+/** Parameter for CREATING CLUSTER 
+ * @param {String} clusterName
+ * @param {Array} subnetIds 
+ * @param {String} securityGroupIds 
+ * @param {String} roleArn 
+ */
+
 awsParameters.createClusterParam = (clusterName, subnetIds, securityGroupIds, roleArn) => {
   const clusterParam = {
     name: clusterName, 
@@ -52,9 +62,14 @@ awsParameters.createClusterParam = (clusterName, subnetIds, securityGroupIds, ro
   return clusterParam;
 }
 
+//** --------- GENERATES PARAMETER FOR CREATE_CONFIG_FILE -------------- **//
+/** Parameter for CREATE_CONFIG_FILE 
+ * @param {String} clusterName
+ * @param {String} serverEndpoint 
+ * @param {String} certificateAuthorityData 
+ */
 
-//** Parameter for CREATE_CONFIG_FILE 
-awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAuthorityData, clusterArn) => {
+awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAuthorityData) => {
   const AWSClusterConfigFileParam = {
     "apiVersion": "v1",
     "clusters": [
@@ -82,18 +97,23 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
   return AWSClusterConfigFileParam;
 }
 
-//** Parameter for CREATE_WORKER_NODE_TECH_STACK 
+//** --------- GENERATES PARAMETER FOR CREATE_WORKER_NODE_TECH_STACK -------------- **//
+/** Parameter for CREATE_CONFIG_FILE 
+ * @param {String} iamRoleName
+ * @param {String} workerNodeStackName 
+ * @param {String} stackTemplateforWorkerNode 
+ */
 
-awsParameters.createWorkerNodeStackParam = (workerNodeStackName, stackTemplateforWorkerNodeStringified) => {
+awsParameters.createWorkerNodeStackParam = (clusterName, workerNodeStackName, stackTemplateforWorkerNode) => {
 
   console.log("CREATNG STACK PARAM");
 
-  const awsMasterFileData = fs.readFileSync(__dirname + `/../sdkAssets/private/AWS_MASTER_DATA.json`, 'utf-8');
+  const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
+
   const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
 
   console.log('Here is the current master file data in createWorkerNodeStackParams: ', parsedAWSMasterFileData)
 
-  const clusterName = parsedAWSMasterFileData.clusterName;
   const subnetIdsString = parsedAWSMasterFileData.subnetIdsString;
   const vpcId = parsedAWSMasterFileData.vpcId;
   const securityGroupIds = parsedAWSMasterFileData.securityGroupIds;
@@ -120,29 +140,9 @@ awsParameters.createWorkerNodeStackParam = (workerNodeStackName, stackTemplatefo
       { "ParameterKey": "VpcId", "ParameterValue": vpcId },
       { "ParameterKey": "Subnets", "ParameterValue": subnetIdsString }
     ],
-    TemplateBody: stackTemplateforWorkerNodeStringified,
+    TemplateBody: JSON.stringify(stackTemplateforWorkerNode),
   }
   return workerNodeStackParam;
-}
-
-//** Parameter for INPUT NODE INSTANCE 
-
-awsParameters.createInputNodeInstance = (nodeInstanceRoleArn) => {
-
-  const inputNodeInstanceParam = {
-    "apiVersion": "v1",
-    "kind": "ConfigMap",
-    "metadata": {
-        "name": "aws-auth",
-        "namespace": "kube-system"
-    },
-    "data": {
-      "mapRoles": "- " + nodeInstanceRoleArn +"\n  username: system:node:{{EC2PrivateDNSName}}\n  groups:\n    - system:bootstrappers\n    - system:nodes\n"
-    }
-}
-
-  console.log("exiting params");
-  return inputNodeInstanceParam;
 }
 
 module.exports = awsParameters;

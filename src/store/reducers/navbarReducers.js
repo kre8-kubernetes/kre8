@@ -8,6 +8,7 @@ const initialState = {
   showClusterInfo: false,
   clusterInfo: {
     clusterName: '',
+    createdDate: '',
     clusterArn: '',
     iamRoleName: '',
     iamRoleArn: '',
@@ -22,7 +23,7 @@ const initialState = {
   }
 };
 
-export default function kubectlReducers(state = initialState, action) {
+export default function navbarReducers(state = initialState, action) {
   let newState;
 
   switch (action.type) {
@@ -42,7 +43,8 @@ export default function kubectlReducers(state = initialState, action) {
       return {...state, showClusterInfo: true}
     case types.HIDE_CLUSTER_INFO:
       return {...state, showClusterInfo: false}
-
+    case types.UPDATE_CLUSTER_DATA:
+      return {...state, clusterInfo: action.payload}
     default:
       return state;
   }

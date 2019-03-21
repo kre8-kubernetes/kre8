@@ -1,6 +1,11 @@
 import React from 'react';
 import { Group } from '@vx/group';
 
+// filter="url(#shadow)"
+//fill="url('#workerNodeGradient')" 
+
+
+
 
 const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
   const peach = '#fd9b93';
@@ -10,18 +15,18 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
   const plum = '#71248e';
   const lightpurple = '#374469';
   const white = '#ffffff';
-  const bg = '#272b4d';
+  // const bg = '#272b4d';
+  const bg= '#243B55';
+
   const height = 75;
   const width = 60;
   return (
     <Group top={top} left={left}>
       <circle
         r={25}
-        //fill={lightpurple}
-        fill="url('#workerNodeGradient')"
-        stroke="#E2F0F2"
-        strokeWidth="0"
-        filter="url(#shadow)"
+        fill={bg}
+        stroke={blue}
+        strokeWidth="1"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);

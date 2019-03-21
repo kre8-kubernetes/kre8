@@ -32,6 +32,10 @@ class TreeGraphContainer extends Component {
       masterNodeData: {},
       treeData: {
 
+      },
+      dimensions: {
+        width: 0,
+        height: 0
       }
     }
     this.showNodeInfo = this.showNodeInfo.bind(this);
@@ -39,10 +43,15 @@ class TreeGraphContainer extends Component {
     this.handleMasterNode = this.handleMasterNode.bind(this);
     this.handleWorkerNodes = this.handleWorkerNodes.bind(this);
     this.handleContainersAndPods = this.handleContainersAndPods.bind(this);
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+
   }
 
   componentDidMount() {
     // on mount, get the master node, get the worker nodes
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions);
+    console.log(window);
     ipcRenderer.on(events.HANDLE_MASTER_NODE, this.handleMasterNode);
     ipcRenderer.on(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
     ipcRenderer.on(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
@@ -55,6 +64,12 @@ class TreeGraphContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_MASTER_NODE, this.handleMasterNode);
     ipcRenderer.removeListener(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
     ipcRenderer.removeListener(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
+    window.removeEventListener('resize', this.updateWindowDimensions);
+  }
+
+
+  updateWindowDimensions() {
+    this.setState({ dimensions: { width: window.innerWidth, height: window.innerHeight }})
   }
 
   getMasterNode() {
@@ -318,8 +333,6 @@ class TreeGraphContainer extends Component {
       bottom: 150
     };
 
-     {/* width={1100}
-          height={800} */}
 
           console.log("this.state: ", this.state);
 
@@ -333,8 +346,8 @@ class TreeGraphContainer extends Component {
         )}
         <TreeGraphComponent
           showNodeInfo={this.showNodeInfo}
-          width={1000}
-          height={800}
+          width={this.state.dimensions.width}
+          height={this.state.dimensions.height}
           treeData={treeData}
           margin={margin}
         />

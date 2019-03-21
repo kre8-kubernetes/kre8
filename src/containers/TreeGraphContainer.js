@@ -157,32 +157,62 @@ class TreeGraphContainer extends Component {
           "type": "Node",
           "children": [
             { 
-              "name": "Dream POD #1",
+              "name": "#1",
               "id": uuid(),
               "pod_id": 0,
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
             },
             { 
-              "name": "Dream POD #2",
+              "name": "#2",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
             },
             { 
-              "name": "Dream POD #3",
+              "name": "#3",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            { 
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            { 
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            { 
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
@@ -196,31 +226,61 @@ class TreeGraphContainer extends Component {
           "type": "Node",
           "children": [
             { 
-              "name": "Dream POD #1",
+              "name": "#1",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
             },
             { 
-              "name": "Dream POD #2",
+              "name": "#2",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
             },
             { 
-              "name": "Dream POD #3",
+              "name": "#3",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            { 
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            { 
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            { 
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
@@ -234,31 +294,61 @@ class TreeGraphContainer extends Component {
           "type": "Node",
           "children": [
             { 
-              "name": "Dream POD #1",
+              "name": "#1",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
             },
             { 
-              "name": "Dream POD #2",
+              "name": "#2",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
             },
             { 
-              "name": "Dream POD #3",
+              "name": "#3",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            { 
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            { 
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            { 
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
@@ -272,31 +362,61 @@ class TreeGraphContainer extends Component {
           "type": "Node",
           "children": [
             {
-              "name": "Dream POD #1",
+              "name": "#1",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
             },
             {
-              "name": "Dream POD #2",
+              "name": "#2",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]
             },
             {
-              "name": "Dream POD #3",
+              "name": "#3",
               "id": uuid(),
               "type": "Pod",
               "children": [{
-                "name": "Dream POD Container",
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            {
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            {
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
+                "id": uuid(),
+                "type": "Container",
+              }]
+            },
+            {
+              "name": "#3",
+              "id": uuid(),
+              "type": "Pod",
+              "children": [{
+                "name": "",
                 "id": uuid(),
                 "type": "Container",
               }]

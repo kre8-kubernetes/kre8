@@ -5,6 +5,7 @@ const isDev = require('electron-is-dev');
 
 //** --------- NODE APIS ---------------- 
 const fs = require('fs');
+const fsp = require('fs').promises;
 const { spawn, spawnSync } = require('child_process');
 const path = require('path');
 //const mkdirp = require('mkdirp');
@@ -95,7 +96,7 @@ function createWindowAndSetEnvironmentVariables () {
     console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
   }
 
-  win = new BrowserWindow({ show: false, height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, backgroundColor: '#243B55', center: true });
+  win = new BrowserWindow({ show: false, height: 720, width: 930, minWidth: 700, minHeight: 500, backgroundColor: '#243B55', center: true });
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
   
@@ -605,9 +606,9 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
     const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
     let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);
     console.log(stringifiedDeploymentYamlTemplate);
-    await fsp.writeFile(process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`, stringifiedDeploymentYamlTemplate);
+    await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `deployment_${data.deploymentName}.json`, stringifiedDeploymentYamlTemplate);
     // Create the deploy via a kubectl from terminal command, log outputs
-    const child = spawnSync("kubectl", ["create", "-f", process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
+    const child = spawnSync("kubectl", ["create", "-f", process.env['APPLICATION_PATH'] + `/Storage/KUBECTL_Assets/deployment_${data.deploymentName}.json`]);
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);

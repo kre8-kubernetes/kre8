@@ -1,7 +1,7 @@
 import React from 'react';
 import { Group } from '@vx/group';
 import { Tree } from '@vx/hierarchy';
-import { LinkHorizontal, LinkRadial, LinkRadialLine } from '@vx/shape';
+import { LinkHorizontal, LinkRadial, LinkRadialLine, LinkVertical, LinkVerticalLine, LinkVerticalCurve } from '@vx/shape';
 import { hierarchy } from 'd3-hierarchy';
 import { LinearGradient, RadialGradient } from '@vx/gradient';
 import { pointRadial } from 'd3-shape';
@@ -55,8 +55,8 @@ const TreeGraphComponent = (props) => {
 
 
   const { height, width, treeData, margin } = props;
-  const yMax = height - margin.top - margin.bottom;
-  const xMax = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+  const innerWidth = width - margin.left - margin.right;
 
   // const innerWidth = 2 * Math.PI;
   // const innerHeight = Math.min(yMax, xMax) / 2;
@@ -66,8 +66,8 @@ const TreeGraphComponent = (props) => {
 
 
 
-  const innerWidth = 2 * Math.PI;
-  const innerHeight = Math.min(yMax, xMax) / 2;
+  // const innerWidth = 2 * Math.PI;
+  // const innerHeight = Math.min(yMax, xMax) / 2;
 
   const data = hierarchy(treeData);
 
@@ -85,15 +85,15 @@ const TreeGraphComponent = (props) => {
 
         <RadialGradient id="containerGradient" from={coolSkyDark} to={coolSkyLight} />
         
-        <Tree root={data} size={[innerWidth, innerHeight]}>
+        <Tree root={data} size={[innerWidth, innerHeight]} separation={(a, b) => (a.parent == b.parent ? 1 : 0.5) / a.depth}>
           {tree => {
             // console.log('tree', tree)
             return (
-              <Group top={yMax / 2} left={xMax / 2}>
+              <Group top={75} left={0}>
                 {tree.links().map((link, i) => {
                   // console.log('link', link);
                   return (
-                    <LinkRadialLine
+                    <LinkVerticalLine
                       key={`link-${i}`}
                       data={link}
                       stroke={'#1592E6'}
@@ -110,9 +110,11 @@ const TreeGraphComponent = (props) => {
                   let top;
                   let left;
                   
-                  const [radialX, radialY] = pointRadial(node.x, node.y);
-                  top = radialY;
-                  left = radialX;
+                  // const [radialX, radialY] = pointRadial(node.x, node.y);
+                  // top = radialY;
+                  // left = radialX;
+                  top = node.y;
+                  left = node.x;
   
                   if (node.data.type === 'apiserver') return <MasterNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i}/>
                   if (node.data.type === 'Node') return <WorkerNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />

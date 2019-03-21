@@ -12,7 +12,7 @@ import uuid from 'uuid'
 import * as events from '../../eventTypes';
 
 import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
-import ClusterInfoComponent from '../components/ClusterComponentInfo';
+import ClusterInfoComponent from '../components/GraphComponents/ClusterComponentInfo';
 import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
 
 const mapStateToProps = store => ({
@@ -105,7 +105,6 @@ class TreeGraphContainer extends Component {
     });
     console.log("newState: ", newState);
     this.setState({ ...this.state, treeData: newState.treeData});
-
   }
 
   handleContainersAndPods(event, data) {
@@ -449,10 +448,7 @@ class TreeGraphContainer extends Component {
       right: 30,
       bottom: 150
     };
-
-
-    // console.log("this.state: ", this.state);
-
+    
     return (
       <div className='treegraph_container'>
         {this.state.showInfo === true && (

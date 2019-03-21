@@ -9,7 +9,9 @@ const CreateMenuItemComponent = (props) => {
     toggleCreateMenuItem,
     handleFunction,
   } = props;
+
   const componentNameFormatted = menuItemToShow.charAt(0).toUpperCase() + menuItemToShow.slice(1);
+  
   const formItems = Object.entries(props.inputDataToShow).map((arr, i) => {
     const inputName = arr[0];
     const inputVal = arr[1];
@@ -22,6 +24,7 @@ const CreateMenuItemComponent = (props) => {
       </div>
     )
   })
+
   return (
     <div onClick={handleCloseFormItem} className="popup_form">
       <div className='popup_form_inner'>

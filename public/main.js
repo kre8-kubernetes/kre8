@@ -491,7 +491,6 @@ ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
     const stdoutParsed = JSON.parse(stdout);
     const stderr = apiNodeData.stderr.toString();
     console.log('stdout PODS: ', stdoutParsed);
-    console.log('stdout type: ', typeof stdoutParsed);
     console.log('stderr', stderr);
     win.webContents.send(events.HANDLE_CONTAINERS_AND_PODS, stdoutParsed);
   } catch (err) {
@@ -505,18 +504,17 @@ ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
 ipcMain.on(events.CREATE_POD, async (event, data) => {
   try{
     console.log('data.podName: ', data.podName);
+    // CREATE AND WRITE THE POD FILE FROM TEMPLATE
     const podYamlTemplate = kubernetesTemplates.createPodYamlTemplate(data);
-  
     let stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate, null, 2);
     await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `pod_${data.podName}.json`, stringifiedPodYamlTemplate)
-
+    // CREATE THE POD VIA kubectl
     const child = spawnSync('kubectl', ['apply', '-f', process.env['KUBECTL_STORAGE'] + `pod_${data.podName}.json`]);
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);
-  
+    // SEND STDOUT TO RENDERER PROCESS
     win.webContents.send(events.HANDLE_NEW_POD, stdout);
-
   } catch (err) {
     console.log('err', err);
   }
@@ -525,62 +523,24 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
 //**-----------------------SERVICE--------------------------------**//
 
 //BUILD A SERVICE YAML
-ipcMain.on(events.CREATE_SERVICE, (event, data) => {
-  console.log("data:", data);
-
-  const serviceYamlTemplate = kubernetesTemplates.createServiceYamlTemplate(data);
-
-  //SERVICE YAML TEMPLATE
-  // const serviceYamlTemplate = {
-  //   apiVersion: "v1",
-  //   kind: "Service",
-  //   metadata: {
-  //     name: `${data.name}`
-  //   },
-  //   spec: {
-  //     selector: {
-  //       app: `${data.appName}`
-  //     },
-  //     ports: [
-  //       {
-  //         protocol: "TCP",
-  //         port: `${data.port}`,
-  //         targetPort: `${data.targetPort}`
-  //       }
-  //     ]
-  //   }
-  // }
-    
-  let stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate);
-
-  //WRITE A NEW SERVICE YAML FILE
-  fs.writeFile(process.env['KUBECTL_STORAGE'] + `/services/${data.serviceName}.json`, stringifiedServiceYamlTemplate, (err) => {
-      if (err) {
-        console.log(err);
-      }
-      console.log("You made a service Yaml!!!!");
-    }
-  );
-
-
-  //CREATE SERVICE AND INSERT INTO MINIKUBE
-  const child = spawn("kubectl", ["create", "-f", process.env['KUBECTL_STORAGE'] + `/services/${data.serviceName}.json`]);
-    console.log("serviceCreator");
-    child.stdout.on("data", data => {
-      console.log(`stdout: ${data}`);
-      win.webContents.send(events.HANDLE_NEW_SERVICE, `${data}`);
-    });
-    child.stderr.on("data", data => {
-      console.log(`stderr: ${data}`);
-    });
-    child.on("close", code => {
-      console.log(`child process exited with code ${code}`);
-    });
+ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
+  try {
+    console.log("data:", data);
+    // CREATE AND WRITE THE SERVICE FILE FROM TEMPLATE
+    const serviceYamlTemplate = kubernetesTemplates.createServiceYamlTemplate(data);
+    let stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate, null, 2);
+    await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `service_${data.serviceName}.json`, stringifiedServiceYamlTemplate);
+    // CREATE THE SERVICE VIA kubectl
+    const child = spawnSync('kubectl', ['apply', '-f', process.env['KUBECTL_STORAGE'] + `service_${data.serviceName}.json`]);
+    const stdout = child.stdout.toString();
+    const stderr = child.stderr.toString();
+    console.log('stdout', stdout, 'stderr', stderr);
+    // SEND STDOUT TO RENDERER PROCESS
+    win.webContents.send(events.HANDLE_NEW_SERVICE, stdout);
+  } catch (err) {
+    console.log('err', err);
+  }
 });
-
-
-
-
 
 //**--------------DEPLOYMENT-----------------**//
 
@@ -588,24 +548,21 @@ ipcMain.on(events.CREATE_SERVICE, (event, data) => {
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
   try {
     if (data.spec.replicas > 10) throw new Error(`Replica amount entered was ${data.spec.replicas}. This value has to be 10 or less.`)
-    // Create template and write file from the template
+    // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
     const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
     let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);
-    console.log(stringifiedDeploymentYamlTemplate);
     await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `deployment_${data.deploymentName}.json`, stringifiedDeploymentYamlTemplate);
-    // Create the deploy via a kubectl from terminal command, log outputs
+    // CREATE THE DEPOYMENT VIA kubectl
     const child = spawnSync("kubectl", ["create", "-f", process.env['KUBECTL_STORAGE'] + `deployment_${data.deploymentName}.json`]);
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);
-    // send the stdout of the process
+    // SEND STDOUT TO RENDERER PROCESS
     win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stdout);
-
   } catch (err) {
     console.log('err', err)
   }
 });
-
 
 //** --------- APPLICATION OBJECT EVENT EMITTERS ---------- **//
 // HANDLE app ready

@@ -49,7 +49,7 @@ kubernetesTemplates.createServiceYamlTemplate = (data) => {
     apiVersion: "v1",
     kind: "Service",
     metadata: {
-      name: `${data.name}`
+      name: `${data.serviceName}`
     },
     spec: {
       selector: {

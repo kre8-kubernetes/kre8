@@ -6,8 +6,8 @@ const CreateMenuItemComponent = (props) => {
     handleChange,
     handleCloseFormItem,
     menuItemToShow,
-    handleCreateDeployment,
     toggleCreateMenuItem,
+    handleFunction,
   } = props;
   const componentNameFormatted = menuItemToShow.charAt(0).toUpperCase() + menuItemToShow.slice(1);
   const formItems = Object.entries(props.inputDataToShow).map((arr, i) => {
@@ -15,8 +15,8 @@ const CreateMenuItemComponent = (props) => {
     const inputVal = arr[1];
     const id = `${menuItemToShow}_${inputName}`;
     return (
-      <div className='create_menu_item_component_inputs_item'>
-        <input id={id} key={i} value={inputVal} placeholder={`${menuItemToShow}-${inputName}`} onChange={handleChange} type="text" />
+      <div key={i} className='create_menu_item_component_inputs_item'>
+        <input id={id} value={inputVal} placeholder={`${menuItemToShow}-${inputName}`} onChange={handleChange} type="text" />
         {/* TODO: error handling in these forms? this validator seems to force a re-render, which causes issues */}
         {/* {props.validator1.message(`${menuItemToShow} name, ${inputName}, required`)} */}
       </div>
@@ -37,7 +37,7 @@ const CreateMenuItemComponent = (props) => {
           </div>
           {/**** BUTTONS ****/}
           <div className='create_menu_item_component_buttons'>
-            <ActionButton clickHandler={handleCreateDeployment} buttonText={`Create`}/>
+            <ActionButton clickHandler={handleFunction} buttonText={`Create`}/>
           </div>
         </div>
       </div>

@@ -19,7 +19,9 @@ const TreeGraphComponent = (props) => {
   const plum = '#71248e';
   const lightpurple = '#374469';
   const white = '#ffffff';
-  const bg = '#272b4d';
+  // const bg = '#272b4d';
+  const bg= '#243B55';
+
 
 
   //masternode
@@ -60,7 +62,6 @@ const TreeGraphComponent = (props) => {
 
   // {/* filter="url(#shadow)" */}
           {/* <rect width={width} height={height} rx={0} fill="url('#back')" /> */}
-          {/* <LinearGradient id="back" from={'#141E30'} to={'#243B55'} /> */}
 
 
 
@@ -82,6 +83,10 @@ const TreeGraphComponent = (props) => {
         <filter id="shadow"><feDropShadow dx="1" dy="1" stdDeviation="1"/></filter>
 
         <RadialGradient id="containerGradient" from={coolSkyDark} to={coolSkyLight} />
+        <LinearGradient id="back" from={'#1F2D46'} to={'#152134'} />
+
+
+
         
         <Tree root={data} size={[innerWidth, innerHeight]}>
           {tree => {
@@ -94,9 +99,9 @@ const TreeGraphComponent = (props) => {
                     <LinkRadialLine
                       key={`link-${i}`}
                       data={link}
-                      stroke={'#1592E6'}
+                      stroke={lightpurple}
                       //stroke="url('#lines')"
-                      strokeWidth="1"
+                      strokeWidth="2"
                       fill="none"
                      
                       // radius={d => d.y}

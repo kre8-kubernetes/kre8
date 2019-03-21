@@ -54,9 +54,9 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-svg:hover {
-  fill: red;
-}
+// svg:hover {
+//   fill: red;
+// }
 
 body {
   margin: 0px;
@@ -398,17 +398,6 @@ body {
   color: $light-font;
   width: 83%;
   margin-bottom: 20px;
-
-
-  /* display: flex;
-  flex-direction: row;
-  justify-content: center;
-  font-size: 12px;
-  line-height: 13px;
-  font-weight: lighter;
-  color: $light-font;
-  width: 85%;
-  text-align: center; */
 }
 
 .aws_cluster_form_input_field_area {
@@ -584,11 +573,19 @@ body {
   /* Disable text selection, or your app will feel like a web page */
   -webkit-user-select: none;
   -webkit-app-region: drag;
+  background: #1F2D46;
+  // background: #272b4d;
+
+  // background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main);  /* Chrome 10-25, Safari 5.1-6 */
+  // background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 
 
   /* Cover the whole window */
   height: 100%;
-  animation: fadein 2s, change 90s infinite;
+  animation: fadein 2s;
 }
+
+// animation: fadein 2s, change 90s infinite;
+
 
 /* Kubectl Component Styling */
 
@@ -960,7 +957,7 @@ body {
 .nav_component_cluster_button {
   font-family: Lato;
   color:$cluster-element-text-color;
-  background: rgb(2,18,41);
+  background: none;
   border: none;
   margin-right: 10px;
   font-size: 15px;

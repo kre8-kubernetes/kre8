@@ -167,19 +167,14 @@ class AwsContainer extends Component {
     const x = e.screenX;
     const y = e.screenY;
     const newCoords = {top: y, left: x}
-    if(e.target.id === "aws_info"){
-      this.setState({...this.state, text_info: aws_info, mouseCoords: newCoords, showInfo: true})
-    }
-    // if(buttonId === aws_info_button){
-    //   this.setState({...this.state, text_info: aws_info, showInfo: true})
-    // }
+    this.setState({...this.state, text_info: aws_info, mouseCoords: newCoords, showInfo: true})
   }
 
   //HIDE INFO BUTTON CLICK HANDLER
   hideInfoHandler(){
     this.setState({...this.state, showInfo: false})
   }
-
+  
   render() {
     const { 
       iamRoleName,

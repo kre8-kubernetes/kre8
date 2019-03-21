@@ -11,7 +11,7 @@ import uuid from 'uuid'
 
 import * as events from '../../eventTypes';
 
-import TreeGraphComponent from '../components/TreeGraphComponent';
+import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
 import ClusterInfoComponent from '../components/ClusterComponentInfo';
 import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
 
@@ -51,7 +51,6 @@ class TreeGraphContainer extends Component {
     // on mount, get the master node, get the worker nodes
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
-    console.log(window);
     ipcRenderer.on(events.HANDLE_MASTER_NODE, this.handleMasterNode);
     ipcRenderer.on(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
     ipcRenderer.on(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
@@ -454,7 +453,7 @@ class TreeGraphContainer extends Component {
     };
 
 
-          console.log("this.state: ", this.state);
+    // console.log("this.state: ", this.state);
 
     return (
       <div className='treegraph_container'>
@@ -468,7 +467,7 @@ class TreeGraphContainer extends Component {
           showNodeInfo={this.showNodeInfo}
           width={this.state.dimensions.width}
           height={this.state.dimensions.height}
-          treeData={treeData}
+          treeData={this.state.treeData}
           margin={margin}
         />
       </div>

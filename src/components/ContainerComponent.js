@@ -1,6 +1,8 @@
 import React from 'react';
 import { Group } from '@vx/group';
 
+// filter="url(#shadow)"
+
 
 const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const peach = '#fd9b93';
@@ -10,22 +12,38 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const plum = '#71248e';
   const lightpurple = '#374469';
   const white = '#ffffff';
-  const bg = '#272b4d';
-  const height = 75;
-  const width = 60;
+  const citrus = '#ddf163';
+
+  const bg = '#1F2D46';
+  const height = 20;
+  const width = 15;
+  
   return (
     <Group top={top} left={left}>
-      <circle
-        r={10}
-        fill="url('#containerGradient')"
-        stroke="#E2F0F2"
-        strokeWidth="0"
-        filter="url(#shadow)"
+    <ellipse className="pods"
+        rx={width}
+        ry={height}
+        fill={bg}
+        stroke={citrus}
+        strokeWidth="1"
+        strokeDasharray="10,10" d="M5 40 l215 0"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
       />
+
+
+      {/* <circle
+        r={10}
+        fill="bg"
+        stroke="#plum"
+        strokeWidth="1"
+        onClick={() => {
+          showNodeInfo(node);
+          console.log('from circle', node);
+        }}
+      /> */}
       <text
         dy={'.33em'}
         fontSize={11}

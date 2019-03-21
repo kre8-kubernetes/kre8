@@ -16,13 +16,20 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
   const lightpurple = '#374469';
   const white = '#ffffff';
   // const bg = '#272b4d';
-  const bg= '#243B55';
+  const bg= '#1F2D46';
+  const medBlue = '#1DBDCE';
 
-  const height = 75;
-  const width = 60;
+  // const height = 75;
+  // const width = 60;
+
+  const width = 45;
+  const height = 25;
+  const centerX = -width / 2;
+  const centerY = -height / 2;
+
   return (
     <Group top={top} left={left}>
-      <circle
+      {/* <circle
         r={25}
         fill={bg}
         stroke={blue}
@@ -31,7 +38,25 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
+      /> */}
+
+      <rect
+        height={height}
+        width={width}
+        y={centerY}
+        x={centerX}
+        fill={bg}
+        stroke={medBlue}
+        strokeWidth={1}
+        onClick={() => {
+          alert(`clicked: ${JSON.stringify(node.data.name)}`);
+        }}
       />
+
+
+
+
+
       <text
         dy={'.33em'}
         fontSize={11}

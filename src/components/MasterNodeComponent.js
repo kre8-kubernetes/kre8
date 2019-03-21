@@ -1,5 +1,6 @@
 import React from 'react';
 import { Group } from '@vx/group';
+import { Polygon } from '@vx/shape';
 
 
 // filter="url(#shadow)"
@@ -19,14 +20,21 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
   const lightpurple = '#374469';
   const white = '#ffffff';
   const orange ='#D35B51';
+  const kubernetesBlue = '#316CE6';
   // const bg = '#272b4d';
 
-  const bg= '#243B55';
+  const bg = '#1F2D46';
+
+  const sides = 6;
+  const rotate = 0;
+  const strokeWidth = 1;
+  const size = 30;
+
   return (
     <Group top={top} left={left}>
-      <circle
+      {/* <circle
         className='node'
-        r={52}
+        r={30}
         fill={bg}
         stroke={orange}
         strokeWidth='1'
@@ -34,7 +42,21 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
-      />
+      /> */}
+      <Polygon 
+        className='node'
+        sides={sides}
+        size={size} 
+        fill={bg}
+        stroke={kubernetesBlue}
+        strokeWidth={strokeWidth}
+        rotate={rotate} 
+        onClick={() => {
+          showNodeInfo(node);
+          console.log('from circle', node);
+        }}
+        />
+
       <text
         dy={'.33em'}
         fontSize={16}

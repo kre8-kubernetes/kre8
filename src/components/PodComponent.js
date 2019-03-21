@@ -14,17 +14,28 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const lightpurple = '#374469';
   const white = '#ffffff';
   // const bg = '#272b4d';
-  const bg= '#243B55';
+  const bg= '#1F2D46';
 
-  const height = 75;
-  const width = 60;
+  const height = 20;
+  const width = 15;
   return (
     <Group top={top} left={left}>
-      <circle className="pods"
-        r={25}
+      {/* <circle className="pods"
+        r={15}
         fill={bg}
         stroke={green}
-        strokeWidth="0"
+        strokeWidth="1"
+        onClick={() => {
+          showNodeInfo(node);
+          console.log('from circle', node);
+        }}
+      /> */}
+      <ellipse className="pods"
+        rx={width}
+        ry={height}
+        fill={bg}
+        stroke={green}
+        strokeWidth="1"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);

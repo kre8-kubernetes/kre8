@@ -13,7 +13,7 @@ import * as events from '../../eventTypes';
 
 import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
 import ClusterInfoComponent from '../components/GraphComponents/ClusterComponentInfo';
-import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
+import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 
 const mapStateToProps = store => ({
   showCreateMenuItem: store.navbar.showCreateMenuItem,

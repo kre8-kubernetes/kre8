@@ -1,5 +1,5 @@
 import React from 'react';
-import ActionButton from './Buttons/ActionButton';
+import ActionButton from '../Buttons/ActionButton';
 
 const CreateMenuItemComponent = (props) => {
   const { 

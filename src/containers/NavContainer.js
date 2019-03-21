@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 
-import NavComponent from '../components/NavComponent.js';
+import NavComponent from '../components/NavigationComponents/NavComponent.js';
 
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';

@@ -5,7 +5,7 @@ import { ipcRenderer } from 'electron';
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
-import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
+import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 import SimpleReactValidator from 'simple-react-validator';
 
 const mapStateToProps = store => ({

@@ -2,6 +2,10 @@ import React from 'react';
 import { Group } from '@vx/group';
 
 
+// filter="url(#shadow)"
+//fill="url('#lg')"
+
+
 const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
 
   const darkBlue = '#373B44';
@@ -14,16 +18,18 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
   const plum = '#71248e';
   const lightpurple = '#374469';
   const white = '#ffffff';
-  const bg = '#272b4d';
+  const orange ='#D35B51';
+  // const bg = '#272b4d';
+
+  const bg= '#243B55';
   return (
     <Group top={top} left={left}>
       <circle
-        className="node"
+        className='node'
         r={52}
-        fill="url('#lg')"
-        stroke='#E2F0F2'
-        filter="url(#shadow)"
-        strokeWidth="0"
+        fill={bg}
+        stroke={orange}
+        strokeWidth='1'
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);

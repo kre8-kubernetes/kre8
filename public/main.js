@@ -5,6 +5,7 @@ const isDev = require('electron-is-dev');
 
 //** --------- NODE APIS ---------------- 
 const fs = require('fs');
+const fsp = require('fs').promises;
 const { spawn, spawnSync } = require('child_process');
 const path = require('path');
 //const mkdirp = require('mkdirp');
@@ -95,7 +96,9 @@ function createWindowAndSetEnvironmentVariables () {
     console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
   }
 
-  win = new BrowserWindow({ show: false, height: 720, width: 930, maxHeight: 800, maxWidth: 1000, minWidth: 700, minHeight: 500, backgroundColor: '#243B55', center: true });
+  // maxHeight: 800, maxWidth: 1000, 
+
+  win = new BrowserWindow({ show: false, height: 720, width: 930, minHeight: 550, minWidth: 700,  backgroundColor: '#243B55', center: true });
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
   
@@ -399,35 +402,33 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 //serve HomeComponent page, else, serve HomeComponentPostCredentials
 ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
 
-  const dataFromCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/$awsCredentials.json`, 'utf-8');
+  try {
 
-  const parsedCredentialsFileData = JSON.parse(dataFromCredentialsFile);
+    const dataFromCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/awsCredentials.json`, 'utf-8');
 
-  console.log(parsedCredentialsFileData);
+    const parsedCredentialsFileData = JSON.parse(dataFromCredentialsFile);
 
-  const clusterName = parsedCredentialsFileData.clusterName;
+    console.log("parsedCredentialsFileData: ", parsedCredentialsFileData);
 
-  const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
+    const clusterName = parsedCredentialsFileData.clusterName;
 
-  //TODO add lookup in credentials file for iamrole name
+    const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
 
-  const dataToDisplay = {}
-  const parsedAWSMasterFileData = JSON.parse(dataFromMasterFile);
 
-  dataToDisplay.iamRoleName = parsedAWSMasterFileData.iamRoleName;
-  dataToDisplay.iamRoleArn = parsedAWSMasterFileData.iamRoleArn;
-  dataToDisplay.stackName = parsedAWSMasterFileData.stackName;
-  dataToDisplay.clusterName = parsedAWSMasterFileData.clusterName;
-  dataToDisplay.clusterArn = parsedAWSMasterFileData.clusterArn;
-  dataToDisplay.vpcId = parsedAWSMasterFileData.vpcId;
-  dataToDisplay.securityGroupIds = parsedAWSMasterFileData.securityGroupIds;
-  dataToDisplay.subnetIdsArray = parsedAWSMasterFileData.subnetIdsArray;
-  dataToDisplay.serverEndPoint = parsedAWSMasterFileData.serverEndPoint;
-  dataToDisplay.KeyName = parsedAWSMasterFileData.KeyName;
-  dataToDisplay.workerNodeStackName = parsedAWSMasterFileData.workerNodeStackName;
-  dataToDisplay.nodeInstanceRoleArn = parsedAWSMasterFileData.nodeInstanceRoleArn;
 
-win.webContents.send(events.SEND_CLUSTER_DATA, dataToDisplay)
+    //TODO add lookup in credentials file for iamrole name
+
+    const parsedAWSMasterFileData = JSON.parse(dataFromMasterFile);
+
+    delete parsedAWSMasterFileData.certificateAuthorityData;
+
+    console.log("parsedAWSMasterFileData: ", parsedAWSMasterFileData);
+    win.webContents.send(events.SEND_CLUSTER_DATA, parsedAWSMasterFileData);
+
+  } catch (err) {
+    console.log(err);
+  }
+
 })
 
 

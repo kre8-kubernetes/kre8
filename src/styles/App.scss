@@ -7,17 +7,17 @@
 * this increases performance as well
 */
 
-  @keyframes change{
-    0%{background-color: rgb(0,117,171);}
-    12.5%{background-color: rgb(12,0,73);}
-    25%{background-color: rgb(49, 7, 86);}
-    50%{background-color: rgb(9,35,108);}
-    75%{background-color: rgb(0,74,134);}
-    100%{background-color: rgb(0,117,171);}
-  }
+  // @keyframes change{
+  //   0%{background-color: rgb(0,117,171);}
+  //   12.5%{background-color: rgb(12,0,73);}
+  //   25%{background-color: rgb(49, 7, 86);}
+  //   50%{background-color: rgb(9,35,108);}
+  //   75%{background-color: rgb(0,74,134);}
+  //   100%{background-color: rgb(0,117,171);}
+  // }
   
   body{
-    animation: change 90s infinite;
+    // animation: change 90s infinite;
   }
 
   .pods{
@@ -36,9 +36,27 @@
 /*************** HTML FUNDAMENTAL *****************/
 /**************************************************/
 
-svg:hover {
-  fill: red;
+// @keyframes change {
+//   0%{background-color: rgb(0,117,171);}
+//   12.5%{background-color: rgb(12,0,73);}
+//   25%{background-color: rgb(49, 7, 86);}
+//   50%{background-color: rgb(9,35,108);}
+//   75%{background-color: rgb(0,74,134);}
+//   100%{background-color: rgb(0,117,171);}
+// }
+
+// .root {
+//   // animation: fadein 2s;
+//   animation: change 90s infinite;
+// }
+
+body::-webkit-scrollbar {
+  display: none;
 }
+
+// svg:hover {
+//   fill: red;
+// }
 
 body {
   margin: 0px;
@@ -380,17 +398,6 @@ body {
   color: $light-font;
   width: 83%;
   margin-bottom: 20px;
-
-
-  /* display: flex;
-  flex-direction: row;
-  justify-content: center;
-  font-size: 12px;
-  line-height: 13px;
-  font-weight: lighter;
-  color: $light-font;
-  width: 85%;
-  text-align: center; */
 }
 
 .aws_cluster_form_input_field_area {
@@ -535,12 +542,50 @@ body {
 /************ KubectlContainer Styling ************/
 /**************************************************/
 
+
+//color change animation
+// @keyframes change {
+//   0%{background-color: rgb(0,117,171);}
+//   12.5%{background-color: rgb(12,0,73);}
+//   25%{background-color: rgb(49, 7, 86);}
+//   50%{background-color: rgb(9,35,108);}
+//   75%{background-color: rgb(0,74,134);}
+//   100%{background-color: rgb(0,117,171);}
+// }
+
+@keyframes change {
+  12.5%{background-color: #2D5481;}
+  25%{background-color: #274B74;}
+  37.5%{background-color: #243B55;}
+  50%{background-color: #1F2D46;}
+  62.5%{background-color: #141E30;}
+  75%{background-color: #1F2D46;}
+  87.5%{background-color: #243B55;}
+  100%{background-color: #274B74;}
+}
+
 .kubectl_container {
   display: flex;
   flex-direction: row;
   align-content: space-around;
   z-index: -2;  
+
+  /* Disable text selection, or your app will feel like a web page */
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+  background: #1F2D46;
+  // background: #272b4d;
+
+  // background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main);  /* Chrome 10-25, Safari 5.1-6 */
+  // background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 
+
+  /* Cover the whole window */
+  height: 100%;
+  animation: fadein 2s;
 }
+
+// animation: fadein 2s, change 90s infinite;
+
 
 /* Kubectl Component Styling */
 
@@ -912,7 +957,7 @@ body {
 .nav_component_cluster_button {
   font-family: Lato;
   color:$cluster-element-text-color;
-  background: rgb(2,18,41);
+  background: none;
   border: none;
   margin-right: 10px;
   font-size: 15px;

@@ -37,6 +37,11 @@ export const hideClusterInfo = () => ({
   type: types.HIDE_CLUSTER_INFO
 });
 
+export const updateClusterData = (clusterData) => ({
+  type: types.UPDATE_CLUSTER_DATA,
+  payload: clusterData
+});
+
 
 
 // ******************************

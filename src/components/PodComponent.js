@@ -2,6 +2,9 @@ import React from 'react';
 import { Group } from '@vx/group';
 
 
+// filter="url(#shadow)"
+        {/* fill="url('#podGradient')" */}
+
 const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const peach = '#fd9b93';
   const pink = '#fe6e9e';
@@ -10,17 +13,18 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const plum = '#71248e';
   const lightpurple = '#374469';
   const white = '#ffffff';
-  const bg = '#272b4d';
+  // const bg = '#272b4d';
+  const bg= '#243B55';
+
   const height = 75;
   const width = 60;
   return (
     <Group top={top} left={left}>
       <circle className="pods"
         r={25}
-        fill="url('#podGradient')"
-        stroke="#E2F0F2" 
+        fill={bg}
+        stroke={green}
         strokeWidth="0"
-        filter="url(#shadow)"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);

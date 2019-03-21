@@ -606,9 +606,9 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
     const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
     let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);
     console.log(stringifiedDeploymentYamlTemplate);
-    await fsp.writeFile(process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`, stringifiedDeploymentYamlTemplate);
+    await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `deployment_${data.deploymentName}.json`, stringifiedDeploymentYamlTemplate);
     // Create the deploy via a kubectl from terminal command, log outputs
-    const child = spawnSync("kubectl", ["create", "-f", process.env['APPLICATION_PATH'] + `/yamlAssets/private/deployments/${data.deploymentName}.json`]);
+    const child = spawnSync("kubectl", ["create", "-f", process.env['APPLICATION_PATH'] + `/Storage/KUBECTL_Assets/deployment_${data.deploymentName}.json`]);
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);

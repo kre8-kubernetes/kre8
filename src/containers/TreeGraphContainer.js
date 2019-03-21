@@ -30,9 +30,7 @@ class TreeGraphContainer extends Component {
       showInfo: false,
       nodeInfoToShow: {},
       masterNodeData: {},
-      treeData: {
-
-      },
+      treeData: {},
       dimensions: {
         width: 0,
         height: 0

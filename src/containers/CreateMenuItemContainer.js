@@ -176,8 +176,7 @@ class CreateMenuItemContainer extends Component {
 
   //INCOMING POD DATA
   handleNewPod(event, data) {
-    // The following is going to be the logic that occurs once a new role was created via the main thread process
-    console.log('incoming text:', data);
+    console.log('incoming data from kubectl pod creation:', data);
     const emptyPodObj = Object.entries(this.state.inputData.pod).reduce((acc, item) => {
       acc[item[0]] = '';
       return acc;
@@ -188,7 +187,7 @@ class CreateMenuItemContainer extends Component {
   //INCOMING DEPLOYMENT DATA 
   handleNewDeployment(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
-    console.log('incoming text:', data);
+    console.log('incoming data from kubectl deployment creation:', data);
     const emptyDeploymentObj = Object.entries(this.state.inputData.deployment).reduce((acc, item) => {
       acc[item[0]] = '';
       return acc;
@@ -200,7 +199,7 @@ class CreateMenuItemContainer extends Component {
   //INCOMING SERVICE DATA
   handleNewService(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
-    console.log('incoming text:', data);
+    console.log('incoming data from kubectl service creation:', data);
     const emptyServiceObj = Object.entries(this.state.inputData.service).reduce((acc, item) => {
       acc[item[0]] = '';
       return acc;
@@ -215,7 +214,6 @@ class CreateMenuItemContainer extends Component {
                            menuItemToShow === 'service' ? this.handleCreateService :
                            menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
 
-    console.log('menuItemToShow', this.props.menuItemToShow);
     return (
       <div>
         {this.props.showCreateMenuItem === true && (

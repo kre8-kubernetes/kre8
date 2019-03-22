@@ -98,7 +98,6 @@ const TreeGraphComponent = (props) => {
                       key={`link-${i}`}
                       data={link}
                       stroke={lightpurple}
-                      //stroke="url('#lines')"
                       strokeWidth="2"
                       fill="none"
                      

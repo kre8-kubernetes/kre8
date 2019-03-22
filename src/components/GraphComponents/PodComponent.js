@@ -24,17 +24,17 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
 
   return (
     <Group top={top} left={left}>
-      {/* <circle className="pods"
+      <circle className="pods"
         r={15}
         fill={bg}
-        stroke={green}
-        strokeWidth="1"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
-      /> */}
-      <ellipse className="pods"
+      />
+      {/* <ellipse className="pods"
         rx={width}
         ry={height}
         fill={bg}
@@ -44,7 +44,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
-      />
+      /> */}
       <text className="podText"
         dy={'.33em'}
         fontSize={11}

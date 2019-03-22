@@ -26,13 +26,6 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
   const centerX = -width / 2;
   const centerY = -height / 2;
 
-  // console.log("node.data: ", node.data);
-  // console.log("node.data.status.nodeInfo.systemUUID: ", node.data.status.nodeInfo.systemUUID);
-  // console.log(typeof node.data.status.nodeInfo.systemUUID);
-  // let nodeUUID = node.data.status.nodeInfo.systemUUID.slice(0, 8);
-  // console.log(nodeUUID);
-  //EC2189F9-96F1-88FB-2D04-1CA9852D2802
-
   return (
     <Group top={top} left={left}>
       <rect

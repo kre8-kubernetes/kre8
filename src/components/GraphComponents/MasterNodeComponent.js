@@ -9,18 +9,17 @@ import { Polygon } from '@vx/shape';
 
 const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
 
-  const darkBlue = '#373B44';
-  const lighterBlue = '#4286f4';
-
-  const peach = '#fd9b93';
-  const pink = '#fe6e9e';
-  const blue = '#03c0dc';
-  const green = '#26deb0';
-  const plum = '#71248e';
-  const lightpurple = '#374469';
-  const white = '#ffffff';
-  const orange ='#D35B51';
-  const kubernetesBlue = '#316CE6';
+  // const darkBlue = '#373B44';
+  // const lighterBlue = '#4286f4';
+  // const peach = '#fd9b93';
+  // const pink = '#fe6e9e';
+  // const blue = '#03c0dc';
+  // const green = '#26deb0';
+  // const plum = '#71248e';
+  // const lightpurple = '#374469';
+  // const white = '#ffffff';
+  // const orange ='#D35B51';
+  // const kubernetesBlue = '#316CE6';
   // const bg = '#272b4d';
 
   const bg = '#1D2541';
@@ -33,17 +32,7 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
 
   return (
     <Group top={top} left={left}>
-      {/* <circle
-        className='node'
-        r={30}
-        fill={bg}
-        stroke={orange}
-        strokeWidth='1'
-        onClick={() => {
-          showNodeInfo(node);
-          console.log('from circle', node);
-        }}
-      /> */}
+
       <Polygon 
         className='node'
         sides={sides}
@@ -75,3 +64,16 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
 }
 
 export default MasterNodeComponent;
+
+
+{/* <circle
+        className='node'
+        r={30}
+        fill={bg}
+        stroke={orange}
+        strokeWidth='1'
+        onClick={() => {
+          showNodeInfo(node);
+          console.log('from circle', node);
+        }}
+      /> */}

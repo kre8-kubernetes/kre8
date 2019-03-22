@@ -34,7 +34,7 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
           console.log('from circle', node);
         }}
         onMouseOver={(e) => {
-          toolTipOn(e, { title: 'ReplicaSet:', text: node.data.metadata.generateName });
+          toolTipOn(e, { title: 'ReplicaSet:', text: node.data.metadata.generateName.slice(0, -1) });
         }}
         onMouseLeave={toolTipOff}
       />

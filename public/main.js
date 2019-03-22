@@ -80,9 +80,10 @@ function createWindowAndSetEnvironmentVariables () {
     console.log("process.env['KUBECONFIG']: ", process.env['KUBECONFIG']);
 
     Object.entries(parsedCredentialsFile).forEach((arr, index) => {
-      if (index < 3) {
+      if (index < 4) {
         process.env[arr[0]] = arr[1];
         console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
+        console.log("process.env[ 'CLUSTER_NAME' ]: ", process.env[ 'CLUSTER_NAME' ])
       }
       if (index === 4) {
 
@@ -410,13 +411,9 @@ ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
 
     console.log("parsedCredentialsFileData: ", parsedCredentialsFileData);
 
-    const clusterName = parsedCredentialsFileData.clusterName;
+    const clusterName = parsedCredentialsFileData.CLUSTER_NAME;
 
     const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
-
-
-
-    //TODO add lookup in credentials file for iamrole name
 
     const parsedAWSMasterFileData = JSON.parse(dataFromMasterFile);
 
@@ -547,7 +544,8 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
 //CREATE DEPLOYMENT 
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
   try {
-    if (data.spec.replicas > 10) throw new Error(`Replica amount entered was ${data.spec.replicas}. This value has to be 10 or less.`)
+    console.log("data from replicas: ", data);
+    if (data.replicas > 10) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 10 or less.`)
     // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
     const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
     let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);

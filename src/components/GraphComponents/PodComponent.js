@@ -14,17 +14,32 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const lightpurple = '#374469';
   const white = '#ffffff';
   // const bg = '#272b4d';
-  const bg= '#243B55';
 
-  const height = 75;
-  const width = 60;
+
+  const bg= '#1D2541';
+  const stroke='#228EB5';
+  const strokeWidth = 1;
+  const height = 24;
+  const width = 15;
+
   return (
     <Group top={top} left={left}>
-      <circle className="pods"
-        r={25}
+      {/* <circle className="pods"
+        r={15}
         fill={bg}
         stroke={green}
-        strokeWidth="0"
+        strokeWidth="1"
+        onClick={() => {
+          showNodeInfo(node);
+          console.log('from circle', node);
+        }}
+      /> */}
+      <ellipse className="pods"
+        rx={width}
+        ry={height}
+        fill={bg}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
@@ -33,7 +48,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
       <text className="podText"
         dy={'.33em'}
         fontSize={11}
-        fontFamily="Arial"
+        fontFamily="Lato"
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
         fill={'#D7D7D7'}

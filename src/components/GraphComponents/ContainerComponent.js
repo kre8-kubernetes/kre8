@@ -1,6 +1,8 @@
 import React from 'react';
 import { Group } from '@vx/group';
 
+// filter="url(#shadow)"
+
 
 const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const peach = '#fd9b93';
@@ -10,30 +12,49 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const plum = '#71248e';
   const lightpurple = '#374469';
   const white = '#ffffff';
-  const bg = '#272b4d';
-  const height = 75;
-  const width = 60;
+  const citrus = '#ddf163';
+  const lightBlue = '#CDEDF0';
+  
+
+  const bg = '#1D2541';
+  const stroke = '#82EFFF';
+  const strokeWidth = .65;
+  // const radius = 13;
+  const height = 18;
+  const width = 12;
+  
   return (
     <Group top={top} left={left}>
-      <circle
-        r={10}
-        fill="url('#containerGradient')"
-        stroke="#E2F0F2"
-        strokeWidth="0"
-        filter="url(#shadow)"
+    <ellipse className="pods"
+        rx={width}
+        ry={height}
+        fill={bg}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeDasharray="6,1.26" d="M5 40 l215 0"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
       />
+      {/* <circle
+        r={radius}
+        fill={bg}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        onClick={() => {
+          showNodeInfo(node);
+          console.log('from circle', node);
+        }}
+      /> */}
       <text
         dy={'.33em'}
-        fontSize={11}
-        fontFamily="Arial"
+        fontSize={9}
+        fontFamily="Lato"
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
         fill={'#D7D7D7'}
-      >
+      >1
         {node.data.name}
       </text>
     </Group>

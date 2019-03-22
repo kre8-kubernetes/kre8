@@ -1,15 +1,17 @@
+//Color Heirarchy 
+
+//Accent Color - Darkest Blue — Navbar, Modals, Interior of graph components
+// $modal-bg-color: #071526;
+// $accent-darkest-blue: #121A36;
+$accent-darkest-blue: #071526;
 
 
-//errorClass
-$error-red: red;
-
-
-//background color
+//background blues for gradient
 $bg-color-main: #141E30;
 $bg-color-right: #243B55;
 
-//modal elements
-$modal-bg-color: #071526;
+
+
 
 //font colors
 $light-font: #D7D7D7;
@@ -33,6 +35,10 @@ $help-info-font-color: black;
 
 //treegraph component
 $treegraph-border-color: black;
+
+
+//errorClass
+$error-red: red;
 
 
 // // $font-family: Arial;

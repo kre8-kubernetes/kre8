@@ -88,7 +88,7 @@ body {
 .action_button {
   width: 110px;
   height: 40px;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   margin-right: 15px;
   border-radius: 5px;
   color: $button-background;
@@ -104,13 +104,13 @@ body {
 .action_button:active {
   background: $button-background;
   opacity: 0.7;
-  color: $modal-bg-color;
+  color: $accent-darkest-blue;
 }
 
 .action_button:hover {
   cursor: pointer;
   background: $button-background;
-  color: $modal-bg-color;
+  color: $accent-darkest-blue;
   transition-duration: .2s;
 }
 
@@ -121,12 +121,12 @@ body {
   font-size: 1.1em;
   color: $light-font;
   border-radius: 20px;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
 }
 
 .help_button:active {
   background: $input-color;
-  color:$modal-bg-color;
+  color:$accent-darkest-blue;
 }
 
 .help_button:hover {
@@ -142,7 +142,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 17.5px;
   color: #818181;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   align-self: flex-end;
   border: none;
   margin: 3px 2px;
@@ -185,7 +185,7 @@ body {
   min-height: 380px;
   max-height: 390px;
   height: 50%;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   border-radius: 6px;
   padding-bottom: 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
@@ -231,7 +231,7 @@ body {
   width: 100%;
   height: 33px;
   border-radius: 5px;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   color: $input-color;
   border: 1px solid $input-color;
   font-size: 14px;
@@ -287,7 +287,7 @@ body {
   min-height: 300px;
   max-height: 325px;
   height: 50%;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   border-radius: 6px;
   padding-bottom: 20px;
 
@@ -365,7 +365,7 @@ body {
   max-width: 525px;
   min-height: 380px;
   max-height: 390px;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   border-radius: 6px;
   padding-bottom: 20px;
 
@@ -439,7 +439,7 @@ body {
   width: 100%;
   height: 33px;
   border-radius: 5px;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   color: $input-color;
   border: 1px solid $input-color;
   font-size: 14px;
@@ -470,7 +470,7 @@ body {
   max-width: 525px;
   min-height: 380px;
   max-height: 390px;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   color: $light-font;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
@@ -663,7 +663,7 @@ body {
   bottom: 10%;
   min-width: 350px;
   margin: auto;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   color: $cluster-element-text-color;
   padding: 30px;
   border-radius: 6px;
@@ -793,7 +793,7 @@ body {
   width: 100%;
   height: 40px;
   /* background-color: #090927; */
-  background-color: $modal-bg-color;
+  background-color: $accent-darkest-blue;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
@@ -877,7 +877,7 @@ body {
   top: 25%;
   bottom: 25%;
   margin: auto;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   color: $light-font;
   border-radius: 6px;
   font-family: Lato;
@@ -921,7 +921,7 @@ body {
   width: 100%;
   height: 33px;
   border-radius: 5px;
-  background: $modal-bg-color;
+  background: $accent-darkest-blue;
   color: $input-color;
   border: 1px solid $input-color;
   font-size: 14px;

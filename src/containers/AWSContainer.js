@@ -12,7 +12,7 @@ import AWSLoadingComponent from '../components/AWSLoadingComponent'
 import HelpInfoComponent from '../components/HelpInfoComponent';
 
 
-//TODO: Create logic for form data sanitation, ie don't accept an empty field from a user when they click submit
+//**-------------- REDUX -----------------------------------**//
 
 const mapStateToProps = store => ({
 
@@ -65,14 +65,13 @@ class AwsContainer extends Component {
 
 
 
-  //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
+  //**-------------- COMPONENT LIFECYCLE METHODS -----------------**//
 
   //Once component mounts, activate listeners, to receive data from AWS regarding the cluster creation process
   componentDidMount() {
     ipcRenderer.on(events.HANDLE_STATUS_CHANGE, this.handleStatusChange);
     ipcRenderer.on(events.HANDLE_ERRORS, this.handleError);
     ipcRenderer.on(events.HANDLE_NEW_NODES, this.handleNewNodes);
-
   }
 
   // On component unmount, unsubscribe to listeners

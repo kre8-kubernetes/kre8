@@ -120,6 +120,8 @@ const TreeGraphComponent = (props) => {
                     return (
                       <MasterNodeComponent 
                         showNodeInfo={props.showNodeInfo} 
+                        toolTipOff={props.toolTipOff}
+                        toolTipOn={props.toolTipOn}
                         node={node} 
                         top={top} 
                         left={left} 
@@ -144,6 +146,8 @@ const TreeGraphComponent = (props) => {
                     return (
                       <PodComponent 
                         showNodeInfo={props.showNodeInfo} 
+                        toolTipOff={props.toolTipOff}
+                        toolTipOn={props.toolTipOn}
                         node={node} 
                         top={top} 
                         left={left} 
@@ -155,6 +159,8 @@ const TreeGraphComponent = (props) => {
                     return (
                       <ContainerComponent 
                         showNodeInfo={props.showNodeInfo} 
+                        toolTipOff={props.toolTipOff}
+                        toolTipOn={props.toolTipOn}
                         node={node} 
                         top={top} 
                         left={left}

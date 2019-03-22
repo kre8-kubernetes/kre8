@@ -646,7 +646,16 @@ body {
   width: 400px;
   background: none;
   color: $light-font;
-  font-size: 12px;
+  font-size: 14px;
+}
+
+.toolTip h4 {
+  font-weight: bold;
+  margin: 1px 0;
+}
+
+.toolTip p {
+  margin: 1px 0;
 }
 
 /**************************************************/

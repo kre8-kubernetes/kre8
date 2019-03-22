@@ -36,6 +36,7 @@ class TreeGraphContainer extends Component {
       },
       mouseCoords: {top: 0, left: 0},
       showToolTip: false,
+      toolTipTitle: '',
       toolTipText: '',
     }
     this.showNodeInfo = this.showNodeInfo.bind(this);
@@ -157,9 +158,9 @@ class TreeGraphContainer extends Component {
     this.setState({ ...this.state, showInfo: false });
   };
 
-  toolTipOn(e, text) {
-    const newCoords = { top: e.clientY - 50, left: e.clientX };
-    this.setState({ ...this.state, mouseCoords: newCoords, showToolTip: true, toolTipText: text })
+  toolTipOn(e, data) {
+    const newCoords = { top: e.clientY - 75, left: e.clientX - 50};
+    this.setState({ ...this.state, mouseCoords: newCoords, showToolTip: true, toolTipTitle: data.title, toolTipText: data.text })
   }
 
   toolTipOff(e) {
@@ -485,7 +486,8 @@ class TreeGraphContainer extends Component {
         )}
         {this.state.showToolTip === true && (
           <div className='toolTip' style={this.state.mouseCoords}>
-            {this.state.toolTipText}
+            <h4>{this.state.toolTipTitle}</h4>
+            <p>{this.state.toolTipText}</p>
           </div>
         )}
         <TreeGraphComponent

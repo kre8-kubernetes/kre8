@@ -5,7 +5,7 @@ import { Group } from '@vx/group';
 // filter="url(#shadow)"
         {/* fill="url('#podGradient')" */}
 
-const PodComponent = ({ node, top, left, showNodeInfo }) => {
+const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
   const peach = '#fd9b93';
   const pink = '#fe6e9e';
   const blue = '#03c0dc';
@@ -33,6 +33,10 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
+        onMouseOver={(e) => {
+          toolTipOn(e, { title: 'ReplicaSet:', text: node.data.metadata.generateName });
+        }}
+        onMouseLeave={toolTipOff}
       />
       {/* <ellipse className="pods"
         rx={width}
@@ -53,7 +57,7 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
         style={{ pointerEvents: 'none' }}
         fill={'#D7D7D7'}
       >
-        {node.data.name}
+        {`#1`}
       </text>
     </Group>
   );

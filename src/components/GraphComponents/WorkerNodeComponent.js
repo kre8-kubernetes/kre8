@@ -39,8 +39,8 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTi
           showNodeInfo(node);
           console.log('from circle', node);
         }}
-        onMouseOver={(e) => {
-          toolTipOn(e, node.data.metadata.name);
+        onMouseOver={(e) => {  
+          toolTipOn(e, { title: 'WorkerNode:', text: node.data.metadata.name });
         }}
         onMouseLeave={toolTipOff}
       />

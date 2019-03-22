@@ -54,7 +54,8 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
         stroke={stroke}
         strokeWidth={strokeWidth}
         onClick={() => {
-          alert(`clicked: ${JSON.stringify(node.data.name)}`);
+          showNodeInfo(node);
+          console.log('from circle', node);
         }}
       />
 

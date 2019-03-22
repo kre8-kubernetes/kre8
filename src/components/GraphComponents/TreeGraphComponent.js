@@ -19,7 +19,6 @@ const TreeGraphComponent = (props) => {
   const plum = '#71248e';
   const lightpurple = '#374469';
   const white = '#ffffff';
-  // const bg = '#272b4d';
   const bg= '#1F2D46';
 
  

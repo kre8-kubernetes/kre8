@@ -30,6 +30,8 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
   const centerX = -width / 2;
   const centerY = -height / 2;
 
+  console.log("node.data: ", node.data)
+
   return (
     <Group top={top} left={left}>
       {/* <circle

@@ -13,10 +13,15 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
   const lightpurple = '#374469';
   const white = '#ffffff';
   const citrus = '#ddf163';
+  const lightBlue = '#CDEDF0';
+  
 
-  const bg = '#1F2D46';
-  const height = 20;
-  const width = 15;
+  const bg = '#1D2541';
+  const stroke = '#82EFFF';
+  const strokeWidth = .65;
+  // const radius = 13;
+  const height = 18;
+  const width = 12;
   
   return (
     <Group top={top} left={left}>
@@ -24,21 +29,19 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
         rx={width}
         ry={height}
         fill={bg}
-        stroke={citrus}
-        strokeWidth="1"
-        strokeDasharray="10,10" d="M5 40 l215 0"
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        strokeDasharray="6,1.26" d="M5 40 l215 0"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
       />
-
-
       {/* <circle
-        r={10}
-        fill="bg"
-        stroke="#plum"
-        strokeWidth="1"
+        r={radius}
+        fill={bg}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
@@ -46,12 +49,12 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
       /> */}
       <text
         dy={'.33em'}
-        fontSize={11}
-        fontFamily="Arial"
+        fontSize={9}
+        fontFamily="Lato"
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
         fill={'#D7D7D7'}
-      >
+      >1
         {node.data.name}
       </text>
     </Group>

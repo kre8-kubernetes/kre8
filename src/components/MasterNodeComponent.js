@@ -23,12 +23,13 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
   const kubernetesBlue = '#316CE6';
   // const bg = '#272b4d';
 
-  const bg = '#1F2D46';
+  const bg = '#1D2541';
+  const stroke = "#4368C9";
 
-  const sides = 6;
-  const rotate = 0;
-  const strokeWidth = 1;
-  const size = 30;
+  const sides = 7;
+  const rotate = -13;
+  const strokeWidth = 1.25;
+  const size =55;
 
   return (
     <Group top={top} left={left}>
@@ -48,7 +49,7 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
         sides={sides}
         size={size} 
         fill={bg}
-        stroke={kubernetesBlue}
+        stroke={stroke}
         strokeWidth={strokeWidth}
         rotate={rotate} 
         onClick={() => {
@@ -60,12 +61,14 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
       <text
         dy={'.33em'}
         fontSize={16}
-        fontFamily="Arial"
+        fontFamily="Lato"
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
         fill={'#D7D7D7'}
       >
-        {node.data.name}
+        {/* {node.data.name} */}
+        <tspan x="0" dy="-.2em">Kubernetes</tspan>
+        <tspan x="0" dy="1.2em">API Server</tspan>
       </text>
     </Group>
   );

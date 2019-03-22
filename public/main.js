@@ -85,7 +85,7 @@ function createWindowAndSetEnvironmentVariables () {
         console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
         console.log("process.env[ 'CLUSTER_NAME' ]: ", process.env[ 'CLUSTER_NAME' ])
       }
-      if (index === 3) {
+      if (index === 4) {
 
         console.log("arr[0]:", arr[0]);
         console.log("arr[1]", arr[1]);
@@ -414,7 +414,6 @@ ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
     const clusterName = parsedCredentialsFileData.CLUSTER_NAME;
 
     const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
-
 
     const parsedAWSMasterFileData = JSON.parse(dataFromMasterFile);
 

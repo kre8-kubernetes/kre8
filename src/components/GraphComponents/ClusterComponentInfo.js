@@ -1,9 +1,9 @@
 import React from 'react';
 
-import ApiserverInfoComponent from './ClusterComponentsInfoComponents/ApiserverInfoComponent';
-import NodeInfoComponent from './ClusterComponentsInfoComponents/NodeInfoComponent';
-import PodInfoComponent from './ClusterComponentsInfoComponents/PodInfoComponent'
-import ContainerInfoComponent from './ClusterComponentsInfoComponents/ContainerInfoComponent'
+import ApiserverInfoComponent from '../ClusterComponentsInfoComponents/ApiserverInfoComponent';
+import NodeInfoComponent from '../ClusterComponentsInfoComponents/NodeInfoComponent';
+import PodInfoComponent from '../ClusterComponentsInfoComponents/PodInfoComponent'
+import ContainerInfoComponent from '../ClusterComponentsInfoComponents/ContainerInfoComponent'
 
 const ClusterInfoComponent = (props) => {
   console.log('props from node info: ', props);

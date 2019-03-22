@@ -112,24 +112,38 @@ class TreeGraphContainer extends Component {
 
   handleContainersAndPods(event, data) {
     console.log('container data', data);
-    debugger;
+    console.log('this.state.treeData.children', this.state.treeData.children);
+
     const newState = {...this.state, treeData: {...this.state.treeData, children: [...this.state.treeData.children]}};
     const addressMap = newState.treeData.children.reduce((acc, ele, index) => {
       acc[ele.name] = index;
+      console.log("++++++++++++++++++++++++++++++++")
+      console.log("ele: ", ele)
       return acc;
     }, {});
+    console.log("addressMap: ", addressMap);
     data.items.forEach((pod) => {
-      pod["name"] = pod.metadata.name;
-      pod["id"] = pod.metadata.uid;
-      pod["type"] = pod.kind;
-      pod["children"] = [];
-      pod.spec.containers.forEach((container) => {
-        container["name"] = container.image;
-        container["type"] = "Container";
-        pod.children.push(container);
-      });
-      const nodeName = pod.spec.nodeName;
-      newState.treeData.children[addressMap[nodeName]].children.push(pod);
+
+      if (pod.status.phase !== "Pending") {
+        pod["name"] = pod.metadata.name;
+        pod["id"] = pod.metadata.uid;
+        pod["type"] = pod.kind;
+        pod["children"] = [];
+        pod.spec.containers.forEach((container) => {
+          container["name"] = container.image;
+          container["type"] = "Container";
+          console.log('pod.children', pod.children);
+
+          pod.children.push(container);
+        });
+        const nodeName = pod.spec.nodeName;
+        console.log("nodeName: ", nodeName);
+        console.log("newState.treeData.children: ", newState.treeData.children)
+        console.log("addressMap[nodeName]: ", addressMap[nodeName])
+        console.log("*******************************************")
+
+        newState.treeData.children[addressMap[nodeName]].children.push(pod);
+      }
     });
     this.setState(newState);
   }
@@ -144,15 +158,11 @@ class TreeGraphContainer extends Component {
   };
 
   toolTipOn(e, text) {
-    console.log('event on', e);
-    const x = e.clientX;
-    const y = e.clientY;
-    const newCoords = { top: y - 50, left: x };
+    const newCoords = { top: e.clientY - 50, left: e.clientX };
     this.setState({ ...this.state, mouseCoords: newCoords, showToolTip: true, toolTipText: text })
   }
 
   toolTipOff(e) {
-    console.log('event off', e);
     this.setState({ ...this.state, showToolTip: false })
   }
 
@@ -367,74 +377,74 @@ class TreeGraphContainer extends Component {
             },
           ]
         },
-        {
-          "name": "Worker Node #4",
-          "id": uuid(),
-          "worder_node_id": 3,
-          "type": "Node",
-          "children": [
-            {
-              "name": "#1",
-              "id": uuid(),
-              "type": "Pod",
-              "children": [{
-                "name": "",
-                "id": uuid(),
-                "type": "Container",
-              }]
-            },
-            {
-              "name": "#2",
-              "id": uuid(),
-              "type": "Pod",
-              "children": [{
-                "name": "",
-                "id": uuid(),
-                "type": "Container",
-              }]
-            },
-            {
-              "name": "#3",
-              "id": uuid(),
-              "type": "Pod",
-              "children": [{
-                "name": "",
-                "id": uuid(),
-                "type": "Container",
-              }]
-            },
-            {
-              "name": "#3",
-              "id": uuid(),
-              "type": "Pod",
-              "children": [{
-                "name": "",
-                "id": uuid(),
-                "type": "Container",
-              }]
-            },
-            {
-              "name": "#3",
-              "id": uuid(),
-              "type": "Pod",
-              "children": [{
-                "name": "",
-                "id": uuid(),
-                "type": "Container",
-              }]
-            },
-            {
-              "name": "#3",
-              "id": uuid(),
-              "type": "Pod",
-              "children": [{
-                "name": "",
-                "id": uuid(),
-                "type": "Container",
-              }]
-            },
-          ]
-        },
+        // {
+        //   "name": "Worker Node #4",
+        //   "id": uuid(),
+        //   "worder_node_id": 3,
+        //   "type": "Node",
+        //   "children": [
+        //     {
+        //       "name": "#1",
+        //       "id": uuid(),
+        //       "type": "Pod",
+        //       "children": [{
+        //         "name": "",
+        //         "id": uuid(),
+        //         "type": "Container",
+        //       }]
+        //     },
+        //     {
+        //       "name": "#2",
+        //       "id": uuid(),
+        //       "type": "Pod",
+        //       "children": [{
+        //         "name": "",
+        //         "id": uuid(),
+        //         "type": "Container",
+        //       }]
+        //     },
+        //     {
+        //       "name": "#3",
+        //       "id": uuid(),
+        //       "type": "Pod",
+        //       "children": [{
+        //         "name": "",
+        //         "id": uuid(),
+        //         "type": "Container",
+        //       }]
+        //     },
+        //     {
+        //       "name": "#3",
+        //       "id": uuid(),
+        //       "type": "Pod",
+        //       "children": [{
+        //         "name": "",
+        //         "id": uuid(),
+        //         "type": "Container",
+        //       }]
+        //     },
+        //     {
+        //       "name": "#3",
+        //       "id": uuid(),
+        //       "type": "Pod",
+        //       "children": [{
+        //         "name": "",
+        //         "id": uuid(),
+        //         "type": "Container",
+        //       }]
+        //     },
+        //     {
+        //       "name": "#3",
+        //       "id": uuid(),
+        //       "type": "Pod",
+        //       "children": [{
+        //         "name": "",
+        //         "id": uuid(),
+        //         "type": "Container",
+        //       }]
+        //     },
+        //   ]
+        // },
         // {
         //   "name": "kube-apiserver",
         //   "id": uuid(),

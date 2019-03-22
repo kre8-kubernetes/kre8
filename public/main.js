@@ -411,7 +411,7 @@ ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
 
     console.log("parsedCredentialsFileData: ", parsedCredentialsFileData);
 
-    const clusterName = parsedCredentialsFileData.CLUSTER_NAME;
+    const clusterName = parsedCredentialsFileData.clusterName;
 
     const dataFromMasterFile = await fsp.readFile(process.env['AWS_STORAGE'] + `AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
 

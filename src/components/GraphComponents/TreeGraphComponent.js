@@ -89,7 +89,7 @@ const TreeGraphComponent = (props) => {
           {tree => {
             // console.log('tree', tree)
             return (
-              <Group top={75} left={25}>
+              <Group top={100} left={25}>
 
                 {tree.links().map((link, i) => {
                   // console.log('link', link);
@@ -117,41 +117,49 @@ const TreeGraphComponent = (props) => {
                   top = node.y;
                   left = node.x;
   
-                  if (node.data.type === 'apiserver') 
-                    return <MasterNodeComponent 
-                      showNodeInfo={props.showNodeInfo} 
-                      node={node} 
-                      top={top} 
-                      left={left} 
-                      key={i}
-                    />
+                  if (node.data.type === 'apiserver') {
+                    return (
+                      <MasterNodeComponent 
+                        showNodeInfo={props.showNodeInfo} 
+                        node={node} 
+                        top={top} 
+                        left={left} 
+                        key={i}
+                      />
+                    )}
 
-                  if (node.data.type === 'Node') 
-                    return <WorkerNodeComponent  
-                      showNodeInfo={props.showNodeInfo} 
-                      node={node} 
-                      top={top} 
-                      left={left} 
-                      key={i}
-                    />
+                  if (node.data.type === 'Node') {
+                    return (
+                      <WorkerNodeComponent  
+                        showNodeInfo={props.showNodeInfo} 
+                        node={node} 
+                        top={top} 
+                        left={left} 
+                        key={i}
+                      />
+                    )}
 
-                  if (node.data.type === 'Pod') 
-                    return <PodComponent 
-                      showNodeInfo={props.showNodeInfo} 
-                      node={node} 
-                      top={top} 
-                      left={left} 
-                      key={i} 
-                    />
+                  if (node.data.type === 'Pod') {
+                    return (
+                      <PodComponent 
+                        showNodeInfo={props.showNodeInfo} 
+                        node={node} 
+                        top={top} 
+                        left={left} 
+                        key={i} 
+                      />
+                    )}
 
-                  if (node.data.type === 'Container') 
-                    return <ContainerComponent 
-                      showNodeInfo={props.showNodeInfo} 
-                      node={node} 
-                      top={top} 
-                      left={left}
-                      key={i} 
-                    />
+                  if (node.data.type === 'Container') {
+                    return (
+                      <ContainerComponent 
+                        showNodeInfo={props.showNodeInfo} 
+                        node={node} 
+                        top={top} 
+                        left={left}
+                        key={i} 
+                      />
+                    )}
 
                   // if (node.data.type === 'master-component') return <ContainerComponent node={node} top={top} left={left} key={i} />
                 })}

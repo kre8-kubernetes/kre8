@@ -66,14 +66,20 @@ body {
   font-family: 'Lato';
   font-style: normal;
   font-weight: normal;
-  /* src: url('path/to/OpenSans.eot'); */
-  src: local('Lato'), local('Lato'), url('./Lato/Lato-Black.ttf') format('truetype');
+  src: url('./Lato/Lato-Black.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: myFirstFont;
-  src: url("https://fonts.googleapis.com/css?family=Ubuntu");
+  font-family: 'Lato-Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./Lato/Lato-Regular.ttf') format('truetype');
 }
+
+// @font-face {
+//   font-family: myFirstFont;
+//   src: url("https://fonts.googleapis.com/css?family=Ubuntu");
+// }
 
 .errorClass {
   color: red;
@@ -639,6 +645,26 @@ body {
 .podText:hover{
   color: '$pods-color-hover';
 }
+
+.toolTip {
+  position: absolute;
+  height: 50px;
+  width: 400px;
+  background: none;
+  color: $light-font;
+  font-size: 12px;
+  font-family: Lato;
+}
+
+.toolTip h4 {
+  margin: 1px 0;
+}
+
+.toolTip p {
+  font-family: Lato-Regular;
+  margin: 1px 0;
+}
+
 /**************************************************/
 /************* POPUP CONTAINER STYLING ************/
 /**************************************************/

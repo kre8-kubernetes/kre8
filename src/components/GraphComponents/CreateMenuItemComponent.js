@@ -20,7 +20,7 @@ const CreateMenuItemComponent = (props) => {
       <div key={i} className='create_menu_item_component_inputs_item'>
         <input id={id} value={inputVal} placeholder={`${menuItemToShow}-${inputName}`} onChange={handleChange} type="text" />
         {/* TODO: error handling in these forms? this validator seems to force a re-render, which causes issues */}
-        {/* {props.validator1.message(`${menuItemToShow} name, ${inputName}, required`)} */}
+        {/* {props.validator1.message(`${menuItemToShow} name, ${inputVal}, 'required'`)} */}
       </div>
     )
   })
@@ -48,4 +48,10 @@ const CreateMenuItemComponent = (props) => {
   )
 }
 
+
+// const obj = {
+//   'pod-podName': 'required, lowercase',
+//   'service-appName': 'lowercase',
+
+// }
 export default CreateMenuItemComponent;

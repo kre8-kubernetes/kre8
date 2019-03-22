@@ -7,7 +7,7 @@ import { Group } from '@vx/group';
 
 
 
-const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
+const WorkerNodeComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
   // const peach = '#fd9b93';
   // const pink = '#fe6e9e';
   // const blue = '#03c0dc';
@@ -16,7 +16,6 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
   // const lightpurple = '#374469';
   // const white = '#ffffff';
   // const medBlue = '#71D7EF';
-
   const bg= '#1D2541';
   const stroke='#5499D9';
   const strokeWidth = 1.25;
@@ -40,6 +39,10 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
+        onMouseOver={(e) => {  
+          toolTipOn(e, { title: 'WorkerNode:', text: node.data.metadata.name });
+        }}
+        onMouseLeave={toolTipOff}
       />
 
       <text

@@ -120,7 +120,7 @@ const TreeGraphComponent = (props) => {
                   left = node.x;
   
                   if (node.data.type === 'apiserver') return <MasterNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i}/>
-                  if (node.data.type === 'Node') return <WorkerNodeComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
+                  if (node.data.type === 'Node') return <WorkerNodeComponent toolTipOff={props.toolTipOff} toolTipOn={props.toolTipOn} showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
                   if (node.data.type === 'Pod') return <PodComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
                   if (node.data.type === 'Container') return <ContainerComponent showNodeInfo={props.showNodeInfo} node={node} top={top} left={left} key={i} />
                   // if (node.data.type === 'master-component') return <ContainerComponent node={node} top={top} left={left} key={i} />

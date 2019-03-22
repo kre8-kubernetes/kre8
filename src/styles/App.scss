@@ -639,6 +639,16 @@ body {
 .podText:hover{
   color: '$pods-color-hover';
 }
+
+.toolTip {
+  position: absolute;
+  height: 50px;
+  width: 400px;
+  background: none;
+  color: $light-font;
+  font-size: 12px;
+}
+
 /**************************************************/
 /************* POPUP CONTAINER STYLING ************/
 /**************************************************/

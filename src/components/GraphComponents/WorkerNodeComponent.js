@@ -7,7 +7,7 @@ import { Group } from '@vx/group';
 
 
 
-const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
+const WorkerNodeComponent = ({ node, top, left, showNodeInfo, toolTipOn, toolTipOff }) => {
   const peach = '#fd9b93';
   const pink = '#fe6e9e';
   const blue = '#03c0dc';
@@ -31,6 +31,10 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo }) => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
+        onMouseEnter={(e) => {
+          toolTipOn(e, node.data.metadata.name);
+        }}
+        onMouseLeave={toolTipOff}
       />
       <text
         dy={'.33em'}

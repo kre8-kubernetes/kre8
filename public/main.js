@@ -547,7 +547,7 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
 //CREATE DEPLOYMENT 
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
   try {
-    if (data.spec.replicas > 10) throw new Error(`Replica amount entered was ${data.spec.replicas}. This value has to be 10 or less.`)
+    if (data.replicas > 10) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 10 or less.`)
     // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
     const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
     let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);

@@ -27,10 +27,7 @@ kubernetesTemplates.createPodYamlTemplate = (data) => {
             image: `${data.imageName}`,
             imagePullPolicy: "Always",
             env: [
-              // {
-              //   name: '',
-              //   value: '',
-              // }
+              // {name: '', value: ''}
             ],
             command: ["sh", "-c", "echo Hello Kubernetes! && sleep 3600"]
           }
@@ -42,7 +39,6 @@ kubernetesTemplates.createPodYamlTemplate = (data) => {
   return podYamlTemplate;
 }
 
-
 //** --------- GENERATES TEMPLATE FOR CREATING SERVICE YAML FILE---------- **//
 /** 
  * @param {Object} data
@@ -53,7 +49,7 @@ kubernetesTemplates.createServiceYamlTemplate = (data) => {
     apiVersion: "v1",
     kind: "Service",
     metadata: {
-      name: `${data.name}`
+      name: `${data.serviceName}`
     },
     spec: {
       selector: {

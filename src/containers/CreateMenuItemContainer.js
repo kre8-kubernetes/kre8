@@ -5,7 +5,7 @@ import { ipcRenderer } from 'electron';
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
-import CreateMenuItemComponent from '../components/CreateMenuItemComponent';
+import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 import SimpleReactValidator from 'simple-react-validator';
 
 const mapStateToProps = store => ({
@@ -95,7 +95,6 @@ class CreateMenuItemContainer extends Component {
   //HANDLE CHANGE METHOD FOR FORMS
   handleChange(e) {
     e.preventDefault();
-    console.log('e.target', e.target.id);
     const split = e.target.id.split('_');
     const newState = { ...this.state, 
       inputData: { ...this.state.inputData,
@@ -177,46 +176,44 @@ class CreateMenuItemContainer extends Component {
 
   //INCOMING POD DATA
   handleNewPod(event, data) {
-    // The following is going to be the logic that occurs once a new role was created via the main thread process
-    console.log('incoming text:', data);
-    const newState = this.state;
-    newState.inputData.pod.podName = '';
-    newState.inputData.pod.containerName = '';
-    newState.inputData.pod.imageName = '';
-    this.setState(newState);
+    console.log('incoming data from kubectl pod creation:', data);
+    const emptyPodObj = Object.entries(this.state.inputData.pod).reduce((acc, item) => {
+      acc[item[0]] = '';
+      return acc;
+    }, {});
+    this.setState({...this.state, inputData: {...this.state.inputData, pod: emptyPodObj}});
   }
 
   //INCOMING DEPLOYMENT DATA 
   handleNewDeployment(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
-    console.log('incoming text:', data);
-    const newState = this.state;
-    newState.inputData.deployment.deploymentName = '';
-    newState.inputData.deployment.appName = '';
-    newState.inputData.deployment.containerName = '';
-    newState.inputData.deployment.image = '';
-    newState.inputData.deployment.containerPort = '';
-    newState.inputData.deployment.replicas = '';
-    this.setState(newState);
+    console.log('incoming data from kubectl deployment creation:', data);
+    const emptyDeploymentObj = Object.entries(this.state.inputData.deployment).reduce((acc, item) => {
+      acc[item[0]] = '';
+      return acc;
+    }, {});
+    this.setState({ ...this.state, inputData: { ...this.state.inputData, deployment: emptyDeploymentObj } });
   }
 
 
   //INCOMING SERVICE DATA
   handleNewService(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
-    console.log('incoming text:', data);
-    const newState = this.state;
-    newState.inputData.service.serviceName = '';
-    newState.inputData.service.appName = '';
-    newState.inputData.service.port = '';
-    newState.inputData.service.targetPort = ';'
-    this.setState(newState);
+    console.log('incoming data from kubectl service creation:', data);
+    const emptyServiceObj = Object.entries(this.state.inputData.service).reduce((acc, item) => {
+      acc[item[0]] = '';
+      return acc;
+    }, {});
+    this.setState({ ...this.state, inputData: { ...this.state.inputData, service: emptyServiceObj } });
   }
 
-  
-
   render() {
-    const inputDataToShow = this.state.inputData[this.props.menuItemToShow];
+    const { menuItemToShow } = this.props;
+    const inputDataToShow = this.state.inputData[menuItemToShow];
+    const handleFunction = menuItemToShow === 'pod' ? this.handleCreatePod :
+                           menuItemToShow === 'service' ? this.handleCreateService :
+                           menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
+
     return (
       <div>
         {this.props.showCreateMenuItem === true && (
@@ -224,9 +221,7 @@ class CreateMenuItemContainer extends Component {
             handleChange={this.handleChange}
             menuItemToShow={this.props.menuItemToShow}
             toggleCreateMenuItem={this.props.toggleCreateMenuItem}
-            handleCreateDeployment={this.handleCreateDeployment}
-            handleCreateService={this.handleCreateService}
-            handleCreatePod={this.handleCreatePod}
+            handleFunction={handleFunction}
 
             validator1={this.validator1}
 

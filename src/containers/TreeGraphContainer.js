@@ -13,7 +13,6 @@ import * as events from '../../eventTypes';
 
 import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
 import ClusterInfoComponent from '../components/GraphComponents/ClusterComponentInfo';
-import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 
 const mapStateToProps = store => ({
   showCreateMenuItem: store.navbar.showCreateMenuItem,
@@ -34,7 +33,11 @@ class TreeGraphContainer extends Component {
       dimensions: {
         width: 0,
         height: 0
-      }
+      },
+      mouseCoords: {top: 0, left: 0},
+      showToolTip: false,
+      toolTipTitle: '',
+      toolTipText: '',
     }
     this.showNodeInfo = this.showNodeInfo.bind(this);
     this.hideNodeInfo = this.hideNodeInfo.bind(this);
@@ -42,7 +45,8 @@ class TreeGraphContainer extends Component {
     this.handleWorkerNodes = this.handleWorkerNodes.bind(this);
     this.handleContainersAndPods = this.handleContainersAndPods.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
-
+    this.toolTipOn = this.toolTipOn.bind(this);
+    this.toolTipOff = this.toolTipOff.bind(this);
   }
 
   componentDidMount() {
@@ -153,6 +157,15 @@ class TreeGraphContainer extends Component {
   hideNodeInfo() {
     this.setState({ ...this.state, showInfo: false });
   };
+
+  toolTipOn(e, data) {
+    const newCoords = { top: e.clientY - 75, left: e.clientX - 50};
+    this.setState({ ...this.state, mouseCoords: newCoords, showToolTip: true, toolTipTitle: data.title, toolTipText: data.text })
+  }
+
+  toolTipOff(e) {
+    this.setState({ ...this.state, showToolTip: false })
+  }
 
   render() {
     const treeData = {
@@ -471,8 +484,16 @@ class TreeGraphContainer extends Component {
             hideNodeInfo={this.hideNodeInfo}
           />
         )}
+        {this.state.showToolTip === true && (
+          <div className='toolTip' style={this.state.mouseCoords}>
+            <h4>{this.state.toolTipTitle}</h4>
+            <p>{this.state.toolTipText}</p>
+          </div>
+        )}
         <TreeGraphComponent
           showNodeInfo={this.showNodeInfo}
+          toolTipOn={this.toolTipOn}
+          toolTipOff={this.toolTipOff}
           width={this.state.dimensions.width}
           height={this.state.dimensions.height}
           treeData={this.state.treeData}

@@ -120,6 +120,8 @@ const TreeGraphComponent = (props) => {
                     return (
                       <MasterNodeComponent 
                         showNodeInfo={props.showNodeInfo} 
+                        toolTipOff={props.toolTipOff}
+                        toolTipOn={props.toolTipOn}
                         node={node} 
                         top={top} 
                         left={left} 
@@ -131,6 +133,8 @@ const TreeGraphComponent = (props) => {
                     return (
                       <WorkerNodeComponent  
                         showNodeInfo={props.showNodeInfo} 
+                        toolTipOff={props.toolTipOff} 
+                        toolTipOn={props.toolTipOn}
                         node={node} 
                         top={top} 
                         left={left} 
@@ -142,6 +146,8 @@ const TreeGraphComponent = (props) => {
                     return (
                       <PodComponent 
                         showNodeInfo={props.showNodeInfo} 
+                        toolTipOff={props.toolTipOff}
+                        toolTipOn={props.toolTipOn}
                         node={node} 
                         top={top} 
                         left={left} 
@@ -153,6 +159,8 @@ const TreeGraphComponent = (props) => {
                     return (
                       <ContainerComponent 
                         showNodeInfo={props.showNodeInfo} 
+                        toolTipOff={props.toolTipOff}
+                        toolTipOn={props.toolTipOn}
                         node={node} 
                         top={top} 
                         left={left}
@@ -160,7 +168,6 @@ const TreeGraphComponent = (props) => {
                       />
                     )}
 
-                  // if (node.data.type === 'master-component') return <ContainerComponent node={node} top={top} left={left} key={i} />
                 })}
 
               </Group>

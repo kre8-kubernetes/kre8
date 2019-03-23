@@ -4,7 +4,7 @@ import { Group } from '@vx/group';
 // filter="url(#shadow)"
 
 
-const PodComponent = ({ node, top, left, showNodeInfo }) => {
+const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
   const peach = '#fd9b93';
   const pink = '#fe6e9e';
   const blue = '#03c0dc';
@@ -36,6 +36,10 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
+        onMouseOver={(e) => {
+          toolTipOn(e, {title: 'Image Name:', text: node.data.image});
+        }}
+        onMouseLeave={toolTipOff}
       />
       {/* <circle
         r={radius}
@@ -54,8 +58,8 @@ const PodComponent = ({ node, top, left, showNodeInfo }) => {
         textAnchor={'middle'}
         style={{ pointerEvents: 'none' }}
         fill={'#D7D7D7'}
-      >1
-        {node.data.name}
+      >
+        {`#2`}
       </text>
     </Group>
   );

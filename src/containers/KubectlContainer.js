@@ -14,7 +14,9 @@ const mapStateToProps = store => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-
+  displayCreateButton: () => {
+    dispatch(actions.displayCreateButton())
+  }
 });
 
 class KubectlContainer extends Component {
@@ -29,7 +31,7 @@ class KubectlContainer extends Component {
   
   // DEPLOYMENT LIFECYCLE METHOD
   componentDidMount() {
-
+    this.props.displayCreateButton();
   }
   
   // On component unmount, we will unsubscribe to listeners

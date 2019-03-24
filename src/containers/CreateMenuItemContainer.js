@@ -4,9 +4,9 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
+import * as yup from 'yup';
 
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
-import SimpleReactValidator from 'simple-react-validator';
 
 const mapStateToProps = store => ({
   showCreateMenuItem: store.navbar.showCreateMenuItem,
@@ -22,18 +22,6 @@ const mapDispatchToProps = dispatch => ({
 class CreateMenuItemContainer extends Component {
   constructor(props) {
     super(props);
-
-    this.validator = new SimpleReactValidator({
-      element: (message, className) => <div className="errorClass">{message}</div>
-    });
-
-    this.validator1 = new SimpleReactValidator({
-      element: (message, className) => <div className="errorClass">{message}</div>
-    });
-
-    this.validator2 = new SimpleReactValidator({
-      element: (message, className) => <div className="errorClass">{message}</div>
-    });
 
     this.state = {
       inputData: {
@@ -57,9 +45,9 @@ class CreateMenuItemContainer extends Component {
           targetPort: '',
         }
       },
+      errors: {pod: {}, deployment: {}, service: {}},
       display_error: false,
     }
-
     this.handleChange = this.handleChange.bind(this);
 
     this.handleCreatePod = this.handleCreatePod.bind(this);
@@ -70,8 +58,6 @@ class CreateMenuItemContainer extends Component {
 
     this.handleCreateService = this.handleCreateService.bind(this);
     this.handleNewService = this.handleNewService.bind(this);
-
-    this.testFormValidation = this.testFormValidation.bind(this);
   }
 
   //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
@@ -95,7 +81,6 @@ class CreateMenuItemContainer extends Component {
   //HANDLE CHANGE METHOD FOR FORMS
   handleChange(e) {
     e.preventDefault();
-    console.log('event', e.target);
     const split = e.target.id.split('_');
     const newState = { ...this.state, 
       inputData: { ...this.state.inputData,
@@ -108,69 +93,83 @@ class CreateMenuItemContainer extends Component {
     this.setState(newState);
   };
 
-  testFormValidation() {
-    if (this.validator.allValid()) {
-      alert('Your pod is being created!');
-      return true;
-    } else {
-      this.validator.showMessages();
-      this.forceUpdate();
-      return false;
-    }
-  }
-
-  testFormValidation1() {
-    if (this.validator1.allValid()) {
-      alert('Your deployment is being created!');
-      return true;
-    } else {
-      this.validator1.showMessages();
-      this.forceUpdate();
-      return false;
-    }
-  }
-
-  testFormValidation2() {
-    if (this.validator2.allValid()) {
-      alert('Your service is being created!');
-      return true;
-    } else {
-      this.validator2.showMessages();
-      this.forceUpdate();
-      return false;
-    }
-  }
-
   //CREATE POD HANDLER
-  handleCreatePod(data) {
-    console.log('handleCreatePod Clicked!!!');
-    if (this.testFormValidation()) {
-      console.log("All form data passed validation");
-      ipcRenderer.send(events.CREATE_POD, this.state.inputData.pod);
-    } else {
-      console.log("Invalid or missing data entry");
-    }
+  handleCreatePod() {
+    const schema = yup.object().strict().shape({
+      podName: yup.string().required().lowercase(),
+      containerName: yup.string().required(),
+      imageName: yup.string().required(),
+    })
+    schema.validate(this.state.inputData.pod, {abortEarly: false})
+      .then((data) => {
+        console.log('from the then', data)
+        this.setState({ ...this.state, errors: { ...this.state.errors, pod: {} } })
+        // ipcRenderer.send(events.CREATE_POD, this.state.inputData.pod);
+      })
+      .catch((err) => {
+        console.log('err', err);
+        const errorObj = err.inner.reduce((acc, error, i) => {
+          acc[error.path] = error.message;
+          return acc;
+        }, {});
+        this.setState({ ...this.state, errors: { ...this.state.errors, pod: errorObj } })
+      })
   }
 
   //CREATE DEPLOYMENT HANDLER
-  handleCreateDeployment(data) {
-    console.log('handleCreateDeployment Clicked!!!');
-    if (this.testFormValidation1()) {
-      console.log("All form data passed validation");
-      ipcRenderer.send(events.CREATE_DEPLOYMENT, this.state.inputData.deployment);
-    } else {
-      console.log("Invalid or missing data entry");
-    }
+  handleCreateDeployment() {
+    const clone = Object.assign({}, this.state.inputData.deployment);
+    clone.containerPort = Number(clone.containerPort);
+    clone.replicas = Number(clone.replicas);
+    const schema = yup.object().strict().shape({
+      deploymentName: yup.string().required().lowercase(),
+      appName: yup.string().required().lowercase(),
+      containerName: yup.string().required().lowercase(),
+      image: yup.string().required().lowercase(),
+      containerPort: yup.number().required().positive(),
+      replicas: yup.number().required().positive().max(10),
+    })
+    schema.validate(clone, { abortEarly: false })
+      .then((data) => {
+        console.log('from the then', data)
+        this.setState({ ...this.state, errors: { ...this.state.errors, deployment: {} } })
+        //   ipcRenderer.send(events.CREATE_DEPLOYMENT, this.state.inputData.deployment);
+      })
+      .catch((err) => {
+        console.log('err', err);
+        const errorObj = err.inner.reduce((acc, error, i) => {
+          acc[error.path] = error.message;
+          return acc;
+        }, {});
+        this.setState({ ...this.state, errors: { ...this.state.errors, deployment: errorObj } })
+      })
   }
 
   //CREATE SERVICE HANDLER
-  handleCreateService(data) {
-    console.log('handleCreateService Clicked!!!');
-    if (this.testFormValidation2()) {
-      console.log("All form data passed validation");
-      ipcRenderer.send(events.CREATE_SERVICE, this.state.inputData.service);
-    }
-    console.log("Invalid or missing data entry");
+  handleCreateService() {
+    const clone = Object.assign({}, this.state.inputData.service);
+    clone.containerPort = Number(clone.port);
+    clone.replicas = Number(clone.targetPort);
+    const schema = yup.object().strict().shape({
+      serviceName: yup.string().required().lowercase(),
+      appName: yup.string().required().lowercase(),
+      port: yup.number().required().positive(),
+      targetPort: yup.number().required().positive(),
+    })
+    schema.validate(clone, { abortEarly: false })
+      .then((data) => {
+        console.log('from the then', data)
+        this.setState({ ...this.state, errors: { ...this.state.errors, service: {} } })
+        // ipcRenderer.send(events.CREATE_SERVICE, this.state.inputData.service);
+      })
+      .catch((err) => {
+        console.log('err', err);
+        const errorObj = err.inner.reduce((acc, error, i) => {
+          acc[error.path] = error.message;
+          return acc;
+        }, {});
+        this.setState({ ...this.state, errors: { ...this.state.errors, service: errorObj } })
+      })
   }
 
   //**--------------INCOMING DATA FROM MAIN THREAD-----------------**//
@@ -209,6 +208,7 @@ class CreateMenuItemContainer extends Component {
   }
 
   render() {
+    console.log('errsss', this.state.errors);
     const { menuItemToShow } = this.props;
     const inputDataToShow = this.state.inputData[menuItemToShow];
     const handleFunction = menuItemToShow === 'pod' ? this.handleCreatePod :
@@ -224,7 +224,7 @@ class CreateMenuItemContainer extends Component {
             toggleCreateMenuItem={this.props.toggleCreateMenuItem}
             handleFunction={handleFunction}
 
-            validator1={this.validator1}
+            errors={this.state.errors}
 
             inputDataToShow={inputDataToShow}
           />

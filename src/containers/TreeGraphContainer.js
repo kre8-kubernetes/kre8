@@ -470,10 +470,10 @@ class TreeGraphContainer extends Component {
     };
 
     const margin = {
-      top: 150,
+      top: 125,
       left: 30,
       right: 30,
-      bottom: 150
+      bottom: 125
     };
     
     return (

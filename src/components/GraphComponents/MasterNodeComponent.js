@@ -7,7 +7,7 @@ import { Polygon } from '@vx/shape';
 //fill="url('#lg')"
 
 
-const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
+const MasterNodeComponent = ({ node, top, left, showNodeInfo, toolTipOn, toolTipOff }) => {
 
   // const darkBlue = '#373B44';
   // const lighterBlue = '#4286f4';
@@ -34,7 +34,7 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
     <Group top={top} left={left}>
 
       <Polygon 
-        className='node'
+        className='graph_component'
         sides={sides}
         size={size} 
         fill={bg}
@@ -45,6 +45,10 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo }) => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
+        onMouseOver={(e) => {
+          toolTipOn(e, { title: 'API Server:', text: node.data.data.metadata.uid });
+        }}
+        onMouseLeave={toolTipOff}
         />
 
       <text

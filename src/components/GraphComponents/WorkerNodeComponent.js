@@ -28,6 +28,7 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTi
   return (
     <Group top={top} left={left}>
       <rect
+        className="graph_component"
         height={height}
         width={width}
         y={centerY}

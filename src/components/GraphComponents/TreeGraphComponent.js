@@ -59,7 +59,7 @@ const TreeGraphComponent = (props) => {
 
   const { height, width, treeData, margin } = props;
   const innerHeight = height - margin.top - margin.bottom;
-  const innerWidth = width - margin.left - margin.right;
+  const innerWidth = width;
 
   // {/* filter="url(#shadow)" */}
           {/* <rect width={width} height={height} rx={0} fill="url('#back')" /> */}
@@ -74,7 +74,7 @@ const TreeGraphComponent = (props) => {
 
   return (
     <div className='treegraph_component'>
-      <svg width={width} height={height}>
+      <svg width={width} height={height - 44}>
         <RadialGradient id="lg" from={blue4} to={blue5} />
         <RadialGradient id="workerNodeGradient" from={blue3} to={blue4} />
         <RadialGradient id="podGradient" from={blue3} to={blue4} />

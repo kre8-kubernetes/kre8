@@ -24,7 +24,8 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
 
   return (
     <Group top={top} left={left}>
-      <circle className="pods"
+      <circle 
+        className="graph_component"
         r={15}
         fill={bg}
         stroke={stroke}

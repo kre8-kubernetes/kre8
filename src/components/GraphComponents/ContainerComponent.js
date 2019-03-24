@@ -25,7 +25,8 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
   
   return (
     <Group top={top} left={left}>
-    <ellipse className="pods"
+    <ellipse 
+        className="graph_component"
         rx={width}
         ry={height}
         fill={bg}

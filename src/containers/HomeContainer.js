@@ -12,6 +12,12 @@ import HomeComponent from '../components/HomeComponent';
 import HelpInfoComponent from '../components/HelpInfoComponent';
 import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
 
+
+const mapDispatchToProps = dispatch => ({
+  hideCreateButton: () => {
+    dispatch(actions.hideCreateButton())
+  }
+});
 class HomeContainer extends Component {
   constructor(props) {
     super(props);
@@ -197,5 +203,5 @@ class HomeContainer extends Component {
 
 
 
-export default withRouter(connect(null, null)(HomeContainer));
+export default withRouter(connect(null, mapDispatchToProps)(HomeContainer));
 

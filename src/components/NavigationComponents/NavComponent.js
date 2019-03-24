@@ -22,21 +22,9 @@ const NavComponent = (props) => {
             <div className='ham_bar'></div>
           </div>
         )}
-        <div className='nav_left_container_item'>
-          <div onClick={props.handleNavBarClick} className='nav_item2'>
-            <Link to="/">HOME</Link>
-          </div>
-        </div>
-        <div className='nav_left_container_item'>
-          <div onClick={props.handleNavBarClick} className='nav_item2'>
-            <Link to="/aws">AWS</Link>
-          </div>      
-        </div>
-        <div className='nav_left_container_item'>
-          <div id='kubectl_link' onClick={props.handleNavBarClick} className='nav_item2'>
-            <Link id='kubectl_link' to="/cluster">KUBECTL</Link>
-          </div>
-        </div>
+        <Link to="/" className='nav_left_container_item' onClick={props.handleNavBarClick}>HOME</Link>
+        <Link to="/aws" className='nav_left_container_item' onClick={props.handleNavBarClick}>AWS</Link>
+        <Link to="/cluster" className='nav_left_container_item' onClick={props.handleNavBarClick}>KUBECTL</Link>
       </div>
       {/* NAV RIGHT CONTAINER */}
       <div className='nav_right_container'>

@@ -22,7 +22,7 @@ class HomeContainer extends Component {
       text_info:'',
       showInfo: false,
       mouseCoords: {},
-      credentialStatus: false,
+      credentialStatus: true,
 
       
     }
@@ -72,7 +72,6 @@ class HomeContainer extends Component {
 
   testFormValidation() {
     if (this.validator.allValid()) {
-      // alert(`Your credentials are being validated by Amazon Web Services. This can take up to one minute. Please click ok to continue.`);
       return true;
     } else {
       this.validator.showMessages();
@@ -86,11 +85,14 @@ class HomeContainer extends Component {
   //if credentials are saved in file, display HomeContainerPostCredentials
   processAWSCredentialStatus(event, data) {
     console.log("credential status: ", data);
-    if (data === true) {
-      this.setState({ ...this.state, credentialStatus: true });
+    if (data !== true) {
+      this.setState({ ...this.state, credentialStatus: false });
+      console.log("status is true")
+      
+    } else {
       this.props.history.push('/cluster');
-    } 
-    console.log("credentials are not yet entered, send to setup page")
+      console.log("credentials are entered, send to setup page")
+    }
   }
 
   //** ------- CONFIGURE AWS CREDENTIALS ----------------------------- **//

@@ -21,6 +21,9 @@ const mapStateToProps = store => ({
 const mapDispatchToProps = dispatch => ({
   setNewRole: (text) => {
     dispatch(actions.setRole(text))
+  },
+  hideCreateButton: () => {
+    dispatch(actions.hideCreateButton())
   }
 });
 
@@ -69,6 +72,7 @@ class AwsContainer extends Component {
 
   //Once component mounts, activate listeners, to receive data from AWS regarding the cluster creation process
   componentDidMount() {
+    this.props.hideCreateButton();
     ipcRenderer.on(events.HANDLE_STATUS_CHANGE, this.handleStatusChange);
     ipcRenderer.on(events.HANDLE_ERRORS, this.handleError);
     ipcRenderer.on(events.HANDLE_NEW_NODES, this.handleNewNodes);

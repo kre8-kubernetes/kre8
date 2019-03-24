@@ -78,11 +78,11 @@ class NavContainer extends Component {
   }
 
   handleNavBarClick(e) {
-    if (e.target.id === 'kubectl_link') {
-      this.props.displayCreateButton();
-    } else {
-      this.props.hideCreateButton();
-    }
+    // if (e.target.id === 'kubectl_link') {
+    //   this.props.displayCreateButton();
+    // } else {
+    //   this.props.hideCreateButton();
+    // }
     this.props.hideCreateMenu();
   }
 

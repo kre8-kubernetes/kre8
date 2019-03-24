@@ -41,10 +41,12 @@ const NavComponent = (props) => {
       {/* NAV RIGHT CONTAINER */}
       <div className='nav_right_container'>
         <div className='nav_component_container_item'>
-          <button className='nav_component_cluster_button' onMouseEnter={props.displayClusterInfo}>
+          <button className='nav_component_cluster_button' onMouseEnter={props.displayClusterInfo}
+          onMouseLeave={props.hideClusterInfo}
+          >
+          
             Cluster Data
           </button>
-
           {/* THE CLUSTER INFO BOX */}
           {props.showClusterInfo === true && (
           <ClusterInfoComponent
@@ -60,5 +62,3 @@ const NavComponent = (props) => {
  
 
 export default NavComponent;
-
- {/* onMouseLeave={props.hideClusterInfo} */}

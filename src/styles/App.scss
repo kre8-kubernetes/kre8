@@ -1076,6 +1076,10 @@ body {
   flex-direction: row;
   width: 100%;
   justify-content: center;
+  align-content: flex-start;
+}
+.create_menu_item_component_title h2 {
+  margin: 2px 0;
 }
 
 .create_menu_item_component_inputs {

@@ -5,6 +5,20 @@ import HelpInfoButton from './Buttons/HelpInfoButton'
 import { Link } from 'react-router-dom';
 
 const HomeComponent = props => {
+
+  const {
+    awsAccessKeyId,
+    awsSecretAccessKey,
+    awsRegion,
+    text_info,
+    showInfo,
+    mouseCoords,
+    
+    errors,
+    display_error,
+  } = props;
+
+
   return (
       <div className='home_page_form_container'>
         {/* CENTER CONTAINER HEADER */}
@@ -15,15 +29,20 @@ const HomeComponent = props => {
         <div className='home_page_form_container_text'>
           <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. Kre8 is here to simplify everything for you. Let’s get started!</p>
         </div>
+
         {/* INPUT FORM CONTAINER */}
         <div className='home_page_form_container_inputs'>
           <div className='home_page_form_container_inputs_item'>
             <input id='awsAccessKeyId' onChange={props.handleChange} placeholder='AWS Access Key ID' value={props.awsAccessKeyId} type="text" name="awsAccessKeyId" />
-            {props.validator.message('Access Key id', props.awsAccessKeyId, 'required|min:15|max:40')}
+            <div className='errorClass'>{errors.awsAccessKeyId}</div>
+
+
           </div>
           <div className='home_page_form_container_inputs_item'>
             <input id='awsSecretAccessKey' onChange={props.handleChange} placeholder='Secret Access Key' value={props.awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
-            {props.validator.message('Secret Access Key', props.awsSecretAccessKey, 'required|min:30|max:50')}
+            <div className='errorClass'>{errors.awsSecretAccessKey}</div>
+
+            
           </div>
 
         </div>
@@ -52,6 +71,7 @@ const HomeComponent = props => {
             <HelpInfoButton clickHandler={props.displayInfoHandler} />
           </div>
         </div>
+        <div style={{ alignSelf: 'flex-start', marginLeft: '50px', marginTop: '-8px' }} className='errorClass'>{errors.awsRegion}</div>
       </div>
     );
   };

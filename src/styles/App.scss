@@ -80,6 +80,9 @@ body {
 .errorClass {
   color: red;
   font-size: 10px;
+  margin-top: 2px;
+  margin-left: 7px;
+  font-family: Lato-Regular;
 }
 
 /**************************************************/
@@ -209,7 +212,7 @@ body {
   justify-content: center;
   font-size: 16px;
   line-height: 23px;
-  font-weight: lighter;
+  font-family: Lato-Regular;
   color: $light-font;
   width: 83%;
 }
@@ -223,7 +226,7 @@ body {
 }
 .home_page_form_container_inputs_item {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   width: 100%;
   padding: 8px 0;
@@ -232,6 +235,7 @@ body {
 .home_page_form_container_inputs_item input {
   width: 100%;
   height: 33px;
+  min-height: 33px;
   border-radius: 5px;
   background: $accent-darkest-blue;
   color: $input-color;
@@ -270,6 +274,7 @@ body {
 .home_page_form_container_buttons_item select {
   width: 200px;
   height: 33px;
+  min-height: 33px;
   background: hsl(213, 69%, 9%);
   border: 1px solid $input-color;
   border-radius: 5px;
@@ -336,7 +341,7 @@ body {
 .home_page_form_container_header {
   font-family: lato;
   /* color: #D2EEF7; */
-  color: white;
+  color: $light-font;
   grid-area: text;
   text-align: center;
   font-size: 17px;
@@ -433,9 +438,9 @@ body {
   }
 
 
-/**************************************************/
-/*********** HELP INFO COMPONENT STYLING **********/
-/**************************************************/
+//**************************************************/
+//*********** HELP INFO COMPONENT STYLING **********/
+//**************************************************/
 
 .help_info_component {
   background-color: $cluster-element-text-color;
@@ -474,9 +479,9 @@ body {
   align-items: center;
 }
 
-/**************************************************/
-/************** AWS CONTAINER STYLING *************/
-/**************************************************/
+//**************************************************/
+//************** AWS CONTAINER STYLING *************/
+//**************************************************/
 
 .aws_cluster_page_container {
   display: flex;
@@ -505,13 +510,8 @@ body {
   background: $accent-darkest-blue;
   border-radius: 6px;
   padding-bottom: 20px;
-
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
-/* 
-.aws_cluster_form_container:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-} */
 
 .aws_cluster_form_container_header {
   display: flex;
@@ -525,13 +525,12 @@ body {
 }
 
 .aws_cluster_form_timing_text {
-
   display: flex;
   flex-direction: row;
   justify-content: center;
+  font-family: Lato-Regular;
   font-size: 16px;
   line-height: 23px;
-  font-weight: lighter;
   color: $light-font;
   width: 83%;
   margin-bottom: 20px;
@@ -561,20 +560,19 @@ body {
 
 .aws_cluster_form_container_explainer_text {
   font-size: 10px;
-  font-weight: lighter;
-  /* color: #E2F0F2; */
+  font-family: Lato-Light;
   color: $input-color;
-  opacity: 30%;
+  opacity: .9;
   margin-left: 6px;
   margin-bottom: 5px;
   padding-bottom: 10px;
-  padding-top: 3px;
-  font-style: italic;
+  padding-top: 2px;
 }
 
 .aws_cluster_form_container_input input {
   width: 100%;
   height: 33px;
+  min-height: 33px;
   border-radius: 5px;
   background: $accent-darkest-blue;
   color: $input-color;
@@ -628,9 +626,8 @@ body {
   display: flex;
   flex-direction: row;
   text-align: center;
+  font-family: Lato-Regular;
   font-size: 16px;
-  line-height: 23px;
-  font-weight: lighter;
   color: $light-font;
   margin-top: 20px;
   margin-bottom: 20px;
@@ -652,9 +649,9 @@ body {
   flex-direction: column;
   align-items: rigth;
   justify-content: right;
+  font-family: Lato-Regular;
   font-size: 16px;
   line-height: 23px;
-  font-weight: lighter;
   color: $light-font;
 } 
 
@@ -663,7 +660,7 @@ body {
   flex-direction: column;
   text-align: center;
   line-height: 13px;
-  font-weight: lighter;
+  font-family: Lato-Regular;
   color: red;
   font-size: 10px;
   margin-bottom: 10px;
@@ -1103,6 +1100,7 @@ body {
 .create_menu_item_component_inputs_item input {
   width: 100%;
   height: 33px;
+  min-height: 33px;
   border-radius: 5px;
   background: $accent-darkest-blue;
   color: $input-color;
@@ -1169,7 +1167,7 @@ body {
   font-size: 12px;
   line-height: 21px;
   color: $cluster-element-text-color;
-  font-family: Lato-regular;
+  font-family: Lato-Regular;
 }
 
 // .cluster_info_major {

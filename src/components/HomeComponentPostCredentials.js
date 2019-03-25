@@ -32,9 +32,9 @@ const HomeLoadingComponent = props => {
       <div className='home_page_form_container_header'>
         <h3>Connecting to Kre8...</h3>
       </div>
-        <div class="ball"></div>
-        <div class="ball1"></div>
-        <div class="ball2"></div> 
+        <div className="ball"></div>
+        <div className="ball1"></div>
+        <div className="ball2"></div> 
     </div>
     );
   };

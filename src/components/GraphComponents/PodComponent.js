@@ -6,25 +6,25 @@ import { Group } from '@vx/group';
         {/* fill="url('#podGradient')" */}
 
 const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
-  const peach = '#fd9b93';
-  const pink = '#fe6e9e';
-  const blue = '#03c0dc';
-  const green = '#26deb0';
-  const plum = '#71248e';
-  const lightpurple = '#374469';
-  const white = '#ffffff';
+  // const peach = '#fd9b93';
+  // const pink = '#fe6e9e';
+  // const blue = '#03c0dc';
+  // const green = '#26deb0';
+  // const plum = '#71248e';
+  // const lightpurple = '#374469';
+  // const white = '#ffffff';
   // const bg = '#272b4d';
 
 
   const bg= '#1D2541';
   const stroke='#228EB5';
   const strokeWidth = 1;
-  const height = 24;
-  const width = 15;
+  const height = 26;
+  const width = 18;
 
   return (
     <Group top={top} left={left}>
-      <circle 
+      {/* <circle 
         className="graph_component"
         r={15}
         fill={bg}
@@ -38,8 +38,8 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
           toolTipOn(e, { title: 'ReplicaSet:', text: node.data.metadata.generateName.slice(0, -1) });
         }}
         onMouseLeave={toolTipOff}
-      />
-      {/* <ellipse className="pods"
+      /> */}
+      <ellipse className="pods"
         rx={width}
         ry={height}
         fill={bg}
@@ -49,7 +49,11 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
           showNodeInfo(node);
           console.log('from circle', node);
         }}
-      /> */}
+        onMouseOver={(e) => {
+          toolTipOn(e, { title: 'ReplicaSet:', text: node.data.metadata.generateName.slice(0, -1) });
+        }}
+        onMouseLeave={toolTipOff}
+      />
       <text className="podText"
         dy={'.33em'}
         fontSize={11}

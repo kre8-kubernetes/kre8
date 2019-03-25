@@ -110,7 +110,7 @@ function createWindowAndSetEnvironmentVariables () {
 
   win.on('closed', () => win = null)
 
-  childWin = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: true, frame: false, backgroundColor: '#243B55', center: true  });
+  childWin = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: true, frame: false, backgroundColor: '#141E30', center: true  });
 
   // childWin.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index_child.html')}`);
 

@@ -9,6 +9,7 @@ const CreateMenuItemComponent = (props) => {
     toggleCreateMenuItem,
     handleFunction,
     errors,
+    infoText,
   } = props;
 
   const componentNameFormatted = menuItemToShow.charAt(0).toUpperCase() + menuItemToShow.slice(1);
@@ -34,6 +35,9 @@ const CreateMenuItemComponent = (props) => {
           {/**** TITLE  ****/}
           <div className='create_menu_item_component_title'>
             <h2>Create a {componentNameFormatted}</h2>
+          </div>
+          <div className='create_menu_item_component_help_info'>
+            <p>{infoText}</p>
           </div>
           {/**** FORM ****/}
           <div className='create_menu_item_component_inputs'>

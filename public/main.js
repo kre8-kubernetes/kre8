@@ -521,7 +521,7 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
 //BUILD A SERVICE YAML
 ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
   try {
-    console.log("data:", data);
+    console.log("CREATE_SERVICE data:", data);
     // CREATE AND WRITE THE SERVICE FILE FROM TEMPLATE
     const serviceYamlTemplate = kubernetesTemplates.createServiceYamlTemplate(data);
     let stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate, null, 2);
@@ -544,7 +544,7 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
   try {
     console.log("data from replicas: ", data);
-    if (data.replicas > 10) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 10 or less.`)
+    if (data.replicas > 5) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 5 or less.`)
     // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
     const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
     let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);

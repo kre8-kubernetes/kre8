@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { ipcRenderer } from 'electron';
 import { Switch, Route, withRouter } from 'react-router-dom';
-import SimpleReactValidator from 'simple-react-validator';
+
+import * as yup from 'yup';
 
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
@@ -11,8 +12,10 @@ import AWSComponent from '../components/AWSComponent'
 import AWSLoadingComponent from '../components/AWSLoadingComponent'
 import HelpInfoComponent from '../components/HelpInfoComponent';
 
+// import SimpleReactValidator from 'simple-react-validator';
 
-//**-------------- REDUX -----------------------------------**//
+
+//** -------------- REDUX ----------------------------------- **//
 
 const mapStateToProps = store => ({
 
@@ -34,6 +37,7 @@ class AwsContainer extends Component {
       iamRoleName: '',
       vpcStackName: '',
       clusterName: '',
+
       awsComponentSubmitted: false,
 
       iamRoleStatus: 'CREATING',
@@ -43,32 +47,37 @@ class AwsContainer extends Component {
       kubectlConfigStatus: '—',
       errorMessage: '',
 
-      text_info: '',
+      textInfo: '',
       showInfo: false,
-      mouseCoords: {}
+      mouseCoords: {},
+
+      errors: {},
+      displayError: false,
+
     }
 
-    this.validator = new SimpleReactValidator({
-      element: (message, className) => <div className="errorClass">{message}</div>
-    });
+    // this.validator = new SimpleReactValidator({
+    //   element: (message, className) => <div className="errorClass">{message}</div>
+    // });
 
     this.handleChange = this.handleChange.bind(this);
 
     this.handleStatusChange = this.handleStatusChange.bind(this);
-    this.handleError = this.handleError.bind(this);
 
     this.handleConfigAndMakeNodes = this.handleConfigAndMakeNodes.bind(this);
     this.handleNewNodes = this.handleNewNodes.bind(this);
 
-    this.testFormValidation = this.testFormValidation.bind(this);
+    this.handleError = this.handleError.bind(this);
 
     this.displayInfoHandler = this.displayInfoHandler.bind(this);
     this.hideInfoHandler = this.hideInfoHandler.bind(this);
+
+    // this.testFormValidation = this.testFormValidation.bind(this);
+
   }
 
 
-
-  //**-------------- COMPONENT LIFECYCLE METHODS -----------------**//
+  //** -------------- COMPONENT LIFECYCLE METHODS ----------------- **//
 
   //Once component mounts, activate listeners, to receive data from AWS regarding the cluster creation process
   componentDidMount() {
@@ -85,28 +94,33 @@ class AwsContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_NEW_NODES, this.handleNewNodes);
   }
 
-  //**--------------EVENT HANDLERS-----------------**//
+  //** -------------- EVENT HANDLERS ------------------------------ **//
+
+  //Method handling text changes for form input fields
   handleChange(e) {
     e.preventDefault();
     this.setState({ [e.target.id]: e.target.value });
   }
 
-  testFormValidation() {
-    if (this.validator.allValid()) {
-      return true;
-    } else {
-      this.validator.showMessages();
-      this.forceUpdate();
-      return false;
-    }
-  }
+  // testFormValidation() {
+  //   if (this.validator.allValid()) {
+  //     return true;
+  //   } else {
+  //     this.validator.showMessages();
+  //     this.forceUpdate();
+  //     return false;
+  //   }
+  // }
 
   // Handlers to trigger events that will take place in the main thread
 
-  //** --------- CONFIGURE CLUSTER + KUBECTL, TRIGGERED WHEN USER SUBMITS CLUSTER DATA ----------- **//
-  handleConfigAndMakeNodes(e) {
-    e.preventDefault();
+  //** --------- CONFIGURE CLUSTER + KUBECTL ------------------ **//
+  //Triggered when user submits cluster data
 
+  handleConfigAndMakeNodes() {
+   // e.preventDefault();
+
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     console.log('Submit Clicked!!! State:', this.state);
 
     const clusterData = {
@@ -115,19 +129,44 @@ class AwsContainer extends Component {
         clusterName: this.state.clusterName, 
     }
 
-    console.log("clusterdata:", clusterData);
-  
-    if (this.testFormValidation()) {
-      console.log("All form data passed validation");
-      console.log('data to send!!', this.state);
+    const clusterDataSchema = yup.object().strict().shape({
+      iamRoleName: yup.string().required(),
+      vpcStackName: yup.string().required(),
+      clusterName: yup.string().required(),
+    })
+    clusterDataSchema.validate(clusterData, { abortEarly: false })
+      .then((data) => {
+        console.log("!!!!!!!!!!!!!!!!!!!!!!error didnt ocurr")
 
-      ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
-      this.setState({ ...this.state, awsComponentSubmitted: true});
-
-    } else {
-      console.log("Invalid or missing data entry");
-    }
+        console.log('from clusterDataSchema data:', data);
+        this.setState({ ...this.state, iamRoleName: '',  vpcStackName: '', clusterName: '', errors: {}, awsComponentSubmitted: true })
+        console.log("ready to send data")
+        // ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
+      })
+      .catch((err) => {
+        console.log("!!!!!!!!!!!!!!!an error occurred");
+        console.log('!!!!!!!!!!!!!!!!!!err', err);
+        const errorObj = err.inner.reduce((acc, error) => {
+          console.log("Error: ", error)
+          acc[error.path] = error.message;
+          return acc;
+        }, {});
+        this.setState({ ...this.state, errors: errorObj })
+      })
   }
+  // 
+
+  //   if (this.testFormValidation()) {
+  //     console.log("All form data passed validation");
+  //     console.log('data to send!!', this.state);
+
+  //     ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
+  //     this.setState({ ...this.state, awsComponentSubmitted: true});
+
+  //   } else {
+  //     console.log("Invalid or missing data entry");
+  //   }
+  // }
   
   //Activated after last step in cluster creation process is complete. If kubectl is successfully configured:
   handleNewNodes(event, data) {
@@ -138,13 +177,7 @@ class AwsContainer extends Component {
     //** --------- CREATING CLUSTER, TRIGGERED AS AWS SENDS STATUS & ERROR DATA BACK -------- **//
 
     handleStatusChange(event, data) {
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!data", data)
-      console.log("data.type: ", data.type);
-      console.log("data.status: ", data.status);
-      console.log("state before: ", this.state);
-  
       this.setState({ ...this.state, [data.type]: data.status});
-      console.log("state after: ", this.state);
     }
   
     handleError(event, data) {
@@ -153,7 +186,6 @@ class AwsContainer extends Component {
       console.log("error message: ", data.type)
       console.log("error message: ", data.status)
       console.log("error message: ", data.errorMessage)
-  
   
       this.setState({ 
         ...this.state, 
@@ -170,13 +202,14 @@ class AwsContainer extends Component {
     const x = e.screenX;
     const y = e.screenY;
     const newCoords = {top: y, left: x}
-    this.setState({...this.state, text_info: aws_info, mouseCoords: newCoords, showInfo: true})
+    this.setState({...this.state, textInfo: aws_info, mouseCoords: newCoords, showInfo: true})
   }
 
   //HIDE INFO BUTTON CLICK HANDLER
   hideInfoHandler(){
     this.setState({...this.state, showInfo: false})
   }
+
   
   render() {
     const { 
@@ -189,32 +222,44 @@ class AwsContainer extends Component {
       clusterStatus,
       workerNodeStatus,
       kubectlConfigStatus,
-      errorMessage
+
+      textInfo,
+      showInfo,
+      mouseCoords, 
+
+      displayError,
+      errorMessage,
+      errors,
      } = this.state;
+
+     console.log("this.state in AWS: ", this.state);
+
+
 
     return (
       <div className="aws_cluster_page_container">
-        {this.state.showInfo === true && (
+        {showInfo === true && (
         <HelpInfoComponent 
-          text_info={this.state.text_info}
+          textInfo={textInfo}
           hideInfoHandler={this.hideInfoHandler}
-          mouseCoords={this.state.mouseCoords}
+          mouseCoords={mouseCoords}
         />
         )}
 
         {this.state.awsComponentSubmitted === false && (
           <AWSComponent 
-            text_info={this.state.text_info}
-            hideInfoHandler={this.hideInfoHandler}
-            mouseCoords={this.state.mouseCoords}
             handleChange={this.handleChange}
-            validator={this.validator}         
 
             iamRoleName={iamRoleName}
             vpcStackName={vpcStackName}
             clusterName={clusterName}
+            errors={errors}
       
             handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
+
+            textInfo={textInfo}
+            hideInfoHandler={this.hideInfoHandler}
+            mouseCoords={mouseCoords}
             displayInfoHandler={this.displayInfoHandler}
             grabCoords={this.grabCoords}
             /> 

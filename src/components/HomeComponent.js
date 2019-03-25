@@ -1,8 +1,9 @@
 import React from "react";
 import ActionButton from './Buttons/ActionButton'
 import HelpInfoButton from './Buttons/HelpInfoButton'
+
 // import '../styles.css'
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 const HomeComponent = props => {
 
@@ -10,46 +11,39 @@ const HomeComponent = props => {
     awsAccessKeyId,
     awsSecretAccessKey,
     awsRegion,
-    text_info,
-    showInfo,
-    mouseCoords,
     
     errors,
-    display_error,
   } = props;
 
 
   return (
       <div className='home_page_form_container'>
-        {/* CENTER CONTAINER HEADER */}
+        {/* HOME CONTAINER HEADER */}
         <div className='home_page_form_container_header'>
           <h3>Create and Deploy your Kubernetes Cluster</h3>
         </div>
+
         {/* TEXT JUST BELOW THE HEADER */}
         <div className='home_page_form_container_text'>
           <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. Kre8 is here to simplify everything for you. Let’s get started!</p>
         </div>
 
-        {/* INPUT FORM CONTAINER */}
+        {/* HOME INPUT FORM CONTAINER */}
         <div className='home_page_form_container_inputs'>
           <div className='home_page_form_container_inputs_item'>
-            <input id='awsAccessKeyId' onChange={props.handleChange} placeholder='AWS Access Key ID' value={props.awsAccessKeyId} type="text" name="awsAccessKeyId" />
+            <input id='awsAccessKeyId' onChange={props.handleChange} placeholder='AWS Access Key ID' value={awsAccessKeyId} type="text" name="awsAccessKeyId" />
             <div className='errorClass'>{errors.awsAccessKeyId}</div>
-
-
           </div>
+          
           <div className='home_page_form_container_inputs_item'>
-            <input id='awsSecretAccessKey' onChange={props.handleChange} placeholder='Secret Access Key' value={props.awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
+            <input id='awsSecretAccessKey' onChange={props.handleChange} placeholder='Secret Access Key' value={awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
             <div className='errorClass'>{errors.awsSecretAccessKey}</div>
-
-            
           </div>
-
         </div>
         {/* BUTTONS AT THE BOTTOM CONTAINER */}
         <div className='home_page_form_container_buttons'>
           <div className='home_page_form_container_buttons_item'>
-            <select className="dropDown" value={props.awsRegion} onChange={props.handleFormChange}>
+            <select className="dropDown" value={awsRegion} onChange={props.handleFormChange}>
               <option value='default'>Select Region</option>
               <option value='us-west-2'>US West (Oregon) (us-west-2)</option>
               <option value='us-east-1'>US East (N. Virginia) (us-east-1)</option>

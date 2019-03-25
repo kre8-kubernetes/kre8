@@ -28,11 +28,11 @@ const CreateMenuItemComponent = (props) => {
   })
 
   return (
-    <div onClick={handleCloseFormItem} className="popup_form">
+    // <div onClick={handleCloseFormItem} className="popup_form">
       <div className='popup_form_inner'>
-        <button onClick={toggleCreateMenuItem} className='close_popup_button'>X</button>
         <div className='create_menu_item_component_container'>
           {/**** TITLE  ****/}
+          <button onClick={toggleCreateMenuItem} className='close_popup_button'>X</button>
           <div className='create_menu_item_component_title'>
             <h2>Create a {componentNameFormatted}</h2>
           </div>
@@ -49,7 +49,7 @@ const CreateMenuItemComponent = (props) => {
           </div>
         </div>
       </div>
-    </div>
+    // </div>
   )
 }
 

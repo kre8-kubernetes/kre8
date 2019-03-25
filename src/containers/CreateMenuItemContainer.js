@@ -212,8 +212,9 @@ class CreateMenuItemContainer extends Component {
     const { menuItemToShow } = this.props;
     const inputDataToShow = this.state.inputData[menuItemToShow];
     const handleFunction = menuItemToShow === 'pod' ? this.handleCreatePod :
-    menuItemToShow === 'service' ? this.handleCreateService :
-    menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
+                           menuItemToShow === 'service' ? this.handleCreateService :
+                           menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
+    
     const textObj = {pod: 'Pod text here', service: 'Service text here', deployment: 'deployment text here'};
     const text = textObj[menuItemToShow];
 

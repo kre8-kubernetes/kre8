@@ -596,6 +596,13 @@ body {
   outline: none;
 }
 
+.aws_cluster_form_container_button_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}
+
 /**************************************************/
 /************ AWS Loading Component Styling ************/
 /**************************************************/

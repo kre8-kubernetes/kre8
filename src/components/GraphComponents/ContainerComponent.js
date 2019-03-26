@@ -5,23 +5,23 @@ import { Group } from '@vx/group';
 
 
 const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
-  const peach = '#fd9b93';
-  const pink = '#fe6e9e';
-  const blue = '#03c0dc';
-  const green = '#26deb0';
-  const plum = '#71248e';
-  const lightpurple = '#374469';
-  const white = '#ffffff';
-  const citrus = '#ddf163';
-  const lightBlue = '#CDEDF0';
+  // const peach = '#fd9b93';
+  // const pink = '#fe6e9e';
+  // const blue = '#03c0dc';
+  // const green = '#26deb0';
+  // const plum = '#71248e';
+  // const lightpurple = '#374469';
+  // const white = '#ffffff';
+  // const citrus = '#ddf163';
+  // const lightBlue = '#CDEDF0';
   
 
   const bg = '#1D2541';
   const stroke = '#82EFFF';
   const strokeWidth = .65;
   // const radius = 13;
-  const height = 18;
-  const width = 12;
+  const height = 20;
+  const width = 14;
   
   return (
     <Group top={top} left={left}>

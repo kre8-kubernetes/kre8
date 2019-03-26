@@ -8,7 +8,7 @@ const AWSLoadingComponent = props => {
   return (
     <div className='aws_loading_form_component'>
       <div className='aws_loading_form_component_header'>
-        <h3>Cluster Status</h3>
+        Cluster Status
       </div>
 
       <div className='aws_loading_component_explainer_text'>

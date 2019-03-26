@@ -83,7 +83,6 @@ function createWindowAndSetEnvironmentVariables () {
       if (index < 4) {
         process.env[arr[0]] = arr[1];
         console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
-        console.log("process.env[ 'CLUSTER_NAME' ]: ", process.env[ 'CLUSTER_NAME' ])
       }
       if (index === 4) {
 
@@ -110,7 +109,7 @@ function createWindowAndSetEnvironmentVariables () {
 
   win.on('closed', () => win = null)
 
-  childWin = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: true, frame: false, backgroundColor: '#243B55', center: true  });
+  childWin = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: true, frame: false, backgroundColor: '#141E30', center: true  });
 
   // childWin.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index_child.html')}`);
 
@@ -521,7 +520,7 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
 //BUILD A SERVICE YAML
 ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
   try {
-    console.log("data:", data);
+    console.log("CREATE_SERVICE data:", data);
     // CREATE AND WRITE THE SERVICE FILE FROM TEMPLATE
     const serviceYamlTemplate = kubernetesTemplates.createServiceYamlTemplate(data);
     let stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate, null, 2);
@@ -544,7 +543,7 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
   try {
     console.log("data from replicas: ", data);
-    if (data.replicas > 10) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 10 or less.`)
+    if (data.replicas > 5) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 5 or less.`)
     // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
     const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
     let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);

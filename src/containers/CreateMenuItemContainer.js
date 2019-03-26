@@ -127,7 +127,7 @@ class CreateMenuItemContainer extends Component {
       containerName: yup.string().required().lowercase(),
       image: yup.string().required().lowercase(),
       containerPort: yup.number().required().positive(),
-      replicas: yup.number().required().positive().max(10),
+      replicas: yup.number().required().positive().max(4),
     })
     schema.validate(clone, { abortEarly: false })
       .then((data) => {

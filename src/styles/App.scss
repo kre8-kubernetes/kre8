@@ -79,12 +79,18 @@ body {
 
 .errorClass {
   color: red;
-  font-size: 10px;
+  font-size: 9px;
+  margin-top: 2px;
+  margin-left: 7px;
+  opacity: .9;
+  font-family: Lato-Regular;
 }
 
-/**************************************************/
-/**************** BUTTON COMPONENTS ***************/
-/**************************************************/
+
+//**************************************************/
+//*********** BUTTON COMPONENTS ********************/
+//**************************************************/
+
 
 /* ACTION BUTTON */
 .action_button {
@@ -159,9 +165,12 @@ body {
   color: #5188ff;
 }
 
-/**************************************************/
-/*********** HOME PAGE COMPONENT STYLING **********/
-/**************************************************/
+
+//**************************************************/
+//*********** HOME PAGE CONTAINER STYLING **********/
+//**************************************************/
+
+//TODO: Braden do we need the 3 color options for multiple browsers?
 
 .home_page_container {
   display: flex;
@@ -182,11 +191,11 @@ body {
   justify-content: center;
   align-items: center;
   width: 55%;
+  height: 50%;
   min-width: 500px;
   max-width: 525px;
   min-height: 380px;
   max-height: 390px;
-  height: 50%;
   background: $accent-darkest-blue;
   border-radius: 6px;
   padding-bottom: 20px;
@@ -195,49 +204,57 @@ body {
 
 .home_page_form_container_header {
   display: flex;
-  flex-direction: row;
   justify-content: center;
+
+  font-family: Lato-Bold;
+  font-size: 22px;
   color: $light-font;
-  width: 100%;
-  font-size: 20px;
-  font-weight: bold;
+
+  // flex-direction: row;
+  // width: 100%;
+
 }
 
-.home_page_form_container_text {
+.home_page_form_container_intro_text {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  font-family: Lato-Regular;
+  color: $light-font;
   font-size: 16px;
   line-height: 23px;
-  font-weight: lighter;
-  color: $light-font;
   width: 83%;
 }
 
-.home_page_form_container_inputs {
+.home_page_form_container_input_field_area {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 83%;
-  opacity: 0.7;
+  // opacity: 0.7;
 }
+
 .home_page_form_container_inputs_item {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   width: 100%;
   padding: 8px 0;
+  opacity: 0.7;
+
 }
 
 .home_page_form_container_inputs_item input {
   width: 100%;
   height: 33px;
+  min-height: 33px;
   border-radius: 5px;
   background: $accent-darkest-blue;
-  color: $input-color;
   border: 1px solid $input-color;
+
+  font-family: Lato-light;
   font-size: 14px;
-  font-weight: thin;
+  color: $input-color;
 }
 
 .home_page_form_container_inputs_item input[type=text] {
@@ -270,17 +287,20 @@ body {
 .home_page_form_container_buttons_item select {
   width: 200px;
   height: 33px;
-  background: hsl(213, 69%, 9%);
+  min-height: 33px;
+  background: $accent-darkest-blue;
   border: 1px solid $input-color;
   border-radius: 5px;
   color: $input-color;
+  font-family: Lato-light;
   font-size: 14px;
   opacity: 0.7;
 }
 
-/**************************************************/
-/*********** HOME PAGE COMPONENT STYLING **********/
-/**************************************************/
+
+//**************************************************/
+//*********** HOME PAGE COMPONENT STYLING **********/
+//**************************************************/
 
 
 // .home_page_post_config_form_container {
@@ -333,10 +353,10 @@ body {
     ". . . . ."; 
 }
 
-.home_page_form_container_header {
+.loading_form_container_text {
   font-family: lato;
   /* color: #D2EEF7; */
-  color: white;
+  color: $light-font;
   grid-area: text;
   text-align: center;
   font-size: 17px;
@@ -433,9 +453,9 @@ body {
   }
 
 
-/**************************************************/
-/*********** HELP INFO COMPONENT STYLING **********/
-/**************************************************/
+//**************************************************/
+//*********** HELP INFO COMPONENT STYLING **********/
+//**************************************************/
 
 .help_info_component {
   background-color: $cluster-element-text-color;
@@ -474,9 +494,9 @@ body {
   align-items: center;
 }
 
-/**************************************************/
-/************** AWS CONTAINER STYLING *************/
-/**************************************************/
+//**************************************************/
+//************** AWS CONTAINER STYLING *************/
+//**************************************************/
 
 .aws_cluster_page_container {
   display: flex;
@@ -486,7 +506,8 @@ body {
   width: 100%;
   height: 100vh;
   background: $bg-color-main;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main);  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main); 
+  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: Lato;
 }
@@ -505,84 +526,76 @@ body {
   background: $accent-darkest-blue;
   border-radius: 6px;
   padding-bottom: 20px;
-
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
-/* 
-.aws_cluster_form_container:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-} */
 
 .aws_cluster_form_container_header {
   display: flex;
+  justify-content: center;
+
+  font-family: Lato-Bold;
+  font-size: 22px;
+  color: $light-font;
+
+  //do we need?
   flex-direction: column;
   align-items: center;
-  color: $light-font;
-  width: 90%;
-  font-size: 20px;
-  font-weight: bold;
-  padding-top: 20px;
+  // width: 90%;
+  
+  padding-top: 30px;
 }
 
-.aws_cluster_form_timing_text {
-
+.aws_cluster_form_intro_text {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  font-family: Lato-Regular;
+  color: $light-font;
   font-size: 16px;
   line-height: 23px;
-  font-weight: lighter;
-  color: $light-font;
   width: 83%;
-  margin-bottom: 20px;
 }
 
 .aws_cluster_form_input_field_area {
-  display: block;
-  text-align: center;
-  margin: auto;
-  width: 83%;
-}
-
-.aws_cluster_form_container_input {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  color: $light-font;
-  /* width: 80%; */
-  margin-right: 10px;
-  min-height: 38px;
-  min-width: 375px;
+  align-items: center;
+  width: 83%;
+  // opacity: 0.7;
 
-
-  /* height: 40px;
-  width: 250px; */
+  // display: block;
+  // text-align: center;
+  // margin: auto;
 }
 
-.aws_cluster_form_container_explainer_text {
-  font-size: 10px;
-  font-weight: lighter;
-  /* color: #E2F0F2; */
-  color: $input-color;
-  opacity: 30%;
-  margin-left: 6px;
-  margin-bottom: 5px;
-  padding-bottom: 10px;
-  padding-top: 3px;
-  font-style: italic;
+.aws_cluster_form_container_inputs_item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 0;
+  opacity: 0.7;
+
 }
 
-.aws_cluster_form_container_input input {
+.aws_cluster_form_container_inputs_item input {
   width: 100%;
   height: 33px;
+  min-height: 33px;
   border-radius: 5px;
   background: $accent-darkest-blue;
-  color: $input-color;
   border: 1px solid $input-color;
+
+  font-family: Lato-light;
   font-size: 14px;
-  font-weight: thin;
-  opacity: 0.7;
+  color: $input-color;
+  padding-left: 10px;
+
+  // opacity: 0.7;
+  // margin-top: 7px;
 }
+
+
 
 .aws_cluster_form_container_input input[type=text] {
   padding-left: 10px;
@@ -594,6 +607,16 @@ body {
 
 .aws_cluster_form_container_input input:focus {
   outline: none;
+}
+
+.aws_cluster_form_container_explainer_text {
+  font-size: 10px;
+  font-family: Lato-regular;
+  color: $light-font;
+  margin-left: 6px;
+  margin-bottom: 3px;
+  // padding-bottom: 10px;
+  padding-top: 2px;
 }
 
 .aws_cluster_form_container_button_item {
@@ -635,9 +658,8 @@ body {
   display: flex;
   flex-direction: row;
   text-align: center;
+  font-family: Lato-Regular;
   font-size: 16px;
-  line-height: 23px;
-  font-weight: lighter;
   color: $light-font;
   margin-top: 20px;
   margin-bottom: 20px;
@@ -659,9 +681,9 @@ body {
   flex-direction: column;
   align-items: rigth;
   justify-content: right;
+  font-family: Lato-Regular;
   font-size: 16px;
   line-height: 23px;
-  font-weight: lighter;
   color: $light-font;
 } 
 
@@ -670,7 +692,7 @@ body {
   flex-direction: column;
   text-align: center;
   line-height: 13px;
-  font-weight: lighter;
+  font-family: Lato-Regular;
   color: red;
   font-size: 10px;
   margin-bottom: 10px;
@@ -1110,6 +1132,7 @@ body {
 .create_menu_item_component_inputs_item input {
   width: 100%;
   height: 33px;
+  min-height: 33px;
   border-radius: 5px;
   background: $accent-darkest-blue;
   color: $input-color;
@@ -1177,7 +1200,7 @@ body {
   font-size: 12px;
   line-height: 21px;
   color: $cluster-element-text-color;
-  font-family: Lato-regular;
+  font-family: Lato-Regular;
 }
 
 // .cluster_info_major {

@@ -297,6 +297,14 @@ body {
   opacity: 0.7;
 }
 
+.home_page_form_container_buttons_item select:focus {
+  outline: none;
+}
+
+#home_form_buttom {
+  margin-right: 12px;
+}
+
 
 //**************************************************/
 //*********** HOME PAGE COMPONENT STYLING **********/
@@ -595,17 +603,15 @@ body {
   // margin-top: 7px;
 }
 
-
-
-.aws_cluster_form_container_input input[type=text] {
+.aws_cluster_form_container_inputs_item input[type=text] {
   padding-left: 10px;
 }
 
-.aws_cluster_form_container_input input::placeholder {
+.aws_cluster_form_container_inputs_item input::placeholder {
   color: $input-color;
 }
 
-.aws_cluster_form_container_input input:focus {
+.aws_cluster_form_container_inputs_item input:focus {
   outline: none;
 }
 
@@ -622,8 +628,12 @@ body {
 .aws_cluster_form_container_button_item {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
   width: 100%;
+}
+
+#aws_form_button{
+  margin-right: 40px;
 }
 
 /**************************************************/

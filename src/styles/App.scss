@@ -97,7 +97,6 @@ body {
   width: 110px;
   height: 40px;
   background: $accent-darkest-blue;
-  margin-right: 15px;
   border-radius: 5px;
   color: $button-background;
   border: 1px solid $button-background;
@@ -148,16 +147,17 @@ body {
 /* CLOSE POPUP BUTTON */
 .close_popup_button {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 17.5px;
+  font-size: 18px;
   color: #818181;
-  background: $accent-darkest-blue;
-  align-self: flex-end;
+  background: none;
   border: none;
-  margin: 3px 2px;
+  margin-left: auto;
+  padding-top: 3px;
 }
 
 .close_popup_button:hover {
   opacity: 0.7;
+  cursor: pointer;
 }
 
 .close_popup_button:focus {
@@ -619,6 +619,13 @@ body {
   padding-top: 2px;
 }
 
+.aws_cluster_form_container_button_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}
+
 /**************************************************/
 /************ AWS Loading Component Styling ************/
 /**************************************************/
@@ -829,15 +836,13 @@ body {
 
 .popup_info_inner {
   position: absolute;
-  left: 25%;
-  right: 25%;
+  left: 30%;
+  right: 30%;
   top: 10%;
-  bottom: 10%;
-  min-width: 350px;
-  margin: auto;
+  min-width: 375px;
   background: $accent-darkest-blue;
   color: $cluster-element-text-color;
-  padding: 30px;
+  padding: 20px 25px 20px 25px;
   border-radius: 6px;
   font-family: Lato;
   border: 1px solid lightgray;
@@ -1073,11 +1078,10 @@ body {
 
 .popup_form_inner {
   position: absolute;
-  left: 25%;
-  right: 25%;
-  top: 25%;
-  bottom: 25%;
-  margin: auto;
+  left: 31%;
+  right: 31%;
+  top: 17%;
+  min-width: 375px;
   background: $accent-darkest-blue;
   color: $light-font;
   border-radius: 6px;
@@ -1099,10 +1103,13 @@ body {
   width: 100%;
   justify-content: center;
   align-content: flex-start;
+  margin: 3px 0;
 }
+
 .create_menu_item_component_title h2 {
-  margin: 2px 0;
+  margin: 0;
 }
+
 
 .create_menu_item_component_inputs {
   display: flex;
@@ -1115,7 +1122,7 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin: 10px 0px;
+  margin-top: 16px;
 }
 
 .create_menu_item_component_inputs_item h4 {
@@ -1152,6 +1159,7 @@ body {
   flex-direction: row;
   width: 100%;
   justify-content: space-around;
+  margin: 20px 0;
 }
 
 

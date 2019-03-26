@@ -2,7 +2,7 @@ import React from 'react';
 import InfoBodyComponent from './InfoBodyComponent'
 import ActionButton from '../Buttons/ActionButton'
 
-const ApiserverInfoComponet = (props) => {
+const ApiserverInfoComponent = (props) => {
   const { data } = props;
 
   return (
@@ -15,4 +15,4 @@ const ApiserverInfoComponet = (props) => {
   )
 }
 
-export default ApiserverInfoComponet
+export default ApiserverInfoComponent

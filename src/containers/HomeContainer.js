@@ -4,6 +4,8 @@ import { Switch, Route, withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 
 import * as yup from 'yup';
+import { setLocale } from 'yup';
+
 
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
@@ -29,17 +31,10 @@ const mapDispatchToProps = dispatch => ({
     dispatch(actions.setCredentialStatusTrue())
   },
 
-  setCredentialStatusFalse: () => {
-    dispatch(actions.setCheckCredentialsFalse())
-  },
-
   setCheckCredentialsTrue: () => {
     dispatch(actions.setCheckCredentialsTrue())
   },
 
-  // setCheckCredentialsFalse: () => {
-  //   dispatch(actions.setCheckCredentialsFalse())
-  // }
 });
 
 
@@ -55,7 +50,7 @@ class HomeContainer extends Component {
       textInfo:'',
       showInfo: false,
       mouseCoords: {},
-      // credentialStatus: false,
+      credentialStatus: false,
 
       errors: {},
       displayError: false,
@@ -110,7 +105,10 @@ class HomeContainer extends Component {
 
   processAWSCredentialStatus(event, data) {
 
+    console.log("credential status data: ", data);
+
     if (data === true) {
+      (console.log("status is true"))
       this.props.setCredentialStatusTrue();
       this.props.history.push('/cluster');
     } else {
@@ -131,11 +129,21 @@ class HomeContainer extends Component {
       awsSecretAccessKey: this.state.awsSecretAccessKey,
       awsRegion: this.state.awsRegion
     }
+
+    setLocale({
+      mixed: {
+        notOneOf: 'AWS Region is required',
+      },
+      string: {
+        min: 'Please enter a valid AWS credential',
+        max: 'Please enter a valid AWS credential',
+      },
+    });
   
     const awsCredentialsSchema = yup.object().strict().shape({
-      awsAccessKeyId: yup.string().required().min(15).max(40),
-      awsSecretAccessKey: yup.string().required().min(30).max(50),
-      awsRegion: yup.mixed().required().notOneOf(['default'])
+      awsAccessKeyId: yup.string().required('Please enter a valid AWS Access Key Id').min(15).max(40),
+      awsSecretAccessKey: yup.string().required('Please enter a valid AWS Secret Access Key').min(30).max(50),
+      awsRegion: yup.mixed().required('AWS Region is required').notOneOf(['default'])
     })
     awsCredentialsSchema.validate(awsCredentials, { abortEarly: false })
       .then((data) => {

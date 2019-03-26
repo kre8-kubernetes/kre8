@@ -20,23 +20,23 @@ const HomeComponent = props => {
       <div className='home_page_form_container'>
         {/* HOME CONTAINER HEADER */}
         <div className='home_page_form_container_header'>
-          <h3>Create and Deploy your Kubernetes Cluster</h3>
+          Create and Deploy your Kubernetes Cluster
         </div>
 
         {/* TEXT JUST BELOW THE HEADER */}
-        <div className='home_page_form_container_text'>
-          <p>Creating and launching your Kubernetes cluster to the Amazon cloud can be a long and complicated process. Kre8 is here to simplify everything for you. Let’s get started!</p>
+        <div className='home_page_form_container_intro_text'>
+          <p>Creating and launching a Kubernetes cluster to the Amazon cloud can be a long and complicated process. Kre8 is here to simplify everything for you. Let’s get started!</p>
         </div>
 
         {/* HOME INPUT FORM CONTAINER */}
-        <div className='home_page_form_container_inputs'>
+        <div className='home_page_form_container_input_field_area'>
           <div className='home_page_form_container_inputs_item'>
             <input id='awsAccessKeyId' onChange={props.handleChange} placeholder='AWS Access Key ID' value={awsAccessKeyId} type="text" name="awsAccessKeyId" />
             <div className='errorClass'>{errors.awsAccessKeyId}</div>
           </div>
           
           <div className='home_page_form_container_inputs_item'>
-            <input id='awsSecretAccessKey' onChange={props.handleChange} placeholder='Secret Access Key' value={awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
+            <input id='awsSecretAccessKey' onChange={props.handleChange} placeholder='AWS Secret Access Key' value={awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
             <div className='errorClass'>{errors.awsSecretAccessKey}</div>
           </div>
         </div>

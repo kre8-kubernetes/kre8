@@ -15,11 +15,6 @@ export const setCheckCredentialsTrue = () => ({
   type: types.CHECK_CREDENTIALS_TRUE
 })
 
-export const setCheckCredentialsFalse = () => ({
-  type: types.CHECK_CREDENTIALS_FALSE
-})
-
-
 //** --------------------------------------------------------------------------- **//
 //** ------------- NAVBAR ACTIONS ---------------------------------------------- **//
 //** --------------------------------------------------------------------------- **//

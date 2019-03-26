@@ -29,8 +29,8 @@ import { Link } from 'react-router-dom';
 const HomeLoadingComponent = props => {
   return (
     <div className='home_page_post_config_form_container'>
-      <div className='home_page_form_container_header'>
-        <h3>Connecting to Kre8...</h3>
+      <div className='loading_form_container_text'>
+        Connecting to Kre8...
       </div>
         <div className="ball"></div>
         <div className="ball1"></div>

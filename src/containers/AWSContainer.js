@@ -129,10 +129,16 @@ class AwsContainer extends Component {
         clusterName: this.state.clusterName, 
     }
 
+    setLocale({
+      string: {
+        max: `Entry must be under ${max} characters`,
+      },
+    });
+
     const clusterDataSchema = yup.object().strict().shape({
-      iamRoleName: yup.string().required(),
-      vpcStackName: yup.string().required(),
-      clusterName: yup.string().required(),
+      iamRoleName: yup.string().required('IAM Role Name is required').max(64),
+      vpcStackName: yup.string().required('VPC Stack Name is required').max(128),
+      clusterName: yup.string().required('Cluster Name is required').max(100),
     })
     clusterDataSchema.validate(clusterData, { abortEarly: false })
       .then((data) => {

@@ -1,7 +1,7 @@
 import * as types from '../actionTypes.js'
 
 const initialState = {
-  credentialStatus: false,
+  credentialStatus: true,
   hasCheckedCredentials: false
 };
 

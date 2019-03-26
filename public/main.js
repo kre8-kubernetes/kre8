@@ -83,7 +83,6 @@ function createWindowAndSetEnvironmentVariables () {
       if (index < 4) {
         process.env[arr[0]] = arr[1];
         console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
-        console.log("process.env[ 'CLUSTER_NAME' ]: ", process.env[ 'CLUSTER_NAME' ])
       }
       if (index === 4) {
 

@@ -31,6 +31,10 @@ const mapDispatchToProps = dispatch => ({
     dispatch(actions.setCredentialStatusTrue())
   },
 
+  setCredentialStatusFalse: () => {
+    dispatch(actions.setCredentialStatusFalse())
+  },
+
   setCheckCredentialsTrue: () => {
     dispatch(actions.setCheckCredentialsTrue())
   },

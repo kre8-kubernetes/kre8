@@ -509,11 +509,37 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
     const stderr = child.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);
     // SEND STDOUT TO RENDERER PROCESS
+    await awsHelperFunctions.timeout(1000 * 5)
     win.webContents.send(events.HANDLE_NEW_POD, stdout);
   } catch (err) {
     console.log('err', err);
   }
 });
+
+
+  //** ----- DELETE A NODE ---------- **//
+  ipcMain.on(events.DELETE_NODE, async (event, data) => {
+    console.log("delete triggered on main")
+    try{
+      console.log('data.data.name: ', data);
+      // CREATE AND WRITE THE POD FILE FROM TEMPLATE
+      // const podYamlTemplate = kubernetesTemplates.createPodYamlTemplate(data);
+      // let stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate, null, 2);
+      // await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `pod_${data.podName}.json`, stringifiedPodYamlTemplate)
+      // DELETE THE POD VIA kubectl
+      const deploymentName = data.data.name.split('-')[0];
+      const child = spawnSync('kubectl', ['delete', 'deployment', deploymentName]);
+      const stdout = child.stdout.toString();
+      const stderr = child.stderr.toString();
+      console.log('stdout', stdout, 'stderr', stderr);
+      // SEND STDOUT TO RENDERER PROCESS
+      await awsHelperFunctions.timeout(1000 * 10)
+      win.webContents.send(events.HANDLE_DELETE_NODE);
+    } catch (err) {
+      console.log('err', err);
+    }
+  });
+
 
 //**-----------------------SERVICE--------------------------------**//
 

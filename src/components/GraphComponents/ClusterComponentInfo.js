@@ -29,6 +29,7 @@ const ClusterInfoComponent = (props) => {
             <PodInfoComponent 
               data={props.nodeInfoToShow.data}
               hideNodeInfo={props.hideNodeInfo}
+              deleteNode={props.deleteNode}
             />
           : (componentType === "Container") ? 
             <ContainerInfoComponent

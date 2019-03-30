@@ -172,6 +172,12 @@ class CreateMenuItemContainer extends Component {
       })
   }
 
+
+
+
+
+
+
   //**--------------INCOMING DATA FROM MAIN THREAD-----------------**//
 
   //INCOMING POD DATA
@@ -215,7 +221,7 @@ class CreateMenuItemContainer extends Component {
                            menuItemToShow === 'service' ? this.handleCreateService :
                            menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
     
-    const textObj = {pod: 'Pod text here', service: 'Service text here', deployment: 'deployment text here'};
+    const textObj = {pod: 'Pod text here', service: 'Service text here', deployment: <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/">deployment text here</a>};
     const text = textObj[menuItemToShow];
 
     return (

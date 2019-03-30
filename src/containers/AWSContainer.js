@@ -20,9 +20,9 @@ const mapStateToProps = store => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  setNewRole: (text) => {
-    dispatch(actions.setRole(text))
-  },
+  // setNewRole: (text) => {
+  //   dispatch(actions.setRole(text))
+  // },
   hideCreateButton: () => {
     dispatch(actions.hideCreateButton())
   }
@@ -106,11 +106,11 @@ class AwsContainer extends Component {
         clusterName: this.state.clusterName, 
     }
 
-    setLocale({
-      string: {
-        max: `Entry must be under ${max} characters`,
-      },
-    });
+    // setLocale({
+    //   string: {
+    //     max: `Entry must be under ${max} characters`,
+    //   },
+    // });
 
     const clusterDataSchema = yup.object().strict().shape({
       iamRoleName: yup.string().required('IAM Role Name is required').max(64),

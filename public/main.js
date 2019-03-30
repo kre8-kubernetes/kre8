@@ -1,138 +1,137 @@
-//** --------- NPM MODULES ---------------- 
+//* --------- NPM MODULES ----------------
 require('dotenv').config();
-const { electron, app, BrowserWindow, ipcMain } = require('electron');
+
+//* --------- ELECTRON MODULES -----------
+const { app, BrowserWindow, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
 
-//** --------- NODE APIS ---------------- 
+//* --------- NODE APIS -------------------
 const fs = require('fs');
 const fsp = require('fs').promises;
-const { spawn, spawnSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const path = require('path');
-//const mkdirp = require('mkdirp');
-//const fsp = require('fs').promises;
 
-//** --------- AWS SDK ELEMENTS --------- 
-const IAM = require('aws-sdk/clients/iam');
+//* --------- AWS SDK ELEMENTS ------------
+// AWS Security Token Service
 const STS = require('aws-sdk/clients/sts');
-//const EKS = require('aws-sdk/clients/eks');
-//const CloudFormation = require('aws-sdk/clients/cloudformation');
 
-//** --------- INSTANTIATE AWS CLASSES --- 
+//* --------- INSTANTIATE AWS CLASSES -----
 const sts = new STS();
-//const eks = new EKS();
-//const cloudformation = new CloudFormation();
-//const awsConfig = new AWSConfig();
-//const iam = new IAM();
-//const eks = new EKS({ region: REGION });
-//const cloudformation = new CloudFormation({ region: REGION });
 
-//** --------- IMPORT MODULES -----------
-const events = require('../eventTypes.js')
+//* --------- IMPORT KRE8 MODULES ---------
+const events = require('../eventTypes.js');
+const awsProps = require(__dirname + '/awsPropertyNames'); 
 const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
 const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
 const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemplates');
 const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
-const awsProps = require(__dirname + '/awsPropertyNames'); 
 
-//const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
+// const awsParameters = require(__dirname + '/helperFunctions/awsParameters');
 
-//** --------- IMPORT DOCUMENT TEMPLATES - 
-// const iamRolePolicyDocument = require(__dirname + '/sdkAssets/samples/iamRoleTrustPolicy.json');
-// const stackTemplate = require(__dirname + '/sdkAssets/samples/amazon-stack-template-eks-vpc-real.json');
+//* --------- .ENV Variables --------------
+const { PORT, REACT_DEV_TOOLS_PATH } = process.env;
 
-//** --------- .ENV Variables -------------- 
-//let REGION = process.env.REGION;
-const PORT = process.env.PORT;
-const REACT_DEV_TOOLS_PATH = process.env.REACT_DEV_TOOLS_PATH;
-
-//Declare window object
+// Declare window object
 let win;
 let childWin;
 
-console.time('init')
+// TODO: Delete
+console.time('init');
 
-//** --------- CREATE WINDOW OBJECT -------------------------------------------- **//
-//Invoked with app.on('ready'): 
-//Insures IAM Authenticator is installed and configured 
-//sets necessary environment variables
-//creates application window, serves either dev or production version of app and
+//* --------- CREATE WINDOW OBJECT -------------------------------------------- *//
+
+
+// //* 
+// * Invoked with app.on('ready'): 
+// * Insures IAM Authenticator is installed and configured 
+// * sets necessary environment variables
+// * reates application window, serves either dev or production version of app and
+// */
+
 function createWindowAndSetEnvironmentVariables () {
 
+  // TODO: add to application package
   awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator();
-  
   if (isDev) {
     BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
-    process.env['APPLICATION_PATH'] = __dirname;
+    process.env.APPLICATION_PATH = __dirname;
 
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
-
   } else {
     awsEventCallbacks.setEnvVarsAndMkDirsInProd();
-    //TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
+    // TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
   }
 
-  //If awsCredentials file has already been created, use data to set additional required 
-  //AWS Environment Variables AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION
+  // If awsCredentials file has already been created, use data to set additional required
+  // AWS Environment Variables AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION
+
   if (fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json')) {
     const readCredentialsFile = fs.readFileSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(readCredentialsFile);
 
-    console.log("process.env['KUBECONFIG']: ", process.env['KUBECONFIG']);
-
     Object.entries(parsedCredentialsFile).forEach((arr, index) => {
       if (index < 4) {
         process.env[arr[0]] = arr[1];
-        console.log("process.env[arr[0]]: ", [arr[0]], process.env[arr[0]]);
       }
       if (index === 4) {
-
-        console.log("arr[0]:", arr[0]);
-        console.log("arr[1]", arr[1]);
-
-        process.env['KUBECONFIG'] = process.env['HOME'] + `/.kube/config-${arr[1]}`;
+        process.env.KUBECONFIG = process.env.HOME + `/.kube/config-${arr[1]}`;
       }
     });
-
-    console.log("process.env['KUBECONFIG'] after: ", process.env['KUBECONFIG']);
   }
 
 
-  win = new BrowserWindow({ show: false, height: 720, width: 930, minHeight: 550, minWidth: 700,  backgroundColor: '#243B55', center: true });
+  win = new BrowserWindow({
+    show: false,
+    height: 720,
+    width: 930,
+    minHeight: 550,
+    minWidth: 700,
+    backgroundColor: '#243B55',
+    center: true,
+  });
 
-  win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`)
-  
+  win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`); 
   win.once('ready-to-show', () => {
     win.show();
     childWin.close();
+    // TODO: delete
     console.timeEnd('init');
-  })
+  });
 
-  win.on('closed', () => win = null)
+  win.on('closed', () => win = null);
 
-  childWin = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: true, frame: false, backgroundColor: '#141E30', center: true  });
+  childWin = new BrowserWindow({
+    height: 325,
+    width: 325,
+    maxHeight: 325,
+    maxWidth: 325,
+    minHeight: 325,
+    minWidth: 325,
+    parent: win,
+    show: true,
+    frame: false,
+    backgroundColor: '#141E30',
+    center: true,
+  });
 
   // childWin.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index_child.html')}`);
 
-  childWin.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
-
-
   // childWin.loadURL(`file://${path.join(__dirname, 'dist/index_child.html')}`);
 
+  childWin.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
+
   childWin.once('ready-to-show', () => {
-    childWin.show()
-  })
+    childWin.show();
+  });
 
   childWin.on('closed', () => {
     childWin = null;
-  })
+  });
 
 }
 
-
-
-
-//** ------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------------- **//
-//** ------- Check credentials file to determine if user needs to configure the application **// 
+//* ------- EXECUTES ON EVERY OPENING OF APPLICATION ------------------------------------- *//
+//* ------- Check credentials file to determine if user needs to configure the application */
 
 //If kubectl has not yet been configured and/or the credential's file hasn't been created yet (meaning user hasn't entered credentials previously), 
 //serve HomeComponent page, else, serve HomeComponentPostCredentials
@@ -140,8 +139,6 @@ ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
 
   try {
     const credentialStatusToReturn = await awsEventCallbacks.returnKubectlAndCredentialsStatus(data);
-    
-    console.log("Kubectl + Credential Status: ", credentialStatusToReturn)
     win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatusToReturn);
 
   } catch (err) {
@@ -150,8 +147,8 @@ ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
   }
 })
 
-//** --------- EXECUTES ON USER'S FIRST INTERACTION WITH APP ---------------- **//
-//** --------- Verifies and Configures User's AWS Credentials --------------- **//
+//* --------- EXECUTES ON USER'S FIRST INTERACTION WITH APP ---------------- *//
+//* --------- Verifies and Configures User's AWS Credentials --------------- *//
 //Function fires when user submits AWS credential information on homepage
 //Writes credentials to file, sets environment variables with data from user,
 //verifies with AWS API that credentials were correct, if so user is advanced to
@@ -189,10 +186,10 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
   }
 })
 
-//** --------- AWS SDK EVENTS-------------------------------------------------------------------------------- **//
-//** --------- EXECUTES ON FIRST INTERACTION WITH APP WHEN USER SUBMITS DATA FROM PAGE 2, AWS CONTAINER ----- **//
-//** --------- Takes 10 - 15 minutes to complete ------------------------------------------------------------ **//
-//** --------- Creates AWS account components: IAM Role, Stack, Cluster, Worker Node Stack ------------------ **//
+//* --------- AWS SDK EVENTS-------------------------------------------------------------------------------- *//
+//* --------- EXECUTES ON FIRST INTERACTION WITH APP WHEN USER SUBMITS DATA FROM PAGE 2, AWS CONTAINER ----- *//
+//* --------- Takes 10 - 15 minutes to complete ------------------------------------------------------------ *//
+//* --------- Creates AWS account components: IAM Role, Stack, Cluster, Worker Node Stack ------------------ *//
 
 
 ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
@@ -212,7 +209,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
      await awsHelperFunctions.updateCredentialsFile(awsProps.CLUSTER_NAME, data.clusterName);
 
 
-    //** --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------------------------
+    //* --------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS ---------------------------
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     console.log('============  ipcMain.on(events.CREATE_IAM_ROLE)... =================')
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -249,7 +246,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     win.webContents.send(events.HANDLE_ERRORS, errorData);
   }
 
-  // //** ------ CREATE AWS STACK + SAVE RETURNED DATA IN FILE ---- **//
+  // //* ------ CREATE AWS STACK + SAVE RETURNED DATA IN FILE ---- *//
   //Takes approx 1 - 1.5 mins to create stack and get data back from AWS
 
   try {
@@ -284,7 +281,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   }
 
-  // //** --------- CREATE AWS CLUSTER ---------------------------------- **//
+  // //* --------- CREATE AWS CLUSTER ---------------------------------- *//
 
   try {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -314,7 +311,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     win.webContents.send(events.HANDLE_ERRORS, errorData);
   }
 
-  //** ----- CREATE KUBECONFIG FILE, CONFIGURE KUBECTL, CREATE WORKER NODE STACK ---------- **//
+  //* ----- CREATE KUBECONFIG FILE, CONFIGURE KUBECTL, CREATE WORKER NODE STACK ---------- *//
 
   try {
 
@@ -350,7 +347,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   }
 
-  //** ----- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS ---------- **//
+  //* ----- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS ---------- *//
 
   try {
 
@@ -391,12 +388,12 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 })
 
 
-//** --------------------------------------------------------------------------- **//
-//** ----------------------- FUNCTION TO SEND CLUSTER DATA TO DISPLAY ---------- **//
-//** --------------------------------------------------------------------------- **//
+//* --------------------------------------------------------------------------- *//
+//* ----------------------- FUNCTION TO SEND CLUSTER DATA TO DISPLAY ---------- *//
+//* --------------------------------------------------------------------------- *//
 
-//** ------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------------- **//
-//** ------- Check credentials file to determine if user needs to configure the application **// 
+//* ------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------------- *//
+//* ------- Check credentials file to determine if user needs to configure the application *// 
 //If credential's file hasn't been created yet (meaning user hasn't entered credentials previously), 
 //serve HomeComponent page, else, serve HomeComponentPostCredentials
 ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
@@ -429,14 +426,14 @@ ipcMain.on(events.GET_CLUSTER_DATA, async (event, data) => {
 
 
 
-//** --------------------------------------------------------------------------- **//
-//** ----------------------- KUBECTL EVENTS ------------------------------------ **//
-//** --------------------------------------------------------------------------- **//
+//* --------------------------------------------------------------------------- *//
+//* ----------------------- KUBECTL EVENTS ------------------------------------ *//
+//* --------------------------------------------------------------------------- *//
 
-//**----------- CREATE A KUBERNETES POD ------------------------------ **//
+//*----------- CREATE A KUBERNETES POD ------------------------------ *//
 //Pass user input into createPodYamlTemplate method to generate template
 //Create a pod based on that template, launch pod via kubectl
-//** ---------- Get the Master Node ------------------- **//
+//* ---------- Get the Master Node ------------------- *//
 // run 'kubectl get svc -o=json' to get the services, one element in the item array will contain
 // the apiserver. result.items[x].metadata.labels.component = "apiserver"
 // this is our master node so send this back
@@ -458,7 +455,7 @@ ipcMain.on(events.GET_MASTER_NODE, async (event, data) => {
   }
 })
 
-//** -------------- Get the Worker Nodes -------------------- **//
+//* -------------- Get the Worker Nodes -------------------- *//
 
 ipcMain.on(events.GET_WORKER_NODES, async (event, data) => {
   try {
@@ -477,7 +474,7 @@ ipcMain.on(events.GET_WORKER_NODES, async (event, data) => {
 })
 
 
-//** -------------- Get the Containers and Pods -------------------- **//
+//* -------------- Get the Containers and Pods -------------------- *//
 
 ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
   try {
@@ -494,7 +491,7 @@ ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
   }
 })
 
-//**----------- CREATE A POD -------------------------------- **//
+//*----------- CREATE A POD -------------------------------- *//
 
 ipcMain.on(events.CREATE_POD, async (event, data) => {
   try{
@@ -515,7 +512,7 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
   }
 });
 
-//**-----------------------SERVICE--------------------------------**//
+//*-----------------------SERVICE--------------------------------*//
 
 //BUILD A SERVICE YAML
 ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
@@ -537,7 +534,7 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
   }
 });
 
-//**--------------DEPLOYMENT-----------------**//
+//*--------------DEPLOYMENT-----------------*//
 
 //CREATE DEPLOYMENT 
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
@@ -560,7 +557,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
   }
 });
 
-//** --------- APPLICATION OBJECT EVENT EMITTERS ---------- **//
+//* --------- APPLICATION OBJECT EVENT EMITTERS ---------- *//
 // HANDLE app ready
 app.on('ready', createWindowAndSetEnvironmentVariables);
 

@@ -9,7 +9,7 @@ import { pointRadial } from 'd3-shape';
 import MasterNodeComponent from './MasterNodeComponent';
 import WorkerNodeComponent from './WorkerNodeComponent';
 import PodComponent from './PodComponent';
-import ContainerComponent from './ContainerComponent'
+import ContainerComponent from './ContainerComponent';
 
 const TreeGraphComponent = (props) => {
   const peach = '#fd9b93';

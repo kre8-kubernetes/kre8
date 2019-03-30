@@ -72,6 +72,20 @@ body {
   src: url('./Lato/Lato-Regular.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Lato-Light';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./Lato/Lato-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Lato-Bold';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./Lato/Lato-Bold.ttf') format('truetype');
+}
+
 // @font-face {
 //   font-family: myFirstFont;
 //   src: url("https://fonts.googleapis.com/css?family=Ubuntu");
@@ -241,7 +255,6 @@ body {
   width: 100%;
   padding: 8px 0;
   opacity: 0.7;
-
 }
 
 .home_page_form_container_inputs_item input {

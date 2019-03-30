@@ -6,7 +6,6 @@ import { ipcRenderer } from 'electron';
 import * as yup from 'yup';
 import { setLocale } from 'yup';
 
-
 import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 
@@ -16,7 +15,6 @@ import HomeComponentPostCredentials from '../components/HomeComponentPostCredent
 
 
 //** -------------- REDUX ----------------------------------- **//
-
 const mapStateToProps = (store) => ({
   credentialStatus: store.aws.credentialStatus,
   hasCheckedCredentials: store.aws.hasCheckedCredentials
@@ -38,7 +36,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 
-
+//** -------------- REACT COMPONENT ----------------------------------- **//
 class HomeContainer extends Component {
   constructor(props) {
     super(props);
@@ -56,7 +54,7 @@ class HomeContainer extends Component {
       displayError: false,
     }
 
-    //TODO: do we use displayError?
+    //TODO: do we use displayError from state?
 
     this.handleChange = this.handleChange.bind(this);
     this.setAWSCredentials = this.setAWSCredentials.bind(this);
@@ -198,9 +196,6 @@ class HomeContainer extends Component {
 
   render() { 
 
-    console.log('this.state.awsRegion', this.state.awsRegion);
-    console.log("this.state inside home container: ", this.state)
-
     const {
       awsAccessKeyId,
       awsSecretAccessKey,
@@ -219,13 +214,13 @@ class HomeContainer extends Component {
       <div className="home_page_container">
         {showInfo === true && (
         <HelpInfoComponent 
-    I  textInfo={textInfo}
-          hideInfoHandler={this.hideInfoHandler}
+    I     textInfo={textInfo}
           mouseCoords={mouseCoords}
+          hideInfoHandler={this.hideInfoHandler}    
         />
         )}
 
-        { ((this.props.hasCheckedCredentials === false) && (this.props.credentialStatus === true)) ?
+        {((this.props.hasCheckedCredentials === false) && (this.props.credentialStatus === true)) ?
 
           <HomeComponentPostCredentials
             handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials}
@@ -236,16 +231,15 @@ class HomeContainer extends Component {
           <HomeComponent 
             handleChange={this.handleChange}
             handleFormChange={this.handleFormChange}
-
-            awsAccessKeyId={awsAccessKeyId}
-            awsSecretAccessKey={awsSecretAccessKey}
-            awsRegion={awsRegion}
-            errors={errors}
-
             setAWSCredentials={this.setAWSCredentials} 
 
             displayInfoHandler={this.displayInfoHandler}
             grabCoords={this.grabCoords}
+
+            awsAccessKeyId={awsAccessKeyId}
+            awsSecretAccessKey={awsSecretAccessKey}
+            awsRegion={awsRegion}
+            errors={errors}            
           />
         }
         
@@ -255,6 +249,4 @@ class HomeContainer extends Component {
 }
 
 
-
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HomeContainer));
-

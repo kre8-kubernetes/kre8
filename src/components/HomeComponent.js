@@ -2,9 +2,6 @@ import React from "react";
 import ActionButton from './Buttons/ActionButton'
 import HelpInfoButton from './Buttons/HelpInfoButton'
 
-// import '../styles.css'
-// import { Link } from 'react-router-dom';
-
 const HomeComponent = props => {
 
   const {
@@ -13,6 +10,11 @@ const HomeComponent = props => {
     awsRegion,
     
     errors,
+
+    handleChange,
+    handleFormChange,
+    setAWSCredentials,
+    displayInfoHandler
   } = props;
 
 
@@ -31,19 +33,20 @@ const HomeComponent = props => {
         {/* HOME INPUT FORM CONTAINER */}
         <div className='home_page_form_container_input_field_area'>
           <div className='home_page_form_container_inputs_item'>
-            <input id='awsAccessKeyId' onChange={props.handleChange} placeholder='AWS Access Key ID' value={awsAccessKeyId} type="text" name="awsAccessKeyId" />
+            <input id='awsAccessKeyId' onChange={handleChange} placeholder='AWS Access Key ID' value={awsAccessKeyId} type="text" name="awsAccessKeyId" />
             <div className='errorClass'>{errors.awsAccessKeyId}</div>
           </div>
           
           <div className='home_page_form_container_inputs_item'>
-            <input id='awsSecretAccessKey' onChange={props.handleChange} placeholder='AWS Secret Access Key' value={awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
+            <input id='awsSecretAccessKey' onChange={handleChange} placeholder='AWS Secret Access Key' value={awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
             <div className='errorClass'>{errors.awsSecretAccessKey}</div>
           </div>
         </div>
+        
         {/* BUTTONS AT THE BOTTOM CONTAINER */}
         <div className='home_page_form_container_buttons'>
           <div className='home_page_form_container_buttons_item'>
-            <select className="dropDown" value={awsRegion} onChange={props.handleFormChange}>
+            <select className="dropDown" value={awsRegion} onChange={handleFormChange}>
               <option value='default'>Select Region</option>
               <option value='us-west-2'>US West (Oregon) (us-west-2)</option>
               <option value='us-east-1'>US East (N. Virginia) (us-east-1)</option>
@@ -61,8 +64,8 @@ const HomeComponent = props => {
             </select>
           </div>
           <div className='home_page_form_container_buttons_item'>
-            <ActionButton clickHandler={props.setAWSCredentials} buttonText={`Submit`} />
-            <HelpInfoButton clickHandler={props.displayInfoHandler} />
+            <ActionButton clickHandler={setAWSCredentials} buttonText={`Submit`} />
+            <HelpInfoButton clickHandler={displayInfoHandler} />
           </div>
         </div>
         <div style={{ alignSelf: 'flex-start', marginLeft: '50px', marginTop: '-8px' }} className='errorClass'>{errors.awsRegion}</div>

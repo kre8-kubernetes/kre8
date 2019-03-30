@@ -106,11 +106,11 @@ class AwsContainer extends Component {
         clusterName: this.state.clusterName, 
     }
 
-    setLocale({
-      string: {
-        max: `Entry must be under ${max} characters`,
-      },
-    });
+    // setLocale({
+    //   string: {
+    //     max: `Entry must be under ${max} characters`,
+    //   },
+    // });
 
     const clusterDataSchema = yup.object().strict().shape({
       iamRoleName: yup.string().required('IAM Role Name is required').max(64),
@@ -121,8 +121,8 @@ class AwsContainer extends Component {
       .then((data) => {
 
         this.setState({ ...this.state, iamRoleName: '',  vpcStackName: '', clusterName: '', errors: {}, awsComponentSubmitted: true })
-        //TODO Uncomment
-        // ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
+        console.log("ready to send data")
+        ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
       })
       .catch((err) => {
 

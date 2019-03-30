@@ -58,6 +58,8 @@ class CreateMenuItemContainer extends Component {
 
     this.handleCreateService = this.handleCreateService.bind(this);
     this.handleNewService = this.handleNewService.bind(this);
+
+    this.showKubeDocs = this.showKubeDocs.bind(this);
   }
 
   //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
@@ -172,6 +174,12 @@ class CreateMenuItemContainer extends Component {
       })
   }
 
+
+
+
+
+
+
   //**--------------INCOMING DATA FROM MAIN THREAD-----------------**//
 
   //INCOMING POD DATA
@@ -207,6 +215,15 @@ class CreateMenuItemContainer extends Component {
     this.setState({ ...this.state, inputData: { ...this.state.inputData, service: emptyServiceObj } });
   }
 
+  //SHOW KUBE DOCS
+  showKubeDocs(){
+    ipcRenderer.send(events.SHOW_KUBE_DOCS_DEPLOYMENT);
+  }
+
+
+
+
+
   render() {
     console.log('errsss', this.state.errors);
     const { menuItemToShow } = this.props;
@@ -215,7 +232,7 @@ class CreateMenuItemContainer extends Component {
                            menuItemToShow === 'service' ? this.handleCreateService :
                            menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
     
-    const textObj = {pod: 'Pod text here', service: 'Service text here', deployment: 'deployment text here'};
+    const textObj = {pod: 'Pod text here', service: 'Service text here', deployment: <button onClick={this.showKubeDocs}>See Kubernetes docs</button>};
     const text = textObj[menuItemToShow];
 
     return (

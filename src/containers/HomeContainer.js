@@ -29,6 +29,10 @@ const mapDispatchToProps = dispatch => ({
     dispatch(actions.setCredentialStatusTrue())
   },
 
+  setCredentialStatusFalse: () => {
+    dispatch(actions.setCredentialStatusFalse())
+  },
+
   setCheckCredentialsTrue: () => {
     dispatch(actions.setCheckCredentialsTrue())
   },
@@ -186,7 +190,7 @@ class HomeContainer extends Component {
     const x = e.screenX;
     const y = e.screenY;
     const newCoords = {top: y, left: x}
-    this.setState({...this.staI, textInfo: home_info, mouseCoords: newCoords, showInfo: true})
+    this.setState({...this.state, textInfo: home_info, mouseCoords: newCoords, showInfo: true})
   }
 
   //HIDE INFO BUTTON CLICK HANDLER

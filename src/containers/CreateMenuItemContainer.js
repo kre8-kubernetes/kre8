@@ -104,7 +104,7 @@ class CreateMenuItemContainer extends Component {
       .then((data) => {
         console.log('from the then', data)
         this.setState({ ...this.state, errors: { ...this.state.errors, pod: {} } })
-        // ipcRenderer.send(events.CREATE_POD, this.state.inputData.pod);
+        ipcRenderer.send(events.CREATE_POD, this.state.inputData.pod);
       })
       .catch((err) => {
         console.log('err', err);
@@ -133,7 +133,7 @@ class CreateMenuItemContainer extends Component {
       .then((data) => {
         console.log('from the then', data)
         this.setState({ ...this.state, errors: { ...this.state.errors, deployment: {} } })
-        //   ipcRenderer.send(events.CREATE_DEPLOYMENT, this.state.inputData.deployment);
+          ipcRenderer.send(events.CREATE_DEPLOYMENT, this.state.inputData.deployment);
       })
       .catch((err) => {
         console.log('err', err);
@@ -160,7 +160,7 @@ class CreateMenuItemContainer extends Component {
       .then((data) => {
         console.log('from the then', data)
         this.setState({ ...this.state, errors: { ...this.state.errors, service: {} } })
-        // ipcRenderer.send(events.CREATE_SERVICE, this.state.inputData.service);
+        ipcRenderer.send(events.CREATE_SERVICE, this.state.inputData.service);
       })
       .catch((err) => {
         console.log('err', err);

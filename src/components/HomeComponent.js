@@ -64,7 +64,7 @@ const HomeComponent = props => {
             </select>
           </div>
           <div className='home_page_form_container_buttons_item'>
-            <ActionButton clickHandler={setAWSCredentials} buttonText={`Submit`} />
+            <ActionButton id={'home_form_buttom'} clickHandler={setAWSCredentials} buttonText={`Submit`} />
             <HelpInfoButton clickHandler={displayInfoHandler} />
           </div>
         </div>

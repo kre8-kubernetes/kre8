@@ -12,8 +12,6 @@ import AWSComponent from '../components/AWSComponent'
 import AWSLoadingComponent from '../components/AWSLoadingComponent'
 import HelpInfoComponent from '../components/HelpInfoComponent';
 
-// import SimpleReactValidator from 'simple-react-validator';
-
 
 //** -------------- REDUX ----------------------------------- **//
 
@@ -30,6 +28,8 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
+
+//** -------------- Declare React Component ------------------- **//
 class AwsContainer extends Component {
   constructor(props) {
     super(props);
@@ -45,35 +45,29 @@ class AwsContainer extends Component {
       clusterStatus:'—',
       workerNodeStatus: '—',
       kubectlConfigStatus: '—',
+
       errorMessage: '',
+      displayError: false,
 
       textInfo: '',
       showInfo: false,
       mouseCoords: {},
 
       errors: {},
-      displayError: false,
-
     }
 
-    // this.validator = new SimpleReactValidator({
-    //   element: (message, className) => <div className="errorClass">{message}</div>
-    // });
+    //TODO: Do we use displayError?
 
     this.handleChange = this.handleChange.bind(this);
-
     this.handleStatusChange = this.handleStatusChange.bind(this);
-
     this.handleConfigAndMakeNodes = this.handleConfigAndMakeNodes.bind(this);
+   
     this.handleNewNodes = this.handleNewNodes.bind(this);
 
     this.handleError = this.handleError.bind(this);
 
     this.displayInfoHandler = this.displayInfoHandler.bind(this);
     this.hideInfoHandler = this.hideInfoHandler.bind(this);
-
-    // this.testFormValidation = this.testFormValidation.bind(this);
-
   }
 
 
@@ -87,7 +81,7 @@ class AwsContainer extends Component {
     ipcRenderer.on(events.HANDLE_NEW_NODES, this.handleNewNodes);
   }
 
-  // On component unmount, unsubscribe to listeners
+  //On component unmount, unsubscribe to listeners
   componentWillUnmount() {
     ipcRenderer.removeListener(events.HANDLE_STATUS_CHANGE, this.handleStatusChange);
     ipcRenderer.removeListener(events.HANDLE_ERRORS, this.handleError);
@@ -102,27 +96,10 @@ class AwsContainer extends Component {
     this.setState({ [e.target.id]: e.target.value });
   }
 
-  // testFormValidation() {
-  //   if (this.validator.allValid()) {
-  //     return true;
-  //   } else {
-  //     this.validator.showMessages();
-  //     this.forceUpdate();
-  //     return false;
-  //   }
-  // }
-
-  // Handlers to trigger events that will take place in the main thread
 
   //** --------- CONFIGURE CLUSTER + KUBECTL ------------------ **//
   //Triggered when user submits cluster data
-
   handleConfigAndMakeNodes() {
-   // e.preventDefault();
-
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    console.log('Submit Clicked!!! State:', this.state);
-
     const clusterData = {
         iamRoleName: this.state.iamRoleName,
         vpcStackName: this.state.vpcStackName,
@@ -142,41 +119,23 @@ class AwsContainer extends Component {
     })
     clusterDataSchema.validate(clusterData, { abortEarly: false })
       .then((data) => {
-        console.log("!!!!!!!!!!!!!!!!!!!!!!error didnt ocurr")
 
-        console.log('from clusterDataSchema data:', data);
         this.setState({ ...this.state, iamRoleName: '',  vpcStackName: '', clusterName: '', errors: {}, awsComponentSubmitted: true })
         console.log("ready to send data")
         ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
       })
       .catch((err) => {
-        console.log("!!!!!!!!!!!!!!!an error occurred");
-        console.log('!!!!!!!!!!!!!!!!!!err', err);
+
         const errorObj = err.inner.reduce((acc, error) => {
-          console.log("Error: ", error)
           acc[error.path] = error.message;
           return acc;
         }, {});
         this.setState({ ...this.state, errors: errorObj })
       })
   }
-  // 
-
-  //   if (this.testFormValidation()) {
-  //     console.log("All form data passed validation");
-  //     console.log('data to send!!', this.state);
-
-  //     ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
-  //     this.setState({ ...this.state, awsComponentSubmitted: true});
-
-  //   } else {
-  //     console.log("Invalid or missing data entry");
-  //   }
-  // }
   
   //Activated after last step in cluster creation process is complete. If kubectl is successfully configured:
   handleNewNodes(event, data) {
-    console.log('kubectl has been configured and worker nodes have been made from the main thread:', data);
     this.props.history.push('/cluster');
   }
 
@@ -187,18 +146,11 @@ class AwsContainer extends Component {
     }
   
     handleError(event, data) {
-      console.log("state from error: ", this.state);
-      console.log("data", data)
-      console.log("error message: ", data.type)
-      console.log("error message: ", data.status)
-      console.log("error message: ", data.errorMessage)
-  
       this.setState({ 
         ...this.state, 
         [data.type]: data.status,
         errorMessage: data.errorMessage,
-      }),
-      console.log("state after error: ", this.state);
+      })
     }
 
   //** --------- More Info Component -------------- **//
@@ -216,7 +168,6 @@ class AwsContainer extends Component {
     this.setState({...this.state, showInfo: false})
   }
 
-  
   render() {
     const { 
       iamRoleName,
@@ -238,9 +189,6 @@ class AwsContainer extends Component {
       errors,
      } = this.state;
 
-     console.log("this.state in AWS: ", this.state);
-
-
 
     return (
       <div className="aws_cluster_page_container">
@@ -255,18 +203,17 @@ class AwsContainer extends Component {
         {this.state.awsComponentSubmitted === false && (
           <AWSComponent 
             handleChange={this.handleChange}
+            handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
+            hideInfoHandler={this.hideInfoHandler}
+            displayInfoHandler={this.displayInfoHandler}
 
             iamRoleName={iamRoleName}
             vpcStackName={vpcStackName}
             clusterName={clusterName}
             errors={errors}
       
-            handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
-
             textInfo={textInfo}
-            hideInfoHandler={this.hideInfoHandler}
             mouseCoords={mouseCoords}
-            displayInfoHandler={this.displayInfoHandler}
             grabCoords={this.grabCoords}
             /> 
           )}
@@ -292,8 +239,3 @@ class AwsContainer extends Component {
 }
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AwsContainer));
-
-    {/* handleCreateRole={this.handleCreateRole} 
-          emitInstallAuthenticator={this.emitInstallAuthenticator}
-          handleCreateTechStack={this.handleCreateTechStack}
-          handleCreateCluster={this.handleCreateCluster} */}

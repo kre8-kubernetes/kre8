@@ -48,7 +48,7 @@ class TreeGraphContainer extends Component {
     this.toolTipOn = this.toolTipOn.bind(this);
     this.toolTipOff = this.toolTipOff.bind(this);
     this.deleteNode = this.deleteNode.bind(this);
-    this.handleDeleteNode = this.handleDeleteNode.bind(this);
+    this.handleRerenderNode = this.handleRerenderNode.bind(this);
   }
 
   componentDidMount() {
@@ -58,7 +58,7 @@ class TreeGraphContainer extends Component {
     ipcRenderer.on(events.HANDLE_MASTER_NODE, this.handleMasterNode);
     ipcRenderer.on(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
     ipcRenderer.on(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
-    ipcRenderer.on(events.HANDLE_DELETE_NODE, this.handleDeleteNode);
+    ipcRenderer.on(events.HANDLE_RERENDER_NODE, this.handleRerenderNode);
     this.getMasterNode();
     this.getWorkerNodes();
     this.getContainersAndPods();
@@ -68,7 +68,7 @@ class TreeGraphContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_MASTER_NODE, this.handleMasterNode);
     ipcRenderer.removeListener(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
     ipcRenderer.removeListener(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
-    ipcRenderer.removeListener(events.HANDLE_DELETE_NODE, this.handleDeleteNode)
+    ipcRenderer.removeListener(events.HANDLE_RERENDER_NODE, this.handleRerenderNode)
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
@@ -179,13 +179,16 @@ class TreeGraphContainer extends Component {
     ipcRenderer.send(events.DELETE_NODE, this.state.nodeInfoToShow)
   }
 
-  handleDeleteNode(){
-    console.log("handle delete node called");
+  handleRerenderNode(){
+    console.log("handle rerender node called");
     //remove the node from the visualizer
     //call to get data on the current nodes -- this will update state and trigger a re-render of the page
+    ipcRenderer.send(events.START_LOADING_ICON, 'close');
+    console.log('hit start loading icon inside handle render node handler')
     this.getMasterNode();
     this.getWorkerNodes();
     this.getContainersAndPods();
+
   }
 
 

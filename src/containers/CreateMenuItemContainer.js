@@ -16,7 +16,7 @@ const mapStateToProps = store => ({
 const mapDispatchToProps = dispatch => ({
   toggleCreateMenuItem: () => {
     dispatch(actions.toggleCreateMenuItem())
-  }
+  },  
 });
 
 class CreateMenuItemContainer extends Component {
@@ -133,9 +133,12 @@ class CreateMenuItemContainer extends Component {
     })
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
+        this.props.toggleCreateMenuItem();
         console.log('from the then', data)
         this.setState({ ...this.state, errors: { ...this.state.errors, deployment: {} } })
           ipcRenderer.send(events.CREATE_DEPLOYMENT, this.state.inputData.deployment);
+          ipcRenderer.send(events.START_LOADING_ICON, 'open')
+          console.log('sent start loading icon on front from createmenuitemcontainer')
       })
       .catch((err) => {
         console.log('err', err);
@@ -201,6 +204,7 @@ class CreateMenuItemContainer extends Component {
       return acc;
     }, {});
     this.setState({ ...this.state, inputData: { ...this.state.inputData, deployment: emptyDeploymentObj } });
+
   }
 
 

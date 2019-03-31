@@ -126,7 +126,25 @@ function createWindowAndSetEnvironmentVariables () {
     childWin = null;
   })
 
+
+//Kube Docs Window
+let kubeDocsDeploymentWindow = new BrowserWindow({ width: 600, height: 400, show:false});
+kubeDocsDeploymentWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/controllers/deployment/')
+ipcMain.on(events.SHOW_KUBE_DOCS_DEPLOYMENT, function(){
+  kubeDocsDeploymentWindow.show()
+})
+kubeDocsDeploymentWindow.on('close', () =>{
+  kubeDocsDeploymentWindow.hide();
+})
 }
+
+
+
+
+
+
+
+
 
 
 

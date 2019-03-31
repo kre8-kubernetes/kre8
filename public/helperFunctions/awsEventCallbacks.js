@@ -1,30 +1,30 @@
-//* --------- NODE APIS ---------------- 
+//* --------- NODE APIS ----------------
 const fs = require('fs');
 const fsp = require('fs').promises;
 const mkdirp = require('mkdirp');
 
-//* --------- AWS SDK ELEMENTS --------- 
+//* --------- AWS SDK ELEMENTS ---------
 const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 
-//* --------- INSTANTIATE AWS CLASSES --- 
+//* --------- INSTANTIATE AWS CLASSES ---
 const iam = new IAM();
 const eks = new EKS({ region: process.env.REGION });
 const cloudformation = new CloudFormation({ region: process.env.REGION });
 
-//* --------- IMPORT MODULES ----------- 
+//* --------- IMPORT MODULES -----------
 const onDownload = require(__dirname + '/onDownloadFunctions');
 const awsHelperFunctions = require(__dirname + '/awsHelperFunctions'); 
 const awsParameters = require(__dirname + '/awsParameters');
 const awsProps = require(__dirname + '/../awsPropertyNames'); 
 const kubectlConfigFunctions = require(__dirname + '/kubectlConfigFunctions');
 
-//* --------- IMPORT DOCUMENT TEMPLATES - 
+//* --------- IMPORT DOCUMENT TEMPLATES -
 const iamRolePolicyDocument = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/amazon-stack-template-eks-vpc-real.json');
 
-//* --------- DECLARE EXPORT OBJECT ---------------------------------- 
+//* --------- DECLARE EXPORT OBJECT ----------------------------------
 const awsEventCallbacks = {};
 
 //* --------- EXECUTES ON DOWNLOAD -------------------------------------------- *//
@@ -33,14 +33,12 @@ const awsEventCallbacks = {};
 /*
 * To communicate with AWS, user must have the aws-iam-authenticator installed
 * These functions check if authenticator is already installed in user's bin folder
-* If not, the authenticator will be installed, and the path will be defined in the user's 
+* If not, the authenticator will be installed, and the path will be defined in the user's
 * .bash_profile file, which is where AWS specifies it should be
 */
-
 awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator = async () => {
-
   try {
-    const iamAuthenticatorExists = fs.existsSync(process.env['HOME'] + '/bin/aws-iam-authenticator');
+    const iamAuthenticatorExists = fs.existsSync(`${process.env.HOME}/bin/aws-iam-authenticator`);
 
     if (!iamAuthenticatorExists) {
       onDownload.installIAMAuthenticator();
@@ -54,64 +52,55 @@ awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator = async () => {
 };
 
 awsEventCallbacks.setEnvVarsAndMkDirsInDev = () => {
-  process.env['AWS_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/AWS_Assets/';
-  process.env['KUBECTL_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/KUBECTL_Assets/'
-  mkdirp.sync(process.env['AWS_STORAGE'] + 'AWS_Private/');
-  mkdirp.sync(process.env['KUBECTL_STORAGE']);
+  process.env.AWS_STORAGE = `${process.env.APPLICATION_PATH}/Storage/AWS_Assets/`;
+  process.env.KUBECTL_STORAGE = `${process.env.APPLICATION_PATH}/Storage/KUBECTL_Assets/`;
+  mkdirp.sync(`${process.env.AWS_STORAGE}AWS_Private/`);
+  mkdirp.sync(process.env.KUBECTL_STORAGE);
 };
-
 
 awsEventCallbacks.setEnvVarsAndMkDirsInProd = () => {
-  process.env['APPLICATION_PATH'] = process.env['HOME'] + '/Library/Application\ Support/KRE8';
-  process.env['AWS_STORAGE'] = process.env['APPLICATION_PATH'] + `/Storage/AWS_Assets/`;
-  process.env['KUBECTL_STORAGE'] = process.env['APPLICATION_PATH'] + '/Storage/KUBECTL_Assets'
-  mkdirp.sync(process.env['AWS_STORAGE'] + 'AWS_Assets/');
-  mkdirp.sync(process.env['KUBECTL_STORAGE']);
+  process.env.APPLICATION_PATH = `${process.env.HOME}/Library/Application\ Support/KRE8`;
+  process.env.AWS_STORAGE = `${process.env.APPLICATION_PATH}/Storage/AWS_Assets/`;
+  process.env.KUBECTL_STORAGE = `${process.env.APPLICATION_PATH}/Storage/KUBECTL_Assets`;
+  mkdirp.sync(`${process.env.AWS_STORAGE}AWS_Assets/`);
+  mkdirp.sync(process.env.KUBECTL_STORAGE);
 };
-
 
 //* ------- EXECUTES ON EVERY OPENING OF APPLICATION --------------- *//
 //* ------- Check credentials file to determine if user needs to configure the application **// 
 awsEventCallbacks.returnKubectlAndCredentialsStatus = async (data) => {
-
   try {
-
     const kubectlStatus = await kubectlConfigFunctions.testKubectlStatus();
+    const awsCredentialFileExists = fs.existsSync(`${process.env.AWS_STORAGE}AWS_Private/awsCredentials.json`);
 
-    const awsCredentialFileExists = fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json');
+    console.log('kubectlStatus: ', kubectlStatus);
+    console.log('awsCredentialFileExists: ', awsCredentialFileExists);
 
-    console.log('kubectlStatus: ', kubectlStatus)
-    console.log('awsCredentialFileExists: ', awsCredentialFileExists)
-
-
-    if ((kubectlStatus === true) &&  awsCredentialFileExists) {
-
-      const readAWSCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
+    if ((kubectlStatus === true) && awsCredentialFileExists) {
+      const readAWSCredentialsFile = await fsp.readFile(`${process.env.AWS_STORAGE}AWS_Private/awsCredentials.json`, 'utf-8');
 
       const parsedCredentialsFile = JSON.parse(readAWSCredentialsFile);
       console.log('this is the parsed obj', parsedCredentialsFile);
       console.log('STATUS!!!!!!', parsedCredentialsFile.STATUS);
 
-      return (parsedCredentialsFile.STATUS === awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED) ? true : false;
-    } else {
-      return false;
+      if (parsedCredentialsFile.STATUS === awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED) return true;
     }
-
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
-}
+    return false;
+  } catch (err) {
+    console.error('From returnKubectlAndCredentialsStatus:', err);
+    return false;
+  }
+};
 
 //* --------- CONFIGURE AWS CREDENTIALS ------------------------------ *//
-//Check if awsCredentials.json file exits, meaning user has configured KRE8 application
-//previously. If not, create the file, adding user input, and setting environment variables for
-//AWS credentials and region.
+// Check if awsCredentials.json file exits, meaning user has configured KRE8 application
+// previously. If not, create the file, adding user input, and setting environment variables for
+// AWS credentials and region.
 awsEventCallbacks.configureAWSCredentials = async (data) => {
 
-  if (fs.existsSync(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json')) {
+  if (fs.existsSync(process.env.AWS_STORAGE + 'AWS_Private/awsCredentials.json')) {
 
-    const awsCredentialsFile = await fsp.readFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', 'utf-8');
+    const awsCredentialsFile = await fsp.readFile(process.env.AWS_STORAGE + 'AWS_Private/awsCredentials.json', 'utf-8');
     const parsedCredentialsFile = JSON.parse(awsCredentialsFile);
     console.log('Credential file this is the parsed obj', parsedCredentialsFile);
 
@@ -126,7 +115,7 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
     console.log('environment variables: ', process.env['AWS_ACCESS_KEY_ID'], process.env['AWS_SECRET_ACCESS_KEY'],  process.env['REGION'] )
 
     const stringifiedCredentialFile = JSON.stringify(parsedCredentialsFile, null, 2);
-    await fsp.writeFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
+    await fsp.writeFile(process.env.AWS_STORAGE + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
 
   } else {
     process.env['AWS_ACCESS_KEY_ID'] = data.awsAccessKeyId;
@@ -143,7 +132,7 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
 
     const stringifiedCredentialFile = JSON.stringify(dataForCredentialsFile, null, 2);
 
-    await fsp.writeFile(process.env['AWS_STORAGE'] + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
+    await fsp.writeFile(process.env.AWS_STORAGE + 'AWS_Private/awsCredentials.json', stringifiedCredentialFile);
 
   }
 }
@@ -323,7 +312,7 @@ awsEventCallbacks.createCluster = async (clusterName) => {
 
     if (!isClusterInMasterFile) {
 
-      const awsMasterFileData = fs.readFileSync(process.env['AWS_STORAGE'] + `AWS_Private/${process.env['CLUSTER_NAME']}_MASTER_FILE.json`, 'utf-8');
+      const awsMasterFileData = fs.readFileSync(process.env.AWS_STORAGE + `AWS_Private/${process.env['CLUSTER_NAME']}_MASTER_FILE.json`, 'utf-8');
 
       const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
       iamRoleArn = parsedAWSMasterFileData.iamRoleArn;

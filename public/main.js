@@ -144,7 +144,7 @@ const createWindowAndSetEnvironmentVariables = () => {
 
 ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
   try {
-    const credentialStatusToReturn = await awsEventCallbacks.returnKubectlAndCredentialsStatus(data);
+    const credentialStatusToReturn = await awsEventCallbacks.returnKubectlAndCredentialsStatus();
     win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatusToReturn);
   } catch (err) {
     console.error('FROM CHECK_CREDENTIALS_STATUS:', err);
@@ -236,7 +236,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
     const { vpcStackName } = data;
 
-    await awsEventCallbacks.createVPCStack(vpcStackName, data.iamRoleName);
+    await awsEventCallbacks.createVPCStack(vpcStackName);
 
     vpcStackStatus.status = awsProps.CREATED;
     console.log('vpcStackStatus: ', vpcStackStatus);

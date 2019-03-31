@@ -20,6 +20,7 @@ const sts = new STS();
 
 //* --------- IMPORT KRE8 MODULES ---------
 const events = require('../eventTypes.js');
+
 const awsProps = require(__dirname + '/awsPropertyNames'); 
 const awsEventCallbacks = require(__dirname + '/helperFunctions/awsEventCallbacks'); 
 const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConfigFunctions');

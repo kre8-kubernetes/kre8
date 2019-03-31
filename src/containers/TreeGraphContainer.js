@@ -47,6 +47,8 @@ class TreeGraphContainer extends Component {
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     this.toolTipOn = this.toolTipOn.bind(this);
     this.toolTipOff = this.toolTipOff.bind(this);
+    this.deleteNode = this.deleteNode.bind(this);
+    this.handleRerenderNode = this.handleRerenderNode.bind(this);
   }
 
   componentDidMount() {
@@ -56,6 +58,7 @@ class TreeGraphContainer extends Component {
     ipcRenderer.on(events.HANDLE_MASTER_NODE, this.handleMasterNode);
     ipcRenderer.on(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
     ipcRenderer.on(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
+    ipcRenderer.on(events.HANDLE_RERENDER_NODE, this.handleRerenderNode);
     this.getMasterNode();
     this.getWorkerNodes();
     this.getContainersAndPods();
@@ -65,6 +68,7 @@ class TreeGraphContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_MASTER_NODE, this.handleMasterNode);
     ipcRenderer.removeListener(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
     ipcRenderer.removeListener(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
+    ipcRenderer.removeListener(events.HANDLE_RERENDER_NODE, this.handleRerenderNode)
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
@@ -78,7 +82,7 @@ class TreeGraphContainer extends Component {
   }
 
   getWorkerNodes() {
-    ipcRenderer.send(events.GET_WORKER_NODES, 'helle from the getWokerNodes call');
+    ipcRenderer.send(events.GET_WORKER_NODES, 'hello from the getWokerNodes call');
   }
 
   getContainersAndPods() {
@@ -166,6 +170,28 @@ class TreeGraphContainer extends Component {
   toolTipOff(e) {
     this.setState({ ...this.state, showToolTip: false })
   }
+
+  deleteNode(){
+    console.log('delete node handler triggered');
+    
+    //trigger the kubectl delete command
+    //to do that, send the DELETE_NODE event to the main process
+    ipcRenderer.send(events.DELETE_NODE, this.state.nodeInfoToShow)
+  }
+
+  handleRerenderNode(){
+    console.log("handle rerender node called");
+    //remove the node from the visualizer
+    //call to get data on the current nodes -- this will update state and trigger a re-render of the page
+    ipcRenderer.send(events.START_LOADING_ICON, 'close');
+    console.log('hit start loading icon inside handle render node handler')
+    this.getMasterNode();
+    this.getWorkerNodes();
+    this.getContainersAndPods();
+
+  }
+
+
 
   render() {
     const treeData = {
@@ -482,6 +508,7 @@ class TreeGraphContainer extends Component {
           <ClusterInfoComponent
             nodeInfoToShow={this.state.nodeInfoToShow}
             hideNodeInfo={this.hideNodeInfo}
+            deleteNode={this.deleteNode}
           />
         )}
         {this.state.showToolTip === true && (

@@ -12,6 +12,7 @@ const PodInfoComponent = (props) => {
       <InfoBodyComponent data={data} />
       <div className='more_info_button_item'>
         <ActionButton clickHandler={props.hideNodeInfo} buttonText={`Close`} /> 
+      <button className='action_button' onClick={props.deleteNode}>Delete Deployment</button>
       </div>
     </div>
   )

@@ -155,7 +155,7 @@ class HomeContainer extends Component {
 
         console.log("ready to send data")
         //TODO: uncomment this
-        // ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsCredentials);
+        ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsCredentials);
       })
       .catch((err) => {
         console.log("!!!!!!!!!!!!!!!!!!!!!!error ocurred")

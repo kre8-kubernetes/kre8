@@ -121,8 +121,8 @@ class AwsContainer extends Component {
       .then((data) => {
 
         this.setState({ ...this.state, iamRoleName: '',  vpcStackName: '', clusterName: '', errors: {}, awsComponentSubmitted: true })
-        //TODO Uncomment
-        // ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
+        console.log("ready to send data")
+        ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
       })
       .catch((err) => {
 

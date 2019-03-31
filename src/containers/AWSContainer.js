@@ -20,9 +20,9 @@ const mapStateToProps = store => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  setNewRole: (text) => {
-    dispatch(actions.setRole(text))
-  },
+  // setNewRole: (text) => {
+  //   dispatch(actions.setRole(text))
+  // },
   hideCreateButton: () => {
     dispatch(actions.hideCreateButton())
   }

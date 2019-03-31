@@ -126,17 +126,20 @@ function createWindowAndSetEnvironmentVariables () {
     childWin = null;
   })
 
-
-//Kube Docs Window
-let kubeDocsDeploymentWindow = new BrowserWindow({ width: 600, height: 400, show:false});
-kubeDocsDeploymentWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/controllers/deployment/')
-ipcMain.on(events.SHOW_KUBE_DOCS_DEPLOYMENT, function(){
-  kubeDocsDeploymentWindow.show()
-})
-kubeDocsDeploymentWindow.on('close', () =>{
-  kubeDocsDeploymentWindow.hide();
-})
+  //Kube Docs Window
+  let kubeDocsDeploymentWindow = new BrowserWindow({ width: 600, height: 400, show:false });
+  kubeDocsDeploymentWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/controllers/deployment/')
+  ipcMain.on(events.SHOW_KUBE_DOCS_DEPLOYMENT, function(){
+    kubeDocsDeploymentWindow.show()
+  })
+  kubeDocsDeploymentWindow.on('close', () =>{
+    kubeDocsDeploymentWindow.hide();
+  })
 }
+
+
+
+
 
 
 
@@ -552,7 +555,7 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
       console.log('stdout', stdout, 'stderr', stderr);
       // SEND STDOUT TO RENDERER PROCESS
       await awsHelperFunctions.timeout(1000 * 10)
-      win.webContents.send(events.HANDLE_DELETE_NODE);
+      win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender from main');
     } catch (err) {
       console.log('err', err);
     }
@@ -586,6 +589,12 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
 //CREATE DEPLOYMENT 
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
   try {
+    //START LOADING ICON
+    let startingIcon = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: false, frame: false, backgroundColor: '#141E30', center: true  });
+    startingIcon.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
+    startingIcon.show();
+
+    //START CREATING DEPLOYMENT
     console.log("data from replicas: ", data);
     if (data.replicas > 5) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 5 or less.`)
     // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
@@ -597,8 +606,13 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);
+    
+    
     // SEND STDOUT TO RENDERER PROCESS
+    await awsHelperFunctions.timeout(1000 * 10)
     win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stdout);
+    win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create deployment');
+    startingIcon.close();
   } catch (err) {
     console.log('err', err)
   }

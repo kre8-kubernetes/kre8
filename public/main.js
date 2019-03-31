@@ -443,27 +443,28 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
 });
 
   //** ----- DELETE A NODE ---------- **//
-ipcMain.on(events.DELETE_NODE, async (event, data) => {
-  console.log("delete triggered on main")
-  try{
-    console.log('data.data.name: ', data);
-    // CREATE AND WRITE THE POD FILE FROM TEMPLATE
-    // const podYamlTemplate = kubernetesTemplates.createPodYamlTemplate(data);
-    // let stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate, null, 2);
-    // await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `pod_${data.podName}.json`, stringifiedPodYamlTemplate)
-    // DELETE THE POD VIA kubectl
-    const deploymentName = data.data.name.split('-')[0];
-    const child = spawnSync('kubectl', ['delete', 'deployment', deploymentName]);
-    const stdout = child.stdout.toString();
-    const stderr = child.stderr.toString();
-    console.log('stdout', stdout, 'stderr', stderr);
-    // SEND STDOUT TO RENDERER PROCESS
-    await awsHelperFunctions.timeout(1000 * 10)
-    win.webContents.send(events.HANDLE_DELETE_NODE);
-  } catch (err) {
-    console.log('err', err);
-  }
-});
+  ipcMain.on(events.DELETE_NODE, async (event, data) => {
+    console.log("delete triggered on main")
+    try{
+      console.log('data.data.name: ', data);
+      // CREATE AND WRITE THE POD FILE FROM TEMPLATE
+      // const podYamlTemplate = kubernetesTemplates.createPodYamlTemplate(data);
+      // let stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate, null, 2);
+      // await fsp.writeFile(process.env['KUBECTL_STORAGE'] + `pod_${data.podName}.json`, stringifiedPodYamlTemplate)
+      // DELETE THE POD VIA kubectl
+      const deploymentName = data.data.name.split('-')[0];
+      const child = spawnSync('kubectl', ['delete', 'deployment', deploymentName]);
+      const stdout = child.stdout.toString();
+      const stderr = child.stderr.toString();
+      console.log('stdout', stdout, 'stderr', stderr);
+      // SEND STDOUT TO RENDERER PROCESS
+      await awsHelperFunctions.timeout(1000 * 10)
+      win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender from main');
+    } catch (err) {
+      console.log('err', err);
+    }
+  });
+
 
 //**-----------------------SERVICE--------------------------------**//
 
@@ -491,8 +492,14 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
 
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
   try {
-    console.log('data from replicas: ', data);
-    if (data.replicas > 5) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 5 or less.`);
+    //START LOADING ICON
+    let startingIcon = new BrowserWindow({ height: 325, width: 325, maxHeight: 325, maxWidth: 325, minHeight: 325, minWidth: 325, parent: win, show: false, frame: false, backgroundColor: '#141E30', center: true  });
+    startingIcon.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
+    startingIcon.show();
+
+    //START CREATING DEPLOYMENT
+    console.log("data from replicas: ", data);
+    if (data.replicas > 5) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 5 or less.`)
     // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
     const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
     let stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);
@@ -502,9 +509,11 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);
-
     // SEND STDOUT TO RENDERER PROCESS
+    await awsHelperFunctions.timeout(1000 * 10)
     win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stdout);
+    win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create deployment');
+    startingIcon.close();
   } catch (err) {
     console.log('err', err);
   }

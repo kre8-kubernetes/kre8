@@ -33,40 +33,29 @@ class AwsContainer extends Component {
       iamRoleName: '',
       vpcStackName: '',
       clusterName: '',
-
       awsComponentSubmitted: false,
-
       iamRoleStatus: 'CREATING',
       stackStatus: '—',
       clusterStatus: '—',
       workerNodeStatus: '—',
       kubectlConfigStatus: '—',
-
       errorMessage: '',
-      displayError: false,
-
+      // displayError: false,
       textInfo: '',
       showInfo: false,
       mouseCoords: {},
-
       errors: {},
     };
-
-
     this.handleChange = this.handleChange.bind(this);
     this.handleStatusChange = this.handleStatusChange.bind(this);
     this.handleConfigAndMakeNodes = this.handleConfigAndMakeNodes.bind(this);
-
     this.handleNewNodes = this.handleNewNodes.bind(this);
-
     this.handleError = this.handleError.bind(this);
-
     this.displayInfoHandler = this.displayInfoHandler.bind(this);
     this.hideInfoHandler = this.hideInfoHandler.bind(this);
   }
 
   //* -------------- COMPONENT LIFECYCLE METHODS ----------------- *//
-  
   // Once component mounts, activate listeners, to receive data from AWS regarding the cluster creation process
   componentDidMount() {
     const { hideCreateButton } = this.props;
@@ -83,14 +72,14 @@ class AwsContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_NEW_NODES, this.handleNewNodes);
   }
 
-  //* -------------- EVENT HANDLERS ------------------------------ *//
+  //* -------------- EVENT HANDLER ------------------------------ *//
 
   // Method handling text changes for form input fields
   handleChange(e) {
+    const { id, value } = e.target;
     e.preventDefault();
-    this.setState({ [e.target.id]: e.target.value });
+    this.setState(prevState => ({ ...prevState, [id]: value }));
   }
-
 
   //* --------- CONFIGURE CLUSTER + KUBECTL -------------------- *//
   // Triggered when user submits cluster data
@@ -130,14 +119,13 @@ class AwsContainer extends Component {
       });
   }
 
-  // Activated after last step in cluster creation process is complete. If kubectl is successfully configured:
+  // Activated after last step in cluster creation process completes. If kubectl is successfully configured:
   handleNewNodes(event, data) {
     const { history } = this.props;
     history.push('/cluster');
   }
   
   //* --------- CREATING CLUSTER, TRIGGERED AS AWS SENDS STATUS & ERROR DATA BACK -------- *//
-
   handleStatusChange(event, data) {
     this.setState(prevState => ({ ...prevState, [data.type]: data.status }));
   }
@@ -150,7 +138,7 @@ class AwsContainer extends Component {
     }));
   }
 
-  //** --------- More Info Component -------------- **//
+  //* --------- MORE INFO '?' COMPONENT ----------------------- *//
   displayInfoHandler(e) {
     const awsInfo = 'Amazon Web Services Elastic Container Service for Kubernetes (EKS) Account Setup. Your Identity and Access Management (IAM) Role for EKS is the AWS identity that will have specific permissions to create and manage your Kubernetes Cluster. For the Role Name, select something that will easily identify the role’s purpose. Example: unique-EKS-Management-Role. Your AWS VPC Stack represents a collection of resources necessary to manage and run your Kubernetes cluster. For the Stack Name, select something that will easily identify the stack’s purpose. Example: unique-EKS-Stack. An EKS Cluster consists of two primary components: The Amazon EKS control plane and Amazon EKS worker nodes that run the Kubernetes etcd and the Kubernetes API server. For the Cluster Name, select something that will easily identify the stack’s purpose. Example: unique-EKS-Cluster. Once submitted, this phase takes 10-15 minutes to complete, depending on Amazon’s processing time. Kre8 cannot proceed until your EKS Account has been set up.';
 
@@ -209,17 +197,15 @@ class AwsContainer extends Component {
             handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
             hideInfoHandler={this.hideInfoHandler}
             displayInfoHandler={this.displayInfoHandler}
-
             iamRoleName={iamRoleName}
             vpcStackName={vpcStackName}
             clusterName={clusterName}
-            errors={errors}
-      
+            errors={errors}  
             textInfo={textInfo}
             mouseCoords={mouseCoords}
             grabCoords={this.grabCoords}
-            />
-          )}
+          />
+        )}
 
         {awsComponentSubmitted === true && (
         <AWSLoadingComponent
@@ -233,8 +219,8 @@ class AwsContainer extends Component {
           clusterStatus={clusterStatus}
           workerNodeStatus={workerNodeStatus}
           kubectlConfigStatus={kubectlConfigStatus}
-          errorMessage={errorMessage}  
-        /> 
+          errorMessage={errorMessage}
+        />
         )}
       </div>
     );

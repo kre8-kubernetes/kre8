@@ -180,22 +180,21 @@ class HomeContainer extends Component {
   //* -------------- FORM EVENT HANDLERS ------------------------------ *//
   // Method handling text changes for form input fields
   handleChange(e) {
+    const { id, value } = e.target;
     e.preventDefault();
-    this.setState(prevState => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
+    this.setState(prevState => ({ ...prevState, [id]: value }));
   }
 
   // Method handling region selection from dropdown menu
   handleFormChange(e) {
-    this.setState(prevState => ({ ...prevState, awsRegion: e.target.value }));
+    const { value } = e.target;
+    this.setState(prevState => ({ ...prevState, awsRegion: value }));
   }
 
   // Method handling click of '?' more info button
   // this should tell info component which text to display
   displayInfoHandler(e) {
-    const homeInfo = 'In order to use KRE8 to create and launch your Kubernetes cluster on Amazon’s Elastic Container Service for Kubernetes (EKS), you must have an Amazon Web Services Account. KRE8 needs the below details from your AWS account in order to deploy your cluster. KRE8 will use these details to generate a file titled “credentials” in a folder named .aws in your root directory. AWS will reference this file to verify your permissions as you build your Kubernetes cluster.'
+    const homeInfo = 'In order to use KRE8 to create and launch your Kubernetes cluster on Amazon’s Elastic Container Service for Kubernetes (EKS), you must have an Amazon Web Services Account. KRE8 needs the below details from your AWS account in order to deploy your cluster. KRE8 will use these details to generate a file titled “credentials” in a folder named .aws in your root directory. AWS will reference this file to verify your permissions as you build your Kubernetes cluster.';
     const x = e.screenX;
     const y = e.screenY;
     const newCoords = { top: y, left: x };
@@ -220,11 +219,9 @@ class HomeContainer extends Component {
       awsAccessKeyId,
       awsSecretAccessKey,
       awsRegion,
-
       textInfo,
       showInfo,
       mouseCoords,
-
       errors,
       // displayError,
     } = this.state;
@@ -267,6 +264,5 @@ class HomeContainer extends Component {
     );
   }
 }
-
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HomeContainer));

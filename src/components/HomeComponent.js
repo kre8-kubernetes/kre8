@@ -30,7 +30,14 @@ const HomeComponent = props => {
       {/* HOME INPUT FORM CONTAINER */}
       <div className="home_page_form_container_input_field_area">
         <div className="home_page_form_container_inputs_item">
-          <input id="awsAccessKeyId" onChange={handleChange} placeholder="AWS Access Key ID" value={awsAccessKeyId} type="text" name="awsAccessKeyId" />
+          <input 
+            id="awsAccessKeyId" 
+            onChange={handleChange} 
+            placeholder="AWS Access Key ID" 
+            value={awsAccessKeyId} 
+            type="text" 
+            name="awsAccessKeyId" 
+          />
           <div className="errorClass">{errors.awsAccessKeyId}</div>
         </div>
         <div className="home_page_form_container_inputs_item">

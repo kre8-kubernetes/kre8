@@ -213,7 +213,7 @@ class HomeContainer extends Component {
     }));
   }
 
-  //* --------- RENDER
+  //* --------- RENDER METHOD
   render() {
     const {
       awsAccessKeyId,

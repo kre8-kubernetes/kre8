@@ -75,7 +75,9 @@ class TreeGraphContainer extends Component {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
-  //* -------------- COMPONENT METHODS
+  //* --------- TREE GRAPH GENERATION METHODS ---------------------------- **//
+
+  //* ----------- SEND REQUESTS TO MAINTHREAD TO ASK KUBECTL FOR NODE DATA
   getMasterNode() {
     ipcRenderer.send(events.GET_MASTER_NODE, 'Master Node info request');
   }
@@ -95,7 +97,7 @@ class TreeGraphContainer extends Component {
     }));
   }
 
-  //* --------- GENERATES PARAMETER FOR CREATING IAM ROLE--------------- **//
+  //* ----------- METHODS TO PROCESS DATA COMING BACK FROM KUBECTL VIA MAIN THREAD
   /**
    * Methods to structure tree data object starting with the Master Node (Kubernetes API Server)
    * at the top of the heirarchy. The subsequent children are then pushed into an array, Children
@@ -130,7 +132,6 @@ class TreeGraphContainer extends Component {
 
   handleContainersAndPods(event, data) {
     const { treeData } = this.state;
-
     const newState = { ...this.state, treeData: { ...treeData, children: [...treeData.children] } };
     const addressMap = newState.treeData.children.reduce((acc, ele, index) => {
       acc[ele.name] = index;
@@ -155,6 +156,7 @@ class TreeGraphContainer extends Component {
     this.setState(newState);
   }
 
+  //* --------- DISPLAY OR HIDE NODE INFO WHEN USER HOVERS OR CLICKS IN GRAPH
   showNodeInfo(node) {
     console.log('node coming in', node);
     this.setState(prevState => ({ ...prevState, showInfo: true, nodeInfoToShow: node }));
@@ -179,12 +181,14 @@ class TreeGraphContainer extends Component {
     this.setState(prevState => ({ ...prevState, showToolTip: false }));
   }
 
+  //* --------- DELETE NODE METHOD
   // Send the DELETE_NODE event to the main process to trigger the kubectl delete command
   deleteNode() {
     const { nodeInfoToShow } = this.state;
     ipcRenderer.send(events.DELETE_NODE, nodeInfoToShow);
   }
-
+  
+  //* --------- RERENDER GRAPH METHOD
   /**
    * Call to get data on the current nodes -- this will update state and trigger
    * a re-render of the page, either removing the deleted node, or adding the newly created node
@@ -198,6 +202,7 @@ class TreeGraphContainer extends Component {
     this.getContainersAndPods();
   }
 
+  //* --------- RENDER METHOD
   render() {
     const dummyTreeData = {
       name: 'Master Node',
@@ -517,6 +522,8 @@ class TreeGraphContainer extends Component {
       dimensions,
       treeData,
     } = this.state;
+
+    //* --------- RETURN
     return (
       <div className="treegraph_container">
         {showInfo === true && (

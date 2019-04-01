@@ -89,11 +89,11 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
     console.log('============  kubectlConfigFunctions.configureKubectl ===============');
     console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-    console.log("process.env.KUBECONFIG before: ", process.env.KUBECONFIG);
+    console.log('process.env.KUBECONFIG before: ', process.env.KUBECONFIG);
 
     process.env.KUBECONFIG = `${process.env.HOME}/.kube/config-${clusterName}`;
 
-    console.log("process.env.KUBECONFIG after: ", process.env.KUBECONFIG);
+    console.log('process.env.KUBECONFIG after: ', process.env.KUBECONFIG);
 
     let bashRead = await fsp.readFile(`${process.env.HOME}/.bash_profile`, 'utf-8');
 

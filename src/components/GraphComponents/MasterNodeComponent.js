@@ -3,7 +3,8 @@ import { Group } from '@vx/group';
 import { Polygon } from '@vx/shape';
 
 const MasterNodeComponent = ({ node, top, left, showNodeInfo, toolTipOn, toolTipOff }) => {
-  const bg = '#1D2541';
+  // const bg = '#1D2541';
+  const bg = '#16273B';
   const stroke = '#4368C9';
   const strokeWidth = 1.25;
   const textFill = '#D7D7D7';

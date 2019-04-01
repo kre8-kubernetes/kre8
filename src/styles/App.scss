@@ -1,15 +1,8 @@
 @import "theme";
 
-/*
-* Label sections of the CSS to determine what styling goes where.
-* If the styling starts to get to be a lot then move the styling into
-* their own seperate files and only import in the styles that are relevent to a page
-* this increases performance as well
-*/
-
-//**************************************************/
-//*************** HTML FUNDAMENTAL *****************/
-//**************************************************/
+//* ----------------------------------------------------------- *//
+//* --------------- HTML FUNDAMENTAL--------------------------- *//
+//* ----------------------------------------------------------- *//
 
 body::-webkit-scrollbar {
   display: none;
@@ -48,7 +41,6 @@ body {
 }
 
 
-
 .errorClass {
   color: red;
   font-size: 9px;
@@ -59,12 +51,11 @@ body {
 }
 
 
-//**************************************************/
-//*********** BUTTON COMPONENTS ********************/
-//**************************************************/
+//* ----------------------------------------------------------- *//
+//* --------------- BUTTON COMPONENTSL------------------------- *//
+//* ----------------------------------------------------------- *//
 
-
-/* ACTION BUTTON */
+//* ----- ACTION BUTTON
 .action_button {
   width: 110px;
   height: 40px;
@@ -93,7 +84,7 @@ body {
   transition-duration: .2s;
 }
 
-/* HELP BUTTON */
+//* ----- ACTION BUTTON ------------
 .help_button {
   height: 32px;
   width: 32px;
@@ -116,7 +107,7 @@ body {
   outline: none;
 }
 
-/* CLOSE POPUP BUTTON */
+//* ----- CLOSED POPUP BUTTON --------
 .close_popup_button {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 18px;
@@ -138,9 +129,9 @@ body {
 }
 
 
-//**************************************************/
-//*********** HOME PAGE CONTAINER STYLING **********/
-//**************************************************/
+//* ----------------------------------------------------------- *//
+//* --------------- HOME PAGE CONTAINER STYLING --------------- *//
+//* ----------------------------------------------------------- *//
 
 //TODO: Braden do we need the 3 color options for multiple browsers?
 
@@ -151,9 +142,9 @@ body {
   align-items: center;
   width: 100%;
   height: 100vh;
-  background: $bg-color-main;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: $bg-gradient-dark;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: 'Lato-Regular', sans-serif;
 }
 
@@ -181,10 +172,6 @@ body {
   font-family: 'Lato-Bold', sans-serif;
   font-size: 22px;
   color: $light-font;
-
-  // flex-direction: row;
-  // width: 100%;
-
 }
 
 .home_page_form_container_intro_text {
@@ -263,7 +250,7 @@ body {
   border: 1px solid $input-color;
   border-radius: 5px;
   color: $input-color;
-  font-family: 'Lato-Regular', sans-serif;
+  font-family: 'Lato-Light', sans-serif;
   font-size: 14px;
   opacity: 0.7;
 }
@@ -276,47 +263,14 @@ body {
   margin-right: 12px;
 }
 
-
-//**************************************************/
-//*********** HOME PAGE COMPONENT STYLING **********/
-//**************************************************/
-
-
-// .home_page_post_config_form_container {
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: center;
-//   align-items: center;
-//   width: 55%;
-
-//   min-width: 500px;
-//   max-width: 525px;
-//   min-height: 300px;
-//   max-height: 325px;
-
-//   height: 50%;
-//   background: $accent-darkest-blue;
-//   border-radius: 6px;
-//   padding-bottom: 20px;
-
-//   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-// }
+//* ----------------------------------------------------------- *//
+//* --------------- HOME PAGE POST CONFIG COMPONENT STYLING --- *//
+//* ----------------------------------------------------------- *//
 
 .home_page_post_config_form_container {
   width: 325px;
   height: 325px;
   border-radius: 6px;
-  // background: $accent-darkest-blue;
-  // width: 55%;
-  // height: 50%;
-  // min-width: 500px;
-  // max-width: 525px;
-  // min-height: 300px;
-  // max-height: 325px;
-  // padding-bottom: 20px;
-
-  // box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-
   display: grid;
   grid-template-rows: 1.25fr 1fr .65fr 1fr 1fr 1fr;
   grid-template-columns: 50px 1fr 1fr 1fr 60px;
@@ -334,7 +288,6 @@ body {
 
 .loading_form_container_text {
   font-family: Lato-Regular, sans-serif;
-  /* color: #D2EEF7; */
   color: $light-font;
   grid-area: text;
   text-align: center;
@@ -343,7 +296,6 @@ body {
 }
 
 .ball {
-  /*   background-color: rgba(0,0,0,0); */
     grid-area: ball0;
     border: 2px solid rgba(0,183,229,0.9);
     opacity: .9;
@@ -395,7 +347,6 @@ body {
       0% {
           -moz-transform: rotate(0deg);
       }
-  
       100% {
           -moz-transform: rotate(360deg);
       };
@@ -404,8 +355,7 @@ body {
   @-moz-keyframes spinoff {
       0% {
           -moz-transform: rotate(0deg);
-      }
-  
+      } 
       100% {
           -moz-transform: rotate(-360deg);
       };
@@ -415,7 +365,6 @@ body {
       0% {
           -webkit-transform: rotate(0deg);
       }
-  
       100% {
           -webkit-transform: rotate(360deg);
       };
@@ -432,9 +381,9 @@ body {
   }
 
 
-//**************************************************/
-//*********** HELP INFO COMPONENT STYLING **********/
-//**************************************************/
+//* ----------------------------------------------------------- *//
+//* --------------- HELP INFO COMPONENT STYLING --------------- *//
+//* ----------------------------------------------------------- *//
 
 .help_info_component {
   background-color: $cluster-element-text-color;
@@ -453,14 +402,10 @@ body {
   width: 20px;
   height: 20px;
   background: $button-background;
-  /* padding: 10px; */
-  /* margin-right: px; */
-  /* border-radius: 20px; */
   color: black;
   font-size: .5em;
   font-weight: 200;
   font-family: Lato-Regular, sans-serif;
-  /* font-weight: medium; */
   outline: none;
 }
 
@@ -484,10 +429,10 @@ body {
   align-items: center;
   width: 100%;
   height: 100vh;
-  background: $bg-color-main;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main); 
+  background: $bg-gradient-dark;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); 
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: Lato-Regular, sans-serif;
 }
 
@@ -511,16 +456,12 @@ body {
 .aws_cluster_form_container_header {
   display: flex;
   justify-content: center;
-
   font-family: Lato-Bold, sans-serif;
   font-size: 22px;
   color: $light-font;
-
-  //do we need?
+  // TODO: do we need?
   flex-direction: column;
   align-items: center;
-  // width: 90%;
-  
   padding-top: 30px;
 }
 
@@ -540,11 +481,6 @@ body {
   flex-direction: column;
   align-items: center;
   width: 83%;
-  // opacity: 0.7;
-
-  // display: block;
-  // text-align: center;
-  // margin: auto;
 }
 
 .aws_cluster_form_container_inputs_item {
@@ -554,7 +490,6 @@ body {
   width: 100%;
   padding: 8px 0;
   opacity: 0.7;
-
 }
 
 .aws_cluster_form_container_inputs_item input {
@@ -564,14 +499,10 @@ body {
   border-radius: 5px;
   background: $accent-darkest-blue;
   border: 1px solid $input-color;
-
   font-family: Lato-Light, sans-serif;
   font-size: 14px;
   color: $input-color;
   padding-left: 10px;
-
-  // opacity: 0.7;
-  // margin-top: 7px;
 }
 
 .aws_cluster_form_container_inputs_item input[type=text] {
@@ -592,7 +523,6 @@ body {
   color: $light-font;
   margin-left: 6px;
   margin-bottom: 3px;
-  // padding-bottom: 10px;
   padding-top: 2px;
 }
 
@@ -607,9 +537,9 @@ body {
   margin-right: 40px;
 }
 
-/**************************************************/
-/************ AWS Loading Component Styling ************/
-/**************************************************/
+//* ----------------------------------------------------------- *//
+//* --------------- AWS LOADING COMPONENT STYLING ------------- *//
+//* ----------------------------------------------------------- *//
 
 .aws_loading_form_component {
   display: flex;
@@ -684,21 +614,9 @@ body {
 }
 
 
-
-/**************************************************/
-/************ KubectlContainer Styling ************/
-/**************************************************/
-
-
-//color change animation
-// @keyframes change {
-//   0%{background-color: rgb(0,117,171);}
-//   12.5%{background-color: rgb(12,0,73);}
-//   25%{background-color: rgb(49, 7, 86);}
-//   50%{background-color: rgb(9,35,108);}
-//   75%{background-color: rgb(0,74,134);}
-//   100%{background-color: rgb(0,117,171);}
-// }
+//* ----------------------------------------------------------- *//
+//* --------------- KUBECTL COMPONENT STYLING ----------------- *//
+//* ----------------------------------------------------------- *//
 
 @keyframes change {
   12.5%{background-color: #2D5481;}
@@ -719,11 +637,11 @@ body {
   /* Disable text selection, or your app will feel like a web page */
   -webkit-user-select: none;
   -webkit-app-region: drag;
-  background: #1F2D46;
-  // background: #272b4d;
+  //background: #1F2D46;
 
-  // background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main);  /* Chrome 10-25, Safari 5.1-6 */
-  // background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 
+  background: $graph-background;
+  // background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark, $bg-gradient-light);  /* Chrome 10-25, Safari 5.1-6 */
+  // background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 
 
   /* Cover the whole window */
   height: 100%;
@@ -985,7 +903,7 @@ body {
 }
 
 .nav_left_container_item:hover {
-  background: #1F2D46;
+  background: $nav-bar-hover;
   //background: #243B55;
 }
 
@@ -1003,7 +921,8 @@ body {
 
 #nav_drop_down:hover .ham_bar{
   // background: #4368C9;
-  background: #243B55;
+  // background: #243B55;
+  background: #546E8D;
 }
 
 .ham_bar {
@@ -1167,6 +1086,13 @@ body {
   margin-right: 10px;
   font-size: 15px;
   float: left;
+  height: 40px;
+  padding: 0 10px;
+  text-decoration: none;
+}
+
+.nav_component_cluster_button:hover {
+  background: $nav-bar-hover;
 }
 
 //** --------- CLUSTER INFO COMPONENT --------- **//
@@ -1186,6 +1112,7 @@ body {
   font-size: 12px;
   line-height: 21px;
   color: $cluster-element-text-color;
+  z-index: 2;
 }
 
 // .cluster_info_major {

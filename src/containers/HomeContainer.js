@@ -67,7 +67,7 @@ class HomeContainer extends Component {
     this.hideInfoHandler = this.hideInfoHandler.bind(this);
   }
 
-  //* -------------- COMPONENT LIFECYCLE METHODS -------------------------- *//
+  //* -------------- COMPONENT LIFECYCLE METHODS
   componentDidMount() {
     const { hasCheckedCredentials } = this.props;
     if (!hasCheckedCredentials) {
@@ -173,26 +173,25 @@ class HomeContainer extends Component {
       history.push('/aws');
     } else {
       // TODO: convert alert
-      alert('AWS has alerted us that the credentials you entered are incorrect. Please check your entries and try again.');
+      alert('AWS has informed us that the credentials you entered are incorrect. Please check your entries and try again.');
     }
   }
 
-  //* -------------- FORM EVENT HANDLERS ------------------------------ *//
-  // Method handling text changes for form input fields
+  //* -------------- FORM EVENT HANDLER METHODS
+  // Handles text changes in form input fields
   handleChange(e) {
     const { id, value } = e.target;
     e.preventDefault();
     this.setState(prevState => ({ ...prevState, [id]: value }));
   }
 
-  // Method handling region selection from dropdown menu
+  // Handles region selection from dropdown menu
   handleFormChange(e) {
     const { value } = e.target;
     this.setState(prevState => ({ ...prevState, awsRegion: value }));
   }
 
-  // Method handling click of '?' more info button
-  // this should tell info component which text to display
+  //* --------- DISPLAY MORE INFO ( ? ) COMPONENT METHOD
   displayInfoHandler(e) {
     const homeInfo = 'In order to use KRE8 to create and launch your Kubernetes cluster on Amazon’s Elastic Container Service for Kubernetes (EKS), you must have an Amazon Web Services Account. KRE8 needs the below details from your AWS account in order to deploy your cluster. KRE8 will use these details to generate a file titled “credentials” in a folder named .aws in your root directory. AWS will reference this file to verify your permissions as you build your Kubernetes cluster.';
     const x = e.screenX;
@@ -206,7 +205,7 @@ class HomeContainer extends Component {
     }));
   }
 
-  // Method hiding info component
+  //* --------- HIDE MORE INFO ( ? ) COMPONENT METHOD
   hideInfoHandler() {
     this.setState(prevState => ({
       ...prevState,
@@ -214,6 +213,7 @@ class HomeContainer extends Component {
     }));
   }
 
+  //* --------- RENDER
   render() {
     const {
       awsAccessKeyId,
@@ -231,7 +231,7 @@ class HomeContainer extends Component {
       credentialStatus,
     } = this.props;
 
-
+    //* --------- RETURN
     return (
       <div className="home_page_container">
         {showInfo === true && (

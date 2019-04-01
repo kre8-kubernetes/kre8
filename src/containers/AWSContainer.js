@@ -11,8 +11,11 @@ import * as events from '../../eventTypes';
 import AWSComponent from '../components/AWSComponent';
 import AWSLoadingComponent from '../components/AWSLoadingComponent';
 import HelpInfoComponent from '../components/HelpInfoComponent';
+import { createConnection } from 'net';
 
 // TODO: Do we use displayError?
+// TODO: Fix ? text
+// What is createConnection and net?
 
 //* -------------- ACTIONS FROM REDUX ----------------------------------- *//
 
@@ -40,7 +43,6 @@ class AwsContainer extends Component {
       workerNodeStatus: '—',
       kubectlConfigStatus: '—',
       errorMessage: '',
-      // displayError: false,
       textInfo: '',
       showInfo: false,
       mouseCoords: {},
@@ -55,8 +57,11 @@ class AwsContainer extends Component {
     this.hideInfoHandler = this.hideInfoHandler.bind(this);
   }
 
-  //* -------------- COMPONENT LIFECYCLE METHODS ----------------- *//
-  // Once component mounts, activate listeners, to receive data from AWS regarding the cluster creation process
+  //* -------------- COMPONENT LIFECYCLE METHODS
+  /*
+   * Once component mounts, activate listeners, to receive data from
+   * AWS regarding the cluster creation process
+  */
   componentDidMount() {
     const { hideCreateButton } = this.props;
     hideCreateButton();
@@ -72,17 +77,20 @@ class AwsContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_NEW_NODES, this.handleNewNodes);
   }
 
-  //* -------------- EVENT HANDLER ------------------------------ *//
-
-  // Method handling text changes for form input fields
+  //* -------------- FORM EVENT HANDLER METHOD
+  // Handles text changes in form input fields
   handleChange(e) {
     const { id, value } = e.target;
     e.preventDefault();
     this.setState(prevState => ({ ...prevState, [id]: value }));
   }
 
-  //* --------- CONFIGURE CLUSTER + KUBECTL -------------------- *//
-  // Triggered when user submits cluster data
+  //* --------- CONFIGURE CLUSTER + KUBECTL
+  /*
+   * When user submits cluster data, method takes data from state, checks for errors,
+   * and signals to Main process to begin configuring Kubectl
+  */
+
   handleConfigAndMakeNodes() {
     const { iamRoleName, vpcStackName, clusterName } = this.state;
     const clusterData = {
@@ -119,17 +127,21 @@ class AwsContainer extends Component {
       });
   }
 
-  // Activated after last step in cluster creation process completes. If kubectl is successfully configured:
-  handleNewNodes(event, data) {
-    const { history } = this.props;
-    history.push('/cluster');
-  }
-  
-  //* --------- CREATING CLUSTER, TRIGGERED AS AWS SENDS STATUS & ERROR DATA BACK -------- *//
+  //* --------- METHODS RUNNING DURING CLUSTER CREATION (10-15 MIN)
+  /**
+   * Method updates state with data coming back from AWS during cluster creation.
+   * Data is displayed on the loading page.
+   * @param {String} 'CREATING', 'CREATED', 'ERROR'
+  */
   handleStatusChange(event, data) {
     this.setState(prevState => ({ ...prevState, [data.type]: data.status }));
   }
 
+  /**
+   * Handles errors coming back from AWS and displays them for the user
+   * Data is displayed on the loading page.
+   * @param {String} Error message to display
+  */
   handleError(event, data) {
     this.setState(prevState => ({
       ...prevState,
@@ -138,7 +150,7 @@ class AwsContainer extends Component {
     }));
   }
 
-  //* --------- MORE INFO '?' COMPONENT ----------------------- *//
+  //* --------- DISPLAY MORE INFO ( ? ) COMPONENT
   displayInfoHandler(e) {
     const awsInfo = 'Amazon Web Services Elastic Container Service for Kubernetes (EKS) Account Setup. Your Identity and Access Management (IAM) Role for EKS is the AWS identity that will have specific permissions to create and manage your Kubernetes Cluster. For the Role Name, select something that will easily identify the role’s purpose. Example: unique-EKS-Management-Role. Your AWS VPC Stack represents a collection of resources necessary to manage and run your Kubernetes cluster. For the Stack Name, select something that will easily identify the stack’s purpose. Example: unique-EKS-Stack. An EKS Cluster consists of two primary components: The Amazon EKS control plane and Amazon EKS worker nodes that run the Kubernetes etcd and the Kubernetes API server. For the Cluster Name, select something that will easily identify the stack’s purpose. Example: unique-EKS-Cluster. Once submitted, this phase takes 10-15 minutes to complete, depending on Amazon’s processing time. Kre8 cannot proceed until your EKS Account has been set up.';
 
@@ -153,34 +165,41 @@ class AwsContainer extends Component {
     }));
   }
 
-  // HIDE INFO BUTTON CLICK HANDLER
+  //* --------- HIDE MORE INFO ( ? ) COMPONENT METHOD
   hideInfoHandler() {
     this.setState(prevState => ({ ...prevState, showInfo: false }));
   }
 
+  //* --------- MOVES USER TO GRAPH SCREEN
+  /*
+   * Activated after last step in cluster creation process completes.
+   * If kubectl is successfully configured:
+  */
+  handleNewNodes(event, data) {
+    const { history } = this.props;
+    history.push('/cluster');
+  }
+
+  //* --------- RENDER
   render() {
     const {
-      awsComponentSubmitted,
-
       iamRoleName,
       vpcStackName,
       clusterName,
-
+      awsComponentSubmitted,
       iamRoleStatus,
       stackStatus,
       clusterStatus,
       workerNodeStatus,
       kubectlConfigStatus,
-
       textInfo,
       showInfo,
       mouseCoords,
-
-      // displayError,
       errorMessage,
       errors,
     } = this.state;
 
+    //* --------- RETURN
     return (
       <div className="aws_cluster_page_container">
         {showInfo === true && (

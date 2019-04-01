@@ -85,6 +85,7 @@ const createWindowAndSetEnvironmentVariables = () => {
     minWidth: 700,
     backgroundColor: '#243B55',
     center: true,
+    defaultFontFamily: 'sansSerif',
   });
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`);

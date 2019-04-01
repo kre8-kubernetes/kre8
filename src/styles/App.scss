@@ -7,59 +7,20 @@
 * this increases performance as well
 */
 
-  // @keyframes change{
-  //   0%{background-color: rgb(0,117,171);}
-  //   12.5%{background-color: rgb(12,0,73);}
-  //   25%{background-color: rgb(49, 7, 86);}
-  //   50%{background-color: rgb(9,35,108);}
-  //   75%{background-color: rgb(0,74,134);}
-  //   100%{background-color: rgb(0,117,171);}
-  // }
-  
-  body{
-    // animation: change 90s infinite;
-  }
-
-  @keyframes pods{
-    0%{background-color: green;}
-    25%{background-color: yellow;}
-    50%{background-color: red;}
-    75%{background-color: blue;}
-    100%{background-color: green;}
-  }
-
-/**************************************************/
-/*************** HTML FUNDAMENTAL *****************/
-/**************************************************/
-
-// @keyframes change {
-//   0%{background-color: rgb(0,117,171);}
-//   12.5%{background-color: rgb(12,0,73);}
-//   25%{background-color: rgb(49, 7, 86);}
-//   50%{background-color: rgb(9,35,108);}
-//   75%{background-color: rgb(0,74,134);}
-//   100%{background-color: rgb(0,117,171);}
-// }
-
-// .root {
-//   // animation: fadein 2s;
-//   animation: change 90s infinite;
-// }
+//**************************************************/
+//*************** HTML FUNDAMENTAL *****************/
+//**************************************************/
 
 body::-webkit-scrollbar {
   display: none;
 }
-
-// svg:hover {
-//   fill: red;
-// }
 
 body {
   margin: 0px;
 }
 
 @font-face {
-  font-family: 'Lato';
+  font-family: 'Lato-Black';
   font-style: normal;
   font-weight: normal;
   src: url('./Lato/Lato-Black.ttf') format('truetype');
@@ -86,10 +47,7 @@ body {
   src: url('./Lato/Lato-Bold.ttf') format('truetype');
 }
 
-// @font-face {
-//   font-family: myFirstFont;
-//   src: url("https://fonts.googleapis.com/css?family=Ubuntu");
-// }
+
 
 .errorClass {
   color: red;
@@ -97,7 +55,7 @@ body {
   margin-top: 2px;
   margin-left: 7px;
   opacity: .9;
-  font-family: Lato-Regular;
+  font-family: Lato-Regular, sans-serif;
 }
 
 
@@ -196,7 +154,7 @@ body {
   background: $bg-color-main;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  font-family: Lato;
+  font-family: 'Lato-Regular', sans-serif;
 }
 
 .home_page_form_container {
@@ -220,7 +178,7 @@ body {
   display: flex;
   justify-content: center;
 
-  font-family: Lato-Bold;
+  font-family: 'Lato-Bold', sans-serif;
   font-size: 22px;
   color: $light-font;
 
@@ -233,7 +191,7 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  font-family: Lato-Regular;
+  font-family: 'Lato-Regular', sans-serif;
   color: $light-font;
   font-size: 16px;
   line-height: 23px;
@@ -265,7 +223,7 @@ body {
   background: $accent-darkest-blue;
   border: 1px solid $input-color;
 
-  font-family: Lato-light;
+  font-family: 'Lato-Light', sans-serif;
   font-size: 14px;
   color: $input-color;
 }
@@ -305,7 +263,7 @@ body {
   border: 1px solid $input-color;
   border-radius: 5px;
   color: $input-color;
-  font-family: Lato-light;
+  font-family: 'Lato-Regular', sans-serif;
   font-size: 14px;
   opacity: 0.7;
 }
@@ -375,7 +333,7 @@ body {
 }
 
 .loading_form_container_text {
-  font-family: lato;
+  font-family: Lato-Regular, sans-serif;
   /* color: #D2EEF7; */
   color: $light-font;
   grid-area: text;
@@ -481,7 +439,7 @@ body {
 .help_info_component {
   background-color: $cluster-element-text-color;
   border-radius: 6px;
-  font-family: Lato;
+  font-family: Lato-Regular, sans-serif;
   z-index: 1;
   position: absolute;
   width: 70%;
@@ -501,7 +459,7 @@ body {
   color: black;
   font-size: .5em;
   font-weight: 200;
-  font-family: Lato;
+  font-family: Lato-Regular, sans-serif;
   /* font-weight: medium; */
   outline: none;
 }
@@ -530,7 +488,7 @@ body {
   background: -webkit-linear-gradient(to right, $bg-color-right, $bg-color-main); 
   /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, $bg-color-right, $bg-color-main); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  font-family: Lato;
+  font-family: Lato-Regular, sans-serif;
 }
 
 .aws_cluster_form_container {
@@ -554,7 +512,7 @@ body {
   display: flex;
   justify-content: center;
 
-  font-family: Lato-Bold;
+  font-family: Lato-Bold, sans-serif;
   font-size: 22px;
   color: $light-font;
 
@@ -570,7 +528,7 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  font-family: Lato-Regular;
+  font-family: Lato-Regular, sans-serif;
   color: $light-font;
   font-size: 16px;
   line-height: 23px;
@@ -607,7 +565,7 @@ body {
   background: $accent-darkest-blue;
   border: 1px solid $input-color;
 
-  font-family: Lato-light;
+  font-family: Lato-Light, sans-serif;
   font-size: 14px;
   color: $input-color;
   padding-left: 10px;
@@ -630,7 +588,7 @@ body {
 
 .aws_cluster_form_container_explainer_text {
   font-size: 10px;
-  font-family: Lato-regular;
+  font-family: 'Lato-Regular', sans-serif;
   color: $light-font;
   margin-left: 6px;
   margin-bottom: 3px;
@@ -681,7 +639,7 @@ body {
   display: flex;
   flex-direction: row;
   text-align: center;
-  font-family: Lato-Regular;
+  font-family: 'Lato-Regular', sans-serif;
   font-size: 16px;
   color: $light-font;
   margin-top: 20px;
@@ -704,7 +662,7 @@ body {
   flex-direction: column;
   align-items: rigth;
   justify-content: right;
-  font-family: Lato-Regular;
+  font-family: 'Lato-Regular', sans-serif;
   font-size: 16px;
   line-height: 23px;
   color: $light-font;
@@ -715,7 +673,7 @@ body {
   flex-direction: column;
   text-align: center;
   line-height: 13px;
-  font-family: Lato-Regular;
+  font-family: 'Lato-Regular', sans-serif;
   color: red;
   font-size: 10px;
   margin-bottom: 10px;
@@ -829,7 +787,7 @@ body {
   background: none;
   color: $light-font;
   font-size: 12px;
-  font-family: Lato;
+  font-family: 'Lato-Regular', sans-serif;
 }
 
 .toolTip h4 {
@@ -837,7 +795,7 @@ body {
 }
 
 .toolTip p {
-  font-family: Lato-Regular;
+  font-family: 'Lato-Regular', sans-serif;
   margin: 1px 0;
 }
 
@@ -867,7 +825,7 @@ body {
   color: $cluster-element-text-color;
   padding: 20px 25px 20px 25px;
   border-radius: 6px;
-  font-family: Lato;
+  font-family: 'Lato-Regular', sans-serif;
   border: 1px solid lightgray;
 }
 
@@ -1018,7 +976,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-family: Lato;
+  font-family: 'Lato-Black', sans-serif;
   text-decoration: none;
   color: $light-font;
   height: 100%;
@@ -1026,7 +984,8 @@ body {
 }
 
 .nav_left_container_item:hover {
-  background: #4368C9;
+  background: #1F2D46;
+  //background: #243B55;
 }
 
 #nav_drop_down {
@@ -1042,7 +1001,8 @@ body {
 }
 
 #nav_drop_down:hover .ham_bar{
-  background: #4368C9;
+  // background: #4368C9;
+  background: #243B55;
 }
 
 .ham_bar {
@@ -1050,7 +1010,8 @@ body {
   width: 30px;
   margin: 2px 0;
   border-radius: 2px;
-  background: $cluster-element-text-color;
+  //background: $cluster-element-text-color;
+  background: $light-font;
 }
 
 //**************** CREATE MENU (BUTTON + MENU)  ***************/
@@ -1082,7 +1043,7 @@ body {
   outline: none;
 }
 .create_menu_component_container_button:hover {
-  background:$button-background;
+  background:$button-background2;
   cursor: pointer;
 }
 
@@ -1108,7 +1069,7 @@ body {
   background: $accent-darkest-blue;
   color: $light-font;
   border-radius: 6px;
-  font-family: Lato;
+  font-family: 'Lato-Regular', sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -1198,7 +1159,7 @@ body {
 }
 
 .nav_component_cluster_button {
-  font-family: Lato;
+  font-family: 'Lato-Black', sans-serif;
   color: $cluster-element-text-color;
   background: none;
   border: none;
@@ -1220,10 +1181,10 @@ body {
   height: auto;
   padding: 15px;
   background: $accent-darkest-blue;
+  opacity: .9;
   font-size: 12px;
   line-height: 21px;
   color: $cluster-element-text-color;
-  font-family: Lato-Regular;
 }
 
 // .cluster_info_major {
@@ -1241,9 +1202,18 @@ body {
 // }
 
 .cluster_info_key {
-  font-family: Lato-bold;
+  font-family: 'Lato-Black', sans-serif;
 }
 
-// .cluster_info_value {
-//   font-weight: 300;
-// }
+.cluster_info_value {
+  font-family: 'Lato-Regular', sans-serif;
+}
+
+
+.cluster_info_subnets {
+  padding-left: 15px;
+  font-family: 'Lato-Regular', sans-serif;
+
+}
+
+

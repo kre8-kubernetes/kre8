@@ -5,7 +5,7 @@ const initialState = {
   showCreateMenu: false,
   showCreateMenuItem: false,
   menuItemToShow: 'none',
-  showClusterInfo: false,
+  showClusterInfo: true,
   clusterInfo: {
     clusterName: '',
     createdDate: '',
@@ -20,7 +20,7 @@ const initialState = {
     KeyName: '',
     workerNodeStackName: '',
     nodeInstanceRoleArn: '',
-  }
+  },
 };
 
 export default function navbarReducers(state = initialState, action) {

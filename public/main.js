@@ -91,7 +91,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`);
   win.once('ready-to-show', () => {
     win.show();
-    // childWin.close();
+    childWin.close();
     console.timeEnd('init');
   });
 

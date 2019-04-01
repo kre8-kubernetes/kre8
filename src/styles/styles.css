@@ -18,7 +18,7 @@ body {
   background: linear-gradient(to right, #243B55, #141E30);
   font-family: Lato; */
 
-  background:#0E1E31;
+  background:#1F3248;
   /* background: -webkit-linear-gradient(to right, #1F3248, #243B55);  
   background: linear-gradient(to right, #1F3248, #243B55); */
   font-family: Lato;
@@ -34,25 +34,21 @@ body::-webkit-scrollbar {
 svg {
   position: absolute;
   bottom: 50;
-  left: -62px;
-  height: 325px;
+  left: -58px;
+  height: 300px;
   width: 325px;
 }
 
 path {
   fill: none;
-  stroke: black;
-  stroke-width: 4;
+  stroke: #4368C9;
+  stroke-width: 1.5;
   stroke-dasharray: 275;
   stroke-dashoffset: 10000;
   animation: dash 50s linear infinite running;
 }
 
 @keyframes dash {
-/*   from {
-    stroke-dashoffset: 1000;
-  } */
-
   to {
     stroke-dashoffset: -100;
   }

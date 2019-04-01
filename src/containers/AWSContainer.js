@@ -11,11 +11,9 @@ import * as events from '../../eventTypes';
 import AWSComponent from '../components/AWSComponent';
 import AWSLoadingComponent from '../components/AWSLoadingComponent';
 import HelpInfoComponent from '../components/HelpInfoComponent';
-import { createConnection } from 'net';
 
 // TODO: Do we use displayError?
 // TODO: Fix ? text
-// What is createConnection and net?
 
 //* -------------- ACTIONS FROM REDUX ----------------------------------- *//
 

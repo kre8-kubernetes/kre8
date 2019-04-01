@@ -12,10 +12,17 @@
 }
 
 body {
-  background:#071526;
+  /* background:#071526; */
+  /* background:#071526;
   background: -webkit-linear-gradient(to right, #243B55, #141E30);  
   background: linear-gradient(to right, #243B55, #141E30);
+  font-family: Lato; */
+
+  background:#0E1E31;
+  /* background: -webkit-linear-gradient(to right, #1F3248, #243B55);  
+  background: linear-gradient(to right, #1F3248, #243B55); */
   font-family: Lato;
+
   animation: fadein 2s;
   /* align-items: center; */
 }

@@ -1,56 +1,61 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Switch, Route, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-
-import NavComponent from '../components/NavigationComponents/NavComponent.js';
-
-import * as actions from '../store/actions/actions.js';
+import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
+import NavComponent from '../components/NavigationComponents/NavComponent';
+
+// TODO: seem not to be using the following, i commented them out, awaiting approval to delete
+// showCreateMenuItem,
+// hideCreateButton,
+// displayCreateButton,
 
 
+//* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
+  // showCreateMenuItem: store.navbar.showCreateMenuItem;
   showCreateButton: store.navbar.showCreateButton,
   showCreateMenu: store.navbar.showCreateMenu,
-  showCreateMenuItem: store.navbar.showCreateMenuItem,
   menuItemToShow: store.navbar.menuItemToShow,
   showClusterInfo: store.navbar.showClusterInfo,
-  clusterInfo: store.navbar.clusterInfo
+  clusterInfo: store.navbar.clusterInfo,
 });
 
 const mapDispatchToProps = dispatch => ({
-  displayCreateButton: () => {
-    dispatch(actions.displayCreateButton())
-  },
-  hideCreateButton: () => {
-    dispatch(actions.hideCreateButton())
-  },
+  // displayCreateButton: () => {
+  //   dispatch(actions.displayCreateButton());
+  // },
+  // hideCreateButton: () => {
+  //   dispatch(actions.hideCreateButton());
+  // },
   toggleCreateMenu: () => {
-    dispatch(actions.toggleCreateMenu())
+    dispatch(actions.toggleCreateMenu());
   },
   hideCreateMenu: () => {
-    dispatch(actions.hideCreateMenu())
+    dispatch(actions.hideCreateMenu());
   },
   toggleCreateMenuItem: () => {
-    dispatch(actions.toggleCreateMenuItem())
+    dispatch(actions.toggleCreateMenuItem());
   },
   CreateMenuItem: () => {
-    dispatch(actions.toggleCreateMenuItem())
+    dispatch(actions.toggleCreateMenuItem());
   },
   menuItemToShow: (menuItem) => {
-    dispatch(actions.menuItemToShow(menuItem))
+    dispatch(actions.menuItemToShow(menuItem));
   },
   displayClusterInfo: () => {
-    dispatch(actions.displayClusterInfo())
+    dispatch(actions.displayClusterInfo());
   },
   hideClusterInfo: () => {
-    dispatch(actions.hideClusterInfo())
+    dispatch(actions.hideClusterInfo());
   },
   updateClusterData: (clusterData) => {
-    dispatch(actions.updateClusterData(clusterData))
-  }
+    dispatch(actions.updateClusterData(clusterData));
+  },
 });
 
+//* --------------- NAVIGATION COMPONENT --------------------------- *//
 class NavContainer extends Component {
   constructor(props) {
     super(props);
@@ -59,73 +64,66 @@ class NavContainer extends Component {
     this.handleClusterData = this.handleClusterData.bind(this);
   }
 
-  //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
-
+  //* --------------- COMPONENT LIFECYCLE METHODS ----------------- *//
   componentDidMount() {
-    ipcRenderer.on(events.SEND_CLUSTER_DATA, this.handleClusterData)
+    ipcRenderer.on(events.SEND_CLUSTER_DATA, this.handleClusterData);
     ipcRenderer.send(events.GET_CLUSTER_DATA);
   }
 
   componentWillUnmount() {
-    ipcRenderer.removeListener(events.SEND_CLUSTER_DATA, this.handleClusterData)
+    ipcRenderer.removeListener(events.SEND_CLUSTER_DATA, this.handleClusterData);
   }
 
-
+  //* --------------- COMPONENT METHODS --------------------------- *//
   handleMenuItemToShow(e) {
-    console.log('e.target', e.target);
-    this.props.menuItemToShow(e.target.id);
-    this.props.toggleCreateMenuItem();
+    const { menuItemToShow, toggleCreateMenuItem } = this.props;
+    menuItemToShow(e.target.id);
+    toggleCreateMenuItem();
   }
 
   handleNavBarClick(e) {
-    // if (e.target.id === 'kubectl_link') {
-    //   this.props.displayCreateButton();
-    // } else {
-    //   this.props.hideCreateButton();
-    // }
-    this.props.hideCreateMenu();
+    const { hideCreateMenu } = this.props;
+    hideCreateMenu();
   }
 
   handleClusterData(event, data) {
-    console.log("data on cluster: ", data);
-    this.props.updateClusterData(data);
+    const { updateClusterData } = this.props;
+    updateClusterData(data);
   }
 
+  //* --------------- RENDER LIFECYCLE METHOD --------------------- *//
   render() {
-    const { 
+    const {
       showCreateButton,
       showCreateMenu,
-      showCreateMenuItem,
-      menuItemToShow,
+
       clusterInfo,
       showClusterInfo,
+      hideClusterInfo,
+      displayClusterInfo,
 
       toggleCreateMenu,
-      hideCreateButton,
-      displayCreateButton,
-      hideClusterInfo,
-      displayClusterInfo
     } = this.props;
+
+    //* --------------- RETURNING ----------------------------------- *//
     return (
       <div className="nav_container">
-        <NavComponent 
+        <NavComponent
+          handleNavBarClick={this.handleNavBarClick}
+
           showCreateButton={showCreateButton}
           showCreateMenu={showCreateMenu}
-          showCreateMenuItem={showCreateMenuItem}
-          menuItemToShow={menuItemToShow}
-          showClusterInfo={showClusterInfo}
-          clusterInfo={clusterInfo}
-
           toggleCreateMenu={toggleCreateMenu}
-          hideCreateButton={hideCreateButton}
-          displayCreateButton={displayCreateButton}
-          hideClusterInfo={hideClusterInfo}
-          displayClusterInfo={displayClusterInfo}
+
           handleMenuItemToShow={this.handleMenuItemToShow}
-          handleNavBarClick={this.handleNavBarClick}
+
+          clusterInfo={clusterInfo}
+          showClusterInfo={showClusterInfo}
+          displayClusterInfo={displayClusterInfo}
+          hideClusterInfo={hideClusterInfo}
         />
       </div>
-    )
+    );
   }
 }
 

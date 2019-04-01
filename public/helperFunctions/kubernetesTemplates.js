@@ -1,10 +1,11 @@
-//* --------- NODE APIS ----------------
+// --------- NODE APIS ----------------
 
-//* --------- DECLARE EXPORT OBJECT --------------------------
+// --------- DECLARE EXPORT OBJECT --------------------------
 const kubernetesTemplates = {};
 
 /** --------- GENERATES TEMPLATE FOR CREATING POD YAML FILE----------
  * @param {Object} data
+ * @return {Object}
  */
 kubernetesTemplates.createPodYamlTemplate = (data) => {
   const podYamlTemplate = {
@@ -36,6 +37,7 @@ kubernetesTemplates.createPodYamlTemplate = (data) => {
 
 /** --------- GENERATES TEMPLATE FOR CREATING SERVICE YAML FILE----------
  * @param {Object} data
+ * @return {Object}
  */
 kubernetesTemplates.createServiceYamlTemplate = (data) => {
   const serviceYamlTemplate = {
@@ -62,6 +64,7 @@ kubernetesTemplates.createServiceYamlTemplate = (data) => {
 
 /** --------- GENERATES TEMPLATE FOR CREATING DEPLOYMENT YAML FILE ----
  * @param {Object} data
+ * @return {Object}
  */
 kubernetesTemplates.createDeploymentYamlTemplate = (data) => {
   const deploymentTemplate = {

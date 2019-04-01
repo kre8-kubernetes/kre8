@@ -1,15 +1,11 @@
-//* --------- NODE APIS ----------------
+// --------- NODE APIS ----------------
 const fs = require('fs');
 const fsp = require('fs').promises;
 
-//* --------- IMPORT MODULES -----------------
-
-//* --------- DECLARE EXPORT OBJECT ---------------------------------------- **//
-
+// --------- DECLARE EXPORT OBJECT -------------------
 const awsHelperFunctions = {};
 
-//* --------- Timeout function blocks excution thread for ms Miliseconds --- **//
-/**
+/** --------- Timeout function blocks excution thread for ms Miliseconds ---
  * timeout() returns a promise that will will resolve after a number of milliseconds
  * that are passed in as an argument
  * @param {Number} ms milliseconds
@@ -17,8 +13,7 @@ const awsHelperFunctions = {};
 */
 awsHelperFunctions.timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-//* --------- Check the Filesystem for a specific directory ----------------- **//
-/**
+/** --------- Check the Filesystem for a specific directory -----------------
  * Will make the desired folder from the user's root folder if it does not exist
  * @param {string} folderName name of folder of interest
  * @return {undefined}
@@ -33,8 +28,7 @@ awsHelperFunctions.checkFileSystemForDirectoryAndMkDir = async (folderName) => {
   }
 };
 
-//* --------- UPDATE awsCredentials FILE ------------------------------------ **//
-/**
+/** --------- UPDATE awsCredentials FILE ------------------------------------
  * updates the awsCredentials file to include the incoming property name and value
  * @param {string} key keyname of the object property in question
  * @param {string} value the value of the property in question
@@ -53,8 +47,7 @@ awsHelperFunctions.updateCredentialsFile = async (key, value) => {
   }
 };
 
-//* --------- READ & CHECK AWS_MASTER FILE ---------------------------------- **//
-/**
+/** --------- READ & CHECK AWS_MASTER FILE ----------------------------------
  * Checks if the master file exists and if it does not, creates it
  * checkMasterFile() will return false if file does not exist or if
  * the specific property does not match the property value argument
@@ -98,8 +91,7 @@ awsHelperFunctions.checkAWSMasterFile = async (key, value) => {
   }
 };
 
-//* --------- APPEND AWS_MASTER FILE ------------------------------- **//
-/**
+/** --------- APPEND AWS_MASTER FILE -------------------------------
  * Check if data from the incoming object is in AWS_MASTER_FILE yet
  * add the object properties to the master file if they are not there
  * @param {Object} awsDataObject

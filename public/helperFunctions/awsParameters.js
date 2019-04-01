@@ -1,7 +1,7 @@
-//* --------- NODE APIS ----------------
+// --------- NODE APIS ----------------
 const fs = require('fs');
 
-//* --------- DECLARE EXPORT OBJECT -------------------------
+// --------- DECLARE EXPORT OBJECT -------------------------
 const awsParameters = {};
 
 /** --------- GENERATES PARAMETER FOR CREATING IAM ROLE---------------

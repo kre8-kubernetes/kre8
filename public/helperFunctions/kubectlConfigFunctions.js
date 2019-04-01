@@ -1,29 +1,29 @@
-//* --------- NPM MODULES ----------------
+// --------- NPM MODULES ----------------
 const YAML = require('yamljs');
 
-//* --------- NODE APIS ----------------
+// --------- NODE APIS ----------------
 const path = require('path');
 const { spawnSync } = require('child_process');
 const fsp = require('fs').promises;
 const fs = require('fs');
 
-//* --------- AWS SDK ELEMENTS -----------
+// --------- AWS SDK ELEMENTS -----------
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 const EC2 = require('aws-sdk/clients/ec2');
 
-//* --------- INSTANTIATE AWS CLASSES -----------
+// --------- INSTANTIATE AWS CLASSES -----------
 const ec2 = new EC2({ region: process.env.REGION });
 const cloudformation = new CloudFormation({ region: process.env.REGION });
 
-//* --------- IMPORT MODULES -----------
+// --------- IMPORT MODULES -----------
 const awsHelperFunctions = require(__dirname + '/awsHelperFunctions'); 
 const awsParameters = require(__dirname + '/awsParameters');
 const awsProps = require(__dirname + '/../awsPropertyNames'); 
 
-//* --------- IMPORT DOCUMENT TEMPLATES -----
+// --------- IMPORT DOCUMENT TEMPLATES -----
 const stackTemplateForWorkerNode = require(path.join(__dirname, '/../Storage/AWS_Assets/Policy_Documents/amazon-eks-worker-node-stack-template.json'));
 
-//* --------- DECLARE EXPORT OBJECT ----------------------------------
+// --------- DECLARE EXPORT OBJECT ----------------------------------
 const kubectlConfigFunctions = {};
 
 
@@ -221,7 +221,7 @@ kubectlConfigFunctions.createStackForWorkerNode = async (clusterName) => {
   }
 };
 
-/** --------- INPUT NODE INSTANCE ROLE INTO THE was-auth-cm.yaml AND APPLY --
+/** --------- INPUT NODE INSTANCE ROLE INTO THE was-auth-cm.yaml AND APPLY ---------
  * inputNodeInstance() will read create a .yaml file based on the NodeInstanceArn from
  * AWS and will then apply that file to the kubernetes cluster so that we are configured
  * to the nodes that were created
@@ -266,7 +266,7 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
   }
 };
 
-/** ---- CHECK FOR SUCCESSFUL WORKER NODES CONFIGURATION ------
+/** ----------- CHECK FOR SUCCESSFUL WORKER NODES CONFIGURATION ----------------
  * testKubectlStatus() will continue to checkout for worker nodes until they are ready
  * If an error occurs this will return false;
  * @return {Boolean}

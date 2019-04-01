@@ -1,9 +1,9 @@
-//* --------- NODE APIS ----------------
+// --------- NODE APIS ----------------
 const fs = require('fs');
 const fsp = require('fs').promises;
 const { spawnSync } = require('child_process');
 
-//* --------- DECLARE EXPORT OBJECT ----------------------------------
+// --------- DECLARE EXPORT OBJECT ----------------------------------
 const onDownload = {};
 
 /** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ------------------

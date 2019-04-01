@@ -1,34 +1,33 @@
-//* --------- NODE APIS ----------------
+// --------- NODE APIS ----------------
 const fs = require('fs');
 const fsp = require('fs').promises;
 const mkdirp = require('mkdirp');
 
-//* --------- AWS SDK ELEMENTS ---------
+// --------- AWS SDK ELEMENTS ---------
 const EKS = require('aws-sdk/clients/eks');
 const IAM = require('aws-sdk/clients/iam');
 const CloudFormation = require('aws-sdk/clients/cloudformation');
 
-//* --------- INSTANTIATE AWS CLASSES ---
+// --------- INSTANTIATE AWS CLASSES ------
 const iam = new IAM();
 const eks = new EKS({ region: process.env.REGION });
 const cloudformation = new CloudFormation({ region: process.env.REGION });
 
-//* --------- IMPORT MODULES -----------
+// --------- IMPORT MODULES -----------
 const onDownload = require(__dirname + '/onDownloadFunctions');
 const awsHelperFunctions = require(__dirname + '/awsHelperFunctions'); 
 const awsParameters = require(__dirname + '/awsParameters');
 const awsProps = require(__dirname + '/../awsPropertyNames'); 
 const kubectlConfigFunctions = require(__dirname + '/kubectlConfigFunctions');
 
-//* --------- IMPORT DOCUMENT TEMPLATES -
+// --------- IMPORT DOCUMENT TEMPLATES -------
 const iamRolePolicyDocument = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/amazon-stack-template-eks-vpc-real.json');
 
-//* --------- DECLARE EXPORT OBJECT ----------------------------------
+// --------- DECLARE EXPORT OBJECT ----------------------------------
 const awsEventCallbacks = {};
 
-//* --------- EXECUTES ON DOWNLOAD -------------------------------------------- *//
-
+// --------- EXECUTES ON DOWNLOAD --------------------------------------------
 /** --------- Check for & install aws-iam-authenticator -----------------------
  * To communicate with AWS, user must have the aws-iam-authenticator installed
  * These functions check if authenticator is already installed in user's bin folder
@@ -70,7 +69,7 @@ awsEventCallbacks.setEnvVarsAndMkDirsInProd = () => {
   mkdirp.sync(process.env.KUBECTL_STORAGE);
 };
 
-//* -------- EXECUTES ON EVERY OPENING OF APPLICATION ------------ *//
+//* -------- EXECUTES ON EVERY OPENING OF APPLICATION ------------
 /** Check the credentials file to determine if user needs to configure the application
  * If the awsCredentials file exists and the STATUS property is set to configured
  * then this will return true, other will return false

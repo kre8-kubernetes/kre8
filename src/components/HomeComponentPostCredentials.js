@@ -1,42 +1,27 @@
-import React from "react";
-// import '../styles.css'
-import { Link } from 'react-router-dom';
+import React from 'react';
 
-
-
-// const HomeLoadingComponent = props => {
-//   return (
-//     <div className='home_page_post_config_form_container'>
-//       <div className='home_page_form_container_header'>
-//         <h3>Manage your Kubernetes Cluster</h3>
-//       </div>
-//       <div className='home_page_form_container_text'>
-//         <p>Managing your Kubernetes cluster on the AWS cloud can be a complicated process. KRE8 is here to simplify everything for you.</p>
-//         </div>
-//             <br></br>
-
-//             {/* <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-//             </div> */}
-
-//         <div className='home_page_form_container_buttons_item'>
-//             <button id='home_submit_button' onClick={props.handleButtonClickOnHomeComponentPostCredentials}>View Cluster</button>
-//         </div>
-       
-//     </div>
-//     );
-//   };
-  
-const HomeLoadingComponent = props => {
+const HomeLoadingComponent = () => {
   return (
-    <div className='home_page_post_config_form_container'>
-      <div className='loading_form_container_text'>
-        Connecting to Kre8...
-      </div>
-        <div className="ball"></div>
-        <div className="ball1"></div>
-        <div className="ball2"></div> 
+    <div className="home_page_post_config_form_container">
+      <svg id="heptagon_loading">
+        <g transform="translate(-3.722589840316431,-136.36553658320645)
+            scale(2.2474316850393237)
+            rotate(-15,101.04986267322434,131.70723811769813)"
+        >
+          <path
+            d="M140,
+              152.83345844306322L109,
+              175.880461372843L72,
+              166.17923805805214L56,
+              130.9218798280204L73,
+              96.24675420539563L111,
+              87.86058520236253L141,
+              111Z"
+          />
+        </g>
+      </svg>
     </div>
-    );
-  };
-  export default HomeLoadingComponent;
-  
+  );
+};
+
+export default HomeLoadingComponent;

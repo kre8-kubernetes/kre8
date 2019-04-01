@@ -267,6 +267,34 @@ body {
 //* --------------- HOME PAGE POST CONFIG COMPONENT STYLING --- *//
 //* ----------------------------------------------------------- *//
 
+
+#heptagon_loading {
+  position: relative;
+  left: -62px;
+  bottom: 60px;
+  height: 300px;
+  width: 325px;
+}
+
+#heptagon_loading path {
+  fill: none;
+  stroke: #4368C9;
+  stroke-width: 1.5;
+  stroke-dasharray: 275;
+  stroke-dashoffset: 10000;
+  animation: dash 50s linear infinite running;
+}
+
+@keyframes dash {
+/*   from {
+    stroke-dashoffset: 1000;
+  } */
+
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
 .home_page_post_config_form_container {
   width: 325px;
   height: 325px;
@@ -294,92 +322,6 @@ body {
   font-size: 17px;
   font-weight: 150;
 }
-
-.ball {
-    grid-area: ball0;
-    border: 2px solid rgba(0,183,229,0.9);
-    opacity: .9;
-    border-top: 2px solid rgba(0,0,0,0);
-    border-left: 2px solid rgba(0,0,0,0);
-    border-radius: 100px;
-    box-shadow: 0 0 35px #2187e7;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto;
-    -moz-animation: spin 1s infinite linear;
-    -webkit-animation: spin 1s infinite linear;
-  }
-  
-  .ball1 {
-      grid-area: ball1;
-      justify-self: start;
-      background-color: rgba(0,0,0,0);
-      border: 2px solid rgba(0,183,229,0.9);
-      opacity: .9;
-      border-top: 2px solid rgba(0,0,0,0);
-      border-left: 2px solid rgba(0,0,0,0);
-      border-radius: 70px;
-      box-shadow: 0 0 15px #2187e7;
-      width: 70px;
-      height: 70px;
-      margin: 0 auto;
-      -moz-animation: spinoff 1.5s infinite linear;
-      -webkit-animation: spinoff 1.5s infinite linear;
-  }
-  
-  .ball2 {
-      grid-area: ball2;
-      background-color: rgba(0,0,0,0);
-      border: 2px solid rgba(0,183,229,0.9);
-      opacity: .9;
-      border-top: 2px solid rgba(0,0,0,0);
-      border-left: 2px solid rgba(0,0,0,0);
-      border-radius: 50px;
-      box-shadow: 0 0 15px #2187e7;
-      width: 50px;
-      height: 50px;
-      margin: 0 auto;
-      -moz-animation: spin .75s infinite linear;
-      -webkit-animation: spin .75s infinite linear;
-  }
-  
-  @-moz-keyframes spin {
-      0% {
-          -moz-transform: rotate(0deg);
-      }
-      100% {
-          -moz-transform: rotate(360deg);
-      };
-  }
-  
-  @-moz-keyframes spinoff {
-      0% {
-          -moz-transform: rotate(0deg);
-      } 
-      100% {
-          -moz-transform: rotate(-360deg);
-      };
-  }
-  
-  @-webkit-keyframes spin {
-      0% {
-          -webkit-transform: rotate(0deg);
-      }
-      100% {
-          -webkit-transform: rotate(360deg);
-      };
-  }
-  
-  @-webkit-keyframes spinoff {
-      0% {
-          -webkit-transform: rotate(0deg);
-      }
-  
-      100% {
-          -webkit-transform: rotate(-360deg);
-      };
-  }
-
 
 //* ----------------------------------------------------------- *//
 //* --------------- HELP INFO COMPONENT STYLING --------------- *//

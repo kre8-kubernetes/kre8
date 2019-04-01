@@ -134,7 +134,7 @@ kubectlConfigFunctions.testKubectlGetSvc = () => {
       console.log(`Kubectl has been configured. Here is the service data: ${stdout}`);
       return (`Kubectl has been configured. Here is the service data: ${stdout}`);
     }
-    throw stderr;
+    throw new Error(stderr);
   } catch (err) {
     console.error('Error coming from kubectlConfigFunctions.testKubectlGetSvc: ', err);
     throw err;
@@ -256,7 +256,7 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
     const stdout = kubectlApplyChild.stdout.toString();
     const stderr = kubectlApplyChild.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);
-    if (stderr) throw stderr;
+    if (stderr) throw new Error(stderr);
 
     // set a short timeout here to allow for the kubectl apply to take place
     console.log('waiting 5 seconds');
@@ -275,27 +275,27 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
 kubectlConfigFunctions.testKubectlStatus = async () => {
   try {
     console.log('testing status');
-    let successfulOutput;
-    let errorMessage;
+    let stdout;
+    let stderr;
     const getKubectlStatus = () => {
       console.log('getting status');
       const kubectlStatus = spawnSync('kubectl', ['get', 'nodes'], { timeout: 15000 });
-      successfulOutput = kubectlStatus.stdout.toString();
-      errorMessage = kubectlStatus.stderr.toString();
-      console.log('successfulOutput: ', `===>\n${successfulOutput}\n`, 'errorMessage:', errorMessage);
-      if (errorMessage) throw errorMessage;
+      stdout = kubectlStatus.stdout.toString();
+      stderr = kubectlStatus.stderr.toString();
+      console.log('stdout: ', `===>\n${stdout}\n`, 'stderr:', stderr);
+      if (stderr) throw new Error(stderr);
     };
     console.log('get status');
 
     getKubectlStatus();
-    while (successfulOutput.includes('NotReady')) {
-      console.log('successfulOutput status: ', successfulOutput);
+    while (stdout.includes('NotReady')) {
+      console.log('stdout status: ', stdout);
       // wait 10 seconds before rerunning function
       await awsHelperFunctions.timeout(10000);
       getKubectlStatus();
     }
-    if ((successfulOutput.includes('Ready')) && (!successfulOutput.includes('Not'))) {
-      console.log('Kubectl successfully configured:', `====>\n${successfulOutput}\n`, 'errorMessage:', errorMessage);
+    if ((stdout.includes('Ready')) && (!stdout.includes('Not'))) {
+      console.log('Kubectl successfully configured:', `====>\n${stdout}\n`, 'stderr:', stderr);
       return true;
     }
     return false;

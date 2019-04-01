@@ -17,6 +17,7 @@ onDownload.installIAMAuthenticator = () => {
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
   console.log('stdout', stdout, 'stderr', stderr);
+  if (stderr) throw new Error(stderr);
 };
 
 /** --------- APPLY PERMISSIONS TO BINARY FILE TO MAKE EXECUTABLE -----
@@ -29,6 +30,7 @@ onDownload.enableIAMAuthenticator = () => {
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
   console.log('stdout', stdout, 'stderr', stderr);
+  if (stderr) throw new Error(stderr);
 };
 
 
@@ -47,6 +49,7 @@ onDownload.copyIAMAuthenticatorToBinFolder = () => {
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
   console.log('stdout', stdout, 'stderr', stderr);
+  if (stderr) throw new Error(stderr);
 };
 
 /** ---- SET PATH ENVIRONTMENT VARIABLE & APPEND TO BASH_PROFILE FILE ---

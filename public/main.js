@@ -464,7 +464,7 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
     const child = spawnSync('kubectl', ['apply', '-f', `${process.env.KUBECTL_STORAGE}service_${data.serviceName}.json`]);
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
-    if (stderr) throw stderr;
+    if (stderr) throw new Error(stderr);
     // SEND STDOUT TO RENDERER PROCESS
     win.webContents.send(events.HANDLE_NEW_SERVICE, stdout);
   } catch (err) {
@@ -529,7 +529,7 @@ ipcMain.on(events.DELETE_NODE, async (event, data) => {
     const stdout = child.stdout.toString();
 
     const stderr = child.stderr.toString();
-    if (stderr) throw stderr;
+    if (stderr) throw new Error(stderr);
     // SEND STDOUT TO RENDERER PROCESS
     await awsHelperFunctions.timeout(1000 * 10);
     win.webContents.send(events.HANDLE_RERENDER_NODE, stdout);

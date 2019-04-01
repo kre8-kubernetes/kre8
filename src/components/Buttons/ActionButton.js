@@ -1,11 +1,14 @@
-import React from 'react'
+import React from 'react';
+
+// TODO: why isn't it liking the else?
 
 const ActionButton = (props) => {
+  const { id, clickHandler, buttonText } = props;
   if (props.id) {
-    return <button id={props.id} onClick={props.clickHandler} className='action_button'>{props.buttonText}</button>
+    return <button id={id} onClick={clickHandler} className="action_button" type="button">{buttonText}</button>;
   } else {
-    return <button onClick={props.clickHandler} className='action_button'>{props.buttonText}</button>
+    return <button onClick={clickHandler} className="action_button" type="button">{buttonText}</button>;
   }
-}
+};
 
-export default ActionButton
+export default ActionButton;

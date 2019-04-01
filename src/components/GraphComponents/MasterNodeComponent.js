@@ -5,13 +5,14 @@ import { Polygon } from '@vx/shape';
 const MasterNodeComponent = ({ node, top, left, showNodeInfo, toolTipOn, toolTipOff }) => {
   const bg = '#1D2541';
   const stroke = '#4368C9';
-  const numberOfSides = 7;
-  const rotate = -13;
   const strokeWidth = 1.25;
-  const size = 55;
   const textFill = '#D7D7D7';
   const textDY = '.33em';
   const textFontSize = 16;
+  const numberOfSides = 7;
+  const rotate = -13;
+  const size = 55;
+
 
   return (
     <Group top={top} left={left}>

@@ -1,24 +1,13 @@
 import React from 'react';
 import { Group } from '@vx/group';
 
-// filter="url(#shadow)"
-//fill="url('#workerNodeGradient')" 
-
-
-
-
 const WorkerNodeComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
-  // const peach = '#fd9b93';
-  // const pink = '#fe6e9e';
-  // const blue = '#03c0dc';
-  // const green = '#26deb0';
-  // const plum = '#71248e';
-  // const lightpurple = '#374469';
-  // const white = '#ffffff';
-  // const medBlue = '#71D7EF';
-  const bg= '#1D2541';
-  const stroke='#5499D9';
+  const bg = '#1D2541';
+  const stroke = '#5499D9';
   const strokeWidth = 1.25;
+  const textFill = '#D7D7D7';
+  const textDY = '.33em';
+  const textFontSize = 11;
 
   const width = 125;
   const height = 47;
@@ -38,40 +27,29 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTi
         strokeWidth={strokeWidth}
         onClick={() => {
           showNodeInfo(node);
-          console.log('from circle', node);
         }}
-        onMouseOver={(e) => {  
+        onMouseOver={(e) => {
           toolTipOn(e, { title: 'WorkerNode:', text: node.data.metadata.name });
         }}
         onMouseLeave={toolTipOff}
+        onFocus={(e) => {
+          toolTipOn(e, { title: 'WorkerNode:', text: node.data.metadata.name });
+        }}
       />
 
       <text
-        dy={'.33em'}
-        fontSize={11}
+        dy={textDY}
+        fontSize={textFontSize}
         fontFamily="Lato"
-        textAnchor={'middle'}
+        textAnchor="middle"
         style={{ pointerEvents: 'none' }}
-        fill={'#D7D7D7'}
+        fill={textFill}
       >
-      <tspan x="0" dy="-.3em">AWS Worker Node</tspan>
-      <tspan x="0" dy="1.5em">{ node.data.status.nodeInfo.systemUUID.slice(0, 8) }</tspan>
+        <tspan x="0" dy="-.3em">AWS Worker Node</tspan>
+        <tspan x="0" dy="1.5em">{ node.data.status.nodeInfo.systemUUID.slice(0, 8) }</tspan>
       </text>
     </Group>
   );
-}
+};
 
 export default WorkerNodeComponent;
-
-
-
-      {/* <circle
-        r={25}
-        fill={bg}
-        stroke={blue}
-        strokeWidth="1"
-        onClick={() => {
-          showNodeInfo(node);
-          console.log('from circle', node);
-        }}
-      /> */}

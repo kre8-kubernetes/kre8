@@ -101,12 +101,12 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
  * @return {Object}
  */
 awsParameters.createWorkerNodeStackParam = (clusterName, workerNodeStackName, stackTemplateforWorkerNode) => {
-  console.log('CREATNG STACK PARAM');
+  console.log('CREATING STACK PARAM');
   const awsMasterFileData = fs.readFileSync(`${process.env.AWS_STORAGE}AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
   const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
 
   console.log('Here is the current master file data in createWorkerNodeStackParams: ', parsedAWSMasterFileData);
-  const { subnetIdsString, vpcId, securityGroupIds, awsKeyValuePairValue } = parsedAWSMasterFileData;
+  const { subnetIdsString, vpcId, securityGroupIds, KeyName } = parsedAWSMasterFileData;
 
   // TODO: find a way to continuously get the latest AMI values for eks instances
   // because right now we are hard coding it and the values will change periodically
@@ -125,7 +125,7 @@ awsParameters.createWorkerNodeStackParam = (clusterName, workerNodeStackName, st
       { ParameterKey: 'NodeAutoScalingGroupMaxSize', ParameterValue: '4' },
       { ParameterKey: 'NodeInstanceType', ParameterValue: 't3.nano' },
       { ParameterKey: 'NodeImageId', ParameterValue: 'ami-0c28139856aaf9c3b' },
-      { ParameterKey: 'KeyName', ParameterValue: awsKeyValuePairValue },
+      { ParameterKey: 'KeyName', ParameterValue: KeyName },
       { ParameterKey: 'VpcId', ParameterValue: vpcId },
       { ParameterKey: 'Subnets', ParameterValue: subnetIdsString },
     ],

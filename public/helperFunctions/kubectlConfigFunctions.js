@@ -51,10 +51,11 @@ kubectlConfigFunctions.createConfigFile = async (clusterName) => {
       // Read Master File and grab data
       const awsMasterFileData = await fsp.readFile(`${process.env.AWS_STORAGE}AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
       const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
-      const { serverEndpoint, certificateAuthorityData } = parsedAWSMasterFileData;
+      console.log('parsed parsedAWSMasterFileData: ', `===>\n${parsedAWSMasterFileData}\n`);
+      const { serverEndPoint, certificateAuthorityData } = parsedAWSMasterFileData;
 
       // Generate parameter with gathered data
-      const AWSClusterConfigFileData = awsParameters.createConfigParam(clusterName, serverEndpoint, certificateAuthorityData);
+      const AWSClusterConfigFileData = awsParameters.createConfigParam(clusterName, serverEndPoint, certificateAuthorityData);
 
       // Format data from the AWSClusterConfigFileData object into YAML to save in user's filesystem
       const stringifiedAWSClusterConfigFile = JSON.stringify(AWSClusterConfigFileData);

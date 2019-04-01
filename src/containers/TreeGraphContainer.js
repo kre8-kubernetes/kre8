@@ -187,7 +187,7 @@ class TreeGraphContainer extends Component {
     const { nodeInfoToShow } = this.state;
     ipcRenderer.send(events.DELETE_NODE, nodeInfoToShow);
   }
-  
+
   //* --------- RERENDER GRAPH METHOD
   /**
    * Call to get data on the current nodes -- this will update state and trigger
@@ -499,7 +499,6 @@ class TreeGraphContainer extends Component {
         // },
         // {
         //   name: 'kube-controller-manager',
-          
         //   type': 'master-component',
         // },
       ],
@@ -509,7 +508,7 @@ class TreeGraphContainer extends Component {
       top: 110,
       left: 30,
       right: 30,
-      bottom: 110
+      bottom: 110,
     };
 
     const {
@@ -549,7 +548,7 @@ class TreeGraphContainer extends Component {
           margin={margin}
         />
       </div>
-    )
+    );
   }
 }
 

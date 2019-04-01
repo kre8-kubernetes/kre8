@@ -1,50 +1,64 @@
 import React from 'react';
-
 import ApiserverInfoComponent from '../ClusterComponentsInfoComponents/ApiserverInfoComponent';
 import NodeInfoComponent from '../ClusterComponentsInfoComponents/NodeInfoComponent';
-import PodInfoComponent from '../ClusterComponentsInfoComponents/PodInfoComponent'
-import ContainerInfoComponent from '../ClusterComponentsInfoComponents/ContainerInfoComponent'
+import PodInfoComponent from '../ClusterComponentsInfoComponents/PodInfoComponent';
+import ContainerInfoComponent from '../ClusterComponentsInfoComponents/ContainerInfoComponent';
+
+// TODO: Braden, doesn't like nested ifs, also what is: nothing_info_component (line 55)
 
 const ClusterInfoComponent = (props) => {
-  console.log('props from node info: ', props);
-  const componentType = props.nodeInfoToShow.data.type;
-  const data = props.nodeInfoToShow.data.data;
+  const {
+    hideNodeInfo,
+    deleteNode,
+    nodeInfoToShow,
+  } = props;
 
-  console.log('componentType: ', componentType);
+  const componentType = nodeInfoToShow.data.type;
+  const { data } = nodeInfoToShow.data;
+
   return (
-    <div className='popup_info'>
-      <div className='popup_info_inner'>
+    <div className="popup_info">
+      <div className="popup_info_inner">
         {
-            (componentType === "Node") ?
-              <NodeInfoComponent
-                data={props.nodeInfoToShow.data}
-                hideNodeInfo={props.hideNodeInfo}
-              />
-          : (componentType === "apiserver") ? 
-              <ApiserverInfoComponent 
-                data={data}
-                hideNodeInfo={props.hideNodeInfo}
-              />
-          : (componentType === "Pod") ? 
-            <PodInfoComponent 
-              data={props.nodeInfoToShow.data}
-              hideNodeInfo={props.hideNodeInfo}
-              deleteNode={props.deleteNode}
-            />
-          : (componentType === "Container") ? 
-            <ContainerInfoComponent
-              data={props.nodeInfoToShow.data}
-              hideNodeInfo={props.hideNodeInfo}
-            />
-          : 
-            <div className='nothing_info_component'>
-              This is the nothing component
-              <button onClick={props.hideNodeInfo}>Close</button>
-            </div>
+            (componentType === 'Node')
+              ? (
+                <NodeInfoComponent
+                  data={nodeInfoToShow.data}
+                  hideNodeInfo={hideNodeInfo}
+                />
+              )
+              : (componentType === 'apiserver')
+                ? (
+                  <ApiserverInfoComponent
+                    data={data}
+                    hideNodeInfo={hideNodeInfo}
+                  />
+                )
+                : (componentType === 'Pod')
+                  ? (
+                    <PodInfoComponent
+                      data={nodeInfoToShow.data}
+                      hideNodeInfo={hideNodeInfo}
+                      deleteNode={deleteNode}
+                    />
+                  )
+                  : (componentType === 'Container')
+                    ? (
+                      <ContainerInfoComponent
+                        data={nodeInfoToShow.data}
+                        hideNodeInfo={hideNodeInfo}
+                      />
+                    )
+                    : (
+                      <div className="nothing_info_component">
+                        This is the nothing component
+                        <button onClick={hideNodeInfo} type="button">Close</button>
+                      </div>
+                    )
         }
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default ClusterInfoComponent;

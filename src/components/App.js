@@ -1,23 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import NavContainer from '../containers/NavContainer.js';
-import MainContainer from '../containers/MainContainer.js';
+import NavContainer from '../containers/NavContainer';
+import MainContainer from '../containers/MainContainer';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <Router>
-        <div>
-          <NavContainer />
-          <MainContainer />
-        </div>
-      </Router>
-    );
-  }
-}
+const App = (props) => {
+  return (
+    <Router>
+      <div>
+        <NavContainer />
+        <MainContainer />
+      </div>
+    </Router>
+  );
+};
 
 export default App;

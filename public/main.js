@@ -85,6 +85,7 @@ const createWindowAndSetEnvironmentVariables = () => {
     minWidth: 700,
     backgroundColor: '#243B55',
     center: true,
+    defaultFontFamily: 'sansSerif',
   });
 
   win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`);
@@ -107,7 +108,7 @@ const createWindowAndSetEnvironmentVariables = () => {
     parent: win,
     show: true,
     frame: false,
-    backgroundColor: '#141E30',
+    backgroundColor: '#16273B',
     center: true,
   });
 
@@ -486,7 +487,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
       parent: win,
       show: false,
       frame: false,
-      backgroundColor: '#141E30',
+      backgroundColor: '#16273B',
       center: true,
     });
     startingIcon.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);

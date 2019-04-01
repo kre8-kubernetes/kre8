@@ -1,56 +1,45 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Switch, Route, withRouter } from 'react-router-dom';
-import { ipcRenderer } from 'electron';
-import * as actions from '../store/actions/actions.js';
-import * as events from '../../eventTypes';
+import { withRouter } from 'react-router-dom';
+import * as actions from '../store/actions/actions';
+import TreeGraphContainer from './TreeGraphContainer';
+import CreateMenuItemContainer from './CreateMenuItemContainer';
 
-import TreeGraphContainer from './TreeGraphContainer.js';
-
-import CreateMenuItemContainer from './CreateMenuItemContainer'
-
+//* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
   showCreateMenuItem: store.navbar.showCreateMenuItem,
 });
 
 const mapDispatchToProps = dispatch => ({
   displayCreateButton: () => {
-    dispatch(actions.displayCreateButton())
-  }
+    dispatch(actions.displayCreateButton());
+  },
 });
 
+//* -------------- KUBECTL GRAPH COMPONENT -------------------------------- *//
 class KubectlContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-
-    }
+    };
   }
 
-  //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
-  
-  // DEPLOYMENT LIFECYCLE METHOD
+  //* -------------- COMPONENT LIFECYCLE METHODS
   componentDidMount() {
-    this.props.displayCreateButton();
+    const { displayCreateButton } = this.props;
+    displayCreateButton();
   }
-  
-  // On component unmount, we will unsubscribe to listeners
-  componentWillUnmount() {
-
-  }
-
-  //**--------------EVENT HANDLERS-----------------**//
 
   render() {
+    const { showCreateMenuItem } = this.props;
+
     return (
-      <div className='kubectl_container'>
-        {this.props.showCreateMenuItem === true && (
-          <CreateMenuItemContainer />
-        )}
+      <div className="kubectl_container">
+        {showCreateMenuItem === true && <CreateMenuItemContainer />}
         <TreeGraphContainer />
       </div>
     );
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(KubectlContainer))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(KubectlContainer));

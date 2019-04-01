@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Switch, Route, withRouter } from 'react-router-dom';
@@ -10,7 +11,7 @@ const Main = (props) => {
   return (
     <div>
       <Switch>
-      <Route
+        <Route
           exact path='/'
           component={HomeContainer}
         />
@@ -24,7 +25,7 @@ const Main = (props) => {
         />
       </Switch>
     </div>
-  )
-}
+  );
+};
 
 export default withRouter(connect(null, null)(Main));

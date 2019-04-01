@@ -1,3 +1,5 @@
+// TODO: Delete this file?
+
 // import * as types from '../actionTypes.js'
 
 // const initialState = {

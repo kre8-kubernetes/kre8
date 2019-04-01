@@ -1,16 +1,16 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter, HashRouter } from 'react-router-dom';
 import NavContainer from '../containers/NavContainer';
 import MainContainer from '../containers/MainContainer';
 
 const App = (props) => {
   return (
-    <Router>
+    <HashRouter>
       <div>
         <NavContainer />
         <MainContainer />
       </div>
-    </Router>
+    </HashRouter>
   );
 };
 

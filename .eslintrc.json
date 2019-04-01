@@ -1,7 +1,21 @@
 {
-  "extends": "airbnb", 
+  "extends": "airbnb",
   "rules": {
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "max-len": [
+      "error",
+      {
+        "code": 150
+      }
+    ],
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
     "react/prop-types": 0
   }
 }

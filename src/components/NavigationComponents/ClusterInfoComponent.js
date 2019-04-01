@@ -1,53 +1,52 @@
 import React from 'react';
 
 const ClusterInfoComponent = (props) => {
+  const { clusterInfo } = props;
 
   return (
-    <div className='cluster_info_container'>
-      {/* <div className='cluster_info_container_item'> */}
-
-        <div className='cluster_info_major'>
-          <span className='cluster_info_key'>Cluster Name:   </span> <span className='cluster_info_value'>{props.clusterInfo.clusterName}</span>
-        </div>
-        <div className='cluster_info_minor'> 
-          <span className='cluster_info_key'>Cluster Arn:   </span>{props.clusterInfo.clusterArn}
-        </div>
-        <div className='cluster_info_major'> 
-          <span className='cluster_info_key'>IAM Role:   </span>{props.clusterInfo.iamRoleName}
-        </div>
-        <div className='cluster_info_minor'>
-          <span className='cluster_info_key'>IAM Role Arn:   </span>{props.clusterInfo.iamRoleArn}
-        </div>
-        <div className='cluster_info_major'> 
-          <span className='cluster_info_key'> Stack Name:    </span>{props.clusterInfo.stackName}</div>
-        <div className='cluster_info_minor'> 
-        <span className='cluster_info_key'>VPC ID:    </span>{props.clusterInfo.vpcId}
-        </div>
-        <div className='cluster_info_minor'> 
-        <span className='cluster_info_key'>Security Group Id:    </span>
-          {props.clusterInfo.securityGroupIds}</div>
-        <div className='cluster_info_minor'> 
-        <span className='cluster_info_key'>Subnet Ids:    </span>
-          {props.clusterInfo.subnetIdsArray[0]}, 
-          {props.clusterInfo.subnetIdsArray[1]},  
-          {props.clusterInfo.subnetIdsArray[2]} 
-        </div>
-        <div className='cluster_info_minor'> 
-          <span className='cluster_info_key'>Server End Point:    </span>{props.clusterInfo.serverEndPoint}
-        </div>
-        <div className='cluster_info_minor'> 
-          <span className='cluster_info_key'>Key Name:    </span>{props.clusterInfo.KeyName}
-        </div>
-        {/* <div className='cluster_info_minor'> 
-          <span className='cluster_info_key'>Worker Node Stack Name:   </span>
-{props.clusterInfo.workerNodeStackName}
-        </div>
-        <div className='cluster_info_minor'> 
-          <span className='cluster_info_key'>Worker Node Role Arn:   </span>{props.clusterInfo.nodeInstanceRoleArn}
-        </div> */}
-      {/* </div> */}
+    <div className="cluster_info_container">
+      <div className="cluster_info_major">
+        <span className="cluster_info_key">CLUSTER NAME: </span>
+        <span className="cluster_info_value">{clusterInfo.clusterName}</span>
+      </div>
+      <div className="cluster_info_minor">
+        <span className="cluster_info_key">CLUSTER ARN: </span>
+        <span className="cluster_info_value">{clusterInfo.clusterArn}</span>
+      </div>
+      <div className="cluster_info_major">
+        <span className="cluster_info_key">IAM ROLE: </span>
+        <span className="cluster_info_value">{clusterInfo.iamRoleName}</span>
+      </div>
+      <div className="cluster_info_minor">
+        <span className="cluster_info_key">IAM ROLE ARN: </span>
+        <span className="cluster_info_value">{clusterInfo.iamRoleArn}</span>
+      </div>
+      <div className="cluster_info_major">
+        <span className="cluster_info_key"> STACK NAME: </span>
+        <span className="cluster_info_value">{clusterInfo.stackName}</span>
+      </div>
+      <div className="cluster_info_minor">
+        <span className="cluster_info_key">VPC ID: </span>
+        <span className="cluster_info_value">{clusterInfo.vpcId}</span>
+      </div>
+      <div className="cluster_info_minor">
+        <span className="cluster_info_key">SECURITY GROUP ID: </span>
+        <span className="cluster_info_value">{clusterInfo.securityGroupIds}</span>
+      </div>
+      <div className="cluster_info_minor">
+        <span className="cluster_info_key">SUBNET IDS: </span>
+        <span className="cluster_info_value">{clusterInfo.subnetIdsArray[0]}, {clusterInfo.subnetIdsArray[1]}, {clusterInfo.subnetIdsArray[2]}</span>
+      </div>
+      <div className="cluster_info_minor">
+        <span className="cluster_info_key">SERVER END POINT: </span>
+        <span className="cluster_info_value">{clusterInfo.serverEndPoint}</span>
+      </div>
+      <div className="cluster_info_minor">
+        <span className="cluster_info_key">KEY NAME: </span>
+        <span className="cluster_info_value">{clusterInfo.KeyName}</span>
+      </div>
     </div>
   );
-}
+};
 
 export default ClusterInfoComponent;

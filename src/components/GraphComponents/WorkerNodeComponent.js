@@ -29,11 +29,11 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTi
           showNodeInfo(node);
         }}
         onMouseOver={(e) => {
-          toolTipOn(e, { title: 'WorkerNode:', text: node.data.metadata.name });
+          toolTipOn(e, { title: 'AWS Worker Node:', text: node.data.metadata.name });
         }}
         onMouseLeave={toolTipOff}
         onFocus={(e) => {
-          toolTipOn(e, { title: 'WorkerNode:', text: node.data.metadata.name });
+          toolTipOn(e, { title: 'AWS Worker Node:', text: node.data.metadata.name });
         }}
       />
 

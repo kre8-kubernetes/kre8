@@ -24,11 +24,11 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
           showNodeInfo(node);
         }}
         onMouseOver={(e) => {
-          toolTipOn(e, { title: 'ReplicaSet:', text: node.data.metadata.generateName.slice(0, -1) });
+          toolTipOn(e, { title: 'Pod,  Replica  Set:', text: node.data.metadata.generateName.slice(0, -1) });
         }}
         onMouseLeave={toolTipOff}
         onFocus={(e) => {
-          toolTipOn(e, { title: 'ReplicaSet:', text: node.data.metadata.generateName.slice(0, -1) });
+          toolTipOn(e, { title: 'Pod,  Replica  Set:', text: node.data.metadata.generateName.slice(0, -1) });
         }}
       />
       <text

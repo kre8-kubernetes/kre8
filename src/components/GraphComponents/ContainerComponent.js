@@ -1,46 +1,38 @@
 import React from 'react';
 import { Group } from '@vx/group';
 
-// filter="url(#shadow)"
-
-
 const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
-  // const peach = '#fd9b93';
-  // const pink = '#fe6e9e';
-  // const blue = '#03c0dc';
-  // const green = '#26deb0';
-  // const plum = '#71248e';
-  // const lightpurple = '#374469';
-  // const white = '#ffffff';
-  // const citrus = '#ddf163';
-  // const lightBlue = '#CDEDF0';
-  
-
   const bg = '#1D2541';
   const stroke = '#82EFFF';
-  const strokeWidth = .65;
-  // const radius = 13;
+  const strokeWidth = 0.65;
   const height = 20;
   const width = 14;
-  
+  const textFill = '#D7D7D7';
+  const textDY = '.33em';
+  const textFontSize = 9;
+
   return (
     <Group top={top} left={left}>
-    <ellipse 
+      <ellipse
         className="graph_component"
         rx={width}
         ry={height}
         fill={bg}
         stroke={stroke}
         strokeWidth={strokeWidth}
-        strokeDasharray="6,1.26" d="M5 40 l215 0"
+        strokeDasharray="6,1.26"
+        d="M5 40 l215 0"
         onClick={() => {
           showNodeInfo(node);
           console.log('from circle', node);
         }}
         onMouseOver={(e) => {
-          toolTipOn(e, {title: 'Image Name:', text: node.data.image});
+          toolTipOn(e, { title: 'Container,  Image:', text: node.data.image });
         }}
         onMouseLeave={toolTipOff}
+        onFocus={(e) => {
+          toolTipOn(e, { title: 'Container,  Image:', text: node.data.image });
+        }}
       />
       {/* <circle
         r={radius}
@@ -53,17 +45,17 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
         }}
       /> */}
       <text
-        dy={'.33em'}
-        fontSize={9}
+        dy={textDY}
+        fontSize={textFontSize}
         fontFamily="Lato"
-        textAnchor={'middle'}
+        textAnchor="middle"
         style={{ pointerEvents: 'none' }}
-        fill={'#D7D7D7'}
+        fill={textFill}
       >
-        {`#2`}
+        {`C`}
       </text>
     </Group>
   );
-}
+};
 
 export default PodComponent;

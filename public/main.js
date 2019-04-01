@@ -279,7 +279,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
   try {
     await kubectlConfigFunctions.createConfigFile(data.clusterName);
     await kubectlConfigFunctions.configureKubectl(data.clusterName);
-    kubectlConfigFunctions.testKubectlGetSvc(data.clusterName);
+    kubectlConfigFunctions.testKubectlGetSvc();
     await kubectlConfigFunctions.createStackForWorkerNode(data.clusterName);
 
     workerNodeStatus.status = awsProps.CREATED;

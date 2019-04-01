@@ -824,9 +824,10 @@ body {
   background: $accent-darkest-blue;
   color: $cluster-element-text-color;
   padding: 20px 25px 20px 25px;
-  border-radius: 6px;
+  border-radius: 3px;
   font-family: 'Lato-Regular', sans-serif;
-  border: 1px solid lightgray;
+  border: 1px solid #6E6B6B;
+  opacity: .9;
 }
 
 /**************************************************/
@@ -1213,7 +1214,11 @@ body {
 .cluster_info_subnets {
   padding-left: 15px;
   font-family: 'Lato-Regular', sans-serif;
+}
 
+.cluster_info_server_end_point {
+  padding-left: 29px;
+  font-family: 'Lato-Regular', sans-serif;
 }
 
 

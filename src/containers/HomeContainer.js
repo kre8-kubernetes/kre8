@@ -53,7 +53,8 @@ class HomeContainer extends Component {
       credentialStatus: false,
 
       errors: {},
-      // displayError: false,
+      displayError: false,
+      credentialError: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -86,10 +87,8 @@ class HomeContainer extends Component {
   * Activates when user enters AWS credentials. If the credentials pass error handlers,
   * reset values in state, and send data to the Main thread to verify entry data with AWS
   */
-
   setAWSCredentials(e) {
     e.preventDefault();
-
     const { awsAccessKeyId, awsSecretAccessKey, awsRegion } = this.state;
     const awsCredentials = {
       awsAccessKeyId,
@@ -121,8 +120,7 @@ class HomeContainer extends Component {
           awsRegion: '',
           errors: {},
         }));
-      // TODO: uncomment this
-      // ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsCredentials);
+        ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsCredentials);
       })
       .catch((err) => {
         const errorObj = err.inner.reduce((acc, error) => {
@@ -145,7 +143,6 @@ class HomeContainer extends Component {
   */
 
   processAWSCredentialStatus(event, data) {
-    console.log('Credential status data: ', data);
     const {
       setCredentialStatusTrue,
       setCredentialStatusFalse,
@@ -158,27 +155,25 @@ class HomeContainer extends Component {
     } else {
       setCredentialStatusFalse();
     }
-
     setCheckCredentialsTrue();
   }
 
   /*
   * Based on AWS response, either move the user on to the AWS data entry page,
-  * or send error alert, for user to reenter credentials
+  * or display error alert, for user to reenter credentials
   */
-
   handleAWSCredentials(event, data) {
     const { history } = this.props;
-    if (data.Arn) {
+    const credentialData = data;
+    if (credentialData.Arn) {
       history.push('/aws');
     } else {
-      // TODO: convert alert
-      alert('AWS has informed us that the credentials you entered are incorrect. Please check your entries and try again.');
+      this.setState(prevState => ({ ...prevState, displayError: true, credentialError: credentialData }));
     }
   }
 
   //* -------------- FORM EVENT HANDLER METHODS
-  // Handles text changes in form input fields
+  // Handles text changes from form input fields
   handleChange(e) {
     const { id, value } = e.target;
     e.preventDefault();
@@ -223,7 +218,8 @@ class HomeContainer extends Component {
       showInfo,
       mouseCoords,
       errors,
-      // displayError,
+      credentialError,
+      displayError,
     } = this.state;
 
     const {
@@ -257,6 +253,8 @@ class HomeContainer extends Component {
               awsSecretAccessKey={awsSecretAccessKey}
               awsRegion={awsRegion}
               errors={errors}
+              credentialError={credentialError}
+              displayError={displayError}
             />
           )
         }

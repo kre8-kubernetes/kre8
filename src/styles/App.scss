@@ -43,7 +43,7 @@ body {
 
 .errorClass {
   color: red;
-  font-size: 9px;
+  font-size: $error-font-size;
   margin-top: 2px;
   margin-left: 7px;
   opacity: .9;
@@ -261,6 +261,11 @@ body {
 
 #home_form_buttom {
   margin-right: 12px;
+}
+
+#home_page_container_error {
+  padding-top: 20px;
+  font-size: 12px;
 }
 
 //* ----------------------------------------------------------- *//

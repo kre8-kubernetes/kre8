@@ -1,52 +1,60 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import CreateMenuComponent from './CreateMenuComponent'
-import ClusterInfoComponent from './ClusterInfoComponent'
-
+import ClusterInfoComponent from './ClusterInfoComponent';
+import OutsideClick from "../../helperFunctions/OutsideClick.js"
 
 const NavComponent = (props) => {
+  const {
+    handleNavBarClick,
+    handleMenuItemToShow,
+    handleOutsideDropdownClick,
+
+    showCreateMenuButton,
+    showCreateMenuDropdown,
+
+    displayClusterInfo,
+    hideClusterInfo,
+    clusterInfo,
+    showClusterInfo,
+
+    toggleCreateMenuDropdown,
+  } = props;
+
   return (
-    <div className='nav_component_container'>
+    <div className="nav_component_container">
       {/* THE CREATE DROP DOWN MENU */}
-      {props.showCreateMenu === true && (
-        <CreateMenuComponent 
-          handleMenuItemToShow={props.handleMenuItemToShow}
-        />
+      {showCreateMenuDropdown === true && (
+        <OutsideClick className={'create_menu_component_container'} handleOutsideClick={handleOutsideDropdownClick}>
+          <button id="pod" className="create_menu_component_container_button" onClick={handleMenuItemToShow} type="button">Create a Pod</button>
+          <button id="service" className="create_menu_component_container_button" onClick={handleMenuItemToShow} type="button">Create a Service</button>
+          <button id="deployment" className="create_menu_component_container_button" onClick={handleMenuItemToShow} type="button">Create a Deployment</button>
+        </OutsideClick>
       )}
       {/* NAV LEFT CONTAINER */}
-      <div className='nav_left_container'>
-        {props.showCreateButton === true && (
-          <div id='nav_drop_down' className='nav_left_container_item' onClick={props.toggleCreateMenu}>
-            <div className='ham_bar'></div>
-            <div className='ham_bar'></div>
-            <div className='ham_bar'></div>
+      <div className="nav_left_container">
+        {showCreateMenuButton === true && (
+          <div id="nav_drop_down" className="nav_left_container_item" onClick={toggleCreateMenuDropdown} onKeyPress={toggleCreateMenuDropdown} role="button" tabIndex={0}>
+            <div className="ham_bar" />
+            <div className="ham_bar" />
+            <div className="ham_bar" />
           </div>
         )}
-        <Link to="/" className='nav_left_container_item' onClick={props.handleNavBarClick}>HOME</Link>
-        <Link to="/aws" className='nav_left_container_item' onClick={props.handleNavBarClick}>AWS</Link>
-        <Link to="/cluster" className='nav_left_container_item' onClick={props.handleNavBarClick}>KUBECTL</Link>
+        <Link to="/" className="nav_left_container_item" onClick={handleNavBarClick}>HOME</Link>
+        <Link to="/aws" className="nav_left_container_item" onClick={handleNavBarClick}>AWS</Link>
+        <Link to="/cluster" className="nav_left_container_item" onClick={handleNavBarClick}>KUBECTL</Link>
       </div>
       {/* NAV RIGHT CONTAINER */}
-      <div className='nav_right_container'>
-        <div className='nav_component_container_item'>
-          <button className='nav_component_cluster_button' onMouseEnter={props.displayClusterInfo}
-          onMouseLeave={props.hideClusterInfo}
-          >
-          
-            Cluster Data
-          </button>
-          {/* THE CLUSTER INFO BOX */}
-          {props.showClusterInfo === true && (
-          <ClusterInfoComponent
-          clusterInfo={props.clusterInfo}
-          />
+      <div className="nav_right_container">
+        <div className="nav_component_container_item">
+          <button className="nav_component_cluster_button" type="button" onMouseEnter={displayClusterInfo} onMouseLeave={hideClusterInfo}>CLUSTER DATA</button>
+          {/* CLUSTER INFO DROPDOWN CONTAINER */}
+          {showClusterInfo === true && (
+          <ClusterInfoComponent clusterInfo={clusterInfo} />
           )}
-      </div>
+        </div>
       </div>
     </div>
-  )
-}
-
- 
+  );
+};
 
 export default NavComponent;

@@ -1,13 +1,20 @@
 //Color Hierarchy 
 
-//Accent Color - Darkest Blue — Navbar, Modals, Interior of graph components
-$accent-darkest-blue: #071526;
+//* ---- Accent Color - Darkest Blue — Navbar, Modals, Interior of graph components
+// $accent-darkest-blue: #071526;
 
-//background blues for gradient
+$accent-darkest-blue: #0E1E31;
+
+//* ---- background blues for gradient
 //darker
-$bg-color-main: #141E30;
+// $bg-color-main: #141E30;
+// $bg-color-main: #19253B;
+$bg-gradient-dark: #1F3248;
+
 //lighter
-$bg-color-right: #243B55;
+// $bg-color-right: #233352;
+$bg-gradient-light: #243B55;
+
 
 
 //font colors
@@ -17,9 +24,8 @@ $input-color: #D6D9E0;
 
 //button colors
 $button-background: #D35B51;
-
-//pod color border + text
-$pods-color-hover: #C5DEEf;
+$button-background2: #243B55;
+$nav-bar-hover: #1F2D46;
 
 //cluster popups
 $cluster-element-text-color: white;
@@ -28,41 +34,19 @@ $cluster-element-text-color: white;
 $help-info-background-color: whitesmoke;
 $help-info-font-color: black;
 
-//treegraph component
+
+//* ---- Graph
+
+// graph-background
+$graph-background: #1F3248;
+// pod color border + text
+
+$pods-color-hover: #C5DEEf;
+
+// treegraph component
 $treegraph-border-color: black;
 
 
 //errorClass
 $error-red: red;
-
-
-// // $font-family: Arial;
-// // //**Font Colors
-
-// //normal
-// $standard-font-black: #343434;
-
-// //blue logo color font
-// $bluefont: #08548E;
-
-// $input-field-font-color: #8E8A8A;
-
-// //light grey fonts
-// $light-font-color: #343434;
-
-// //button color
-// $button-blue: #CBECF4;
-// $button-green: #64BC74;
-// $button-red: #E31717;
-// $button-yellow: #F2DA2A;
-
-// //Rounded edges
-// $border-radius: 8px;
-// // $input-fields-box-shadow: inset 2px 2px 2px 2px #E3E7E9;
-// $input-fields-box-shadow: inset 3px 2px 3px#8E8A8A;
-
-
-
-// $bg-image: linear-gradient(60deg, #29323c 0%, #485563 100%);
-// $graph-container-bg-color: lighten($bg-color, 3%);
-// $border-color: darken($bg-color, 5%);
+$error-font-size: 9px;

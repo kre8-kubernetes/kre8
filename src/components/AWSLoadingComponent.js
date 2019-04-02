@@ -1,50 +1,52 @@
 import React from "react";
-import { Link } from 'react-router-dom';
-// import "../styles.css";
 
-
-const AWSLoadingComponent = props => {
+const AWSLoadingComponent = (props) => {
+  const {
+    iamRoleName,
+    iamRoleStatus,
+    vpcStackName,
+    stackStatus,
+    clusterName,
+    clusterStatus,
+    workerNodeStatus,
+    kubectlConfigStatus,
+    errorMessage,
+  } = props;
 
   return (
-    <div className='aws_loading_form_component'>
-      <div className='aws_loading_form_component_header'>
+    <div className="aws_loading_form_component">
+      <div className="aws_loading_form_component_header">
         Cluster Status
       </div>
-
-      <div className='aws_loading_component_explainer_text'>
+      <div className="aws_loading_component_explainer_text">
         Cluster configuration takes AWS approximately 10-15 minutes. Do not close the application, until the process completes.
       </div>
-
-      <div className='aws_loading_form_component_items'>
-
-        <div className='aws_loading_form_component_item'>
-          <p>IAM Role {props.iamRoleName}</p>
-          <p>{props.iamRoleStatus}</p>
+      <div className="aws_loading_form_component_items">
+        <div className="aws_loading_form_component_item">
+          <p>IAM Role {iamRoleName}</p>
+          <p>{iamRoleStatus}</p>
         </div>
-        <div className='aws_loading_form_component_item'>
-          <p>VPC Stack {props.vpcStackName}</p>
-          <p>{props.stackStatus}</p>
+        <div className="aws_loading_form_component_item">
+          <p>VPC Stack {vpcStackName}</p>
+          <p>{stackStatus}</p>
         </div>
-        <div className='aws_loading_form_component_item'>
-          <p>Cluster {props.clusterName}</p>
-          <p>{props.clusterStatus}</p>
+        <div className="aws_loading_form_component_item">
+          <p>Cluster {clusterName}</p>
+          <p>{clusterStatus}</p>
         </div>
-        <div className='aws_loading_form_component_item'>
+        <div className="aws_loading_form_component_item">
           <p>Worker Node Stack</p>
-          <p>{props.workerNodeStatus}</p>
+          <p>{workerNodeStatus}</p>
         </div>
-        <div className='aws_loading_form_component_item'>
+        <div className="aws_loading_form_component_item">
           <p>Kubectl Configuration</p>
-          <p>{props.kubectlConfigStatus}</p>
+          <p>{kubectlConfigStatus}</p>
         </div>
       </div>
-        
-        <div className='aws_loading_component_error_text'> 
-          {props.errorMessage} 
-        </div>
-      
-     </div>
-
+      <div className="aws_loading_component_error_text">
+        <p>{errorMessage}</p>
+      </div>
+    </div>
   );
 };
 

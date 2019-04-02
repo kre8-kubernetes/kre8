@@ -1,45 +1,21 @@
 import React from 'react';
 import { Group } from '@vx/group';
 
-
-// filter="url(#shadow)"
-        {/* fill="url('#podGradient')" */}
-
 const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
-  // const peach = '#fd9b93';
-  // const pink = '#fe6e9e';
-  // const blue = '#03c0dc';
-  // const green = '#26deb0';
-  // const plum = '#71248e';
-  // const lightpurple = '#374469';
-  // const white = '#ffffff';
-  // const bg = '#272b4d';
-
-
-  const bg= '#1D2541';
-  const stroke='#228EB5';
+  // const bg = '#1D2541';
+  const bg = '#16273B';
+  const stroke = '#228EB5';
   const strokeWidth = 1;
-  const height = 26;
-  const width = 18;
+  const textFill = '#D7D7D7';
+  const textDY = '.33em';
+  const textFontSize = 11;
+  const height = 27;
+  const width = 20;
 
   return (
     <Group top={top} left={left}>
-      {/* <circle 
-        className="graph_component"
-        r={15}
-        fill={bg}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        onClick={() => {
-          showNodeInfo(node);
-          console.log('from circle', node);
-        }}
-        onMouseOver={(e) => {
-          toolTipOn(e, { title: 'ReplicaSet:', text: node.data.metadata.generateName.slice(0, -1) });
-        }}
-        onMouseLeave={toolTipOff}
-      /> */}
-      <ellipse className="pods"
+      <ellipse
+        className="pods"
         rx={width}
         ry={height}
         fill={bg}
@@ -47,25 +23,28 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
         strokeWidth={strokeWidth}
         onClick={() => {
           showNodeInfo(node);
-          console.log('from circle', node);
         }}
         onMouseOver={(e) => {
-          toolTipOn(e, { title: 'ReplicaSet:', text: node.data.metadata.generateName.slice(0, -1) });
+          toolTipOn(e, { title: 'Pod,  Replica  Set:', text: node.data.metadata.generateName.slice(0, -1) });
         }}
         onMouseLeave={toolTipOff}
+        onFocus={(e) => {
+          toolTipOn(e, { title: 'Pod,  Replica  Set:', text: node.data.metadata.generateName.slice(0, -1) });
+        }}
       />
-      <text className="podText"
-        dy={'.33em'}
-        fontSize={11}
+      <text
+        className="podText"
+        dy={textDY}
+        fontSize={textFontSize}
         fontFamily="Lato"
-        textAnchor={'middle'}
+        textAnchor="middle"
         style={{ pointerEvents: 'none' }}
-        fill={'#D7D7D7'}
+        fill={textFill}
       >
-        {`#1`}
+        {'Pod'}
       </text>
     </Group>
   );
-}
+};
 
 export default PodComponent;

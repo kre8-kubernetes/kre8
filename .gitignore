@@ -3,7 +3,12 @@
 /public/yamlAssets/private
 /public/Storage/AWS_Assets/AWS_Private
 /public/Storage/KUBECTL_Assets
-/dist
+
+
+dist/*
+
+dist/bundle.js
+dist/bundle.js.map
 
 # Logs
 logs

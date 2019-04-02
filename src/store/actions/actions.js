@@ -20,28 +20,30 @@ export const setCheckCredentialsTrue = () => ({
 //* ------------- NAVBAR ACTIONS ----------------------------------- *//
 //* ---------------------------------------------------------------- *//
 
-export const displayCreateButton = () => ({
-  type: types.SHOW_CREATE_BUTTON,
+export const displayCreateMenuButton = () => ({
+  type: types.SHOW_CREATE_MENU_BUTTON,
 });
 
-export const hideCreateButton = () => ({
-  type: types.HIDE_CREATE_BUTTON,
+export const hideCreateMenuButton = () => ({
+  type: types.HIDE_CREATE_MENU_BUTTON,
 });
 
-export const toggleCreateMenu = () => ({
-  type: types.TOGGLE_CREATE_MENU,
+export const toggleCreateMenuDropdown = (bool) => ({
+  type: types.TOGGLE_CREATE_MENU_DROPDOWN,
+  payload: bool
 });
 
-export const hideCreateMenu = () => ({
-  type: types.HIDE_CREATE_MENU,
+export const hideCreateMenuDropdown = () => ({
+  type: types.HIDE_CREATE_MENU_DROPDOWN,
 });
 
-export const toggleCreateMenuItem = () => ({
-  type: types.TOGGLE_CREATE_MENU_ITEM,
+export const toggleCreateMenuFormItem = (bool) => ({
+  type: types.TOGGLE_CREATE_MENU_FORM_ITEM,
+  payload: bool
 });
 
 export const menuItemToShow = menuItem => ({
-  type: types.MENU_ITEM_TO_SHOW,
+  type: types.MENU_FORM_ITEM_TO_SHOW,
   payload: menuItem,
 });
 

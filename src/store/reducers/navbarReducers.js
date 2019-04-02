@@ -1,9 +1,9 @@
 import * as types from '../actionTypes';
 
 const initialState = {
-  showCreateButton: false,
-  showCreateMenu: false,
-  showCreateMenuItem: false,
+  showCreateMenuButton: false,
+  showCreateMenuDropdown: false,
+  showCreateMenuFormItem: false,
   menuItemToShow: 'none',
   showClusterInfo: false,
   clusterInfo: {
@@ -12,7 +12,7 @@ const initialState = {
     clusterArn: '',
     iamRoleName: '',
     iamRoleArn: '',
-    stackName: '',
+    šstackName: '',
     vpcId: '',
     securityGroupIds: '',
     subnetIdsArray: '',
@@ -24,18 +24,25 @@ const initialState = {
 };
 
 export default function navbarReducers(state = initialState, action) {
+  console.log('incoming action!!!', action);
   switch (action.type) {
-    case types.SHOW_CREATE_BUTTON:
-      return { ...state, showCreateButton: true };
-    case types.HIDE_CREATE_BUTTON:
-      return { ...state, showCreateButton: false };
-    case types.TOGGLE_CREATE_MENU:
-      return { ...state, showCreateMenu: !state.showCreateMenu };
-    case types.HIDE_CREATE_MENU:
-      return { ...state, showCreateMenu: false };
-    case types.TOGGLE_CREATE_MENU_ITEM:
-      return { ...state, showCreateMenuItem: !state.showCreateMenuItem };
-    case types.MENU_ITEM_TO_SHOW:
+    case types.SHOW_CREATE_MENU_BUTTON:
+      return { ...state, showCreateMenuButton: true };
+    case types.HIDE_CREATE_MENU_BUTTON:
+      return { ...state, showCreateMenuButton: false };
+    case types.TOGGLE_CREATE_MENU_DROPDOWN:
+      return {
+        ...state,
+        showCreateMenuDropdown: typeof action.payload === 'boolean' ? action.payload : !state.showCreateMenuDropdown
+      };
+    case types.HIDE_CREATE_MENU_DROPDOWN:
+      return { ...state, showCreateMenuDropdown: false };
+    case types.TOGGLE_CREATE_MENU_FORM_ITEM:
+      return { 
+        ...state,
+        showCreateMenuFormItem: typeof action.payload === 'boolean' ? action.payload : !state.showCreateMenuFormItem 
+      };
+    case types.MENU_FORM_ITEM_TO_SHOW:
       return { ...state, menuItemToShow: action.payload };
     case types.DISPLAY_CLUSTER_INFO:
       return { ...state, showClusterInfo: true };

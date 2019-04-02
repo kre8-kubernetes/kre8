@@ -3,6 +3,7 @@ import ApiserverInfoComponent from '../ClusterComponentsInfoComponents/Apiserver
 import NodeInfoComponent from '../ClusterComponentsInfoComponents/NodeInfoComponent';
 import PodInfoComponent from '../ClusterComponentsInfoComponents/PodInfoComponent';
 import ContainerInfoComponent from '../ClusterComponentsInfoComponents/ContainerInfoComponent';
+import OutsideClick from '../../helperFunctions/OutsideClick.js'
 
 // TODO: Braden, doesn't like nested ifs, also what is: nothing_info_component (line 55)
 
@@ -18,45 +19,47 @@ const ClusterInfoComponent = (props) => {
 
   return (
     <div className="popup_info">
-      <div className="popup_info_inner">
-        {
-            (componentType === 'Node')
-              ? (
-                <NodeInfoComponent
-                  data={nodeInfoToShow.data}
-                  hideNodeInfo={hideNodeInfo}
-                />
-              )
-              : (componentType === 'apiserver')
+      <OutsideClick handleOutsideClick={hideNodeInfo}>
+        <div className="popup_info_inner">
+          {
+              (componentType === 'Node')
                 ? (
-                  <ApiserverInfoComponent
-                    data={data}
+                  <NodeInfoComponent
+                    data={nodeInfoToShow.data}
                     hideNodeInfo={hideNodeInfo}
                   />
                 )
-                : (componentType === 'Pod')
+                : (componentType === 'apiserver')
                   ? (
-                    <PodInfoComponent
-                      data={nodeInfoToShow.data}
+                    <ApiserverInfoComponent
+                      data={data}
                       hideNodeInfo={hideNodeInfo}
-                      deleteNode={deleteNode}
                     />
                   )
-                  : (componentType === 'Container')
+                  : (componentType === 'Pod')
                     ? (
-                      <ContainerInfoComponent
+                      <PodInfoComponent
                         data={nodeInfoToShow.data}
                         hideNodeInfo={hideNodeInfo}
+                        deleteNode={deleteNode}
                       />
                     )
-                    : (
-                      <div className="nothing_info_component">
-                        This is the nothing component
-                        <button onClick={hideNodeInfo} type="button">Close</button>
-                      </div>
-                    )
-        }
-      </div>
+                    : (componentType === 'Container')
+                      ? (
+                        <ContainerInfoComponent
+                          data={nodeInfoToShow.data}
+                          hideNodeInfo={hideNodeInfo}
+                        />
+                      )
+                      : (
+                        <div className="nothing_info_component">
+                          This is the nothing component
+                          <button onClick={hideNodeInfo} type="button">Close</button>
+                        </div>
+                      )
+          }
+        </div>
+      </OutsideClick>
     </div>
   );
 };

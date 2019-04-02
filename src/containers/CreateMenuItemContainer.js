@@ -6,17 +6,21 @@ import * as actions from '../store/actions/actions.js';
 import * as events from '../../eventTypes';
 import * as yup from 'yup';
 
+import OutsideClick from "../helperFunctions/OutsideClick.js"
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 
 const mapStateToProps = store => ({
-  showCreateMenuItem: store.navbar.showCreateMenuItem,
+  showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
   menuItemToShow: store.navbar.menuItemToShow,
 });
 
 const mapDispatchToProps = dispatch => ({
-  toggleCreateMenuItem: () => {
-    dispatch(actions.toggleCreateMenuItem())
-  },  
+  toggleCreateMenuFormItem: (bool) => {
+    dispatch(actions.toggleCreateMenuFormItem(bool));
+  },
+  toggleCreateMenuDropdown: (bool) => {
+    dispatch(actions.toggleCreateMenuDropdown(bool));
+  },
 });
 
 class CreateMenuItemContainer extends Component {
@@ -60,6 +64,8 @@ class CreateMenuItemContainer extends Component {
     this.handleNewService = this.handleNewService.bind(this);
 
     this.showKubeDocs = this.showKubeDocs.bind(this);
+    this.handleFormClose = this.handleFormClose.bind(this);
+    this.handleOutsideFormClick = this.handleOutsideFormClick.bind(this);
   }
 
   //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
@@ -133,7 +139,7 @@ class CreateMenuItemContainer extends Component {
     })
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
-        this.props.toggleCreateMenuItem();
+        this.props.toggleCreateMenuFormItem();
         console.log('from the then', data)
         this.setState({ ...this.state, errors: { ...this.state.errors, deployment: {} } })
           ipcRenderer.send(events.CREATE_DEPLOYMENT, this.state.inputData.deployment);
@@ -177,12 +183,6 @@ class CreateMenuItemContainer extends Component {
       })
   }
 
-
-
-
-
-
-
   //**--------------INCOMING DATA FROM MAIN THREAD-----------------**//
 
   //INCOMING POD DATA
@@ -207,7 +207,6 @@ class CreateMenuItemContainer extends Component {
 
   }
 
-
   //INCOMING SERVICE DATA
   handleNewService(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
@@ -224,8 +223,16 @@ class CreateMenuItemContainer extends Component {
     ipcRenderer.send(events.SHOW_KUBE_DOCS_DEPLOYMENT);
   }
 
+  handleFormClose() {
+    const { toggleCreateMenuFormItem, toggleCreateMenuDropdown } = this.props;
+    toggleCreateMenuFormItem();
+    toggleCreateMenuDropdown(false);
+  }
 
-
+  handleOutsideFormClick() {
+    const { toggleCreateMenuFormItem } = this.props;
+    toggleCreateMenuFormItem();
+  }
 
 
   render() {
@@ -241,18 +248,20 @@ class CreateMenuItemContainer extends Component {
 
     return (
       <div>
-        {this.props.showCreateMenuItem === true && (
-          <CreateMenuItemComponent
-            handleChange={this.handleChange}
-            menuItemToShow={this.props.menuItemToShow}
-            toggleCreateMenuItem={this.props.toggleCreateMenuItem}
-            handleFunction={handleFunction}
-            infoText={text}
+        {this.props.showCreateMenuFormItem === true && (
+          <OutsideClick handleOutsideClick={this.handleOutsideFormClick}>
+            <CreateMenuItemComponent
+              handleChange={this.handleChange}
+              menuItemToShow={this.props.menuItemToShow}
+              handleFormClose={this.handleFormClose}
+              handleFunction={handleFunction}
+              infoText={text}
 
-            errors={this.state.errors}
+              errors={this.state.errors}
 
-            inputDataToShow={inputDataToShow}
-          />
+              inputDataToShow={inputDataToShow}
+            />
+          </OutsideClick>
         )}
       </div>
     );

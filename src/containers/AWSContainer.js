@@ -21,8 +21,8 @@ import HelpInfoComponent from '../components/HelpInfoComponent';
 // });
 
 const mapDispatchToProps = dispatch => ({
-  hideCreateButton: () => {
-    dispatch(actions.hideCreateButton());
+  hideCreateMenuButton: () => {
+    dispatch(actions.hideCreateMenuButton());
   },
 });
 
@@ -61,8 +61,8 @@ class AwsContainer extends Component {
    * AWS regarding the cluster creation process
   */
   componentDidMount() {
-    const { hideCreateButton } = this.props;
-    hideCreateButton();
+    const { hideCreateMenuButton } = this.props;
+    hideCreateMenuButton();
     ipcRenderer.on(events.HANDLE_STATUS_CHANGE, this.handleStatusChange);
     ipcRenderer.on(events.HANDLE_ERRORS, this.handleError);
     ipcRenderer.on(events.HANDLE_NEW_NODES, this.handleNewNodes);

@@ -867,6 +867,10 @@ body {
   background: #546E8D;
 }
 
+#nav_drop_down:focus {
+  outline: none;
+}
+
 .ham_bar {
   height: 3px;
   width: 30px;

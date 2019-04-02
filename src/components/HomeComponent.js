@@ -9,7 +9,8 @@ const HomeComponent = props => {
     awsSecretAccessKey,
     awsRegion,
     errors,
-
+    displayError,
+    credentialError,
     handleChange,
     handleFormChange,
     setAWSCredentials,
@@ -30,18 +31,19 @@ const HomeComponent = props => {
       {/* HOME INPUT FORM CONTAINER */}
       <div className="home_page_form_container_input_field_area">
         <div className="home_page_form_container_inputs_item">
-          <input 
-            id="awsAccessKeyId" 
-            onChange={handleChange} 
-            placeholder="AWS Access Key ID" 
-            value={awsAccessKeyId} 
-            type="text" 
-            name="awsAccessKeyId" 
+          <input
+            id="awsAccessKeyId"
+            onChange={handleChange}
+            placeholder="AWS Access Key ID"
+            value={awsAccessKeyId}
+            type="text"
+            name="awsAccessKeyId"
+            maxLength="40"
           />
           <div className="errorClass">{errors.awsAccessKeyId}</div>
         </div>
         <div className="home_page_form_container_inputs_item">
-          <input id="awsSecretAccessKey" onChange={handleChange} placeholder="AWS Secret Access Key" value={awsSecretAccessKey} type="text" name="awsSecretAccessKey" />
+          <input id="awsSecretAccessKey" onChange={handleChange} placeholder="AWS Secret Access Key" value={awsSecretAccessKey} type="text" maxLength="50" name="awsSecretAccessKey" />
           <div className="errorClass">{errors.awsSecretAccessKey}</div>
         </div>
       </div>
@@ -71,6 +73,9 @@ const HomeComponent = props => {
         </div>
       </div>
       <div style={{ alignSelf: 'flex-start', marginLeft: '50px', marginTop: '-8px' }} className="errorClass">{errors.awsRegion}</div>
+      {displayError === true
+      && (<div className="errorClass" id="home_page_container_error">{credentialError}</div>)
+      }
     </div>
   );
 };

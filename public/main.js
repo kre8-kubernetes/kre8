@@ -57,8 +57,6 @@ const createWindowAndSetEnvironmentVariables = () => {
     // TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
   }
 
-  // awsEventCallbacks.checkAWSCredentials();
-
   /*
   * If awsCredentials file has already been created, use data to set additional required
   * AWS Environment Variables AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, REGION
@@ -108,7 +106,7 @@ const createWindowAndSetEnvironmentVariables = () => {
     parent: win,
     show: true,
     frame: false,
-    backgroundColor: '#16273B',
+    backgroundColor: '#1F3248',
     center: true,
   });
 
@@ -169,20 +167,44 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
   console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
   console.log('=============  SET_AWS_CREDENTIALS Fucntion fired ===================');
   console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+  let loadingChildWindow;
 
   try {
+    const currentParentPosition = win.getPosition();
+    const currentParentSize = win.getSize();
+    const childX = Math.floor(currentParentPosition[0] + (currentParentSize[0] / 2) - (325 / 2));
+    const childY = Math.floor((currentParentPosition[1] + (currentParentSize[1] / 2) - (325 / 2)));
+
+    loadingChildWindow = new BrowserWindow({
+      height: 325,
+      width: 325,
+      maxHeight: 325,
+      maxWidth: 325,
+      minHeight: 325,
+      minWidth: 325,
+      parent: win,
+      show: true,
+      frame: false,
+      center: false,
+      backgroundColor: '#1F3248',
+      x: childX,
+      y: childY,
+    });
+
+    loadingChildWindow.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
     awsEventCallbacks.configureAWSCredentials(data);
-    let credentialStatus = await sts.getCallerIdentity().promise();
+    const credentialStatus = await sts.getCallerIdentity().promise();
 
     if (credentialStatus.Arn) {
+      loadingChildWindow.close();
       await awsHelperFunctions.updateCredentialsFile(awsProps.AWS_CREDENTIALS_STATUS, awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED);
-      win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
-    } else {
-      credentialStatus = false;
       win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
     }
   } catch (err) {
-    console.error('From configureAWSCredentials', err);
+    console.error(err);
+    loadingChildWindow.close();
+    loadingChildWindow = null;
+    win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'Login details were incorrect. Please check your credentials and try again.');
   }
 });
 
@@ -475,9 +497,16 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
 //* -------------- CREATE A DEPLOYMENT----------------- *//
 
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
+
+  let loadingChildWindow;
   try {
-    // START LOADING ICON
-    let startingIcon = new BrowserWindow({
+    // Create Loading Icon Child Window
+    const currentParentPosition = win.getPosition();
+    const currentParentSize = win.getSize();
+    const childX = Math.floor(currentParentPosition[0] + (currentParentSize[0] / 2) - (325 / 2));
+    const childY = Math.floor((currentParentPosition[1] + (currentParentSize[1] / 2) - (325 / 2)));
+
+    loadingChildWindow = new BrowserWindow({
       height: 325,
       width: 325,
       maxHeight: 325,
@@ -485,13 +514,14 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
       minHeight: 325,
       minWidth: 325,
       parent: win,
-      show: false,
+      show: true,
       frame: false,
-      backgroundColor: '#16273B',
-      center: true,
+      center: false,
+      backgroundColor: '#1F3248',
+      x: childX,
+      y: childY,
     });
-    startingIcon.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
-    startingIcon.show();
+    loadingChildWindow.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
 
     // START CREATING DEPLOYMENT
     if (data.replicas > 5) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 5 or less.`);
@@ -508,8 +538,11 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
     await awsHelperFunctions.timeout(1000 * 10);
     win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stdout);
     win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create deployment');
-    startingIcon.close();
+    loadingChildWindow.close();
+    loadingChildWindow = null;
   } catch (err) {
+    loadingChildWindow.close();
+    loadingChildWindow = null;
     console.error('From CREATE_DEPLOYMENT', err);
   }
 });

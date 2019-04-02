@@ -23,8 +23,8 @@ const mapStateToProps = store => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  hideCreateButton: () => {
-    dispatch(actions.hideCreateButton());
+  hideCreateMenuButton: () => {
+    dispatch(actions.hideCreateMenuButton());
   },
   setCredentialStatusTrue: () => {
     dispatch(actions.setCredentialStatusTrue());

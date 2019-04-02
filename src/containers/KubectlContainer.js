@@ -7,12 +7,12 @@ import CreateMenuItemContainer from './CreateMenuItemContainer';
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
-  showCreateMenuItem: store.navbar.showCreateMenuItem,
+  showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
 });
 
 const mapDispatchToProps = dispatch => ({
-  displayCreateButton: () => {
-    dispatch(actions.displayCreateButton());
+  displayCreateMenuButton: () => {
+    dispatch(actions.displayCreateMenuButton());
   },
 });
 
@@ -26,16 +26,16 @@ class KubectlContainer extends Component {
 
   //* -------------- COMPONENT LIFECYCLE METHODS
   componentDidMount() {
-    const { displayCreateButton } = this.props;
-    displayCreateButton();
+    const { displayCreateMenuButton } = this.props;
+    displayCreateMenuButton();
   }
 
   render() {
-    const { showCreateMenuItem } = this.props;
+    const { showCreateMenuFormItem } = this.props;
 
     return (
       <div className="kubectl_container">
-        {showCreateMenuItem === true && <CreateMenuItemContainer />}
+        {showCreateMenuFormItem === true && <CreateMenuItemContainer />}
         <TreeGraphContainer />
       </div>
     );

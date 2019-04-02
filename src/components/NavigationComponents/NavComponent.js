@@ -1,37 +1,39 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import CreateMenuComponent from './CreateMenuComponent';
 import ClusterInfoComponent from './ClusterInfoComponent';
-
+import OutsideClick from "../../helperFunctions/OutsideClick.js"
 
 const NavComponent = (props) => {
   const {
     handleNavBarClick,
     handleMenuItemToShow,
+    handleOutsideDropdownClick,
 
-    showCreateButton,
-    showCreateMenu,
+    showCreateMenuButton,
+    showCreateMenuDropdown,
 
     displayClusterInfo,
     hideClusterInfo,
     clusterInfo,
     showClusterInfo,
 
-    toggleCreateMenu,
+    toggleCreateMenuDropdown,
   } = props;
 
   return (
     <div className="nav_component_container">
       {/* THE CREATE DROP DOWN MENU */}
-      {showCreateMenu === true && (
-        <CreateMenuComponent
-          handleMenuItemToShow={handleMenuItemToShow}
-        />
+      {showCreateMenuDropdown === true && (
+        <OutsideClick className={'create_menu_component_container'} handleOutsideClick={handleOutsideDropdownClick}>
+          <button id="pod" className="create_menu_component_container_button" onClick={handleMenuItemToShow} type="button">Create a Pod</button>
+          <button id="service" className="create_menu_component_container_button" onClick={handleMenuItemToShow} type="button">Create a Service</button>
+          <button id="deployment" className="create_menu_component_container_button" onClick={handleMenuItemToShow} type="button">Create a Deployment</button>
+        </OutsideClick>
       )}
       {/* NAV LEFT CONTAINER */}
       <div className="nav_left_container">
-        {showCreateButton === true && (
-          <div id="nav_drop_down" className="nav_left_container_item" onClick={toggleCreateMenu} onKeyPress={toggleCreateMenu} role="button" tabIndex={0}>
+        {showCreateMenuButton === true && (
+          <div id="nav_drop_down" className="nav_left_container_item" onClick={toggleCreateMenuDropdown} onKeyPress={toggleCreateMenuDropdown} role="button" tabIndex={0}>
             <div className="ham_bar" />
             <div className="ham_bar" />
             <div className="ham_bar" />

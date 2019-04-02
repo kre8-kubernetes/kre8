@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 // import { LinearGradient } from '@vx/gradient';
 import uuid from 'uuid';
 import * as events from '../../eventTypes';
+import * as actions from '../store/actions/actions.js';
 import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
 import ClusterInfoComponent from '../components/GraphComponents/ClusterComponentInfo';
 
@@ -18,9 +19,15 @@ import ClusterInfoComponent from '../components/GraphComponents/ClusterComponent
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
-  showCreateMenuItem: store.navbar.showCreateMenuItem,
+  showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
   menuItemToShow: store.navbar.menuItemToShow,
 });
+
+const mapDispatchToProps = dispatch => ({
+  hideCreateMenuDropdown: () => {
+    dispatch(actions.hideCreateMenuDropdown())
+  },
+})
 
 //* -------------- TREE GRAPH CONTAINER COMPONENT ----------------------------------- *//
 class TreeGraphContainer extends Component {
@@ -187,7 +194,7 @@ class TreeGraphContainer extends Component {
     const { nodeInfoToShow } = this.state;
     ipcRenderer.send(events.DELETE_NODE, nodeInfoToShow);
   }
-  
+
   //* --------- RERENDER GRAPH METHOD
   /**
    * Call to get data on the current nodes -- this will update state and trigger
@@ -197,6 +204,7 @@ class TreeGraphContainer extends Component {
     console.log('handle rerender node called');
     ipcRenderer.send(events.START_LOADING_ICON, 'close');
     console.log('hit start loading icon inside handle render node handler');
+    this.props.hideCreateMenuDropdown();
     this.getMasterNode();
     this.getWorkerNodes();
     this.getContainersAndPods();
@@ -499,7 +507,6 @@ class TreeGraphContainer extends Component {
         // },
         // {
         //   name: 'kube-controller-manager',
-          
         //   type': 'master-component',
         // },
       ],
@@ -509,7 +516,7 @@ class TreeGraphContainer extends Component {
       top: 110,
       left: 30,
       right: 30,
-      bottom: 110
+      bottom: 110,
     };
 
     const {
@@ -549,8 +556,8 @@ class TreeGraphContainer extends Component {
           margin={margin}
         />
       </div>
-    )
+    );
   }
 }
 
-export default withRouter(connect(mapStateToProps, null)(TreeGraphContainer));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(TreeGraphContainer));

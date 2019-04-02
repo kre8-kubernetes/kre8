@@ -7,39 +7,35 @@ import * as events from '../../eventTypes';
 import NavComponent from '../components/NavigationComponents/NavComponent';
 
 // TODO: seem not to be using the following, i commented them out, awaiting approval to delete
-// showCreateMenuItem,
-// hideCreateButton,
-// displayCreateButton,
-
+// showCreateMenuFormItem,
+// hideCreateMenuButton,
+// displayCreateMenuButton,
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
-  // showCreateMenuItem: store.navbar.showCreateMenuItem;
-  showCreateButton: store.navbar.showCreateButton,
-  showCreateMenu: store.navbar.showCreateMenu,
+  // showCreateMenuFormItem: store.navbar.showCreateMenuFormItem;
+  showCreateMenuButton: store.navbar.showCreateMenuButton,
+  showCreateMenuDropdown: store.navbar.showCreateMenuDropdown,
   menuItemToShow: store.navbar.menuItemToShow,
   showClusterInfo: store.navbar.showClusterInfo,
   clusterInfo: store.navbar.clusterInfo,
 });
 
 const mapDispatchToProps = dispatch => ({
-  // displayCreateButton: () => {
-  //   dispatch(actions.displayCreateButton());
+  // displayCreateMenuButton: () => {
+  //   dispatch(actions.displayCreateMenuButton());
   // },
-  // hideCreateButton: () => {
-  //   dispatch(actions.hideCreateButton());
+  // hideCreateMenuButton: () => {
+  //   dispatch(actions.hideCreateMenuButton());
   // },
-  toggleCreateMenu: () => {
-    dispatch(actions.toggleCreateMenu());
+  toggleCreateMenuDropdown: (bool) => {
+    dispatch(actions.toggleCreateMenuDropdown(bool));
   },
-  hideCreateMenu: () => {
-    dispatch(actions.hideCreateMenu());
+  hideCreateMenuDropdown: () => {
+    dispatch(actions.hideCreateMenuDropdown());
   },
-  toggleCreateMenuItem: () => {
-    dispatch(actions.toggleCreateMenuItem());
-  },
-  CreateMenuItem: () => {
-    dispatch(actions.toggleCreateMenuItem());
+  toggleCreateMenuFormItem: (bool) => {
+    dispatch(actions.toggleCreateMenuFormItem(bool));
   },
   menuItemToShow: (menuItem) => {
     dispatch(actions.menuItemToShow(menuItem));
@@ -62,6 +58,7 @@ class NavContainer extends Component {
     this.handleMenuItemToShow = this.handleMenuItemToShow.bind(this);
     this.handleNavBarClick = this.handleNavBarClick.bind(this);
     this.handleClusterData = this.handleClusterData.bind(this);
+    this.handleOutsideDropdownClick = this.handleOutsideDropdownClick.bind(this);
   }
 
   //* --------------- COMPONENT LIFECYCLE METHODS ----------------- *//
@@ -76,14 +73,14 @@ class NavContainer extends Component {
 
   //* --------------- COMPONENT METHODS --------------------------- *//
   handleMenuItemToShow(e) {
-    const { menuItemToShow, toggleCreateMenuItem } = this.props;
+    const { menuItemToShow, toggleCreateMenuFormItem } = this.props;
     menuItemToShow(e.target.id);
-    toggleCreateMenuItem();
+    toggleCreateMenuFormItem(true);
   }
 
   handleNavBarClick(e) {
-    const { hideCreateMenu } = this.props;
-    hideCreateMenu();
+    const { hideCreateMenuDropdown } = this.props;
+    hideCreateMenuDropdown();
   }
 
   handleClusterData(event, data) {
@@ -91,18 +88,23 @@ class NavContainer extends Component {
     updateClusterData(data);
   }
 
+  handleOutsideDropdownClick() {
+    const { toggleCreateMenuDropdown } = this.props;
+    toggleCreateMenuDropdown(false);
+  }
+
   //* --------------- RENDER LIFECYCLE METHOD --------------------- *//
   render() {
     const {
-      showCreateButton,
-      showCreateMenu,
+      showCreateMenuButton,
+      showCreateMenuDropdown,
 
       clusterInfo,
       showClusterInfo,
       hideClusterInfo,
       displayClusterInfo,
 
-      toggleCreateMenu,
+      toggleCreateMenuDropdown,
     } = this.props;
 
     //* --------------- RETURNING ----------------------------------- *//
@@ -111,11 +113,12 @@ class NavContainer extends Component {
         <NavComponent
           handleNavBarClick={this.handleNavBarClick}
 
-          showCreateButton={showCreateButton}
-          showCreateMenu={showCreateMenu}
-          toggleCreateMenu={toggleCreateMenu}
+          showCreateMenuButton={showCreateMenuButton}
+          showCreateMenuDropdown={showCreateMenuDropdown}
+          toggleCreateMenuDropdown={toggleCreateMenuDropdown}
 
           handleMenuItemToShow={this.handleMenuItemToShow}
+          handleOutsideDropdownClick = {this.handleOutsideDropdownClick}
 
           clusterInfo={clusterInfo}
           showClusterInfo={showClusterInfo}

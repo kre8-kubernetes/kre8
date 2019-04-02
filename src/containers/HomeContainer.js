@@ -87,10 +87,8 @@ class HomeContainer extends Component {
   * Activates when user enters AWS credentials. If the credentials pass error handlers,
   * reset values in state, and send data to the Main thread to verify entry data with AWS
   */
-
   setAWSCredentials(e) {
     e.preventDefault();
-
     const { awsAccessKeyId, awsSecretAccessKey, awsRegion } = this.state;
     const awsCredentials = {
       awsAccessKeyId,
@@ -122,7 +120,7 @@ class HomeContainer extends Component {
           awsRegion: '',
           errors: {},
         }));
-      ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsCredentials);
+        ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsCredentials);
       })
       .catch((err) => {
         const errorObj = err.inner.reduce((acc, error) => {
@@ -145,7 +143,6 @@ class HomeContainer extends Component {
   */
 
   processAWSCredentialStatus(event, data) {
-    console.log('Credential status data: ', data);
     const {
       setCredentialStatusTrue,
       setCredentialStatusFalse,
@@ -163,24 +160,20 @@ class HomeContainer extends Component {
 
   /*
   * Based on AWS response, either move the user on to the AWS data entry page,
-  * or send error alert, for user to reenter credentials
+  * or display error alert, for user to reenter credentials
   */
-
   handleAWSCredentials(event, data) {
     const { history } = this.props;
     const credentialData = data;
     if (credentialData.Arn) {
       history.push('/aws');
     } else {
-      console.log("error occurred: ", credentialData);
-      // TODO: convert alert
-      // alert('AWS has informed us that the credentials you entered are incorrect. Please check your entries and try again.');
       this.setState(prevState => ({ ...prevState, displayError: true, credentialError: credentialData }));
     }
   }
 
   //* -------------- FORM EVENT HANDLER METHODS
-  // Handles text changes in form input fields
+  // Handles text changes from form input fields
   handleChange(e) {
     const { id, value } = e.target;
     e.preventDefault();
@@ -268,6 +261,6 @@ class HomeContainer extends Component {
       </div>
     );
   }
-};
+}
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HomeContainer));

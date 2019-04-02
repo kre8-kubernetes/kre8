@@ -53,7 +53,8 @@ class HomeContainer extends Component {
       credentialStatus: false,
 
       errors: {},
-      // displayError: false,
+      displayError: false,
+      credentialError: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -121,8 +122,7 @@ class HomeContainer extends Component {
           awsRegion: '',
           errors: {},
         }));
-      // TODO: uncomment this
-      // ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsCredentials);
+      ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsCredentials);
       })
       .catch((err) => {
         const errorObj = err.inner.reduce((acc, error) => {
@@ -158,7 +158,6 @@ class HomeContainer extends Component {
     } else {
       setCredentialStatusFalse();
     }
-
     setCheckCredentialsTrue();
   }
 
@@ -169,11 +168,14 @@ class HomeContainer extends Component {
 
   handleAWSCredentials(event, data) {
     const { history } = this.props;
-    if (data.Arn) {
+    const credentialData = data;
+    if (credentialData.Arn) {
       history.push('/aws');
     } else {
+      console.log("error occurred: ", credentialData);
       // TODO: convert alert
-      alert('AWS has informed us that the credentials you entered are incorrect. Please check your entries and try again.');
+      // alert('AWS has informed us that the credentials you entered are incorrect. Please check your entries and try again.');
+      this.setState(prevState => ({ ...prevState, displayError: true, credentialError: credentialData }));
     }
   }
 
@@ -223,7 +225,8 @@ class HomeContainer extends Component {
       showInfo,
       mouseCoords,
       errors,
-      // displayError,
+      credentialError,
+      displayError,
     } = this.state;
 
     const {
@@ -257,12 +260,14 @@ class HomeContainer extends Component {
               awsSecretAccessKey={awsSecretAccessKey}
               awsRegion={awsRegion}
               errors={errors}
+              credentialError={credentialError}
+              displayError={displayError}
             />
           )
         }
       </div>
     );
   }
-}
+};
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HomeContainer));

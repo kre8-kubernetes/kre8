@@ -79,8 +79,9 @@ const createWindowAndSetEnvironmentVariables = () => {
     show: false,
     height: 720,
     width: 930,
-    minHeight: 550,
+    minHeight: 620,
     minWidth: 700,
+    maxWidth: 1200,
     backgroundColor: '#243B55',
     center: true,
     defaultFontFamily: 'sansSerif',
@@ -121,7 +122,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   });
 
   // Creates browser window that displays Kubernetes Docs when user clicks more info while creating a pod, service or deployment
-  //For deployment
+    //For deployment
   let kubeDocsDeploymentWindow = new BrowserWindow({
     width: 600,
     height: 400,
@@ -139,7 +140,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   });
 
 
-//For service
+  //For service
 let kubeDocsServiceWindow = new BrowserWindow({
   width: 600,
   height: 400,
@@ -157,7 +158,7 @@ ipcMain.on(events.SHOW_KUBE_DOCS_SERVICE, () => {
   });
 
 
-//For pod
+  //For pod
 let kubeDocsPodWindow = new BrowserWindow({
   width: 600,
   height: 400,

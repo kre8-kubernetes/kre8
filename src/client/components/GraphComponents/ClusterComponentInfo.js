@@ -3,7 +3,7 @@ import ApiserverInfoComponent from '../ClusterComponentsInfoComponents/Apiserver
 import NodeInfoComponent from '../ClusterComponentsInfoComponents/NodeInfoComponent';
 import PodInfoComponent from '../ClusterComponentsInfoComponents/PodInfoComponent';
 import ContainerInfoComponent from '../ClusterComponentsInfoComponents/ContainerInfoComponent';
-import OutsideClick from '../../helperFunctions/OutsideClick.js'
+import OutsideClick from '../../helperFunctions/OutsideClick';
 
 // TODO: Braden, doesn't like nested ifs, also what is: nothing_info_component (line 55)
 

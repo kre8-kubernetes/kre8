@@ -8,7 +8,7 @@ const ApiserverInfoComponent = (props) => {
     <div className="apiserver_info_component">
       <InfoBodyComponent data={data} />
       <div className="more_info_button_item">
-        <ActionButton clickHandler={hideNodeInfo} buttonText="Close" /> 
+        <ActionButton clickHandler={hideNodeInfo} buttonText="Close" />
       </div>
     </div>
   );

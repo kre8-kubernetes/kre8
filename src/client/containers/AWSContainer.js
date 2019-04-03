@@ -217,7 +217,7 @@ class AwsContainer extends Component {
             iamRoleName={iamRoleName}
             vpcStackName={vpcStackName}
             clusterName={clusterName}
-            errors={errors}  
+            errors={errors}
             textInfo={textInfo}
             mouseCoords={mouseCoords}
             grabCoords={this.grabCoords}

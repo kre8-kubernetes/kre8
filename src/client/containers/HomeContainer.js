@@ -14,7 +14,6 @@ import HelpInfoComponent from '../components/HelpInfoComponent';
 import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
 
 // TODO: do we use displayError from state?
-// TODO: Convert alert
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({

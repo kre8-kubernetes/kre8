@@ -1,8 +1,6 @@
 import React from 'react';
-import { makeInfoItemFromObjectProperties, makeInfoComponentBody } from '../../helperFunctions/renderFunctions';
+import { makeInfoItemFromObjectProperties } from '../../helperFunctions/renderFunctions';
 import ActionButton from '../Buttons/ActionButton';
-
-//TODO delete makeInfoComponentBody?
 
 const NodeInfoComponent = (props) => {
   const { data, hideNodeInfo } = props;

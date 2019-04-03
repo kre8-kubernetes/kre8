@@ -40,7 +40,6 @@ body {
   src: url('./Lato/Lato-Bold.ttf') format('truetype');
 }
 
-
 .errorClass {
   color: red;
   font-size: $error-font-size;
@@ -49,7 +48,6 @@ body {
   opacity: .9;
   font-family: Lato-Regular, sans-serif;
 }
-
 
 //* ----------------------------------------------------------- *//
 //* --------------- BUTTON COMPONENTSL------------------------- *//
@@ -119,21 +117,21 @@ body {
 }
 
 .close_popup_button:hover {
-  opacity: 0.7;
+  color: $nav-bar-hover + 14;
   cursor: pointer;
 }
 
+.close_popup_button:active {
+  outline: none;
+  color: $nav-bar-hover;
+}
 .close_popup_button:focus {
   outline: none;
-  color: #5188ff;
 }
-
 
 //* ----------------------------------------------------------- *//
 //* --------------- HOME PAGE CONTAINER STYLING --------------- *//
 //* ----------------------------------------------------------- *//
-
-//TODO: Braden do we need the 3 color options for multiple browsers?
 
 .home_page_container {
   display: flex;
@@ -188,7 +186,6 @@ body {
   flex-direction: column;
   align-items: center;
   width: 83%;
-  // opacity: 0.7;
 }
 
 .home_page_form_container_inputs_item {
@@ -554,7 +551,6 @@ body {
   padding-top: 20px;
 }
 
-
 //* ----------------------------------------------------------- *//
 //* --------------- KUBECTL COMPONENT STYLING ----------------- *//
 //* ----------------------------------------------------------- *//
@@ -802,13 +798,11 @@ body {
   background: $nav-bar-hover;
   box-shadow: 0.5px 0.75px 5px 1.5px #1b1b1b;
   border-radius: 2px;
-  //background: #243B55;
 }
 .nav_left_container_item:active {
   background: $nav-bar-hover - 2;
   box-shadow: 0.5px 0.5px 4px 1px #1b1b1b;
   border-radius: 2px;
-  //background: #243B55;
 }
 
 #nav_drop_down {
@@ -829,7 +823,6 @@ body {
   background: $nav-bar-hover - 2;
   box-shadow: 0.5px 0.5px 4px 1px #1b1b1b;
   border-radius: 2px;
-  //background: #243B55;
 }
 
 #nav_drop_down:focus {
@@ -841,17 +834,14 @@ body {
   width: 30px;
   margin: 2px 0;
   border-radius: 2px;
-  //background: $cluster-element-text-color;
   background: $light-font;
 }
 
 //**************** CREATE MENU (BUTTON + MENU)  ***************/
 .create_menu_component_container {
   position: absolute;
-  left: 0px;
-  top: 40px;
-  width: 20%;
-  height: 20%;
+  left: 1px;
+  top: 41px;
   background-color: $accent-darkest-blue;
   display: flex;
   flex-direction: column;
@@ -859,25 +849,30 @@ body {
 }
 
 .create_menu_component_container_button {
-  width: 100%;
-  height: 33%;
+  display: flex;
+  height: 100%;
   border: none;
   background: $accent-darkest-blue;
   color: $input-color;
   font-size: 14px;
   font-weight: bold;
   text-align: left;
-  padding-left: 15px;
+  padding: 12px 0 12px 15px;
 }
 
 .create_menu_component_container_button:focus {
   outline: none;
-}
-.create_menu_component_container_button:hover {
-  background:$button-background2;
-  cursor: pointer;
+  background: $nav-bar-hover - 10;
 }
 
+.create_menu_component_container_button:active {
+  background: $nav-bar-hover - 10;
+}
+
+.create_menu_component_container_button:hover {
+  background: $nav-bar-hover;
+  cursor: pointer;
+}
 
 /**************** CREATE POPUP FORM  ***************/
 .popup_form {
@@ -903,7 +898,6 @@ body {
   font-family: 'Lato-Regular', sans-serif;
   display: flex;
   flex-direction: column;
-  box-shadow: 0px 0.5px 4px 1px #1b1b1b;
 }
 
 .create_menu_item_component_container {
@@ -925,7 +919,6 @@ body {
 .create_menu_item_component_title h2 {
   margin: 0;
 }
-
 
 .create_menu_item_component_inputs {
   display: flex;
@@ -1005,19 +998,22 @@ body {
 
 .nav_component_cluster_button:hover {
   background: $nav-bar-hover;
-  box-shadow: 0.5px 0.5px 5px #252629;
+  box-shadow: 0.5px 0.5px 7px 2px #1b1b1b;
   border-radius: 2px;
 }
 
-//** --------- CLUSTER INFO COMPONENT --------- **//
+.nav_component_cluster_button:focus {
+  outline: none;
+}
 
+//** --------- CLUSTER INFO COMPONENT --------- **//
 
 .cluster_info_container {
   display: flex;
   flex-direction: column;
   position: absolute;
-  right: 1.5%;
-  top: 40px;
+  right: 1.2%;
+  top: 43px;
   width: auto;
   height: auto;
   padding: 15px;
@@ -1037,7 +1033,6 @@ body {
   font-family: 'Lato-Regular', sans-serif;
 }
 
-
 .cluster_info_subnets {
   padding-left: 15px;
   font-family: 'Lato-Regular', sans-serif;
@@ -1047,5 +1042,3 @@ body {
   padding-left: 29px;
   font-family: 'Lato-Regular', sans-serif;
 }
-
-

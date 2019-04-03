@@ -88,9 +88,11 @@ class NavContainer extends Component {
     updateClusterData(data);
   }
 
-  handleOutsideDropdownClick() {
+  handleOutsideDropdownClick(e) {
     const { toggleCreateMenuDropdown } = this.props;
-    toggleCreateMenuDropdown(false);
+    if (e.target.id !== 'nav_drop_down' && e.target.className !== 'ham_bar') {
+      toggleCreateMenuDropdown(false);
+    }
   }
 
   //* --------------- RENDER LIFECYCLE METHOD --------------------- *//
@@ -118,7 +120,7 @@ class NavContainer extends Component {
           toggleCreateMenuDropdown={toggleCreateMenuDropdown}
 
           handleMenuItemToShow={this.handleMenuItemToShow}
-          handleOutsideDropdownClick = {this.handleOutsideDropdownClick}
+          handleOutsideDropdownClick={this.handleOutsideDropdownClick}
 
           clusterInfo={clusterInfo}
           showClusterInfo={showClusterInfo}

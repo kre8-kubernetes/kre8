@@ -70,7 +70,8 @@ class HomeContainer extends Component {
 
   //* -------------- COMPONENT LIFECYCLE METHODS
   componentDidMount() {
-    const { hasCheckedCredentials } = this.props;
+    const { hideCreateMenuButton, hasCheckedCredentials } = this.props;
+    hideCreateMenuButton();
     if (!hasCheckedCredentials) {
       ipcRenderer.send(events.CHECK_CREDENTIAL_STATUS, 'Checking for credentials');
     }

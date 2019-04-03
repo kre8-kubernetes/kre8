@@ -117,13 +117,13 @@ body {
 }
 
 .close_popup_button:hover {
-  color: $nav-bar-hover + 14;
+  color: darken(#818181, 10);
   cursor: pointer;
 }
 
 .close_popup_button:active {
   outline: none;
-  color: $nav-bar-hover;
+  color: lighten(#818181, 10);
 }
 .close_popup_button:focus {
   outline: none;
@@ -800,7 +800,7 @@ body {
   border-radius: 2px;
 }
 .nav_left_container_item:active {
-  background: $nav-bar-hover - 2;
+  background: lighten($nav-bar-hover, 2);
   box-shadow: 0.5px 0.5px 4px 1px #1b1b1b;
   border-radius: 2px;
 }
@@ -820,7 +820,7 @@ body {
 }
 
 #nav_drop_down:active {
-  background: $nav-bar-hover - 2;
+  background: lighten($nav-bar-hover, 2);
   box-shadow: 0.5px 0.5px 4px 1px #1b1b1b;
   border-radius: 2px;
 }
@@ -862,11 +862,11 @@ body {
 
 .create_menu_component_container_button:focus {
   outline: none;
-  background: $nav-bar-hover - 10;
+  background: darker($nav-bar-hover, 10);
 }
 
 .create_menu_component_container_button:active {
-  background: $nav-bar-hover - 10;
+  background: lighten($nav-bar-hover, 10);
 }
 
 .create_menu_component_container_button:hover {

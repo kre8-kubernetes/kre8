@@ -16,7 +16,7 @@ const path = require('path');
 const STS = require('aws-sdk/clients/sts');
 
 // --------- INSTANTIATE AWS CLASSES -----
-const sts = new STS();
+const sts = new STS({signatureCache: false});
 
 // --------- IMPORT KRE8 MODULES ---------
 const events = require('../eventTypes.js');
@@ -192,7 +192,15 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
     });
 
     loadingChildWindow.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
-    awsEventCallbacks.configureAWSCredentials(data);
+    await awsEventCallbacks.configureAWSCredentials(data);
+
+    /**
+     * Sets the credentials to null in sts object, because AWS caches the access key from a correct login
+     * and will not check if the secrect access key changed in relation to the access key. This could lead to
+     * an issue if the user put in their secret access key in wrong the first time or would like to change their
+     * credentials.
+     */
+    sts.config.credentials = null;
     const credentialStatus = await sts.getCallerIdentity().promise();
 
     if (credentialStatus.Arn) {
@@ -201,7 +209,7 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
       win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
     }
   } catch (err) {
-    console.error(err);
+    console.error('From SET_AWS_CREDENTIALS:', err);
     loadingChildWindow.close();
     loadingChildWindow = null;
     win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'Login details were incorrect. Please check your credentials and try again.');

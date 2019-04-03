@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 // import { LinearGradient } from '@vx/gradient';
 import uuid from 'uuid';
 import * as events from '../../eventTypes';
-import * as actions from '../store/actions/actions.js';
+import * as actions from '../store/actions/actions';
 import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
 import ClusterInfoComponent from '../components/GraphComponents/ClusterComponentInfo';
 
@@ -124,46 +124,48 @@ class TreeGraphContainer extends Component {
   }
 
   handleWorkerNodes(event, data) {
-    const { treeData } = this.state;
-    const newState = { ...this.state, treeData: { ...treeData } };
-
-    data.items.forEach((node) => {
-      const newNode = node;
-      newNode.name = node.metadata.name;
-      newNode.id = node.metadata.uid;
-      newNode.type = node.kind;
-      newNode.children = [];
-      newState.treeData.children.push(newNode);
+    this.setState((prevState) => {
+      const newState = { ...prevState, treeData: { ...prevState.treeData } };
+      data.items.forEach((node) => {
+        const newNode = Object.assign({}, node);
+        newNode.name = node.metadata.name;
+        newNode.id = node.metadata.uid;
+        newNode.type = node.kind;
+        newNode.children = [];
+        newState.treeData.children.push(newNode);
+      });
+      return { ...prevState, treeData: newState.treeData };
     });
-    this.setState(prevState => ({ ...prevState, treeData: newState.treeData }));
   }
 
   handleContainersAndPods(event, data) {
-    const { treeData } = this.state;
-    const newState = { ...this.state, treeData: { ...treeData, children: [...treeData.children] } };
-    const addressMap = newState.treeData.children.reduce((acc, ele, index) => {
-      acc[ele.name] = index;
-      return acc;
-    }, {});
+    this.setState((prevState) => {
+      const { treeData } = prevState;
+      const newState = { ...prevState, treeData: { ...treeData, children: [...treeData.children] } };
+      const addressMap = newState.treeData.children.reduce((acc, ele, index) => {
+        acc[ele.name] = index;
+        return acc;
+      }, {});
 
-    data.items.forEach((pod) => {
-      const newPod = pod;
-      if (pod.status.phase !== 'Pending') {
-        newPod.name = pod.metadata.name;
-        newPod.id = pod.metadata.uid;
-        newPod.type = pod.kind;
-        newPod.children = [];
-        pod.spec.containers.forEach((container) => {
-          const newContainer = container;
-          newContainer.name = container.image;
-          newContainer.type = 'Container';
-          pod.children.push(container);
-        });
-        const { nodeName } = pod.spec;
-        newState.treeData.children[addressMap[nodeName]].children.push(pod);
-      }
+      data.items.forEach((pod) => {
+        const newPod = Object.assign({}, pod);
+        if (newPod.status.phase !== 'Pending') {
+          newPod.name = pod.metadata.name;
+          newPod.id = pod.metadata.uid;
+          newPod.type = pod.kind;
+          newPod.children = [];
+          newPod.spec.containers.forEach((container) => {
+            const newContainer = Object.assign({}, container);
+            newContainer.name = container.image;
+            newContainer.type = 'Container';
+            newPod.children.push(newContainer);
+          });
+          const { nodeName } = pod.spec;
+          newState.treeData.children[addressMap[nodeName]].children.push(newPod);
+        }
+      });
+      return newState;
     });
-    this.setState(newState);
   }
 
   //* --------- DISPLAY OR HIDE NODE INFO WHEN USER HOVERS OR CLICKS IN GRAPH
@@ -216,305 +218,305 @@ class TreeGraphContainer extends Component {
 
   //* --------- RENDER METHOD
   render() {
-    const dummyTreeData = {
-      name: 'Master Node',
-      id: uuid(),
-      type: 'apiserver',
-      children: [
-        {
-          name: 'Worker Node #1',
-          id: uuid(),
-          worder_node_id: 0,
-          type: 'Node',
-          children: [
-            {
-              name: '#1',
-              id: uuid(),
-              pod_id: 0,
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            {
-              name: '#2',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            {
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            {
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            {
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            { 
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-          ]
-        },
-        {
-          name: 'Worker Node #2',
-          id: uuid(),
-          worder_node_id: 1,
-          type: 'Node',
-          children: [
-            { 
-              name: '#1',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            { 
-              name: '#2',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            { 
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            { 
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            { 
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            { 
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-          ],
-        },
-        {
-          name: 'Worker Node #3',
-          id: uuid(),
-          worder_node_id: 2,
-          type: 'Node',
-          children: [
-            {
-              name: '#1',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            {
-              name: '#2',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            {
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            {
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            {
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-            {
-              name: '#3',
-              id: uuid(),
-              type: 'Pod',
-              children: [{
-                name: '',
-                id: uuid(),
-                type: 'Container',
-              }],
-            },
-          ],
-        },
-        // {
-        //   name: 'Worker Node #4',
-        //   id: uuid(),
-        //   worder_node_id: 3,
-        //   type: 'Node',
-        //   children: [
-        //     {
-        //       name: '#1',
-        //       id: uuid(),
-        //       type: 'Pod',
-        //       children: [{
-        //         name: '',
-        //         id: uuid(),
-        //         type: 'Container',
-        //       }]
-        //     },
-        //     {
-        //       name: '#2',
-        //       id: uuid(),
-        //       type: 'Pod',
-        //       children: [{
-        //         name: '',
-        //         id: uuid(),
-        //         type: 'Container',
-        //       }]
-        //     },
-        //     {
-        //       name: '#3',
-        //       id: uuid(),
-        //       type: 'Pod',
-        //       children: [{
-        //         name: '',
-        //         id: uuid(),
-        //         type: 'Container',
-        //       }]
-        //     },
-        //     {
-        //       name: '#3',
-        //       id: uuid(),
-        //       type: 'Pod',
-        //       children: [{
-        //         name: '',
-        //         id: uuid(),
-        //         type: 'Container',
-        //       }]
-        //     },
-        //     {
-        //       name: '#3',
-        //       id: uuid(),
-        //       type: 'Pod',
-        //       children: [{
-        //         name: '',
-        //         id: uuid(),
-        //         type: 'Container',
-        //       }]
-        //     },
-        //     {
-        //       name: '#3',
-        //       id: uuid(),
-        //       type: 'Pod',
-        //       children: [{
-        //         name: '',
-        //         id: uuid(),
-        //         type: 'Container',
-        //       }]
-        //     },
-        //   ]
-        // },
-        // {
-        //   name: 'kube-apiserver',
-        //   id: uuid(),
-        //   type: 'master-component',
-        // },
-        // {
-        //   name: 'etcd',
-        //   id: uuid(),
-        //   type: 'master-component',
-        // },
-        // {
-        //   name: 'kube-scheduler',
-        //   id: uuid(),
-        //   type': 'master-component',
-        // },
-        // {
-        //   name: 'kube-controller-manager',
-        //   type': 'master-component',
-        // },
-      ],
-    };
+    // const dummyTreeData = {
+    //   name: 'Master Node',
+    //   id: uuid(),
+    //   type: 'apiserver',
+    //   children: [
+    //     {
+    //       name: 'Worker Node #1',
+    //       id: uuid(),
+    //       worder_node_id: 0,
+    //       type: 'Node',
+    //       children: [
+    //         {
+    //           name: '#1',
+    //           id: uuid(),
+    //           pod_id: 0,
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         {
+    //           name: '#2',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         {
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         {
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         {
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         { 
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //       ]
+    //     },
+    //     {
+    //       name: 'Worker Node #2',
+    //       id: uuid(),
+    //       worder_node_id: 1,
+    //       type: 'Node',
+    //       children: [
+    //         { 
+    //           name: '#1',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         { 
+    //           name: '#2',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         { 
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         { 
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         { 
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         { 
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //       ],
+    //     },
+    //     {
+    //       name: 'Worker Node #3',
+    //       id: uuid(),
+    //       worder_node_id: 2,
+    //       type: 'Node',
+    //       children: [
+    //         {
+    //           name: '#1',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         {
+    //           name: '#2',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         {
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         {
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         {
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //         {
+    //           name: '#3',
+    //           id: uuid(),
+    //           type: 'Pod',
+    //           children: [{
+    //             name: '',
+    //             id: uuid(),
+    //             type: 'Container',
+    //           }],
+    //         },
+    //       ],
+    //     },
+    //     // {
+    //     //   name: 'Worker Node #4',
+    //     //   id: uuid(),
+    //     //   worder_node_id: 3,
+    //     //   type: 'Node',
+    //     //   children: [
+    //     //     {
+    //     //       name: '#1',
+    //     //       id: uuid(),
+    //     //       type: 'Pod',
+    //     //       children: [{
+    //     //         name: '',
+    //     //         id: uuid(),
+    //     //         type: 'Container',
+    //     //       }]
+    //     //     },
+    //     //     {
+    //     //       name: '#2',
+    //     //       id: uuid(),
+    //     //       type: 'Pod',
+    //     //       children: [{
+    //     //         name: '',
+    //     //         id: uuid(),
+    //     //         type: 'Container',
+    //     //       }]
+    //     //     },
+    //     //     {
+    //     //       name: '#3',
+    //     //       id: uuid(),
+    //     //       type: 'Pod',
+    //     //       children: [{
+    //     //         name: '',
+    //     //         id: uuid(),
+    //     //         type: 'Container',
+    //     //       }]
+    //     //     },
+    //     //     {
+    //     //       name: '#3',
+    //     //       id: uuid(),
+    //     //       type: 'Pod',
+    //     //       children: [{
+    //     //         name: '',
+    //     //         id: uuid(),
+    //     //         type: 'Container',
+    //     //       }]
+    //     //     },
+    //     //     {
+    //     //       name: '#3',
+    //     //       id: uuid(),
+    //     //       type: 'Pod',
+    //     //       children: [{
+    //     //         name: '',
+    //     //         id: uuid(),
+    //     //         type: 'Container',
+    //     //       }]
+    //     //     },
+    //     //     {
+    //     //       name: '#3',
+    //     //       id: uuid(),
+    //     //       type: 'Pod',
+    //     //       children: [{
+    //     //         name: '',
+    //     //         id: uuid(),
+    //     //         type: 'Container',
+    //     //       }]
+    //     //     },
+    //     //   ]
+    //     // },
+    //     // {
+    //     //   name: 'kube-apiserver',
+    //     //   id: uuid(),
+    //     //   type: 'master-component',
+    //     // },
+    //     // {
+    //     //   name: 'etcd',
+    //     //   id: uuid(),
+    //     //   type: 'master-component',
+    //     // },
+    //     // {
+    //     //   name: 'kube-scheduler',
+    //     //   id: uuid(),
+    //     //   type': 'master-component',
+    //     // },
+    //     // {
+    //     //   name: 'kube-controller-manager',
+    //     //   type': 'master-component',
+    //     // },
+    //   ],
+    // };
 
     const margin = {
       top: 110,

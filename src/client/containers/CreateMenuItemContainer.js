@@ -284,4 +284,4 @@ class CreateMenuItemContainer extends Component {
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateMenuItemContainer))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateMenuItemContainer));

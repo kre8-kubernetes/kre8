@@ -64,7 +64,7 @@ const TreeGraphComponent = (props) => {
                       node={node}
                       top={top}
                       left={left}
-                      key={i}
+                      key={node.data.id}
                     />
                   );
                 }
@@ -78,7 +78,7 @@ const TreeGraphComponent = (props) => {
                       node={node}
                       top={top}
                       left={left}
-                      key={i}
+                      key={node.data.id}
                     />
                   );
                 }
@@ -92,7 +92,7 @@ const TreeGraphComponent = (props) => {
                       node={node}
                       top={top}
                       left={left}
-                      key={i}
+                      key={node.data.id}
                     />
                   );
                 }

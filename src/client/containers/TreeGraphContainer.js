@@ -128,11 +128,12 @@ class TreeGraphContainer extends Component {
     const newState = { ...this.state, treeData: { ...treeData } };
 
     data.items.forEach((node) => {
-      node.name = node.metadata.name;
-      node.id = node.metadata.uid;
-      node.type = node.kind;
-      node.children = [];
-      newState.treeData.children.push(node);
+      const newNode = node;
+      newNode.name = node.metadata.name;
+      newNode.id = node.metadata.uid;
+      newNode.type = node.kind;
+      newNode.children = [];
+      newState.treeData.children.push(newNode);
     });
     this.setState(prevState => ({ ...prevState, treeData: newState.treeData }));
   }
@@ -146,17 +147,19 @@ class TreeGraphContainer extends Component {
     }, {});
 
     data.items.forEach((pod) => {
+      const newPod = pod;
       if (pod.status.phase !== 'Pending') {
-        pod.name = pod.metadata.name;
-        pod.id = pod.metadata.uid;
-        pod.type = pod.kind;
-        pod.children = [];
+        newPod.name = pod.metadata.name;
+        newPod.id = pod.metadata.uid;
+        newPod.type = pod.kind;
+        newPod.children = [];
         pod.spec.containers.forEach((container) => {
-          container.name = container.image;
-          container.type = 'Container';
+          const newContainer = container;
+          newContainer.name = container.image;
+          newContainer.type = 'Container';
           pod.children.push(container);
         });
-        const nodeName = pod.spec.nodeName;
+        const { nodeName } = pod.spec;
         newState.treeData.children[addressMap[nodeName]].children.push(pod);
       }
     });
@@ -201,10 +204,11 @@ class TreeGraphContainer extends Component {
    * a re-render of the page, either removing the deleted node, or adding the newly created node
   */
   handleRerenderNode() {
+    const { hideCreateMenuDropdown } = this.props;
     console.log('handle rerender node called');
     ipcRenderer.send(events.START_LOADING_ICON, 'close');
     console.log('hit start loading icon inside handle render node handler');
-    this.props.hideCreateMenuDropdown();
+    hideCreateMenuDropdown();
     this.getMasterNode();
     this.getWorkerNodes();
     this.getContainersAndPods();

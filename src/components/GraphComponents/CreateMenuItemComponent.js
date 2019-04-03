@@ -9,6 +9,7 @@ const CreateMenuItemComponent = (props) => {
     handleFunction,
     errors,
     infoText,
+    infoButton,
     inputDataToShow,
   } = props;
 
@@ -35,7 +36,7 @@ const CreateMenuItemComponent = (props) => {
           <h2>Create a {componentNameFormatted}</h2>
         </div>
         <div className="create_menu_item_component_help_info">
-          <p>{infoText}</p>
+          <p>{infoText}</p><p>{infoButton}</p>
         </div>
         {/** ** FORM *** */}
         <div className="create_menu_item_component_inputs">

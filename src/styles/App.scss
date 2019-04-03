@@ -1017,6 +1017,13 @@ body {
   margin: 20px 0;
 }
 
+.create_menu_item_component_help_info {
+  display: flex;
+  width: 85%;
+  font-size: 14px;
+  margin: 5px;
+}
+
 
 //** --------- NAV COMPONENT RIGHT ------------- **//
 
@@ -1040,10 +1047,12 @@ body {
   height: 40px;
   padding: 0 10px;
   text-decoration: none;
+  outline: none;
 }
 
 .nav_component_cluster_button:hover {
   background: $nav-bar-hover;
+  cursor: pointer;
 }
 
 //** --------- CLUSTER INFO COMPONENT --------- **//

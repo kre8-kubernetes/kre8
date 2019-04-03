@@ -48,7 +48,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   // TODO: add to application package
   awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator();
   if (isDev) {
-    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
+    // BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
     process.env.APPLICATION_PATH = __dirname;
 
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
@@ -121,6 +121,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   });
 
   // Creates browser window that displays Kubernetes Docs when user clicks more info while creating a pod, service or deployment
+  //For deployment
   let kubeDocsDeploymentWindow = new BrowserWindow({
     width: 600,
     height: 400,
@@ -132,10 +133,50 @@ const createWindowAndSetEnvironmentVariables = () => {
     kubeDocsDeploymentWindow.show();
   });
 
-  kubeDocsDeploymentWindow.on('close', () => {
+  kubeDocsDeploymentWindow.on('close', (e) => {
+    e.preventDefault();
     kubeDocsDeploymentWindow.hide();
   });
+
+
+//For service
+let kubeDocsServiceWindow = new BrowserWindow({
+  width: 600,
+  height: 400,
+  show: false,
+});
+
+kubeDocsServiceWindow.loadURL('https://kubernetes.io/docs/concepts/services-networking/service/');
+ipcMain.on(events.SHOW_KUBE_DOCS_SERVICE, () => {
+  kubeDocsServiceWindow.show();
+});
+
+  kubeDocsServiceWindow.on('close', (e) => {
+    e.preventDefault();
+    kubeDocsServiceWindow.hide();
+  });
+
+
+//For pod
+let kubeDocsPodWindow = new BrowserWindow({
+  width: 600,
+  height: 400,
+  show: false,
+});
+
+kubeDocsPodWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/');
+ipcMain.on(events.SHOW_KUBE_DOCS_POD, () => {
+  kubeDocsPodWindow.show();
+});
+
+  kubeDocsPodWindow.on('close', (e) => {
+    e.preventDefault();
+    kubeDocsPodWindow.hide();
+  });
 };
+
+
+
 
 /** ------- EXECUTES ON EVERY OPENING OF APPLICATION --------------------------
  * Check credentials file to determine if user needs to configure the application

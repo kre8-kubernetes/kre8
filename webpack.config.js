@@ -3,7 +3,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { spawn } = require('child_process');
 // Config directories
-const SRC_DIR = path.resolve(__dirname, 'src');
+const SRC_DIR = path.resolve(__dirname, 'src/client');
 const OUTPUT_DIR = path.resolve(__dirname, 'dist');
 // Any directories you will be adding code/files into, need to be
 // added to this array so webpack will pick them up
@@ -17,7 +17,6 @@ module.exports = {
     publicPath: '/dist/',
     filename: 'bundle.js',
   },
-  mode: 'development',
   module: {
     rules: [
       {
@@ -49,7 +48,7 @@ module.exports = {
   target: 'electron-renderer',
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'public/index.html',
+      template: 'src/main/index.html',
       inject: 'body',
     }),
     new webpack.DefinePlugin({
@@ -68,7 +67,7 @@ module.exports = {
     before() {
       spawn(
         'electron',
-        ['./public/main.js'],
+        ['./src/main/main.js'],
         { shell: true, env: process.env, stdio: 'inherit' },
       )
         .on('close', code => process.exit(0))

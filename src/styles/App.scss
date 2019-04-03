@@ -1,0 +1,1165 @@
+@import "theme";
+
+//* ----------------------------------------------------------- *//
+//* --------------- HTML FUNDAMENTAL--------------------------- *//
+//* ----------------------------------------------------------- *//
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  margin: 0px;
+}
+
+@font-face {
+  font-family: 'Lato-Black';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./Lato/Lato-Black.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Lato-Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./Lato/Lato-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Lato-Light';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./Lato/Lato-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Lato-Bold';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./Lato/Lato-Bold.ttf') format('truetype');
+}
+
+
+.errorClass {
+  color: red;
+  font-size: $error-font-size;
+  margin-top: 2px;
+  margin-left: 7px;
+  opacity: .9;
+  font-family: Lato-Regular, sans-serif;
+}
+
+
+//* ----------------------------------------------------------- *//
+//* --------------- BUTTON COMPONENTSL------------------------- *//
+//* ----------------------------------------------------------- *//
+
+//* ----- ACTION BUTTON
+.action_button {
+  width: 110px;
+  height: 40px;
+  background: $accent-darkest-blue;
+  border-radius: 5px;
+  color: $button-background;
+  border: 1px solid $button-background;
+  font-size: 16.5px;
+  font-weight: medium;
+}
+
+.action_button:focus {
+  outline: none;
+}
+
+.action_button:active {
+  background: $button-background;
+  opacity: 0.7;
+  color: $accent-darkest-blue;
+}
+
+.action_button:hover {
+  cursor: pointer;
+  background: $button-background;
+  color: $accent-darkest-blue;
+  transition-duration: .2s;
+}
+
+//* ----- ACTION BUTTON ------------
+.help_button {
+  height: 32px;
+  width: 32px;
+  font-size: 1.1em;
+  color: $light-font;
+  border-radius: 20px;
+  background: $accent-darkest-blue;
+}
+
+.help_button:active {
+  background: $input-color;
+  color:$accent-darkest-blue;
+}
+
+.help_button:hover {
+  cursor:pointer;
+  background: $light-font;
+  color: $accent-darkest-blue;
+  transition-duration: .2s;
+}
+
+.help_button:focus {
+  outline: none;
+}
+
+//* ----- CLOSED POPUP BUTTON --------
+.close_popup_button {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  color: #818181;
+  background: none;
+  border: none;
+  margin-left: auto;
+  padding-top: 3px;
+}
+
+.close_popup_button:hover {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.close_popup_button:focus {
+  outline: none;
+  color: #5188ff;
+}
+
+
+//* ----------------------------------------------------------- *//
+//* --------------- HOME PAGE CONTAINER STYLING --------------- *//
+//* ----------------------------------------------------------- *//
+
+//TODO: Braden do we need the 3 color options for multiple browsers?
+
+.home_page_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background: $bg-gradient-dark;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  font-family: 'Lato-Regular', sans-serif;
+}
+
+.home_page_form_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 55%;
+  height: 50%;
+  min-width: 500px;
+  max-width: 525px;
+  min-height: 380px;
+  max-height: 390px;
+  background: $accent-darkest-blue;
+  border-radius: 6px;
+  padding-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.home_page_form_container_header {
+  display: flex;
+  justify-content: center;
+
+  font-family: 'Lato-Bold', sans-serif;
+  font-size: 22px;
+  color: $light-font;
+}
+
+.home_page_form_container_intro_text {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-family: 'Lato-Regular', sans-serif;
+  color: $light-font;
+  font-size: 16px;
+  line-height: 23px;
+  width: 83%;
+}
+
+.home_page_form_container_input_field_area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 83%;
+  // opacity: 0.7;
+}
+
+.home_page_form_container_inputs_item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 0;
+  opacity: 0.7;
+}
+
+.home_page_form_container_inputs_item input {
+  width: 100%;
+  height: 33px;
+  min-height: 33px;
+  border-radius: 5px;
+  background: $accent-darkest-blue;
+  border: 1px solid $input-color;
+
+  font-family: 'Lato-Light', sans-serif;
+  font-size: 14px;
+  color: $input-color;
+}
+
+.home_page_form_container_inputs_item input[type=text] {
+  padding-left: 10px;
+}
+
+.home_page_form_container_inputs_item input::placeholder {
+  color: $input-color;
+}
+
+.home_page_form_container_inputs_item input:focus {
+  outline: none;
+}
+
+.home_page_form_container_buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-content: center;
+  width: 83%;
+  padding: 8px 0;
+}
+
+.home_page_form_container_buttons_item {
+  display: flex;
+  flex-direction: row;
+}
+
+.home_page_form_container_buttons_item select {
+  width: 200px;
+  height: 33px;
+  min-height: 33px;
+  background: $accent-darkest-blue;
+  border: 1px solid $input-color;
+  border-radius: 5px;
+  color: $input-color;
+  font-family: 'Lato-Light', sans-serif;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.home_page_form_container_buttons_item select:focus {
+  outline: none;
+}
+
+#home_form_buttom {
+  margin-right: 12px;
+}
+
+#home_page_container_error {
+  padding-top: 20px;
+  font-size: 12px;
+}
+
+//* ----------------------------------------------------------- *//
+//* --------------- HOME PAGE POST CONFIG COMPONENT STYLING --- *//
+//* ----------------------------------------------------------- *//
+
+
+#heptagon_loading {
+  position: relative;
+  left: -62px;
+  bottom: 60px;
+  height: 300px;
+  width: 325px;
+}
+
+#heptagon_loading path {
+  fill: none;
+  stroke: #4368C9;
+  stroke-width: 1.5;
+  stroke-dasharray: 275;
+  stroke-dashoffset: 10000;
+  animation: dash 50s linear infinite running;
+}
+
+@keyframes dash {
+/*   from {
+    stroke-dashoffset: 1000;
+  } */
+
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+.home_page_post_config_form_container {
+  width: 325px;
+  height: 325px;
+  border-radius: 6px;
+  display: grid;
+  grid-template-rows: 1.25fr 1fr .65fr 1fr 1fr 1fr;
+  grid-template-columns: 50px 1fr 1fr 1fr 60px;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px; 
+  justify-content: center;
+  grid-template-areas: 
+    ". . . . ."
+    ". ball0 ball0 ball0 ."
+    ". . . . ."
+    ". ball1 . ball2 ."
+    "text text text text text"
+    ". . . . ."; 
+}
+
+.loading_form_container_text {
+  font-family: Lato-Regular, sans-serif;
+  color: $light-font;
+  grid-area: text;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 150;
+}
+
+//* ----------------------------------------------------------- *//
+//* --------------- HELP INFO COMPONENT STYLING --------------- *//
+//* ----------------------------------------------------------- *//
+
+.help_info_component {
+  background-color: $cluster-element-text-color;
+  border-radius: 6px;
+  font-family: Lato-Regular, sans-serif;
+  z-index: 1;
+  position: absolute;
+  width: 70%;
+  height: 50%;
+  padding: 10px;
+  display: flex;
+}
+
+.help_info_component button {
+  width: 20px;
+  height: 20px;
+  background: $button-background;
+  color: black;
+  font-size: .5em;
+  font-weight: 200;
+  font-family: Lato-Regular, sans-serif;
+  outline: none;
+}
+
+.help_info_component button:hover{
+  cursor: pointer;
+}
+
+.help_info_component p{
+  display: flex;
+  align-items: center;
+}
+
+//AWS HELP INFO COMPONENT
+.aws_help_info_component {
+  background-color: $cluster-element-text-color;
+  border-radius: 6px;
+  font-family: Lato-Regular, sans-serif;
+  z-index: 1;
+  position: absolute;
+  width: 90%;
+  height: 70%;
+  padding: 10px;
+  padding-left: 15px;
+  display: flex;
+}
+
+.aws_help_info_component button {
+  width: 20px;
+  height: 20px;
+  background: $button-background;
+  color: black;
+  font-size: .5em;
+  font-weight: 200;
+  font-family: Lato-Regular, sans-serif;
+  outline: none;
+}
+
+.aws_help_info_component button:hover{
+  cursor: pointer;
+}
+
+.aws_help_info_component p{
+  display: flex;
+  align-items: center;
+}
+
+.aws_help_info_component li{
+  padding-left: 10px;
+  position: relative;
+  right: -10px;
+  margin-top: -1em;
+  color: gray;
+}
+
+.aws_help_info_component li span{
+  display: inline;
+  margin-left: -0.6em;
+}
+
+
+
+
+
+//**************************************************/
+//************** AWS CONTAINER STYLING *************/
+//**************************************************/
+
+.aws_cluster_page_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background: $bg-gradient-dark;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); 
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  font-family: Lato-Regular, sans-serif;
+}
+
+.aws_cluster_form_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 55%;
+  height: 50%;
+  min-width: 500px;
+  max-width: 525px;
+  min-height: 380px;
+  max-height: 390px;
+  background: $accent-darkest-blue;
+  border-radius: 6px;
+  padding-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.aws_cluster_form_container_header {
+  display: flex;
+  justify-content: center;
+  font-family: Lato-Bold, sans-serif;
+  font-size: 22px;
+  color: $light-font;
+  // TODO: do we need?
+  flex-direction: column;
+  align-items: center;
+  padding-top: 30px;
+}
+
+.aws_cluster_form_intro_text {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-family: Lato-Regular, sans-serif;
+  color: $light-font;
+  font-size: 16px;
+  line-height: 23px;
+  width: 83%;
+}
+
+.aws_cluster_form_input_field_area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 83%;
+}
+
+.aws_cluster_form_container_inputs_item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 0;
+  opacity: 0.7;
+}
+
+.aws_cluster_form_container_inputs_item input {
+  width: 100%;
+  height: 33px;
+  min-height: 33px;
+  border-radius: 5px;
+  background: $accent-darkest-blue;
+  border: 1px solid $input-color;
+  font-family: Lato-Light, sans-serif;
+  font-size: 14px;
+  color: $input-color;
+  padding-left: 10px;
+}
+
+.aws_cluster_form_container_inputs_item input[type=text] {
+  padding-left: 10px;
+}
+
+.aws_cluster_form_container_inputs_item input::placeholder {
+  color: $input-color;
+}
+
+.aws_cluster_form_container_inputs_item input:focus {
+  outline: none;
+}
+
+.aws_cluster_form_container_explainer_text {
+  font-size: 10px;
+  font-family: 'Lato-Regular', sans-serif;
+  // color: $light-font;
+  color: gray;
+  margin-left: 6px;
+  margin-bottom: 3px;
+  padding-top: 2px;
+}
+
+.aws_cluster_form_container_button_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+#aws_form_button{
+  margin-right: 40px;
+}
+
+//* ----------------------------------------------------------- *//
+//* --------------- AWS LOADING COMPONENT STYLING ------------- *//
+//* ----------------------------------------------------------- *//
+
+.aws_loading_form_component {
+  display: flex;
+  flex-direction: column;
+  min-width: 500px;
+  max-width: 525px;
+  min-height: 380px;
+  max-height: 390px;
+  background: $accent-darkest-blue;
+  color: $light-font;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.aws_loading_form_component_header {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  color: $light-font;
+  font-size: 20px;
+  font-weight: bold;
+  padding-top: 20px;
+
+}
+
+.aws_loading_component_explainer_text {
+  display: flex;
+  flex-direction: row;
+  text-align: center;
+  font-family: 'Lato-Regular', sans-serif;
+  font-size: 16px;
+  color: $light-font;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.aws_loading_form_component_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-left: 75px;
+  margin-right: 100px;
+  height: 35px;
+}
+
+.aws_loading_component_status_text {
+  display: flex;
+  flex-direction: column;
+  align-items: rigth;
+  justify-content: right;
+  font-family: 'Lato-Regular', sans-serif;
+  font-size: 16px;
+  line-height: 23px;
+  color: $light-font;
+} 
+
+.aws_loading_component_error_text {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  line-height: 13px;
+  font-family: 'Lato-Regular', sans-serif;
+  color: red;
+  font-size: 10px;
+  margin-bottom: 10px;
+  padding-bottom: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 20px;
+}
+
+
+//* ----------------------------------------------------------- *//
+//* --------------- KUBECTL COMPONENT STYLING ----------------- *//
+//* ----------------------------------------------------------- *//
+
+@keyframes change {
+  12.5%{background-color: #2D5481;}
+  25%{background-color: #274B74;}
+  37.5%{background-color: #243B55;}
+  50%{background-color: #1F2D46;}
+  62.5%{background-color: #141E30;}
+  75%{background-color: #1F2D46;}
+  87.5%{background-color: #243B55;}
+  100%{background-color: #274B74;}
+}
+
+.kubectl_container {
+  display: flex;
+  flex-direction: row;
+  align-content: space-around;
+
+  /* Disable text selection, or your app will feel like a web page */
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+  //background: #1F2D46;
+
+  background: $graph-background;
+  // background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark, $bg-gradient-light);  /* Chrome 10-25, Safari 5.1-6 */
+  // background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 
+
+  /* Cover the whole window */
+  height: 100%;
+  animation: fadein 2s;
+}
+
+// animation: fadein 2s, change 90s infinite;
+
+
+/* Kubectl Component Styling */
+
+.kubectl_form_container {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 2;
+  border: 2px solid red;
+}
+
+.kubectl_form_container {
+  /* display:grid; */
+  /* border-radius: 10px; */
+  border-style: solid;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 15px;
+  padding: 10px;
+}
+
+.kubectl_form_container input[type="text"] {
+  display: flex;
+  justify-content: center;
+}
+
+.kubectl_form_container:hover {
+  transition: 0.3s;
+  background-color: lightgray;
+}
+
+.kubectl_form_item form {
+  width: 100%;
+}
+
+/**************************************************/
+/*********** TreeGraphContainer Styling ***********/
+/**************************************************/
+.treegraph_container {
+  display: flex;
+  flex-direction: column;
+}
+
+.graph_component:hover{
+  cursor:pointer;
+  border: 1px solid '$pods-color-hover';
+  transition-duration: .2s;
+}
+
+.toolTip {
+  position: absolute;
+  height: 50px;
+  width: 400px;
+  background: none;
+  color: $light-font;
+  font-size: 12px;
+  font-family: 'Lato-Regular', sans-serif;
+}
+
+.toolTip h4 {
+  margin: 1px 0;
+}
+
+.toolTip p {
+  font-family: 'Lato-Regular', sans-serif;
+  margin: 1px 0;
+}
+
+/**************************************************/
+/************* POPUP CONTAINER STYLING ************/
+/**************************************************/
+
+.popup_info {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.popup_info_inner {
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  top: 10%;
+  min-width: 375px;
+  background: $accent-darkest-blue;
+  color: $cluster-element-text-color;
+  padding: 20px 25px 20px 25px;
+  border-radius: 3px;
+  font-family: 'Lato-Regular', sans-serif;
+  border: 1px solid #6E6B6B;
+  opacity: .9;
+}
+
+/**************************************************/
+/********** CLUSTER MORE INFO COMPONENTS **********/
+/**************************************************/
+
+/* UNIVERSAL INFO COMPONENT */
+.info_component_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.info_component_additional_items {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.additional_info_body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 15px;
+  width: 100%
+}
+
+.additional_info_body_container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.additional_info_body_container p:nth-child(2) {
+  padding-right: 15px;
+}
+
+.additional_info_body_item {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.additional_info_body_item_row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 15px;
+  width: 100%
+}
+
+.more_info_button_item {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+/* API SERVER INFO COMPONENT */
+.apiserver_info_component {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-size: 0.7em;
+}
+
+.apiserver_info_component p {
+  margin: 3px 0;
+}
+
+/* NODE INFO COMPONENT */
+.node_info_component {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.70em;
+  width: 100%;
+}
+
+.node_info_component p {
+  margin: 1px 0;
+}
+
+.node_info_component_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* POD INFO COMPONENT */
+.pod_info_component {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.65em;
+  width: 100%;
+}
+
+.pod_info_component p {
+  margin: 1px 0;
+}
+
+/* CONTAINER INFO COMPONENT */
+.container_info_component {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.70em;
+  width: 100%;
+}
+
+.container_info_component p {
+  margin: 1px 0;
+}
+
+/**************************************************/
+/**************** NAVBAR COMPONENTS ***************/
+/**************************************************/
+
+.nav_container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 40px;
+  /* background-color: #090927; */
+  background-color: $accent-darkest-blue;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.nav_component_container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  align-content: space-between;
+}
+
+.nav_left_container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  margin-left: 20px;
+}
+
+.nav_left_container_item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Lato-Black', sans-serif;
+  text-decoration: none;
+  color: $light-font;
+  height: 100%;
+  padding: 0 10px;
+}
+
+.nav_left_container_item:hover {
+  background: $nav-bar-hover;
+  //background: #243B55;
+}
+
+#nav_drop_down {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#nav_drop_down:hover {
+  cursor: pointer;
+  background: $accent-darkest-blue;
+}
+
+#nav_drop_down:hover .ham_bar{
+  // background: #4368C9;
+  // background: #243B55;
+  background: #546E8D;
+}
+
+#nav_drop_down:focus {
+  outline: none;
+}
+
+.ham_bar {
+  height: 3px;
+  width: 30px;
+  margin: 2px 0;
+  border-radius: 2px;
+  //background: $cluster-element-text-color;
+  background: $light-font;
+}
+
+//**************** CREATE MENU (BUTTON + MENU)  ***************/
+.create_menu_component_container {
+  position: absolute;
+  left: 0px;
+  top: 40px;
+  width: 20%;
+  height: 20%;
+  background-color: $accent-darkest-blue;
+  display: flex;
+  flex-direction: column;
+  min-width: 175px;
+}
+
+.create_menu_component_container_button {
+  width: 100%;
+  height: 33%;
+  border: none;
+  background: $accent-darkest-blue;
+  color: $input-color;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+  padding-left: 15px;
+}
+
+.create_menu_component_container_button:focus {
+  outline: none;
+}
+.create_menu_component_container_button:hover {
+  background:$button-background2;
+  cursor: pointer;
+}
+
+
+/**************** CREATE POPUP FORM  ***************/
+.popup_form {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.popup_form_inner {
+  position: absolute;
+  left: 31%;
+  right: 31%;
+  top: 17%;
+  min-width: 375px;
+  background: $accent-darkest-blue;
+  color: $light-font;
+  border-radius: 6px;
+  font-family: 'Lato-Regular', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.create_menu_item_component_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.create_menu_item_component_title {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  align-content: flex-start;
+  margin: 3px 0;
+}
+
+.create_menu_item_component_title h2 {
+  margin: 0;
+}
+
+
+.create_menu_item_component_inputs {
+  display: flex;
+  flex-direction: column;
+  width: 85%;
+  margin-right: 10px;
+}
+
+.create_menu_item_component_inputs_item {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.create_menu_item_component_inputs_item h4 {
+  margin: 0;
+}
+
+.create_menu_item_component_inputs_item input {
+  width: 100%;
+  height: 33px;
+  min-height: 33px;
+  border-radius: 5px;
+  background: $accent-darkest-blue;
+  color: $input-color;
+  border: 1px solid $input-color;
+  font-size: 14px;
+  font-weight: thin;
+  opacity: 0.7;
+}
+
+.create_menu_item_component_inputs_item input[type=text] {
+  padding-left: 10px;
+}
+
+.create_menu_item_component_inputs_item input::placeholder {
+  color: $input-color;
+}
+
+.create_menu_item_component_inputs_item input:focus {
+  outline: none;
+}
+
+.create_menu_item_component_buttons {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.create_menu_item_component_help_info {
+  display: flex;
+  width: 85%;
+  font-size: 14px;
+  margin: 5px;
+}
+
+
+//** --------- NAV COMPONENT RIGHT ------------- **//
+
+.nav_right_container {
+  display: flex;
+  flex-direction: row;
+}
+
+.cluster_info_container {
+  position: relative;
+}
+
+.nav_component_cluster_button {
+  font-family: 'Lato-Black', sans-serif;
+  color: $cluster-element-text-color;
+  background: none;
+  border: none;
+  margin-right: 10px;
+  font-size: 15px;
+  float: left;
+  height: 40px;
+  padding: 0 10px;
+  text-decoration: none;
+  outline: none;
+}
+
+.nav_component_cluster_button:hover {
+  background: $nav-bar-hover;
+  cursor: pointer;
+}
+
+//** --------- CLUSTER INFO COMPONENT --------- **//
+
+
+.cluster_info_container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 1.5%;
+  top: 40px;
+  width: auto;
+  height: auto;
+  padding: 15px;
+  background: $accent-darkest-blue;
+  opacity: .9;
+  font-size: 12px;
+  line-height: 21px;
+  color: $cluster-element-text-color;
+  z-index: 2;
+}
+
+// .cluster_info_major {
+//   font-size: 12px;
+//   line-height: 20px;
+//   color: $cluster-element-text-color;
+//   font-family: Lato-regular;
+// }
+
+// .cluster_info_minor {
+//   font-size: 12px;
+//   line-height: 20px;
+//   color: $cluster-element-text-color;
+//   font-family: Lato-regular;
+// }
+
+.cluster_info_key {
+  font-family: 'Lato-Black', sans-serif;
+}
+
+.cluster_info_value {
+  font-family: 'Lato-Regular', sans-serif;
+}
+
+
+.cluster_info_subnets {
+  padding-left: 15px;
+  font-family: 'Lato-Regular', sans-serif;
+}
+
+.cluster_info_server_end_point {
+  padding-left: 29px;
+  font-family: 'Lato-Regular', sans-serif;
+}
+
+

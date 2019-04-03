@@ -142,8 +142,6 @@ body {
   align-items: center;
   width: 100%;
   height: 100vh;
-  background: $bg-gradient-dark;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: 'Lato-Regular', sans-serif;
 }
@@ -291,10 +289,6 @@ body {
 }
 
 @keyframes dash {
-/*   from {
-    stroke-dashoffset: 1000;
-  } */
-
   to {
     stroke-dashoffset: -100;
   }
@@ -584,51 +578,12 @@ body {
   /* Disable text selection, or your app will feel like a web page */
   -webkit-user-select: none;
   -webkit-app-region: drag;
-  //background: #1F2D46;
 
   background: $graph-background;
-  // background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark, $bg-gradient-light);  /* Chrome 10-25, Safari 5.1-6 */
-  // background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 
 
   /* Cover the whole window */
   height: 100%;
   animation: fadein 2s;
-}
-
-// animation: fadein 2s, change 90s infinite;
-
-
-/* Kubectl Component Styling */
-
-.kubectl_form_container {
-  display: flex;
-  flex-direction: column;
-  flex-basis: 2;
-  border: 2px solid red;
-}
-
-.kubectl_form_container {
-  /* display:grid; */
-  /* border-radius: 10px; */
-  border-style: solid;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-size: 15px;
-  padding: 10px;
-}
-
-.kubectl_form_container input[type="text"] {
-  display: flex;
-  justify-content: center;
-}
-
-.kubectl_form_container:hover {
-  transition: 0.3s;
-  background-color: lightgray;
-}
-
-.kubectl_form_item form {
-  width: 100%;
 }
 
 /**************************************************/
@@ -637,12 +592,6 @@ body {
 .treegraph_container {
   display: flex;
   flex-direction: column;
-}
-
-.graph_component:hover{
-  cursor:pointer;
-  border: 1px solid '$pods-color-hover';
-  transition-duration: .2s;
 }
 
 .toolTip {
@@ -851,6 +800,14 @@ body {
 
 .nav_left_container_item:hover {
   background: $nav-bar-hover;
+  box-shadow: 0.5px 0.75px 5px 1.5px #1b1b1b;
+  border-radius: 2px;
+  //background: #243B55;
+}
+.nav_left_container_item:active {
+  background: $nav-bar-hover - 2;
+  box-shadow: 0.5px 0.5px 4px 1px #1b1b1b;
+  border-radius: 2px;
   //background: #243B55;
 }
 
@@ -863,13 +820,16 @@ body {
 
 #nav_drop_down:hover {
   cursor: pointer;
-  background: $accent-darkest-blue;
+  background: $nav-bar-hover;
+  box-shadow: 0.5px 0.5px 7px 2px #1b1b1b;
+  border-radius: 2px;
 }
 
-#nav_drop_down:hover .ham_bar{
-  // background: #4368C9;
-  // background: #243B55;
-  background: #546E8D;
+#nav_drop_down:active {
+  background: $nav-bar-hover - 2;
+  box-shadow: 0.5px 0.5px 4px 1px #1b1b1b;
+  border-radius: 2px;
+  //background: #243B55;
 }
 
 #nav_drop_down:focus {
@@ -943,6 +903,7 @@ body {
   font-family: 'Lato-Regular', sans-serif;
   display: flex;
   flex-direction: column;
+  box-shadow: 0px 0.5px 4px 1px #1b1b1b;
 }
 
 .create_menu_item_component_container {
@@ -1044,6 +1005,8 @@ body {
 
 .nav_component_cluster_button:hover {
   background: $nav-bar-hover;
+  box-shadow: 0.5px 0.5px 5px #252629;
+  border-radius: 2px;
 }
 
 //** --------- CLUSTER INFO COMPONENT --------- **//
@@ -1065,20 +1028,6 @@ body {
   color: $cluster-element-text-color;
   z-index: 2;
 }
-
-// .cluster_info_major {
-//   font-size: 12px;
-//   line-height: 20px;
-//   color: $cluster-element-text-color;
-//   font-family: Lato-regular;
-// }
-
-// .cluster_info_minor {
-//   font-size: 12px;
-//   line-height: 20px;
-//   color: $cluster-element-text-color;
-//   font-family: Lato-regular;
-// }
 
 .cluster_info_key {
   font-family: 'Lato-Black', sans-serif;

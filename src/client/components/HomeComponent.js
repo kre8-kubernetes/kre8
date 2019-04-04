@@ -26,7 +26,8 @@ const HomeComponent = props => {
 
       {/* TEXT JUST BELOW THE HEADER */}
       <div className="home_page_form_container_intro_text">
-        <p>Creating and launching a Kubernetes cluster to the Amazon cloud can be a long and complicated process. Kre8 is here to simplify everything for you. Let’s get started!</p>
+        {/* <p>Creating and launching a Kubernetes cluster to the Amazon cloud can be a long and complicated process. Kre8 is here to simplify everything for you. Let’s get started!</p> */}
+        <p>To configure Kre8 with your AWS account, enter your credentials below.</p>
       </div>
       {/* HOME INPUT FORM CONTAINER */}
       <div className="home_page_form_container_input_field_area">

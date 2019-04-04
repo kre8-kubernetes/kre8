@@ -12,7 +12,7 @@ import uuid from 'uuid';
 import * as events from '../../eventTypes';
 import * as actions from '../store/actions/actions';
 import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
-import ClusterInfoComponent from '../components/GraphComponents/ClusterComponentInfo';
+import ClusterInfoComponent from '../components/ClusterComponentsInfoComponents/ClusterComponentInfo';
 
 // TODO: Remove console.logs
 // TODO: check out node in handleWorkerNodes method

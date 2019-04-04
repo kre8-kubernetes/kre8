@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeInfoItemFromObjectProperties } from '../../helperFunctions/renderFunctions';
-import ActionButton from '../Buttons/ActionButton';
+import CloseButton from '../Buttons/CloseButton';
 
 const NodeInfoComponent = (props) => {
   const { data, hideNodeInfo } = props;
@@ -20,6 +20,7 @@ const NodeInfoComponent = (props) => {
 
   return (
     <div className="node_info_component">
+      <CloseButton clickHandler={hideNodeInfo} />
       <div className="node_info_component_item">
         <p>ID</p>
         <p>{data.metadata.uid}</p>
@@ -47,9 +48,6 @@ const NodeInfoComponent = (props) => {
       {allocatable}
       {capacity}
       {nodeInfo}
-      <div className="more_info_button_item">
-        <ActionButton clickHandler={hideNodeInfo} buttonText="Close" />
-      </div>
     </div>
   );
 };

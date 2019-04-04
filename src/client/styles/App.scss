@@ -681,13 +681,15 @@ body {
 
 .popup_info_inner {
   position: absolute;
+  display: flex;
+  flex-direction: column;
   left: 30%;
   right: 30%;
   top: 10%;
-  min-width: 375px;
+  min-width: 400px;
   background: $accent-darkest-blue;
   color: $cluster-element-text-color;
-  padding: 20px 25px 20px 25px;
+  // padding: 20px 25px 20px 25px;
   border-radius: 3px;
   font-family: 'Lato-Regular', sans-serif;
   border: 1px solid #6E6B6B;
@@ -754,56 +756,74 @@ body {
 
 /* API SERVER INFO COMPONENT */
 .apiserver_info_component {
+    // padding: 20px 25px 20px 25px;
   display: flex;
   flex-direction: column;
+  align-content: center;
+  align-items: center;
   width: 100%;
   font-size: 0.7em;
+  margin-bottom: 25px;
 }
 
 .apiserver_info_component p {
-  margin: 3px 0;
+  margin: 3px 20px;
 }
 
 /* NODE INFO COMPONENT */
 .node_info_component {
   display: flex;
   flex-direction: column;
-  font-size: 0.70em;
+  align-content: center;
+  align-items: center;
   width: 100%;
+  font-size: 0.7em;
+  margin-bottom: 25px;
 }
 
 .node_info_component p {
-  margin: 1px 0;
+  margin: 1px 15px;
 }
 
 .node_info_component_item {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  width: 100%;
 }
 
 /* POD INFO COMPONENT */
 .pod_info_component {
   display: flex;
   flex-direction: column;
-  font-size: 0.65em;
+  align-content: center;
+  align-items: center;
   width: 100%;
+  font-size: 0.66em;
+  margin-bottom: 15px;
 }
 
 .pod_info_component p {
-  margin: 1px 0;
+  margin: 1px 15px;
+}
+
+#pod_delete_button {
+  width: 200px;
 }
 
 /* CONTAINER INFO COMPONENT */
 .container_info_component {
   display: flex;
   flex-direction: column;
-  font-size: 0.70em;
+  align-content: center;
+  align-items: center;
   width: 100%;
+  font-size: 0.7em;
+  margin-bottom: 25px;
 }
 
 .container_info_component p {
-  margin: 1px 0;
+  margin: 3px 15px;
 }
 
 /**************************************************/

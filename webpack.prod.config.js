@@ -10,13 +10,13 @@ const OUTPUT_DIR = path.resolve(__dirname, 'dist');
 const defaultInclude = [SRC_DIR];
 
 module.exports = {
-  mode: 'development',
+  mode: 'production',
   entry: `${SRC_DIR}/index.js`,
   output: {
     path: OUTPUT_DIR,
-    publicPath: '/dist/',
+    publicPath: './',
     filename: 'bundle.js',
-    
+
   },
   module: {
     rules: [
@@ -57,22 +57,4 @@ module.exports = {
     // }),
   ],
   devtool: 'cheap-source-map',
-  devServer: {
-    contentBase: OUTPUT_DIR,
-    historyApiFallback: true,
-    stats: {
-      colors: true,
-      chunks: false,
-      children: false,
-    },
-    before() {
-      spawn(
-        'electron',
-        ['./src/main/index.js'],
-        { shell: true, env: process.env, stdio: 'inherit' },
-      )
-        .on('close', code => process.exit(0))
-        .on('error', spawnError => console.error(spawnError));
-    },
-  },
 };

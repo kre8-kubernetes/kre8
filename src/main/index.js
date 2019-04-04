@@ -87,7 +87,17 @@ const createWindowAndSetEnvironmentVariables = () => {
     defaultFontFamily: 'sansSerif',
   });
 
-  win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`);
+  
+  console.log('\nNODE_ENV ========================> ', process.env.NODE_ENV);
+  const urlPath = `file://${path.join(__dirname, '..', '..', 'dist/index.html')}`;
+  if (process.env.NODE_ENV === 'development') {
+    win.loadURL(`http://localhost:${PORT}`);
+  } else if (process.env.NODE_ENV === 'production') {
+    win.loadURL(urlPath);
+  } else if (process.env.NODE_ENV === 'test') {
+    win.loadURL(urlPath);
+  }
+
   win.once('ready-to-show', () => {
     win.show();
     childWin.close();

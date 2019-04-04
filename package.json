@@ -4,11 +4,13 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "build": "webpack --config webpack.config.js",
+    "build:test": "webpack --config webpack.prod.config.js",
+    "prod": "webpack --mode production --config webpack.prod.config.js && NODE_ENV=production electron --noDevServer src/main",
     "prestart": "npm run build",
-    "start": "electron public/main.js",
-    "dev": "webpack-dev-server --hot --host 0.0.0.0 --port 3000 --config=./webpack.config.js"
+    "start": "electron src/main/",
+    "dev": "NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000 --config=./webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -26,19 +28,23 @@
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
-    "css-loader": "^2.1.0",
-    "file-loader": "^3.0.1",
-    "html-webpack-plugin": "^3.2.0",
-    "style-loader": "^0.23.1",
-    "webpack": "^4.29.3",
-    "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.1.14",
     "babel-preset-airbnb": "^3.1.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "css-loader": "^2.1.0",
     "eslint": "^5.10.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-react": "^7.11.1"
+    "eslint-plugin-react": "^7.11.1",
+    "file-loader": "^3.0.1",
+    "html-webpack-plugin": "^3.2.0",
+    "mocha": "^6.0.2",
+    "spectron": "^5.0.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.29.3",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.1.14"
   },
   "dependencies": {
     "@vx/gradient": "0.0.183",

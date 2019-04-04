@@ -101,6 +101,9 @@ body {
 
 .help_button:hover {
   cursor:pointer;
+  background: $light-font;
+  color: $accent-darkest-blue;
+  transition-duration: .2s;
 }
 
 .help_button:focus {
@@ -342,7 +345,6 @@ body {
   height: 50%;
   padding: 10px;
   display: flex;
-  align-items: column;
 }
 
 .help_info_component button {
@@ -364,6 +366,57 @@ body {
   display: flex;
   align-items: center;
 }
+
+//AWS HELP INFO COMPONENT
+.aws_help_info_component {
+  background-color: $cluster-element-text-color;
+  border-radius: 6px;
+  font-family: Lato-Regular, sans-serif;
+  z-index: 1;
+  position: absolute;
+  width: 90%;
+  height: 70%;
+  padding: 10px;
+  padding-left: 15px;
+  display: flex;
+}
+
+.aws_help_info_component button {
+  width: 20px;
+  height: 20px;
+  background: $button-background;
+  color: black;
+  font-size: .5em;
+  font-weight: 200;
+  font-family: Lato-Regular, sans-serif;
+  outline: none;
+}
+
+.aws_help_info_component button:hover{
+  cursor: pointer;
+}
+
+.aws_help_info_component p{
+  display: flex;
+  align-items: center;
+}
+
+.aws_help_info_component li{
+  padding-left: 10px;
+  position: relative;
+  right: -10px;
+  margin-top: -1em;
+  color: gray;
+}
+
+.aws_help_info_component li span{
+  display: inline;
+  margin-left: -0.6em;
+}
+
+
+
+
 
 //**************************************************/
 //************** AWS CONTAINER STYLING *************/
@@ -467,7 +520,8 @@ body {
 .aws_cluster_form_container_explainer_text {
   font-size: 10px;
   font-family: 'Lato-Regular', sans-serif;
-  color: $light-font;
+  // color: $light-font;
+  color: gray;
   margin-left: 6px;
   margin-bottom: 3px;
   padding-top: 2px;
@@ -1017,6 +1071,13 @@ body {
   margin: 20px 0;
 }
 
+.create_menu_item_component_help_info {
+  display: flex;
+  width: 85%;
+  font-size: 14px;
+  margin: 5px;
+}
+
 
 //** --------- NAV COMPONENT RIGHT ------------- **//
 
@@ -1040,10 +1101,12 @@ body {
   height: 40px;
   padding: 0 10px;
   text-decoration: none;
+  outline: none;
 }
 
 .nav_component_cluster_button:hover {
   background: $nav-bar-hover;
+  cursor: pointer;
 }
 
 //** --------- CLUSTER INFO COMPONENT --------- **//

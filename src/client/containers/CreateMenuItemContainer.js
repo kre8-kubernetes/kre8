@@ -8,6 +8,8 @@ import * as events from '../../eventTypes';
 
 import OutsideClick from '../helperFunctions/OutsideClick';
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
+import HelpInfoButton from '../components/Buttons/HelpInfoButton';
+
 
 const mapStateToProps = store => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
@@ -195,6 +197,17 @@ class CreateMenuItemContainer extends Component {
       });
   }
 
+  // SHOW KUBE DOCS
+  showKubeDocs(modal) {
+    if (modal === 'deployment'){
+      ipcRenderer.send(events.SHOW_KUBE_DOCS_DEPLOYMENT);
+    } else if (modal === 'service'){
+      ipcRenderer.send(events.SHOW_KUBE_DOCS_SERVICE);
+    }else if (modal === 'pod'){
+      ipcRenderer.send(events.SHOW_KUBE_DOCS_POD);
+    }
+  }
+
   // --------------INCOMING DATA FROM MAIN THREAD-----------------
 
   // INCOMING POD DATA
@@ -235,11 +248,6 @@ class CreateMenuItemContainer extends Component {
     this.setState(prevState => ({ ...prevState, inputData: { ...prevState.inputData, service: emptyServiceObj } }));
   }
 
-  // SHOW KUBE DOCS
-  showKubeDocs() {
-    ipcRenderer.send(events.SHOW_KUBE_DOCS_DEPLOYMENT);
-  }
-
   handleFormClose() {
     const { toggleCreateMenuFormItem, toggleCreateMenuDropdown } = this.props;
     toggleCreateMenuFormItem();
@@ -259,8 +267,20 @@ class CreateMenuItemContainer extends Component {
                            menuItemToShow === 'service' ? this.handleCreateService :
                            menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
 
-    const textObj = { pod: 'Pod text here', service: 'Service text here', deployment: <button onClick={this.showKubeDocs}>See Kubernetes docs</button> };
+
+    const textObj = {
+      pod: 'A Pod is the smallest deployable unit in the Kubernetes object model.',
+      service: 'A Service is an abstraction which defines a set of Pods and a policy by which to access them.',
+      deployment: 'A Deployment is a controller that maintains the number of Pod replicas the user declares.'
+    };
     const text = textObj[menuItemToShow];
+
+    const moreInfoButtons = {
+      pod: <button onClick={() => this.showKubeDocs('pod')} className="help_button" type="button">?</button>,
+      service: <button onClick={() => this.showKubeDocs('service')} className="help_button" type="button">?</button>,
+      deployment: <button onClick={() => this.showKubeDocs('deployment')} className="help_button" type="button">?</button>,
+    };
+    const button = moreInfoButtons[menuItemToShow];
 
     return (
       <div>
@@ -272,6 +292,7 @@ class CreateMenuItemContainer extends Component {
               handleFormClose={this.handleFormClose}
               handleFunction={handleFunction}
               infoText={text}
+              infoButton={button}
 
               errors={errors}
 

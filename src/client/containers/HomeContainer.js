@@ -188,7 +188,14 @@ class HomeContainer extends Component {
 
   //* --------- DISPLAY MORE INFO ( ? ) COMPONENT METHOD
   displayInfoHandler(e) {
-    const homeInfo = 'In order to use KRE8 to create and launch your Kubernetes cluster on Amazon’s Elastic Container Service for Kubernetes (EKS), you must have an Amazon Web Services Account. KRE8 needs the below details from your AWS account in order to deploy your cluster. KRE8 will use these details to generate a file titled “credentials” in a folder named .aws in your root directory. AWS will reference this file to verify your permissions as you build your Kubernetes cluster.';
+    const homeInfo = 
+    <div>
+    <h2>More Information</h2>
+    <p>In order to use KRE8 to create and launch your Kubernetes cluster on Amazon’s Elastic Container Service for Kubernetes (EKS), you must have an Amazon Web Services Account.</p>
+    <p>KRE8 needs the below details from your AWS account in order to deploy your cluster.</p>
+    <p>KRE8 will use these details to generate a file titled “credentials” in a folder named .aws in your root directory.</p>
+    <p>AWS will reference this file to verify your permissions as you build your Kubernetes cluster.'</p>
+    </div>
     const x = e.screenX;
     const y = e.screenY;
     const newCoords = { top: y, left: x };

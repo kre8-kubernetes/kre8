@@ -12,6 +12,7 @@ const AWSComponent = props => {
     vpcStackName,
     clusterName,
     errors,
+    aws,
   } = props;
 
   return (
@@ -22,7 +23,7 @@ const AWSComponent = props => {
       </div>
       {/* TEXT JUST BELOW THE HEADER */}
       <div className="aws_cluster_form_intro_text">
-        <p>Please input the below details to create your cluster. Once submitted, this phase takes AWS 10-15 minutes.</p>
+        <p>Please input the details below to create your cluster. Once submitted, this phase takes AWS 10-15 minutes to complete.</p>
       </div>
       {/* AWS INPUT FORM CONTAINER */}
       <div className="aws_cluster_form_input_field_area">
@@ -45,7 +46,7 @@ const AWSComponent = props => {
       </div>
       <div className="aws_cluster_form_container_button_item">
         <ActionButton id="aws_form_button" clickHandler={handleConfigAndMakeNodes} buttonText="Submit" />
-        <HelpInfoButton clickHandler={displayInfoHandler} />
+        <HelpInfoButton clickHandler={displayInfoHandler} aws={aws}/>
       </div>
 
     </div>

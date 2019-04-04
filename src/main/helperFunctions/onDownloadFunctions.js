@@ -45,7 +45,7 @@ onDownload.copyIAMAuthenticatorToBinFolder = () => {
     fs.mkdirSync(`${process.env.HOME}/bin`);
   }
 
-  const child = spawnSync('cp', ['./aws-iam-authenticator', `${process.env.HOME}/bin/aws-iam-authenticator`]);
+  const child = spawnSync('mv', ['./aws-iam-authenticator', `${process.env.HOME}/bin/aws-iam-authenticator`]);
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
   console.log('stdout', stdout, 'stderr', stderr);

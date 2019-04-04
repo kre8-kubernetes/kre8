@@ -1,5 +1,6 @@
 import React from 'react';
 import ActionButton from '../Buttons/ActionButton';
+import CloseButton from '../Buttons/CloseButton';
 
 const CreateMenuItemComponent = (props) => {
   const {
@@ -31,7 +32,8 @@ const CreateMenuItemComponent = (props) => {
     <div className="popup_form_inner">
       <div className="create_menu_item_component_container">
         {/** ***TITLE*** */}
-        <button onClick={handleFormClose} className="close_popup_button" type="button">X</button>
+        {/* <button onClick={handleFormClose} className="close_popup_button" type="button">X</button> */}
+        <CloseButton clickHandler={handleFormClose} />
         <div className="create_menu_item_component_title">
           <h2>Create a {componentNameFormatted}</h2>
         </div>

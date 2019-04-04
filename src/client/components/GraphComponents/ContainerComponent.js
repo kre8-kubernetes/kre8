@@ -35,25 +35,16 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
           toolTipOn(e, { title: 'Container,  Image:', text: node.data.image });
         }}
       />
-      {/* <circle
-        r={radius}
-        fill={bg}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        onClick={() => {
-          showNodeInfo(node);
-          console.log('from circle', node);
-        }}
-      /> */}
+
       <text
         dy={textDY}
         fontSize={textFontSize}
-        fontFamily="Lato"
+        fontFamily="Lato-Regular"
         textAnchor="middle"
         style={{ pointerEvents: 'none' }}
         fill={textFill}
       >
-        {`C`}
+        {'C'}
       </text>
     </Group>
   );

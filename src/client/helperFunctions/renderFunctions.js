@@ -46,7 +46,7 @@ export const makeInfoComponentBody = (data) => {
     }
     // If property value is array, create list and nest inside div (insertComponent _info_component_additional_items
     if (Array.isArray(item[1]) && item[0] !== 'children' && item[0] !== 'containers' && item[0] !== 'containerStatuses' && item[0] !== 'conditions' && item[0] !== 'tolerations') {
-      const additionalData = item[1].map((obj, i) => {       
+      const additionalData = item[1].map((obj, i) => {
         const items = Object.entries(obj).map((prop, i) => {
           if (typeof prop[1] !== 'object') {
             return (
@@ -56,6 +56,7 @@ export const makeInfoComponentBody = (data) => {
               </div>
             );
           }
+          return null;
         });
         return (
           <div key={i} className="additional_info_body_item">

@@ -25,6 +25,7 @@ const initialState = {
 
 export default function navbarReducers(state = initialState, action) {
   console.log('incoming action!!!', action);
+  console.log('State in reducer', state);
   switch (action.type) {
     case types.SHOW_CREATE_MENU_BUTTON:
       return { ...state, showCreateMenuButton: true };
@@ -33,14 +34,14 @@ export default function navbarReducers(state = initialState, action) {
     case types.TOGGLE_CREATE_MENU_DROPDOWN:
       return {
         ...state,
-        showCreateMenuDropdown: typeof action.payload === 'boolean' ? action.payload : !state.showCreateMenuDropdown
+        showCreateMenuDropdown: typeof action.payload === 'boolean' ? action.payload : !state.showCreateMenuDropdown,
       };
     case types.HIDE_CREATE_MENU_DROPDOWN:
       return { ...state, showCreateMenuDropdown: false };
     case types.TOGGLE_CREATE_MENU_FORM_ITEM:
-      return { 
+      return {
         ...state,
-        showCreateMenuFormItem: typeof action.payload === 'boolean' ? action.payload : !state.showCreateMenuFormItem 
+        showCreateMenuFormItem: typeof action.payload === 'boolean' ? action.payload : !state.showCreateMenuFormItem,
       };
     case types.MENU_FORM_ITEM_TO_SHOW:
       return { ...state, menuItemToShow: action.payload };

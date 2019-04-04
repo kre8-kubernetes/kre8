@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Switch, Route, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import * as actions from '../store/actions/actions.js';
-import * as events from '../../eventTypes';
 import * as yup from 'yup';
+import * as actions from '../store/actions/actions';
+import * as events from '../../eventTypes';
 
-import OutsideClick from '../helperFunctions/OutsideClick.js';
+import OutsideClick from '../helperFunctions/OutsideClick';
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 import HelpInfoButton from '../components/Buttons/HelpInfoButton';
 
@@ -38,7 +38,7 @@ class CreateMenuItemContainer extends Component {
         },
         deployment: {
           deploymentName: '',
-          appName: '', 
+          appName: '',
           containerName: '',
           image: '',
           containerPort: '',
@@ -49,11 +49,11 @@ class CreateMenuItemContainer extends Component {
           appName: '',
           port: '',
           targetPort: '',
-        }
+        },
       },
-      errors: {pod: {}, deployment: {}, service: {}},
+      errors: { pod: {}, deployment: {}, service: {} },
       display_error: false,
-    }
+    };
     this.handleChange = this.handleChange.bind(this);
 
     this.handleCreatePod = this.handleCreatePod.bind(this);
@@ -70,13 +70,13 @@ class CreateMenuItemContainer extends Component {
     this.handleOutsideFormClick = this.handleOutsideFormClick.bind(this);
   }
 
-  //**--------------COMPONENT LIFECYCLE METHODS-----------------**//
+  // -------------- COMPONENT LIFECYCLE METHODS -----------------
 
   // DEPLOYMENT LIFECYCLE METHOD
   componentDidMount() {
-    ipcRenderer.on(events.HANDLE_NEW_POD, this.handleNewPod)
-    ipcRenderer.on(events.HANDLE_NEW_SERVICE, this.handleNewService)
-    ipcRenderer.on(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment)
+    ipcRenderer.on(events.HANDLE_NEW_POD, this.handleNewPod);
+    ipcRenderer.on(events.HANDLE_NEW_SERVICE, this.handleNewService);
+    ipcRenderer.on(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment);
   }
 
   // On component unmount, we will unsubscribe to listeners
@@ -86,49 +86,59 @@ class CreateMenuItemContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment);
   }
 
-  //**--------------EVENT HANDLERS-----------------**//
+  // ------------------- EVENT HANDLERS ------------------------
 
-  //HANDLE CHANGE METHOD FOR FORMS
+  // HANDLE CHANGE METHOD FOR FORMS
   handleChange(e) {
+    const { value } = e.target;
     e.preventDefault();
     const split = e.target.id.split('_');
-    const newState = { ...this.state, 
-      inputData: { ...this.state.inputData,
-        pod: {...this.state.inputData.pod},
-        deployment: {...this.state.inputData.deployment},
-        service: {...this.state.inputData.service},
-      }
-    }
-    newState.inputData[split[0]][split[1]] = e.target.value;
-    this.setState(newState);
-  };
+    this.setState((prevState) => {
+      const newState = {
+        ...prevState,
+        inputData: {
+          ...prevState.inputData,
+          pod: { ...prevState.inputData.pod },
+          deployment: { ...prevState.inputData.deployment },
+          service: { ...prevState.inputData.service },
+        },
+      };
+      newState.inputData[split[0]][split[1]] = value;
+      return newState;
+    });
+  }
 
-  //CREATE POD HANDLER
+  // CREATE POD HANDLER
   handleCreatePod() {
+    const { inputData } = this.state;
+    const { pod } = inputData;
     const schema = yup.object().strict().shape({
       podName: yup.string().required().lowercase(),
       containerName: yup.string().required(),
       imageName: yup.string().required(),
-    })
-    schema.validate(this.state.inputData.pod, {abortEarly: false})
+    });
+    schema.validate(pod, { abortEarly: false })
       .then((data) => {
-        console.log('from the then', data)
-        this.setState({ ...this.state, errors: { ...this.state.errors, pod: {} } })
-        ipcRenderer.send(events.CREATE_POD, this.state.inputData.pod);
+        console.log('from the then', data);
+        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, pod: {} } }));
+        ipcRenderer.send(events.CREATE_POD, data);
       })
       .catch((err) => {
         console.log('err', err);
-        const errorObj = err.inner.reduce((acc, error, i) => {
+        const errorObj = err.inner.reduce((acc, error) => {
           acc[error.path] = error.message;
           return acc;
         }, {});
-        this.setState({ ...this.state, errors: { ...this.state.errors, pod: errorObj } })
-      })
+        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, pod: errorObj } }));
+      });
   }
 
-  //CREATE DEPLOYMENT HANDLER
+  // CREATE DEPLOYMENT HANDLER
   handleCreateDeployment() {
-    const clone = Object.assign({}, this.state.inputData.deployment);
+    const { inputData } = this.state;
+    const { deployment } = inputData;
+    const { toggleCreateMenuFormItem } = this.props;
+    const clone = Object.assign({}, deployment);
     clone.containerPort = Number(clone.containerPort);
     clone.replicas = Number(clone.replicas);
     const schema = yup.object().strict().shape({
@@ -138,29 +148,31 @@ class CreateMenuItemContainer extends Component {
       image: yup.string().required().lowercase(),
       containerPort: yup.number().required().positive(),
       replicas: yup.number().required().positive().max(4),
-    })
+    });
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
-        this.props.toggleCreateMenuFormItem();
-        console.log('from the then', data)
-        this.setState({ ...this.state, errors: { ...this.state.errors, deployment: {} } })
-          ipcRenderer.send(events.CREATE_DEPLOYMENT, this.state.inputData.deployment);
-          ipcRenderer.send(events.START_LOADING_ICON, 'open')
-          console.log('sent start loading icon on front from createmenuitemcontainer')
+        toggleCreateMenuFormItem();
+        console.log('from the then', data);
+        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, deployment: {} } }));
+        ipcRenderer.send(events.CREATE_DEPLOYMENT, data);
+        ipcRenderer.send(events.START_LOADING_ICON, 'open');
+        console.log('sent start loading icon on front from createmenuitemcontainer');
       })
       .catch((err) => {
         console.log('err', err);
-        const errorObj = err.inner.reduce((acc, error, i) => {
+        const errorObj = err.inner.reduce((acc, error) => {
           acc[error.path] = error.message;
           return acc;
         }, {});
-        this.setState({ ...this.state, errors: { ...this.state.errors, deployment: errorObj } })
-      })
+        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, deployment: errorObj } }));
+      });
   }
 
-  //CREATE SERVICE HANDLER
+  // CREATE SERVICE HANDLER
   handleCreateService() {
-    const clone = Object.assign({}, this.state.inputData.service);
+    const { inputData } = this.state;
+    const { service } = inputData;
+    const clone = Object.assign({}, service);
     clone.containerPort = Number(clone.port);
     clone.replicas = Number(clone.targetPort);
     const schema = yup.object().strict().shape({
@@ -171,22 +183,22 @@ class CreateMenuItemContainer extends Component {
     })
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
-        console.log('from the then', data)
-        this.setState({ ...this.state, errors: { ...this.state.errors, service: {} } })
-        ipcRenderer.send(events.CREATE_SERVICE, this.state.inputData.service);
+        console.log('from the then', data);
+        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, service: {} } }));
+        ipcRenderer.send(events.CREATE_SERVICE, data);
       })
       .catch((err) => {
         console.log('err', err);
-        const errorObj = err.inner.reduce((acc, error, i) => {
+        const errorObj = err.inner.reduce((acc, error) => {
           acc[error.path] = error.message;
           return acc;
         }, {});
-        this.setState({ ...this.state, errors: { ...this.state.errors, service: errorObj } })
-      })
+        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, service: errorObj } }));
+      });
   }
-  
-  //SHOW KUBE DOCS
-  showKubeDocs(modal){
+
+  // SHOW KUBE DOCS
+  showKubeDocs(modal) {
     if (modal === 'deployment'){
       ipcRenderer.send(events.SHOW_KUBE_DOCS_DEPLOYMENT);
     } else if (modal === 'service'){
@@ -196,41 +208,45 @@ class CreateMenuItemContainer extends Component {
     }
   }
 
-  //**--------------INCOMING DATA FROM MAIN THREAD-----------------**//
+  // --------------INCOMING DATA FROM MAIN THREAD-----------------
 
-  //INCOMING POD DATA
+  // INCOMING POD DATA
   handleNewPod(event, data) {
+    const { inputData } = this.state;
+    const { pod } = inputData;
     console.log('incoming data from kubectl pod creation:', data);
-    const emptyPodObj = Object.entries(this.state.inputData.pod).reduce((acc, item) => {
+    const emptyPodObj = Object.entries(pod).reduce((acc, item) => {
       acc[item[0]] = '';
       return acc;
     }, {});
-    this.setState({...this.state, inputData: {...this.state.inputData, pod: emptyPodObj}});
+    this.setState(prevState => ({ ...prevState, inputData: { ...prevState.inputData, pod: emptyPodObj } }));
   }
 
-  //INCOMING DEPLOYMENT DATA 
+  // INCOMING DEPLOYMENT DATA
   handleNewDeployment(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
+    const { inputData } = this.state;
+    const { deployment } = inputData;
     console.log('incoming data from kubectl deployment creation:', data);
-    const emptyDeploymentObj = Object.entries(this.state.inputData.deployment).reduce((acc, item) => {
+    const emptyDeploymentObj = Object.entries(deployment).reduce((acc, item) => {
       acc[item[0]] = '';
       return acc;
     }, {});
-    this.setState({ ...this.state, inputData: { ...this.state.inputData, deployment: emptyDeploymentObj } });
-
+    this.setState(prevState => ({ ...prevState, inputData: { ...prevState.inputData, deployment: emptyDeploymentObj } }));
   }
 
-  //INCOMING SERVICE DATA
+  // INCOMING SERVICE DATA
   handleNewService(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
+    const { inputData } = this.state;
+    const { service } = inputData;
     console.log('incoming data from kubectl service creation:', data);
-    const emptyServiceObj = Object.entries(this.state.inputData.service).reduce((acc, item) => {
+    const emptyServiceObj = Object.entries(service).reduce((acc, item) => {
       acc[item[0]] = '';
       return acc;
     }, {});
-    this.setState({ ...this.state, inputData: { ...this.state.inputData, service: emptyServiceObj } });
+    this.setState(prevState => ({ ...prevState, inputData: { ...prevState.inputData, service: emptyServiceObj } }));
   }
-
 
   handleFormClose() {
     const { toggleCreateMenuFormItem, toggleCreateMenuDropdown } = this.props;
@@ -243,41 +259,42 @@ class CreateMenuItemContainer extends Component {
     toggleCreateMenuFormItem();
   }
 
-
   render() {
-    console.log('errsss', this.state.errors);
-    const { menuItemToShow } = this.props;
-    const inputDataToShow = this.state.inputData[menuItemToShow];
+    const { menuItemToShow, showCreateMenuFormItem } = this.props;
+    const { inputData, errors } = this.state;
+    const inputDataToShow = inputData[menuItemToShow];
     const handleFunction = menuItemToShow === 'pod' ? this.handleCreatePod :
                            menuItemToShow === 'service' ? this.handleCreateService :
                            menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
-    
-                           
+
+
     const textObj = {
-      pod: 'A Pod is the smallest deployable unit in the Kubernetes object model.', 
-      service: 'A Service is an abstraction which defines a set of Pods and a policy by which to access them.', 
-      deployment: 'A Deployment is a controller that maintains the number of Pod replicas the user declares.'};
+      pod: 'A Pod is the smallest deployable unit in the Kubernetes object model.',
+      service: 'A Service is an abstraction which defines a set of Pods and a policy by which to access them.',
+      deployment: 'A Deployment is a controller that maintains the number of Pod replicas the user declares.'
+    };
     const text = textObj[menuItemToShow];
-                           
+
     const moreInfoButtons = {
-      pod: <button onClick={() => this.showKubeDocs('pod')} className="help_button" type="button">?</button>, 
-      service: <button onClick={() => this.showKubeDocs('service')} className="help_button" type="button">?</button>, 
-      deployment: <button onClick={() => this.showKubeDocs('deployment')} className="help_button" type="button">?</button>};
+      pod: <button onClick={() => this.showKubeDocs('pod')} className="help_button" type="button">?</button>,
+      service: <button onClick={() => this.showKubeDocs('service')} className="help_button" type="button">?</button>,
+      deployment: <button onClick={() => this.showKubeDocs('deployment')} className="help_button" type="button">?</button>,
+    };
     const button = moreInfoButtons[menuItemToShow];
-                           
+
     return (
       <div>
-        {this.props.showCreateMenuFormItem === true && (
+        {showCreateMenuFormItem === true && (
           <OutsideClick handleOutsideClick={this.handleOutsideFormClick}>
             <CreateMenuItemComponent
               handleChange={this.handleChange}
-              menuItemToShow={this.props.menuItemToShow}
+              menuItemToShow={menuItemToShow}
               handleFormClose={this.handleFormClose}
               handleFunction={handleFunction}
               infoText={text}
               infoButton={button}
 
-              errors={this.state.errors}
+              errors={errors}
 
               inputDataToShow={inputDataToShow}
             />
@@ -288,4 +305,4 @@ class CreateMenuItemContainer extends Component {
   }
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateMenuItemContainer))
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CreateMenuItemContainer));

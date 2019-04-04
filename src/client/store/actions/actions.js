@@ -28,18 +28,18 @@ export const hideCreateMenuButton = () => ({
   type: types.HIDE_CREATE_MENU_BUTTON,
 });
 
-export const toggleCreateMenuDropdown = (bool) => ({
+export const toggleCreateMenuDropdown = bool => ({
   type: types.TOGGLE_CREATE_MENU_DROPDOWN,
-  payload: bool
+  payload: bool,
 });
 
 export const hideCreateMenuDropdown = () => ({
   type: types.HIDE_CREATE_MENU_DROPDOWN,
 });
 
-export const toggleCreateMenuFormItem = (bool) => ({
+export const toggleCreateMenuFormItem = bool => ({
   type: types.TOGGLE_CREATE_MENU_FORM_ITEM,
-  payload: bool
+  payload: bool,
 });
 
 export const menuItemToShow = menuItem => ({

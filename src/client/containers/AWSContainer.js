@@ -151,24 +151,24 @@ class AwsContainer extends Component {
 
   //* --------- DISPLAY MORE INFO ( ? ) COMPONENT
   displayInfoHandler(e) {
-    
-    const awsInfo =
-    <div>
-    <h2>Amazon Web Services Elastic Container Service for Kubernetes (EKS) Account Setup.</h2>
-    <p>Your Identity and Access Management (IAM) Role for EKS is the AWS identity that will have specific permissions to create and manage your Kubernetes Cluster.</p>
-    <li><span>For the Role Name, select something that will easily identify the role’s purpose.</span></li>
-    <br></br>
-    <li><span>Example: unique-EKS-Management-Role. </span></li> 
-    <p>Your AWS VPC Stack represents a collection of resources necessary to manage and run your Kubernetes cluster. </p>
-    <li><span>For the Stack Name, select something that will easily identify the stack’s purpose. </span></li>
-    <br></br>
-    <li><span>Example: unique-EKS-Stack. </span></li>
-    <p>An EKS Cluster consists of two primary components: The Amazon EKS control plane and Amazon EKS worker nodes that run the Kubernetes etcd and the Kubernetes API server. </p>
-    <li><span>For the Cluster Name, select something that will easily identify the stack’s purpose. </span></li>
-    <br></br>
-    <li><span>Example: unique-EKS-Cluster. </span></li>
-    <p>Once submitted, this phase takes 10-15 minutes to complete, depending on Amazon’s processing time. Kre8 cannot proceed until your EKS Account has been set up.</p>
-    </div>
+    const awsInfo = (
+      <div>
+        <h2>Amazon Web Services Elastic Container Service for Kubernetes (EKS) Account Setup.</h2>
+        <p>Your Identity and Access Management (IAM) Role for EKS is the AWS identity that will have specific permissions to create and manage your Kubernetes Cluster.</p>
+        <li><span>For the Role Name, select something that will easily identify the role’s purpose.</span></li>
+        <br />
+        <li><span>Example: unique-EKS-Management-Role. </span></li>
+        <p>Your AWS VPC Stack represents a collection of resources necessary to manage and run your Kubernetes cluster. </p>
+        <li><span>For the Stack Name, select something that will easily identify the stack’s purpose. </span></li>
+        <br />
+        <li><span>Example: unique-EKS-Stack. </span></li>
+        <p>An EKS Cluster consists of two primary components: The Amazon EKS control plane and Amazon EKS worker nodes that run the Kubernetes etcd and the Kubernetes API server.</p>
+        <li><span>For the Cluster Name, select something that will easily identify the stack’s purpose. </span></li>
+        <br />
+        <li><span>Example: unique-EKS-Cluster. </span></li>
+        <p>Once submitted, this phase takes 10-15 minutes to complete, depending on Amazon’s processing time. Kre8 cannot proceed until your EKS Account has been set up.</p>
+      </div>
+    );
     const x = e.screenX;
     const y = e.screenY;
     const newCoords = { top: y, left: x };
@@ -236,7 +236,7 @@ class AwsContainer extends Component {
             iamRoleName={iamRoleName}
             vpcStackName={vpcStackName}
             clusterName={clusterName}
-            errors={errors}  
+            errors={errors}
             // aws={aws}
             textInfo={textInfo}
             mouseCoords={mouseCoords}

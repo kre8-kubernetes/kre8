@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ClusterInfoComponent from './ClusterInfoComponent';
-import OutsideClick from "../../helperFunctions/OutsideClick.js"
+import OutsideClick from '../../helperFunctions/OutsideClick';
 
 const NavComponent = (props) => {
   const {
@@ -24,7 +24,7 @@ const NavComponent = (props) => {
     <div className="nav_component_container">
       {/* THE CREATE DROP DOWN MENU */}
       {showCreateMenuDropdown === true && (
-        <OutsideClick className={'create_menu_component_container'} handleOutsideClick={handleOutsideDropdownClick}>
+        <OutsideClick className="create_menu_component_container" handleOutsideClick={handleOutsideDropdownClick}>
           <button id="pod" className="create_menu_component_container_button" onClick={handleMenuItemToShow} type="button">Create a Pod</button>
           <button id="service" className="create_menu_component_container_button" onClick={handleMenuItemToShow} type="button">Create a Service</button>
           <button id="deployment" className="create_menu_component_container_button" onClick={handleMenuItemToShow} type="button">Create a Deployment</button>

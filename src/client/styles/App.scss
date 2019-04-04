@@ -40,7 +40,6 @@ body {
   src: url('./Lato/Lato-Bold.ttf') format('truetype');
 }
 
-
 .errorClass {
   color: red;
   font-size: $error-font-size;
@@ -49,7 +48,6 @@ body {
   opacity: .9;
   font-family: Lato-Regular, sans-serif;
 }
-
 
 //* ----------------------------------------------------------- *//
 //* --------------- BUTTON COMPONENTSL------------------------- *//
@@ -122,21 +120,21 @@ body {
 }
 
 .close_popup_button:hover {
-  opacity: 0.7;
+  color: darken(#818181, 10);
   cursor: pointer;
 }
 
+.close_popup_button:active {
+  outline: none;
+  color: lighten(#818181, 10);
+}
 .close_popup_button:focus {
   outline: none;
-  color: #5188ff;
 }
-
 
 //* ----------------------------------------------------------- *//
 //* --------------- HOME PAGE CONTAINER STYLING --------------- *//
 //* ----------------------------------------------------------- *//
-
-//TODO: Braden do we need the 3 color options for multiple browsers?
 
 .home_page_container {
   display: flex;
@@ -145,8 +143,6 @@ body {
   align-items: center;
   width: 100%;
   height: 100vh;
-  background: $bg-gradient-dark;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: 'Lato-Regular', sans-serif;
 }
@@ -193,7 +189,6 @@ body {
   flex-direction: column;
   align-items: center;
   width: 83%;
-  // opacity: 0.7;
 }
 
 .home_page_form_container_inputs_item {
@@ -294,10 +289,6 @@ body {
 }
 
 @keyframes dash {
-/*   from {
-    stroke-dashoffset: 1000;
-  } */
-
   to {
     stroke-dashoffset: -100;
   }
@@ -614,7 +605,6 @@ body {
   padding-top: 20px;
 }
 
-
 //* ----------------------------------------------------------- *//
 //* --------------- KUBECTL COMPONENT STYLING ----------------- *//
 //* ----------------------------------------------------------- *//
@@ -638,51 +628,12 @@ body {
   /* Disable text selection, or your app will feel like a web page */
   -webkit-user-select: none;
   -webkit-app-region: drag;
-  //background: #1F2D46;
 
   background: $graph-background;
-  // background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark, $bg-gradient-light);  /* Chrome 10-25, Safari 5.1-6 */
-  // background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 
 
   /* Cover the whole window */
   height: 100%;
   animation: fadein 2s;
-}
-
-// animation: fadein 2s, change 90s infinite;
-
-
-/* Kubectl Component Styling */
-
-.kubectl_form_container {
-  display: flex;
-  flex-direction: column;
-  flex-basis: 2;
-  border: 2px solid red;
-}
-
-.kubectl_form_container {
-  /* display:grid; */
-  /* border-radius: 10px; */
-  border-style: solid;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  font-size: 15px;
-  padding: 10px;
-}
-
-.kubectl_form_container input[type="text"] {
-  display: flex;
-  justify-content: center;
-}
-
-.kubectl_form_container:hover {
-  transition: 0.3s;
-  background-color: lightgray;
-}
-
-.kubectl_form_item form {
-  width: 100%;
 }
 
 /**************************************************/
@@ -691,12 +642,6 @@ body {
 .treegraph_container {
   display: flex;
   flex-direction: column;
-}
-
-.graph_component:hover{
-  cursor:pointer;
-  border: 1px solid '$pods-color-hover';
-  transition-duration: .2s;
 }
 
 .toolTip {
@@ -736,13 +681,15 @@ body {
 
 .popup_info_inner {
   position: absolute;
+  display: flex;
+  flex-direction: column;
   left: 30%;
   right: 30%;
   top: 10%;
-  min-width: 375px;
+  min-width: 400px;
   background: $accent-darkest-blue;
   color: $cluster-element-text-color;
-  padding: 20px 25px 20px 25px;
+  // padding: 20px 25px 20px 25px;
   border-radius: 3px;
   font-family: 'Lato-Regular', sans-serif;
   border: 1px solid #6E6B6B;
@@ -809,56 +756,74 @@ body {
 
 /* API SERVER INFO COMPONENT */
 .apiserver_info_component {
+    // padding: 20px 25px 20px 25px;
   display: flex;
   flex-direction: column;
+  align-content: center;
+  align-items: center;
   width: 100%;
   font-size: 0.7em;
+  margin-bottom: 25px;
 }
 
 .apiserver_info_component p {
-  margin: 3px 0;
+  margin: 3px 20px;
 }
 
 /* NODE INFO COMPONENT */
 .node_info_component {
   display: flex;
   flex-direction: column;
-  font-size: 0.70em;
+  align-content: center;
+  align-items: center;
   width: 100%;
+  font-size: 0.7em;
+  margin-bottom: 25px;
 }
 
 .node_info_component p {
-  margin: 1px 0;
+  margin: 1px 15px;
 }
 
 .node_info_component_item {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  width: 100%;
 }
 
 /* POD INFO COMPONENT */
 .pod_info_component {
   display: flex;
   flex-direction: column;
-  font-size: 0.65em;
+  align-content: center;
+  align-items: center;
   width: 100%;
+  font-size: 0.66em;
+  margin-bottom: 15px;
 }
 
 .pod_info_component p {
-  margin: 1px 0;
+  margin: 1px 15px;
+}
+
+#pod_delete_button {
+  width: 200px;
 }
 
 /* CONTAINER INFO COMPONENT */
 .container_info_component {
   display: flex;
   flex-direction: column;
-  font-size: 0.70em;
+  align-content: center;
+  align-items: center;
   width: 100%;
+  font-size: 0.7em;
+  margin-bottom: 25px;
 }
 
 .container_info_component p {
-  margin: 1px 0;
+  margin: 3px 15px;
 }
 
 /**************************************************/
@@ -905,7 +870,13 @@ body {
 
 .nav_left_container_item:hover {
   background: $nav-bar-hover;
-  //background: #243B55;
+  box-shadow: 0.5px 0.75px 5px 1.5px #1b1b1b;
+  border-radius: 2px;
+}
+.nav_left_container_item:active {
+  background: lighten($nav-bar-hover, 2);
+  box-shadow: 0.5px 0.5px 4px 1px #1b1b1b;
+  border-radius: 2px;
 }
 
 #nav_drop_down {
@@ -917,13 +888,15 @@ body {
 
 #nav_drop_down:hover {
   cursor: pointer;
-  background: $accent-darkest-blue;
+  background: $nav-bar-hover;
+  box-shadow: 0.5px 0.5px 7px 2px #1b1b1b;
+  border-radius: 2px;
 }
 
-#nav_drop_down:hover .ham_bar{
-  // background: #4368C9;
-  // background: #243B55;
-  background: #546E8D;
+#nav_drop_down:active {
+  background: lighten($nav-bar-hover, 2);
+  box-shadow: 0.5px 0.5px 4px 1px #1b1b1b;
+  border-radius: 2px;
 }
 
 #nav_drop_down:focus {
@@ -935,17 +908,14 @@ body {
   width: 30px;
   margin: 2px 0;
   border-radius: 2px;
-  //background: $cluster-element-text-color;
   background: $light-font;
 }
 
 //**************** CREATE MENU (BUTTON + MENU)  ***************/
 .create_menu_component_container {
   position: absolute;
-  left: 0px;
-  top: 40px;
-  width: 20%;
-  height: 20%;
+  left: 1px;
+  top: 41px;
   background-color: $accent-darkest-blue;
   display: flex;
   flex-direction: column;
@@ -953,25 +923,30 @@ body {
 }
 
 .create_menu_component_container_button {
-  width: 100%;
-  height: 33%;
+  display: flex;
+  height: 100%;
   border: none;
   background: $accent-darkest-blue;
   color: $input-color;
   font-size: 14px;
   font-weight: bold;
   text-align: left;
-  padding-left: 15px;
+  padding: 12px 0 12px 15px;
 }
 
 .create_menu_component_container_button:focus {
   outline: none;
-}
-.create_menu_component_container_button:hover {
-  background:$button-background2;
-  cursor: pointer;
+  background: darker($nav-bar-hover, 10);
 }
 
+.create_menu_component_container_button:active {
+  background: lighten($nav-bar-hover, 10);
+}
+
+.create_menu_component_container_button:hover {
+  background: $nav-bar-hover;
+  cursor: pointer;
+}
 
 /**************** CREATE POPUP FORM  ***************/
 .popup_form {
@@ -1018,7 +993,6 @@ body {
 .create_menu_item_component_title h2 {
   margin: 0;
 }
-
 
 .create_menu_item_component_inputs {
   display: flex;
@@ -1106,18 +1080,23 @@ body {
 
 .nav_component_cluster_button:hover {
   background: $nav-bar-hover;
+  box-shadow: 0.5px 0.5px 7px 2px #1b1b1b;
+  border-radius: 2px;
   cursor: pointer;
 }
 
-//** --------- CLUSTER INFO COMPONENT --------- **//
+.nav_component_cluster_button:focus {
+  outline: none;
+}
 
+//** --------- CLUSTER INFO COMPONENT --------- **//
 
 .cluster_info_container {
   display: flex;
   flex-direction: column;
   position: absolute;
-  right: 1.5%;
-  top: 40px;
+  right: 1.2%;
+  top: 43px;
   width: auto;
   height: auto;
   padding: 15px;
@@ -1129,20 +1108,6 @@ body {
   z-index: 2;
 }
 
-// .cluster_info_major {
-//   font-size: 12px;
-//   line-height: 20px;
-//   color: $cluster-element-text-color;
-//   font-family: Lato-regular;
-// }
-
-// .cluster_info_minor {
-//   font-size: 12px;
-//   line-height: 20px;
-//   color: $cluster-element-text-color;
-//   font-family: Lato-regular;
-// }
-
 .cluster_info_key {
   font-family: 'Lato-Black', sans-serif;
 }
@@ -1150,7 +1115,6 @@ body {
 .cluster_info_value {
   font-family: 'Lato-Regular', sans-serif;
 }
-
 
 .cluster_info_subnets {
   padding-left: 15px;
@@ -1161,5 +1125,3 @@ body {
   padding-left: 29px;
   font-family: 'Lato-Regular', sans-serif;
 }
-
-

@@ -41,7 +41,7 @@ const WorkerNodeComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTi
       <text
         dy={textDY}
         fontSize={textFontSize}
-        fontFamily="Lato"
+        fontFamily="Lato-Regular"
         textAnchor="middle"
         style={{ pointerEvents: 'none' }}
         fill={textFill}

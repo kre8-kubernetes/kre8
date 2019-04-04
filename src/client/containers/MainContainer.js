@@ -7,25 +7,27 @@ import AWSContainer from './AWSContainer';
 import KubectlContainer from './KubectlContainer';
 import HomeContainer from './HomeContainer';
 
-const Main = (props) => {
-  return (
-    <div>
-      <Switch>
-        <Route
-          exact path='/'
-          component={HomeContainer}
-        />
-        <Route
-          exact path='/aws'
-          component={AWSContainer}
-        />
-        <Route
-          exact path='/cluster'
-          component={KubectlContainer}
-        />
-      </Switch>
-    </div>
-  );
-};
+const Main = props => (
+  <div>
+    <Switch>
+      <Route
+        exact
+        path="/"
+        component={HomeContainer}
+      />
+      <Route
+        exact
+        path="/aws"
+        component={AWSContainer}
+      />
+      <Route
+        exact
+        path="/cluster"
+        component={KubectlContainer}
+      />
+    </Switch>
+  </div>
+);
+
 
 export default withRouter(connect(null, null)(Main));

@@ -60,6 +60,11 @@ module.exports = {
   devServer: {
     contentBase: OUTPUT_DIR,
     historyApiFallback: true,
+    compress: true,
+    noInfo: true,
+    inline: true,
+    lazy: false,
+    hot: true,
     stats: {
       colors: true,
       chunks: false,

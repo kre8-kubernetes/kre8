@@ -3,7 +3,6 @@ require('dotenv').config();
 
 // --------- ELECTRON MODULES -----------
 const { app, BrowserWindow, ipcMain } = require('electron');
-const isDev = require('electron-is-dev');
 
 // --------- NODE APIS -------------------
 const fs = require('fs');
@@ -16,7 +15,7 @@ const path = require('path');
 const STS = require('aws-sdk/clients/sts');
 
 // --------- INSTANTIATE AWS CLASSES -----
-const sts = new STS({signatureCache: false});
+const sts = new STS({ signatureCache: false });
 
 // --------- IMPORT KRE8 MODULES ---------
 const events = require('../eventTypes.js');
@@ -28,7 +27,7 @@ const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemp
 const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
 
 // --------- .ENV Variables --------------
-const { PORT, REACT_DEV_TOOLS_PATH } = process.env;
+const { PORT, REACT_DEV_TOOLS_PATH, NODE_ENV } = process.env;
 
 console.time('init');
 
@@ -47,14 +46,13 @@ let win;
 const createWindowAndSetEnvironmentVariables = () => {
   // TODO: add to application package
   awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator();
-  if (isDev) {
-    // BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
+  if (NODE_ENV === 'development') {
     process.env.APPLICATION_PATH = __dirname;
-
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
-  } else {
-    awsEventCallbacks.setEnvVarsAndMkDirsInProd();
+    console.log('tooool', BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH));
+  } else if (NODE_ENV === 'production' || NODE_ENV === 'test') {
     // TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
+    awsEventCallbacks.setEnvVarsAndMkDirsInProd();
   }
 
   /*
@@ -87,7 +85,6 @@ const createWindowAndSetEnvironmentVariables = () => {
     defaultFontFamily: 'sansSerif',
   });
 
-  
   console.log('\nNODE_ENV ========================> ', process.env.NODE_ENV);
   const urlPath = `file://${path.join(__dirname, '..', '..', 'dist/index.html')}`;
   if (process.env.NODE_ENV === 'development') {
@@ -121,13 +118,14 @@ const createWindowAndSetEnvironmentVariables = () => {
     center: true,
   });
 
-  childWin.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
+  childWin.loadURL(`file://${path.join(__dirname, '../client/childWindow/childIndex.html')}`);
 
   childWin.once('ready-to-show', () => {
     childWin.show();
   });
 
-  childWin.on('closed', () => {
+  childWin.on('closed', (e) => {
+    e.preventDefault();
     childWin = null;
   });
 
@@ -308,7 +306,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     vpcStackStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
   } catch (err) {
-    console.error('Error from CREATE_IAM_ROLE in main.js:', err);
+    console.error('Error from CREATE_IAM_ROLE in index.js:', err);
     errorData.type = awsProps.IAM_ROLE_STATUS;
     errorData.status = awsProps.ERROR;
     errorData.errorMessage = `Error occurred while creating IAM Role: ${err}`;
@@ -334,7 +332,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     clusterStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
   } catch (err) {
-    console.error('Error from CREATE_TECH_STACK: in main.js: ', err);
+    console.error('Error from CREATE_TECH_STACK: in index.js: ', err);
     errorData.type = awsProps.VPC_STACK_STATUS;
     errorData.status = awsProps.ERROR;
     errorData.errorMessage = `Error occurred while creating VPC Stack: ${err}`;
@@ -355,7 +353,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     workerNodeStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
   } catch (err) {
-    console.error('Error from CLUSTER_STATUS: in main.js: ', err);
+    console.error('Error from CLUSTER_STATUS: in index.js: ', err);
     errorData.type = awsProps.CLUSTER_STATUS;
     errorData.status = awsProps.ERROR;
     errorData.errorMessage = `Error occurred while creating Cluster: ${err}`;
@@ -377,7 +375,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     kubectlConfigStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigStatus);
   } catch (err) {
-    console.error('Error from CREATE_TECH_STACK: in main.js: ', err);
+    console.error('Error from CREATE_TECH_STACK: in index.js: ', err);
     errorData.type = awsProps.WORKER_NODE_STATUS;
     errorData.status = awsProps.ERROR;
     errorData.errorMessage = `Error occurred while creating Worker Node Stack: ${err}`;
@@ -581,7 +579,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
       x: childX,
       y: childY,
     });
-    loadingChildWindow.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
+    loadingChildWindow.loadURL(`file://${path.join(__dirname, '../childWindow/childIndex.html')}`);
 
     // START CREATING DEPLOYMENT
     if (data.replicas > 5) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 5 or less.`);

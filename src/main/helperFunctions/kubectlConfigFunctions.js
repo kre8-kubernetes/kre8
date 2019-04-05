@@ -119,7 +119,7 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
 
 /** --------- TEST if kubectl is configured via 'get svc' -----------------
  * This will test if kubectl is configured to a running cluster. If the kubectl command pipes out an error
- * then we know it is not configured. Main.js will handle the error that we throw.
+ * then we know it is not configured. index.js will handle the error that we throw.
  * @param {String} clusterName
  * @return {undefined}
  */

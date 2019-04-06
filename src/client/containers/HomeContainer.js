@@ -13,7 +13,6 @@ import HomeComponent from '../components/HomeComponent';
 import HelpInfoComponent from '../components/HelpInfoComponent';
 import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
 
-// TODO: do we use displayError from state?
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({

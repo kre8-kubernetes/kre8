@@ -2,19 +2,10 @@
 /* eslint-disable func-names */
 const { Application } = require('spectron');
 const { assert } = require('chai');
-const chaiAsPromised = require('chai-as-promised');
 const path = require('path');
 
 const electronBinary = path.join(__dirname, '..', 'node_modules', '.bin', 'electron');
 const baseDir = path.join(path.join(__dirname, '..', 'src', 'main'));
-
-console.log('electronBinary', electronBinary);
-console.log('baseDir', baseDir);
-// chai.should();
-// chai.use(chaiAsPromised);
-
-// console.log(path.join(__dirname, '../src/main/'));
-// console.log(process.env);
 
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
@@ -26,32 +17,25 @@ describe('Application launch', function () {
     args: [baseDir],
   });
 
-  before(() => app.start());
-
-  after(() => app.stop());
-
-  it('Shows an initial window', async () => {
-    await app.client.waitUntilWindowLoaded();
-    const count = await app.client.getWindowCount();
-    assert.isAbove(count, 0);
+  before(() => {
+    return app.start();
   });
 
-  // beforeEach(function () {
-  //   return this.app.start();
-  // });
+  after(async () => {
+    return app.stop();
+  });
 
-  // beforeEach(function () {
-  //   chaiAsPromised.transferPromiseness = this.app.transferPromiseness;
-  // });
+  it('opens main window with title Kre8', async () => {
+    await app.client.waitUntilWindowLoaded();
+    const window = await app.client.windowByIndex(0);
+    const title = await app.client.getTitle();
+    const result = await app.client.getWindowCount();
+    assert.strictEqual(result, 1);
+    assert.strictEqual(title, 'Kre8');
+  });
 
-  // afterEach(function () {
-  //   if (this.app && this.app.isRunning()) {
-  //     return this.app.stop();
-  //   }
-  // });
-
-  // it('opens a window', function () {
-  //   return this.app.client.waitUntilWindowLoaded()
-  //     .getWindowCount().should.eventually.equal(1);
-  // });
+  it('does not have the developer tools open', async () => {
+    const result = await app.client.browserWindow.isDevToolsOpened();
+    assert.isFalse(result);
+  });
 });

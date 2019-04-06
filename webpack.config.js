@@ -73,7 +73,7 @@ module.exports = {
     before() {
       spawn(
         'electron',
-        ['./src/main/index.js'],
+        ['./src/main/main.js'],
         { shell: true, env: process.env, stdio: 'inherit' },
       )
         .on('close', code => process.exit(0))

@@ -2,14 +2,14 @@
   "name": "kre8",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
-    "test": "mocha",
+    "test": "NODE_ENV=test mocha",
     "build": "webpack --config webpack.config.js",
     "build:test": "webpack --config webpack.prod.config.js",
-    "prod": "webpack --mode production --config webpack.prod.config.js && NODE_ENV=production electron --noDevServer src/main",
+    "prod": "webpack --mode production --config webpack.prod.config.js && NODE_ENV=production electron --noDevServer src/main/main.js",
     "prestart": "npm run build",
-    "start": "electron src/main/",
+    "start": "electron src/main/main.js",
     "dev": "NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000 --config=./webpack.config.js"
   },
   "repository": {
@@ -30,7 +30,6 @@
     "babel-loader": "^8.0.5",
     "babel-preset-airbnb": "^3.1.0",
     "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
     "css-loader": "^2.1.0",
     "eslint": "^5.10.0",
     "eslint-config-airbnb": "^17.1.0",

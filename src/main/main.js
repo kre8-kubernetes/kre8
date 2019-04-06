@@ -49,8 +49,11 @@ const createWindowAndSetEnvironmentVariables = () => {
   if (NODE_ENV === 'development') {
     process.env.APPLICATION_PATH = __dirname;
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
-    console.log('tooool', BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH));
-  } else if (NODE_ENV === 'production' || NODE_ENV === 'test') {
+    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
+  } else if (NODE_ENV === 'test') {
+    process.env.APPLICATION_PATH = __dirname;
+    awsEventCallbacks.setEnvVarsAndMkDirsInDev();
+  } else if (NODE_ENV === 'production') {
     // TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
     awsEventCallbacks.setEnvVarsAndMkDirsInProd();
   }
@@ -73,6 +76,7 @@ const createWindowAndSetEnvironmentVariables = () => {
     });
   }
 
+  // create the main window
   win = new BrowserWindow({
     show: false,
     height: 720,
@@ -83,25 +87,8 @@ const createWindowAndSetEnvironmentVariables = () => {
     backgroundColor: '#243B55',
     center: true,
     defaultFontFamily: 'sansSerif',
+    title: 'MAIN',
   });
-
-  console.log('\nNODE_ENV ========================> ', process.env.NODE_ENV);
-  const urlPath = `file://${path.join(__dirname, '..', '..', 'dist/index.html')}`;
-  if (process.env.NODE_ENV === 'development') {
-    win.loadURL(`http://localhost:${PORT}`);
-  } else if (process.env.NODE_ENV === 'production') {
-    win.loadURL(urlPath);
-  } else if (process.env.NODE_ENV === 'test') {
-    win.loadURL(urlPath);
-  }
-
-  win.once('ready-to-show', () => {
-    win.show();
-    childWin.close();
-    console.timeEnd('init');
-  });
-
-  win.on('closed', () => { win = null; });
 
   // Creates the child window that appears during initial loading of the application
   let childWin = new BrowserWindow({
@@ -116,76 +103,91 @@ const createWindowAndSetEnvironmentVariables = () => {
     frame: false,
     backgroundColor: '#1F3248',
     center: true,
+    title: 'LOADING',
   });
+  // set the win event listeners after create the child window
+  win.once('ready-to-show', () => {
+    win.show();
+    childWin.close();
+    console.timeEnd('init');
+  });
+  win.on('closed', () => { win = null; });
 
+  // load the child window and set the listeners
   childWin.loadURL(`file://${path.join(__dirname, '../client/childWindow/childIndex.html')}`);
-
-  childWin.once('ready-to-show', () => {
+  childWin.webContents.on('dom-ready', () => {
+    // show the child window when ready to show
     childWin.show();
+    // load the renderer url onto window after the child window is ready to show
+    const urlPath = `file://${path.join(__dirname, '..', '..', 'dist/index.html')}`;
+    console.log('\nNODE_ENV ========================> ', process.env.NODE_ENV);
+    if (process.env.NODE_ENV === 'development') {
+      win.loadURL(`http://localhost:${PORT}`);
+    } else if (process.env.NODE_ENV === 'production') {
+      win.loadURL(urlPath);
+    } else if (process.env.NODE_ENV === 'test') {
+      win.loadURL(urlPath);
+    }
   });
 
-  childWin.on('closed', (e) => {
-    e.preventDefault();
+  childWin.on('closed', () => {
     childWin = null;
   });
 
   // Creates browser window that displays Kubernetes Docs when user clicks more info while creating a pod, service or deployment
-    //For deployment
-  let kubeDocsDeploymentWindow = new BrowserWindow({
-    width: 600,
-    height: 400,
-    show: false,
-  });
+  // For deployment
+  // let kubeDocsDeploymentWindow = new BrowserWindow({
+  //   width: 600,
+  //   height: 400,
+  //   show: false,
+  // });
 
-  kubeDocsDeploymentWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/controllers/deployment/');
-  ipcMain.on(events.SHOW_KUBE_DOCS_DEPLOYMENT, () => {
-    kubeDocsDeploymentWindow.show();
-  });
+  //   kubeDocsDeploymentWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/controllers/deployment/');
+  //   ipcMain.on(events.SHOW_KUBE_DOCS_DEPLOYMENT, () => {
+  //     kubeDocsDeploymentWindow.show();
+  //   });
 
-  kubeDocsDeploymentWindow.on('close', (e) => {
-    e.preventDefault();
-    kubeDocsDeploymentWindow.hide();
-  });
-
-
-  //For service
-let kubeDocsServiceWindow = new BrowserWindow({
-  width: 600,
-  height: 400,
-  show: false,
-});
-
-kubeDocsServiceWindow.loadURL('https://kubernetes.io/docs/concepts/services-networking/service/');
-ipcMain.on(events.SHOW_KUBE_DOCS_SERVICE, () => {
-  kubeDocsServiceWindow.show();
-});
-
-  kubeDocsServiceWindow.on('close', (e) => {
-    e.preventDefault();
-    kubeDocsServiceWindow.hide();
-  });
+  //   kubeDocsDeploymentWindow.on('close', (e) => {
+  //     e.preventDefault();
+  //     kubeDocsDeploymentWindow.hide();
+  //   });
 
 
-  //For pod
-let kubeDocsPodWindow = new BrowserWindow({
-  width: 600,
-  height: 400,
-  show: false,
-});
+  //   //For service
+  // let kubeDocsServiceWindow = new BrowserWindow({
+  //   width: 600,
+  //   height: 400,
+  //   show: false,
+  // });
 
-kubeDocsPodWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/');
-ipcMain.on(events.SHOW_KUBE_DOCS_POD, () => {
-  kubeDocsPodWindow.show();
-});
+  // kubeDocsServiceWindow.loadURL('https://kubernetes.io/docs/concepts/services-networking/service/');
+  // ipcMain.on(events.SHOW_KUBE_DOCS_SERVICE, () => {
+  //   kubeDocsServiceWindow.show();
+  // });
 
-  kubeDocsPodWindow.on('close', (e) => {
-    e.preventDefault();
-    kubeDocsPodWindow.hide();
-  });
+  //   kubeDocsServiceWindow.on('close', (e) => {
+  //     e.preventDefault();
+  //     kubeDocsServiceWindow.hide();
+  //   });
+
+
+  //   //For pod
+  // let kubeDocsPodWindow = new BrowserWindow({
+  //   width: 600,
+  //   height: 400,
+  //   show: false,
+  // });
+
+  // kubeDocsPodWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/');
+  // ipcMain.on(events.SHOW_KUBE_DOCS_POD, () => {
+  //   kubeDocsPodWindow.show();
+  // });
+
+//   kubeDocsPodWindow.on('close', (e) => {
+//     e.preventDefault();
+//     kubeDocsPodWindow.hide();
+//   });
 };
-
-
-
 
 /** ------- EXECUTES ON EVERY OPENING OF APPLICATION --------------------------
  * Check credentials file to determine if user needs to configure the application

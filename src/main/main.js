@@ -3,7 +3,6 @@ require('dotenv').config();
 
 // --------- ELECTRON MODULES -----------
 const { app, BrowserWindow, ipcMain } = require('electron');
-const isDev = require('electron-is-dev');
 
 // --------- NODE APIS -------------------
 const fs = require('fs');
@@ -16,7 +15,7 @@ const path = require('path');
 const STS = require('aws-sdk/clients/sts');
 
 // --------- INSTANTIATE AWS CLASSES -----
-const sts = new STS({signatureCache: false});
+const sts = new STS({ signatureCache: false });
 
 // --------- IMPORT KRE8 MODULES ---------
 const events = require('../eventTypes.js');
@@ -28,7 +27,7 @@ const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemp
 const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
 
 // --------- .ENV Variables --------------
-const { PORT, REACT_DEV_TOOLS_PATH } = process.env;
+const { PORT, REACT_DEV_TOOLS_PATH, NODE_ENV } = process.env;
 
 console.time('init');
 
@@ -47,14 +46,16 @@ let win;
 const createWindowAndSetEnvironmentVariables = () => {
   // TODO: add to application package
   awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator();
-  if (isDev) {
-    // BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
+  if (NODE_ENV === 'development') {
     process.env.APPLICATION_PATH = __dirname;
-
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
-  } else {
-    awsEventCallbacks.setEnvVarsAndMkDirsInProd();
+    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
+  } else if (NODE_ENV === 'test') {
+    process.env.APPLICATION_PATH = __dirname;
+    awsEventCallbacks.setEnvVarsAndMkDirsInDev();
+  } else if (NODE_ENV === 'production') {
     // TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
+    awsEventCallbacks.setEnvVarsAndMkDirsInProd();
   }
 
   /*
@@ -75,6 +76,7 @@ const createWindowAndSetEnvironmentVariables = () => {
     });
   }
 
+  // create the main window
   win = new BrowserWindow({
     show: false,
     height: 720,
@@ -85,16 +87,8 @@ const createWindowAndSetEnvironmentVariables = () => {
     backgroundColor: '#243B55',
     center: true,
     defaultFontFamily: 'sansSerif',
+    title: 'MAIN',
   });
-
-  win.loadURL(isDev ? `http://localhost:${PORT}` : `file://${path.join(__dirname, 'dist/index.html')}`);
-  win.once('ready-to-show', () => {
-    win.show();
-    childWin.close();
-    console.timeEnd('init');
-  });
-
-  win.on('closed', () => { win = null; });
 
   // Creates the child window that appears during initial loading of the application
   let childWin = new BrowserWindow({
@@ -109,12 +103,31 @@ const createWindowAndSetEnvironmentVariables = () => {
     frame: false,
     backgroundColor: '#1F3248',
     center: true,
+    title: 'LOADING',
   });
+  // set the win event listeners after create the child window
+  win.once('ready-to-show', () => {
+    win.show();
+    childWin.close();
+    console.timeEnd('init');
+  });
+  win.on('closed', () => { win = null; });
 
-  childWin.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
-
-  childWin.once('ready-to-show', () => {
+  // load the child window and set the listeners
+  childWin.loadURL(`file://${path.join(__dirname, '../client/childWindow/childIndex.html')}`);
+  childWin.webContents.on('dom-ready', () => {
+    // show the child window when ready to show
     childWin.show();
+    // load the renderer url onto window after the child window is ready to show
+    const urlPath = `file://${path.join(__dirname, '..', '..', 'dist/index.html')}`;
+    console.log('\nNODE_ENV ========================> ', process.env.NODE_ENV);
+    if (process.env.NODE_ENV === 'development') {
+      win.loadURL(`http://localhost:${PORT}`);
+    } else if (process.env.NODE_ENV === 'production') {
+      win.loadURL(urlPath);
+    } else if (process.env.NODE_ENV === 'test') {
+      win.loadURL(urlPath);
+    }
   });
 
   childWin.on('closed', () => {
@@ -122,62 +135,59 @@ const createWindowAndSetEnvironmentVariables = () => {
   });
 
   // Creates browser window that displays Kubernetes Docs when user clicks more info while creating a pod, service or deployment
-    //For deployment
-  let kubeDocsDeploymentWindow = new BrowserWindow({
-    width: 600,
-    height: 400,
-    show: false,
-  });
+  // For deployment
+  // let kubeDocsDeploymentWindow = new BrowserWindow({
+  //   width: 600,
+  //   height: 400,
+  //   show: false,
+  // });
 
-  kubeDocsDeploymentWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/controllers/deployment/');
-  ipcMain.on(events.SHOW_KUBE_DOCS_DEPLOYMENT, () => {
-    kubeDocsDeploymentWindow.show();
-  });
+  //   kubeDocsDeploymentWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/controllers/deployment/');
+  //   ipcMain.on(events.SHOW_KUBE_DOCS_DEPLOYMENT, () => {
+  //     kubeDocsDeploymentWindow.show();
+  //   });
 
-  kubeDocsDeploymentWindow.on('close', (e) => {
-    e.preventDefault();
-    kubeDocsDeploymentWindow.hide();
-  });
-
-
-  //For service
-let kubeDocsServiceWindow = new BrowserWindow({
-  width: 600,
-  height: 400,
-  show: false,
-});
-
-kubeDocsServiceWindow.loadURL('https://kubernetes.io/docs/concepts/services-networking/service/');
-ipcMain.on(events.SHOW_KUBE_DOCS_SERVICE, () => {
-  kubeDocsServiceWindow.show();
-});
-
-  kubeDocsServiceWindow.on('close', (e) => {
-    e.preventDefault();
-    kubeDocsServiceWindow.hide();
-  });
+  //   kubeDocsDeploymentWindow.on('close', (e) => {
+  //     e.preventDefault();
+  //     kubeDocsDeploymentWindow.hide();
+  //   });
 
 
-  //For pod
-let kubeDocsPodWindow = new BrowserWindow({
-  width: 600,
-  height: 400,
-  show: false,
-});
+  //   //For service
+  // let kubeDocsServiceWindow = new BrowserWindow({
+  //   width: 600,
+  //   height: 400,
+  //   show: false,
+  // });
 
-kubeDocsPodWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/');
-ipcMain.on(events.SHOW_KUBE_DOCS_POD, () => {
-  kubeDocsPodWindow.show();
-});
+  // kubeDocsServiceWindow.loadURL('https://kubernetes.io/docs/concepts/services-networking/service/');
+  // ipcMain.on(events.SHOW_KUBE_DOCS_SERVICE, () => {
+  //   kubeDocsServiceWindow.show();
+  // });
 
-  kubeDocsPodWindow.on('close', (e) => {
-    e.preventDefault();
-    kubeDocsPodWindow.hide();
-  });
+  //   kubeDocsServiceWindow.on('close', (e) => {
+  //     e.preventDefault();
+  //     kubeDocsServiceWindow.hide();
+  //   });
+
+
+  //   //For pod
+  // let kubeDocsPodWindow = new BrowserWindow({
+  //   width: 600,
+  //   height: 400,
+  //   show: false,
+  // });
+
+  // kubeDocsPodWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/');
+  // ipcMain.on(events.SHOW_KUBE_DOCS_POD, () => {
+  //   kubeDocsPodWindow.show();
+  // });
+
+//   kubeDocsPodWindow.on('close', (e) => {
+//     e.preventDefault();
+//     kubeDocsPodWindow.hide();
+//   });
 };
-
-
-
 
 /** ------- EXECUTES ON EVERY OPENING OF APPLICATION --------------------------
  * Check credentials file to determine if user needs to configure the application
@@ -298,7 +308,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     vpcStackStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
   } catch (err) {
-    console.error('Error from CREATE_IAM_ROLE in main.js:', err);
+    console.error('Error from CREATE_IAM_ROLE in index.js:', err);
     errorData.type = awsProps.IAM_ROLE_STATUS;
     errorData.status = awsProps.ERROR;
     errorData.errorMessage = `Error occurred while creating IAM Role: ${err}`;
@@ -324,7 +334,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     clusterStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
   } catch (err) {
-    console.error('Error from CREATE_TECH_STACK: in main.js: ', err);
+    console.error('Error from CREATE_TECH_STACK: in index.js: ', err);
     errorData.type = awsProps.VPC_STACK_STATUS;
     errorData.status = awsProps.ERROR;
     errorData.errorMessage = `Error occurred while creating VPC Stack: ${err}`;
@@ -345,7 +355,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     workerNodeStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
   } catch (err) {
-    console.error('Error from CLUSTER_STATUS: in main.js: ', err);
+    console.error('Error from CLUSTER_STATUS: in index.js: ', err);
     errorData.type = awsProps.CLUSTER_STATUS;
     errorData.status = awsProps.ERROR;
     errorData.errorMessage = `Error occurred while creating Cluster: ${err}`;
@@ -367,7 +377,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     kubectlConfigStatus.status = awsProps.CREATING;
     win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigStatus);
   } catch (err) {
-    console.error('Error from CREATE_TECH_STACK: in main.js: ', err);
+    console.error('Error from CREATE_TECH_STACK: in index.js: ', err);
     errorData.type = awsProps.WORKER_NODE_STATUS;
     errorData.status = awsProps.ERROR;
     errorData.errorMessage = `Error occurred while creating Worker Node Stack: ${err}`;
@@ -571,7 +581,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
       x: childX,
       y: childY,
     });
-    loadingChildWindow.loadURL(`file://${path.join(__dirname, '../src/childWindow/childIndex.html')}`);
+    loadingChildWindow.loadURL(`file://${path.join(__dirname, '../childWindow/childIndex.html')}`);
 
     // START CREATING DEPLOYMENT
     if (data.replicas > 5) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 5 or less.`);

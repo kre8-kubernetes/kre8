@@ -1,6 +1,7 @@
 # Documents
 /src/main/Storage/AWS_Assets/AWS_Private/
 /src/main/Storage/KUBECTL_Assets/
+/build
 
 dist/*
 

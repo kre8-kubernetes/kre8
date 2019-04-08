@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 // --------- ELECTRON MODULES -----------
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, webContents } = require('electron');
 
 // --------- NODE APIS -------------------
 const fs = require('fs');
@@ -88,6 +88,12 @@ const createWindowAndSetEnvironmentVariables = () => {
     center: true,
     defaultFontFamily: 'sansSerif',
     title: 'MAIN',
+  });
+
+  win.webContents.on('will-navigate', (event, url) => {
+    console.log("url", url);
+    event.preventDefault();
+    shell.openExternal(url);
   });
 
   // Creates the child window that appears during initial loading of the application
@@ -267,6 +273,19 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
     win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'Login details were incorrect. Please check your credentials and try again.');
   }
 });
+
+
+/**  ---------------- OPEN LINK INSTRUCTIONS ------------------------
+ * 
+*/
+
+// ipcMain.on(events.OPEN_LINK, (event, data) => {
+//   shell.openExternal(data);
+// });
+
+// shell.openExternal(data);
+
+
 
 /**  ---------------- AWS SDK EVENTS---------------------------------
  * createCluster() executes on the first interaction with the app when user submits data from
@@ -453,7 +472,6 @@ ipcMain.on(events.GET_CLUSTER_DATA, async (event) => {
 */
 ipcMain.on(events.GET_MASTER_NODE, async (event, data) => {
   try {
-    
     // run kubctl
     const apiServiceData = spawnSync('kubectl', ['get', 'svc', '-o=json']);
     // string the data and log to the console;

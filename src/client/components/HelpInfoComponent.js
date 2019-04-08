@@ -19,7 +19,7 @@ const HelpInfoComponent = (props) => {
           {/* {textInfo} */}
           <div id="aws_more_info_component_title" className="more_info_component_title">Amazon Web Services EKS Setup</div>
           <div id="aws_more_info_component_explainer_text" className="more_info_component_explainer_text">
-            To host a cluster on AWS Elastic Container Service for Kubernetes (EKS), AWS first requires several services be active.
+            Hosting a cluster on AWS Elastic Container Service for Kubernetes (EKS), requires the activation of several services.
           </div>
           <div id="aws_more_info_component_IAM_role">
             <div id="aws_more_info_component_IAM_role_subhead" className="more_info_subhead">IAM Role</div>

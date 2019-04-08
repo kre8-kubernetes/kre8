@@ -50,7 +50,7 @@ body {
 }
 
 //* ----------------------------------------------------------- *//
-//* --------------- BUTTON COMPONENTSL------------------------- *//
+//* --------------- BUTTON COMPONENTS------------------------- *//
 //* ----------------------------------------------------------- *//
 
 //* ----- ACTION BUTTON
@@ -323,88 +323,7 @@ body {
   font-weight: 150;
 }
 
-//* ----------------------------------------------------------- *//
-//* --------------- HELP INFO COMPONENT STYLING --------------- *//
-//* ----------------------------------------------------------- *//
 
-.help_info_component {
-  background-color: $cluster-element-text-color;
-  border-radius: 6px;
-  font-family: Lato-Regular, sans-serif;
-  z-index: 1;
-  position: absolute;
-  width: 70%;
-  height: 50%;
-  padding: 10px;
-  display: flex;
-}
-
-.help_info_component button {
-  width: 20px;
-  height: 20px;
-  background: $button-background;
-  color: black;
-  font-size: .5em;
-  font-weight: 200;
-  font-family: Lato-Regular, sans-serif;
-  outline: none;
-}
-
-.help_info_component button:hover{
-  cursor: pointer;
-}
-
-.help_info_component p{
-  display: flex;
-  align-items: center;
-}
-
-//AWS HELP INFO COMPONENT
-.aws_help_info_component {
-  background-color: $cluster-element-text-color;
-  border-radius: 6px;
-  font-family: Lato-Regular, sans-serif;
-  z-index: 1;
-  position: absolute;
-  width: 90%;
-  height: 70%;
-  padding: 10px;
-  padding-left: 15px;
-  display: flex;
-}
-
-.aws_help_info_component button {
-  width: 20px;
-  height: 20px;
-  background: $button-background;
-  color: black;
-  font-size: .5em;
-  font-weight: 200;
-  font-family: Lato-Regular, sans-serif;
-  outline: none;
-}
-
-.aws_help_info_component button:hover{
-  cursor: pointer;
-}
-
-.aws_help_info_component p{
-  display: flex;
-  align-items: center;
-}
-
-.aws_help_info_component li{
-  padding-left: 10px;
-  position: relative;
-  right: -10px;
-  margin-top: -1em;
-  color: gray;
-}
-
-.aws_help_info_component li span{
-  display: inline;
-  margin-left: -0.6em;
-}
 
 
 
@@ -625,13 +544,7 @@ body {
   display: flex;
   flex-direction: row;
   align-content: space-around;
-
-  /* Disable text selection, or your app will feel like a web page */
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
-
   background: $graph-background;
-
   /* Cover the whole window */
   height: 100%;
   animation: fadein 2s;
@@ -1126,3 +1039,255 @@ body {
   padding-left: 29px;
   font-family: 'Lato-Regular', sans-serif;
 }
+
+
+//** --------- MORE INFO (?) COMPONENTS --------- **//
+
+.more_info_component {
+  color: $light-font;
+  //background-color: $nav-bar-hover + 30;
+  background-color: $accent-darkest-blue;
+  border-radius: 6px;
+  z-index: 1;
+  margin: auto;
+  position: fixed;
+  font-family: Helvetica;
+}
+
+.more_info_component_title {
+  //font-family: 'Lato-Bold', sans-serif;
+  font-family: 'Helvetica', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+.more_info_component_explainer_text {
+  //font-family: 'Lato-Regular';
+  font-family: 'Helvetica', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.more_info_component_explainer_text_ital {
+  //font-family: 'Lato-Regular';
+  font-family: 'Helvetica', sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.more_info_subhead {
+  font-family: 'Lato-Bold';
+  font-size: 14px;
+  //line-height: 1.4;
+}
+
+.more_info_paragraph {
+  //font-family: 'Lato-Regular';
+  font-family: 'Helvetica', sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.home_more_info_component_list_item {
+  font-family: 'Helvetica', sans-serif;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.more_info_component_close_button {
+  // color: $accent-darkest-blue;
+  // width: 20px;
+  // height: 20px;
+  // background: $button-background;
+  // color: black;
+  // font-size: .5em;
+  // font-weight: 200;
+  // font-family: Lato-Regular, sans-serif;
+  // outline: none;
+}
+
+// .more_info_component_close_button:hover {
+//   cursor: pointer;
+// }
+
+#aws_more_info_component {
+  //width: 65%;
+  //height: 60%;
+  min-width: 580px;
+  max-width: 580px;
+  //min-height: 450px;
+  min-height: 450px;
+  display: grid;
+  grid-template-columns: 10% 80% 10%;
+  grid-template-rows: 
+    40px
+    10% // Title
+    14% // ExplainerText
+    13%  // IAM Role
+    13%  // VPC Stack
+    13% // Cluster
+    8% // ExplainerTextItal
+    40px;
+  grid-template-areas: 
+  '. . Button'
+  '. Title .'
+  '. ExplainerText .'
+  '. IAMRole .'
+  '. VPCStack .'
+  '. Cluster .'
+  '. ExplainerTextItal .'
+  '. . .';
+  padding: 0;
+  margin: 0;
+}
+
+#aws_more_info_component_title {
+  grid-area: Title;
+  text-align: center;
+}
+#aws_more_info_component_explainer_text {
+  grid-area: ExplainerText;
+  text-align: center;
+}
+#aws_more_info_component_explainer_text_ital {
+  grid-area: ExplainerTextItal;
+  text-align: center;
+}
+#aws_more_info_component_IAM_role {
+  grid-area: IAMRole;
+}
+#aws_more_info_component_VPC_stack {
+  grid-area: VPCStack;
+}
+#aws_more_info_component_cluster_subhead {
+  grid-area: Subhead3;
+}
+#aws_more_info_component_cluster {
+  grid-area: Cluster;
+}
+#aws_more_info_component_button {
+  grid-area: Button;
+  justify-self: end;
+  margin: 7px;
+}
+
+
+//* -------- HOME MORE INFO COMPONENT
+
+#home_more_info_component {
+  //width: 65%;
+  //height: 60%;
+  min-width: 580px;
+  max-width: 580px;
+  max-height: 405px;
+  min-height: 405px;
+  display: grid;
+  grid-template-columns: 10% 80% 10%;
+  grid-template-rows: 
+    50px
+    50px // Title
+    65px // ExplainerText1
+    10px  // ExplainerText2
+    165px  // List
+    15% // ExplainerText3
+    40px;
+  grid-template-areas: 
+  '. . Button'
+  '. Title .'
+  '. ExplainerText1 .'
+  '. ExplainerText2 .'
+  '. List .'
+  '. ExplainerText3 .'
+  '. . .';
+  padding: 0;
+  margin: 0;
+}
+
+#home_more_info_component_button {
+  grid-area: Button;
+  justify-self: end;
+  margin: 7px;
+}
+
+#home_more_info_component_title {
+  grid-area: Title;
+  text-align: center;
+}
+#home_more_info_component_explainer_text_1 {
+  grid-area: ExplainerText1;
+  text-align: center;
+}
+#home_more_info_component_explainer_text_2 {
+  grid-area: ExplainerText2;
+  text-align: start;
+}
+
+#home_more_info_component_list {
+  grid-area: List;
+  align-self: start;
+}
+#home_more_info_component_explainer_text_3 {
+  grid-area: ExplainerText3;
+  text-align: start;
+}
+
+
+//* ----------------------------------------------------------- *//
+//* --------------- HELP INFO COMPONENT STYLING --------------- *//
+//* ----------------------------------------------------------- *//
+
+a {
+  color: inherit;
+}
+
+// a
+
+//AWS HELP INFO COMPONENT
+// .aws_help_info_component {
+//   // background-color: $cluster-element-text-color;
+//   // border-radius: 6px;
+//   //@at-rootfont-family: Lato-Regular, sans-serif;
+//   // z-index: 1;
+//   // position: absolute;
+//   // width: 90%;
+//   // height: 70%;
+//   // padding: 10px;
+//   // padding-left: 15px;
+//   // display: flex;
+// }
+
+// .aws_help_info_component button {
+//   width: 20px;
+//   height: 20px;
+//   background: $button-background;
+//   color: black;
+//   font-size: .5em;
+//   font-weight: 200;
+//   font-family: Lato-Regular, sans-serif;
+//   outline: none;
+// }
+
+// .aws_help_info_component button:hover{
+//   cursor: pointer;
+// }
+
+// .aws_help_info_component p{
+//   display: flex;
+//   align-items: center;
+// }
+
+// .aws_help_info_component li{
+//   padding-left: 10px;
+//   position: relative;
+//   right: -10px;
+//   margin-top: -1em;
+//   color: gray;
+// }
+
+// .aws_help_info_component li span{
+//   display: inline;
+//   margin-left: -0.6em;
+// }
+
+

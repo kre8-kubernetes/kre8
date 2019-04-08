@@ -113,6 +113,7 @@ class TreeGraphContainer extends Component {
   */
 
   handleMasterNode(event, data) {
+    console.log('handleMasterNode data: ', data);
     const treeData = {
       name: data.metadata.labels.component,
       id: data.metadata.uid,
@@ -124,6 +125,7 @@ class TreeGraphContainer extends Component {
   }
 
   handleWorkerNodes(event, data) {
+    console.log('handleWorkerNodes data: ', data);
     this.setState((prevState) => {
       const newState = { ...prevState, treeData: { ...prevState.treeData } };
       data.items.forEach((node) => {
@@ -139,6 +141,7 @@ class TreeGraphContainer extends Component {
   }
 
   handleContainersAndPods(event, data) {
+    console.log('handleContainersAndPods data: ', data);
     this.setState((prevState) => {
       const { treeData } = prevState;
       const newState = { ...prevState, treeData: { ...treeData, children: [...treeData.children] } };

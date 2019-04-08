@@ -453,11 +453,13 @@ ipcMain.on(events.GET_CLUSTER_DATA, async (event) => {
 */
 ipcMain.on(events.GET_MASTER_NODE, async (event, data) => {
   try {
+    
     // run kubctl
     const apiServiceData = spawnSync('kubectl', ['get', 'svc', '-o=json']);
     // string the data and log to the console;
     const stdout = apiServiceData.stdout.toString();
     const stdoutParsed = JSON.parse(stdout);
+    console.log('stdout:', stdoutParsed);
 
     const stderr = apiServiceData.stderr.toString();
     if (stderr) throw stderr;

@@ -189,11 +189,21 @@ class HomeContainer extends Component {
   displayInfoHandler(e) {
     const homeInfo = (
       <div>
-        <h2>More Information</h2>
-        <p>In order to use KRE8 to create and launch your Kubernetes cluster on Amazon’s Elastic Container Service for Kubernetes (EKS), you must have an Amazon Web Services Account.</p>
-        <p>KRE8 needs the below details from your AWS account in order to deploy your cluster.</p>
-        <p>KRE8 will use these details to generate a file titled “credentials” in a folder named .aws in your root directory.</p>
-        <p>AWS will reference this file to verify your permissions as you build your Kubernetes cluster.</p>
+        {/* <div id="home_more_info_component_title" className="more_info_component_title">Amazon Web Services Account Details</div>
+        <div
+          id="home_more_info_component_explainer_text_1" 
+          className="more_info_component_explainer_text">
+            In order to use KRE8 to create and launch your Kubernetes cluster on Amazon Web Services (AWS) Elastic Container Service for Kubernetes (EKS), KRE8 needs your AWS Access Key and Secret Key.
+        </div>
+        <div id="home_more_info_component_explainer_text_2" className="more_info_component_explainer_text">To locate your AWS Account Details:</div>
+        <ul id="home_more_info_component_list">
+          <li id="home_more_info_component_list_item">Log into your&npsp;<a href="https://aws.amazon.com">AWS Account</a></li>
+          <li className="home_more_info_component_list_item">Click on your username at the top right of the page</li>
+          <li className="home_more_info_component_list_item">Click on the “My Security Credentials” link from the drop-down menu.</li>
+          <li className="home_more_info_component_list_item">Navigate to the AWS IAM credentials section.</li>
+          <li className="home_more_info_component_list_item">Copy the Access Key ID and Secret Access Key, and paste them into form.</li>
+        </ul>
+        <div id="home_more_info_component_explainer_text_3" className="more_info_component_explainer_text">Don’t have an AWS account? Visit&npsp;<a href="https://aws.amazon.com">Amazon Web Services</a>&npsp;to create one</div> */}
       </div>
     );
     const x = e.screenX;

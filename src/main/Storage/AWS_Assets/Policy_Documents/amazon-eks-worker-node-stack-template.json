@@ -106,7 +106,7 @@
         "NodeAutoScalingGroupMaxSize": {
             "Type": "Number",
             "Description": "Maximum size of Node Group ASG. Set to at least 1 greater than NodeAutoScalingGroupDesiredCapacity.",
-            "Default": 4
+            "Default": 8
         },
         "NodeAutoScalingGroupDesiredCapacity": {
             "Type": "Number",

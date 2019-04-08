@@ -170,17 +170,18 @@ class CreateMenuItemContainer extends Component {
 
   // CREATE SERVICE HANDLER
   handleCreateService() {
+    console.log('!!!!!!!!!!!!!!!!!!!this.state: ', this.state.inputData.service);
     const { inputData } = this.state;
     const { service } = inputData;
     const clone = Object.assign({}, service);
-    clone.containerPort = Number(clone.port);
-    clone.replicas = Number(clone.targetPort);
+    clone.port = Number(clone.port);
+    clone.targetPort = Number(clone.targetPort);
     const schema = yup.object().strict().shape({
       serviceName: yup.string().required().lowercase(),
       appName: yup.string().required().lowercase(),
       port: yup.number().required().positive(),
       targetPort: yup.number().required().positive(),
-    })
+    });
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
         console.log('from the then', data);
@@ -269,9 +270,10 @@ class CreateMenuItemContainer extends Component {
 
 
     const textObj = {
-      pod: 'A Pod is the smallest deployable unit in the Kubernetes object model.',
+      pod: 'Pods, hosts to containers via images, are the smallest deployable units of computing that can be created in Kubernetes. A pod’s contents are always co-located and co-scheduled, and run in a shared context. Rather than deploying a single pod (which is not rescheduled in the event of a failure, or displayed on the Kre8 graph), Kubernetes recommends launching a Replica Set via a Deployment.',
+      // pod: 'A Pod is the smallest deployable unit in the Kubernetes object model.',
       service: 'A Service is an abstraction which defines a set of Pods and a policy by which to access them.',
-      deployment: 'A Deployment is a controller that maintains the number of Pod replicas the user declares.'
+      deployment: 'A Deployment is a controller that maintains the number of Pod replicas the user declares.',
     };
     const text = textObj[menuItemToShow];
 

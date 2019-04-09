@@ -7,8 +7,9 @@ import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
 
 import OutsideClick from '../helperFunctions/OutsideClick';
+import CreateMenuItemHelpInfoComponent from '../components/HelpInfoComponents/CreateMenuItemHelpInfoComponent';
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
-import HelpInfoButton from '../components/Buttons/HelpInfoButton';
+// import HelpInfoButton from '../../components/Buttons/HelpInfoButton';
 
 
 const mapStateToProps = store => ({
@@ -38,7 +39,7 @@ class CreateMenuItemContainer extends Component {
         },
         deployment: {
           deploymentName: '',
-          appName: '',
+          applicationName: '',
           containerName: '',
           image: '',
           containerPort: '',
@@ -46,13 +47,14 @@ class CreateMenuItemContainer extends Component {
         },
         service: {
           serviceName: '',
-          appName: '',
+          applicationName: '',
           port: '',
           targetPort: '',
         },
       },
       errors: { pod: {}, deployment: {}, service: {} },
       display_error: false,
+      helpInfoComponent: false,
     };
     this.handleChange = this.handleChange.bind(this);
 
@@ -65,7 +67,8 @@ class CreateMenuItemContainer extends Component {
     this.handleCreateService = this.handleCreateService.bind(this);
     this.handleNewService = this.handleNewService.bind(this);
 
-    this.showKubeDocs = this.showKubeDocs.bind(this);
+    //this.showKubeDocs = this.showKubeDocs.bind(this);
+    this.showHelpInfoComponent = this.showHelpInfoComponent.bind(this);
     this.handleFormClose = this.handleFormClose.bind(this);
     this.handleOutsideFormClick = this.handleOutsideFormClick.bind(this);
   }
@@ -143,7 +146,7 @@ class CreateMenuItemContainer extends Component {
     clone.replicas = Number(clone.replicas);
     const schema = yup.object().strict().shape({
       deploymentName: yup.string().required().lowercase(),
-      appName: yup.string().required().lowercase(),
+      applicationName: yup.string().required().lowercase(),
       containerName: yup.string().required().lowercase(),
       image: yup.string().required().lowercase(),
       containerPort: yup.number().required().positive(),
@@ -178,7 +181,7 @@ class CreateMenuItemContainer extends Component {
     clone.targetPort = Number(clone.targetPort);
     const schema = yup.object().strict().shape({
       serviceName: yup.string().required().lowercase(),
-      appName: yup.string().required().lowercase(),
+      applicationName: yup.string().required().lowercase(),
       port: yup.number().required().positive(),
       targetPort: yup.number().required().positive(),
     });
@@ -198,16 +201,31 @@ class CreateMenuItemContainer extends Component {
       });
   }
 
-  // SHOW KUBE DOCS
-  showKubeDocs(modal) {
-    if (modal === 'deployment'){
-      ipcRenderer.send(events.SHOW_KUBE_DOCS_DEPLOYMENT);
-    } else if (modal === 'service'){
-      ipcRenderer.send(events.SHOW_KUBE_DOCS_SERVICE);
-    }else if (modal === 'pod'){
-      ipcRenderer.send(events.SHOW_KUBE_DOCS_POD);
+
+  showHelpInfoComponent(e) {
+    const { menuItemToShow } = this.props;
+    const { helpInfoComponent } = this.state;
+    console.log('***************e.target: ', e.target);
+    console.log('this.state.helpInfoComponent: ', helpInfoComponent);
+
+    if (helpInfoComponent === true) {
+      this.setState(prevState => ({ ...prevState, helpInfoComponent: false }));
+    } else {
+      this.setState(prevState => ({ ...prevState, helpInfoComponent: true }));
     }
   }
+
+
+  // SHOW KUBE DOCS
+  // showKubeDocs(modal) {
+  //   if (modal === 'deployment'){
+  //     ipcRenderer.send(events.SHOW_KUBE_DOCS_DEPLOYMENT);
+  //   } else if (modal === 'service'){
+  //     ipcRenderer.send(events.SHOW_KUBE_DOCS_SERVICE);
+  //   }else if (modal === 'pod'){
+  //     ipcRenderer.send(events.SHOW_KUBE_DOCS_POD);
+  //   }
+  // }
 
   // --------------INCOMING DATA FROM MAIN THREAD-----------------
 
@@ -262,27 +280,27 @@ class CreateMenuItemContainer extends Component {
 
   render() {
     const { menuItemToShow, showCreateMenuFormItem } = this.props;
-    const { inputData, errors } = this.state;
+    const { inputData, errors, helpInfoComponent } = this.state;
     const inputDataToShow = inputData[menuItemToShow];
     const handleFunction = menuItemToShow === 'pod' ? this.handleCreatePod :
                            menuItemToShow === 'service' ? this.handleCreateService :
                            menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
-
+    console.log('menuItemToShow: ', menuItemToShow);
 
     const textObj = {
-      pod: 'Pods, hosts to containers via images, are the smallest deployable units of computing that can be created in Kubernetes. A pod’s contents are always co-located and co-scheduled, and run in a shared context. Rather than deploying a single pod (which is not rescheduled in the event of a failure, or displayed on the Kre8 graph), Kubernetes recommends launching a Replica Set via a Deployment.',
+      pod: 'To deploy a Pod, enter the below details. Kubernetes requires all text entries be lowercase.',
       // pod: 'A Pod is the smallest deployable unit in the Kubernetes object model.',
       service: 'A Service is an abstraction which defines a set of Pods and a policy by which to access them.',
       deployment: 'A Deployment is a controller that maintains the number of Pod replicas the user declares.',
     };
-    const text = textObj[menuItemToShow];
+    const infoText = textObj[menuItemToShow];
 
-    const moreInfoButtons = {
-      pod: <button onClick={() => this.showKubeDocs('pod')} className="help_button" type="button">?</button>,
-      service: <button onClick={() => this.showKubeDocs('service')} className="help_button" type="button">?</button>,
-      deployment: <button onClick={() => this.showKubeDocs('deployment')} className="help_button" type="button">?</button>,
-    };
-    const button = moreInfoButtons[menuItemToShow];
+    // const moreInfoButtons = {
+    //   pod: <button onClick={() => this.showKubeDocs('pod')} className="help_button" type="button">?</button>,
+    //   service: <button onClick={() => this.showKubeDocs('service')} className="help_button" type="button">?</button>,
+    //   deployment: <button onClick={() => this.showKubeDocs('deployment')} className="help_button" type="button">?</button>,
+    // };
+    // const button = moreInfoButtons[menuItemToShow];
 
     return (
       <div>
@@ -293,13 +311,18 @@ class CreateMenuItemContainer extends Component {
               menuItemToShow={menuItemToShow}
               handleFormClose={this.handleFormClose}
               handleFunction={handleFunction}
-              infoText={text}
-              infoButton={button}
-
+              infoText={infoText}
+              // infoButton={button}
               errors={errors}
-
               inputDataToShow={inputDataToShow}
+              showHelpInfoComponent={this.showHelpInfoComponent}
             />
+            {helpInfoComponent && (
+              <CreateMenuItemHelpInfoComponent
+                showHelpInfoComponent={this.showHelpInfoComponent}
+              />
+            )
+            }
           </OutsideClick>
         )}
       </div>

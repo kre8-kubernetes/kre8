@@ -10,7 +10,7 @@ import * as events from '../../eventTypes';
 
 import AWSComponent from '../components/AWSComponent';
 import AWSLoadingComponent from '../components/AWSLoadingComponent';
-import HelpInfoComponent from '../components/HelpInfoComponent';
+import HelpInfoComponent from '../components/HelpInfoComponents/HelpInfoComponent';
 
 
 //* -------------- ACTIONS FROM REDUX ----------------------------------- *//
@@ -149,18 +149,6 @@ class AwsContainer extends Component {
 
   //* --------- DISPLAY MORE INFO ( ? ) COMPONENT
   displayInfoHandler(e) {
-    // const awsInfo = (
-    //   <div className="aws_more_info_component" id="more_info_component">
-    //     <div className="aws_more_info_component_title" id="more_info_component_title">Amazon Web Services Elastic Container Service for Kubernetes (EKS) Account Setup.</div>
-    //     <div className="aws_more_info_component_explainer_text" id="more_info_component_explainer_text">In order to deploy a Cluster on Amazon Web Services (AWS) Elastic Container Service for Kubernetes (EKS), AWS uses several services that require a unique identifier. Creating these services takes AWS approximately 15 minutes. Please keep the application open for the duration of the process.</div>
-    //     <div className="aws_more_info_component_IAM_role_subhead" id="more_info_subhead">IAM Role</div>
-    //     <div className="aws_more_info_component_IAM_role_text" id="more_info_paragraph">Your Identity and Access Management (IAM) Role for EKS is the AWS identity that will have specific permissions to create and manage your Kubernetes Cluster.</div>
-    //     <div className="aws_more_info_component_VPC_stack_subhead" id="more_info_subhead">VPC Stack</div>
-    //     <div className="aws_more_info_component_VPC_stack_text" id="more_info_paragraph">Your AWS VPC Stack represents a collection of resources necessary to manage and run a Kubernetes cluster.</div>
-    //     <div className="aws_more_info_component_cluster_subhead" id="more_info_subhead">EKS Cluster</div>
-    //     <div className="aws_more_info_component_cluster_text" id="more_info_paragraph">An EKS Cluster consists of two primary components: The Amazon EKS control plane and Amazon EKS worker nodes that run the Kubernetes etcd and the Kubernetes API server.</div>
-    //   </div>
-    // );
     const x = e.screenX;
     console.log('x: ', x);
     const y = e.screenY;
@@ -168,7 +156,6 @@ class AwsContainer extends Component {
     const newCoords = { top: y, left: x };
     this.setState(prevState => ({
       ...prevState,
-      //textInfo: awsInfo,
       mouseCoords: newCoords,
       showInfo: true,
     }));

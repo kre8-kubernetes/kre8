@@ -91,7 +91,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   });
 
   win.webContents.on('will-navigate', (event, url) => {
-    console.log("url", url);
+    console.log('url: ', url);
     event.preventDefault();
     shell.openExternal(url);
   });
@@ -273,18 +273,6 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
     win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'Login details were incorrect. Please check your credentials and try again.');
   }
 });
-
-
-/**  ---------------- OPEN LINK INSTRUCTIONS ------------------------
- * 
-*/
-
-// ipcMain.on(events.OPEN_LINK, (event, data) => {
-//   shell.openExternal(data);
-// });
-
-// shell.openExternal(data);
-
 
 
 /**  ---------------- AWS SDK EVENTS---------------------------------

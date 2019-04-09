@@ -10,7 +10,7 @@ import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
 
 import HomeComponent from '../components/HomeComponent';
-import HelpInfoComponent from '../components/HelpInfoComponent';
+import HelpInfoComponent from '../components/HelpInfoComponents/HelpInfoComponent';
 import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
 
 

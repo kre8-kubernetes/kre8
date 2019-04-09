@@ -919,7 +919,7 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-top: 16px;
+  margin-top: 10px;
 }
 
 .create_menu_item_component_inputs_item h4 {
@@ -928,8 +928,8 @@ body {
 
 .create_menu_item_component_inputs_item input {
   width: 100%;
-  height: 33px;
-  min-height: 33px;
+  height: 31px;
+  min-height: 31px;
   border-radius: 5px;
   background: $accent-darkest-blue;
   color: $input-color;
@@ -955,16 +955,26 @@ body {
   display: flex;
   flex-direction: row;
   width: 100%;
-  justify-content: space-around;
-  margin: 20px 0;
+  justify-content: center;
+  margin: 5px 0 20px 0;
 }
 
 .create_menu_item_component_help_info {
-  display: flex;
+  //display: flex;
   width: 85%;
-  font-size: 14px;
+  font-size: 13px;
   margin: 5px;
 }
+
+.create_menu_item_component_help_info_warning_text {
+  //display: flex;
+  width: 85%;
+  font-size: 12px;
+  margin: 5px;
+  text-align: center;
+}
+
+
 
 
 //** --------- NAV COMPONENT RIGHT ------------- **//
@@ -1045,19 +1055,20 @@ body {
 
 .more_info_component {
   color: $light-font;
-  //background-color: $nav-bar-hover + 30;
-  background-color: $accent-darkest-blue;
-  border-radius: 6px;
+  background-color: $more-info-background-color;
+  border-radius: 1px;
   z-index: 1;
   margin: auto;
   position: absolute;
+  opacity: .98;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.12), 0 3px 6px rgba(0,0,0,0.24);
 }
 
 .more_info_component_title {
   //font-family: 'Lato-Bold', sans-serif;
   font-family: sans-serif;
   font-weight: 800;
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1.4;
 }
 
@@ -1066,18 +1077,19 @@ body {
   font-family: sans-serif;
   font-size: 14px;
   line-height: 1.4;
+  font-weight: 300;
 }
 
 .more_info_component_explainer_text_ital {
   //font-family: 'Lato-Regular';
   font-family: sans-serif;
-  font-size: 13px;
-  line-height: 1.4;
+  font-size: 12px;
+  line-height: 1.3;
 }
 
 .more_info_subhead {
   font-family: sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   //line-height: 1.4;
 }
@@ -1086,13 +1098,13 @@ body {
   //font-family: 'Lato-Regular';
   font-family: sans-serif;
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 .home_more_info_component_list_item {
   font-family: sans-serif;
   font-size: 13px;
-  line-height: 1.8;
+  line-height: 1.7;
 }
 
 //* ------------ AWS MORE INFO COMPONENT
@@ -1103,17 +1115,17 @@ body {
   min-width: 580px;
   max-width: 580px;
   //min-height: 450px;
-  min-height: 450px;
+  min-height: 405px;
   display: grid;
-  grid-template-columns: 10% 80% 10%;
+  grid-template-columns: 14% 76% 10%;
   grid-template-rows: 
-    40px
-    10% // Title
-    14% // ExplainerText
-    13%  // IAM Role
-    13%  // VPC Stack
-    13% // Cluster
-    8% // ExplainerTextItal
+    45px
+    37px // Title
+    59px // ExplainerText
+    65px  // IAM Role
+    65px  // VPC Stack
+    68px // Cluster
+    25px // ExplainerTextItal
     25px;
   grid-template-areas: 
   '. . Button'
@@ -1130,11 +1142,11 @@ body {
 
 #aws_more_info_component_title {
   grid-area: Title;
-  text-align: center;
+  text-align: start;
 }
 #aws_more_info_component_explainer_text {
   grid-area: ExplainerText;
-  text-align: center;
+  text-align: start;
 }
 #aws_more_info_component_explainer_text_ital {
   grid-area: ExplainerTextItal;
@@ -1171,11 +1183,11 @@ body {
   display: grid;
   grid-template-columns: 10% 80% 10%;
   grid-template-rows: 
-    50px
-    50px // Title
-    65px // ExplainerText1
-    10px  // ExplainerText2
-    165px  // List
+    60px
+    42px // Title
+    60px // ExplainerText1
+    18px  // ExplainerText2
+    145px  // List
     15% // ExplainerText3
     40px;
   grid-template-areas: 
@@ -1198,11 +1210,11 @@ body {
 
 #home_more_info_component_title {
   grid-area: Title;
-  text-align: center;
+  text-align: start;
 }
 #home_more_info_component_explainer_text_1 {
   grid-area: ExplainerText1;
-  text-align: center;
+  text-align: start;
   font-size: 16px;
 }
 #home_more_info_component_explainer_text_2 {
@@ -1222,8 +1234,48 @@ body {
 
 
 //* ----------------------------------------------------------- *//
-//* --------------- HELP INFO COMPONENT STYLING --------------- *//
+//* --------------- KUBERNETES COMPONENT HELP INFO COMPONENT STYLING --------------- *//
 //* ----------------------------------------------------------- *//
+
+
+.create_menu_item_help_info_component {
+  //background-color: $accent-darkest-blue;
+  min-width: 400px;
+  max-width: 400px;
+  max-height: 415px;
+  min-height: 415px;
+  display: grid;
+  grid-template-columns: 60px auto 60px;
+  grid-template-rows: 
+    20px // Button
+    60px // Title
+    20px 
+    80% // text
+    10%;
+  grid-template-areas: 
+  '. . Button'
+  '. Title .'
+  '. . .'
+  '. Text .'
+  '. . .';
+  padding: 0;
+  margin-left: 30%;
+  margin-right: 30%;
+}
+
+.create_menu_item_help_info_component_close_button {
+  grid-area: Button;
+}
+
+.create_menu_item_help_info_component_title {
+  grid-area: Title;
+}
+
+.create_menu_item_help_info_component_text {
+  grid-area: Text;
+}
+
+
 
 a {
   color: inherit;

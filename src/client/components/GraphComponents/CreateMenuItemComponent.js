@@ -17,7 +17,7 @@ const CreateMenuItemComponent = (props) => {
 
   const introText = {
     pod: 'Please input the details below to deploy a pod. Note that because pods do not attach to a Worker Node, they will not be displayed or editable from the graph.',
-    service: 'Please input the details below to deploy a Service. A Service is an abstraction which defines a set of Pods and a policy by which to access them. Note that once created, a service will not be displayed or editable from the graph.',
+    service: 'Please input the details below to deploy a Service. Note that once created, a service will not be displayed or editable from the graph.',
     deployment: 'Please input the details below to launch a Deployment.',
   };
   const infoText = introText[menuItemToShow];

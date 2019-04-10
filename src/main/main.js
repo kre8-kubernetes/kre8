@@ -93,7 +93,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   win.webContents.on('will-navigate', (event, url) => {
     event.preventDefault();
     console.log('url: ', url);
-    if (url.includes('aws') || url.includes('kubernetes')) {
+    if (url.includes('aws.com') || url.includes('kubernetes')) {
       shell.openExternal(url);
     }
   });

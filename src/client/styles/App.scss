@@ -4,47 +4,7 @@
 //* --------------- HTML FUNDAMENTAL--------------------------- *//
 //* ----------------------------------------------------------- *//
 
-body::-webkit-scrollbar {
-  display: none;
-}
-
-body {
-  margin: 0px;
-}
-
-// //* Helvetica
-// @font-face {
-//   font-family: 'HelveticaNeueMedium';
-//   font-style: normal;
-//   font-weight: normal;
-//   src: url('./Helvetica/HelveticaNeueMedium.woff') format('woff');
-// }
-
-// @font-face {
-//   font-family: 'HelveticaNeueRoman';
-//   font-style: normal;
-//   font-weight: normal;
-//   src: url('./Helvetica/HelveticaNeue-Roman.woff') format('woff');
-// }
-
-// @font-face {
-//   font-family: 'HelveticaNeueBold';
-//   font-style: normal;
-//   font-weight: normal;
-//   src: url('./Helvetica/HelveticaNeueBold.woff') format('woff');
-// }
-
-// @font-face {
-//   font-family: 'HelveticaNeueThin';
-//   font-style: normal;
-//   font-weight: normal;
-//   src: url('./Helvetica/HelveticaNeue-Thin.woff') format('woff');
-// }
-
-
-
-
-//* Lato
+//* ------ FONTS
 @font-face {
   font-family: 'Lato-Black';
   font-style: normal;
@@ -52,6 +12,12 @@ body {
   src: url('./Lato/Lato-Black.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Lato-Bold';
+  font-style: normal;
+  font-weight: normal;
+  src: url('./Lato/Lato-Bold.ttf') format('truetype');
+}
 
 @font-face {
   font-family: 'Lato-Regular';
@@ -67,39 +33,13 @@ body {
   src: url('./Lato/Lato-Light.ttf') format('truetype');
 }
 
-@font-face {
-  font-family: 'Lato-Bold';
-  font-style: normal;
-  font-weight: normal;
-  src: url('./Lato/Lato-Bold.ttf') format('truetype');
+
+body {
+  margin: 0px;
 }
 
-.errorClass {
-  color: red;
-  font-size: $error-font-size;
-  margin-top: 2px;
-  margin-left: 7px;
-  opacity: .9;
-  font-family: Lato-Regular, sans-serif;
-}
-
-#create_menu_item_component_loading_error {
-  font-size: 12.5px;
-  text-align: center;
-  margin: 30px 45px;
-  opacity: .7;
-}
-
-.popup_form_inner_error_text_title {
-  font-size: 24px;
-  text-align: center;
-  margin: 40px 0 0 0;
-}
-
-.popup_form_inner_error_text_intro {
-  font-size: 14px;
-  text-align: left;
-  margin: 30px 40px 0 50px;
+body::-webkit-scrollbar {
+  display: none;
 }
 
 //* ----------------------------------------------------------- *//
@@ -135,7 +75,7 @@ body {
   transition-duration: .2s;
 }
 
-//* ----- ACTION BUTTON ------------
+//* ----- HELP BUTTON ------------
 .help_button {
   height: 32px;
   width: 32px;
@@ -161,7 +101,7 @@ body {
   outline: none;
 }
 
-//* ----- CLOSED POPUP BUTTON --------
+//* ----- POPUP CLOSE BUTTON --------
 .close_popup_button {
   font-family: Lato-regular, Helvetica, sans-serif;
   font-size: 18px;
@@ -196,32 +136,29 @@ body {
   align-items: center;
   width: 100%;
   height: calc(100vh - 40px);
-  background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  // font-family: 'Lato-Regular', sans-serif;
-  font-family: 'Lato-Regular';
+  background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark);
+  font-family: 'Lato-Regular', sans-serif;
 }
 
 .home_page_form_container {
   display: flex;
   flex-direction: column;
-  //justify-content: center;
   padding-bottom: 30px;
   align-items: center;
   width: 55%;
   height: 50%;
   min-width: 515px;
   max-width: 525px;
-  //min-height: 380px;
   max-height: 390px;
+  min-height: 360px;
   background: $accent-darkest-blue;
   border-radius: 6px;
-  //padding-bottom: 20px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 .kre8Logo {
   width: 40%;
-  margin-top: 30px;
+  margin-top: 45px;
   margin-bottom: 17px;
 }
 
@@ -243,7 +180,6 @@ body {
   width: 83%;
   text-align: center;
   margin-top: 20px;
-  //margin-bottom: 3px;
   font-family: sans-serif;
 }
 
@@ -260,12 +196,11 @@ body {
   justify-content: center;
   width: 100%;
   padding: 8px 0;
-  //margin-bottom: 16px;
   opacity: 0.7;
 }
 
 .home_page_form_container_inputs_item input {
-  width: 100%;
+  width: 97%;
   height: 33px;
   min-height: 33px;
   border-radius: 5px;
@@ -329,11 +264,14 @@ body {
   font-size: 12px;
 }
 
+#home_page_help_info_button {
+  margin-top: 2px;
+}
+
 
 //* ----------------------------------------------------------- *//
 //* --------------- HOME PAGE POST CONFIG COMPONENT STYLING --- *//
 //* ----------------------------------------------------------- *//
-
 
 #heptagon_loading {
   position: relative;
@@ -358,43 +296,28 @@ body {
   }
 }
 
-.home_page_post_config_form_container {
-  width: 325px;
-  height: 325px;
-  border-radius: 6px;
-  display: grid;
-  grid-template-rows: 1.25fr 1fr .65fr 1fr 1fr 1fr;
-  grid-template-columns: 50px 1fr 1fr 1fr 60px;
-  grid-column-gap: 0px;
-  grid-row-gap: 0px; 
-  justify-content: center;
-  grid-template-areas: 
-    ". . . . ."
-    ". ball0 ball0 ball0 ."
-    ". . . . ."
-    ". ball1 . ball2 ."
-    "text text text text text"
-    ". . . . ."; 
-}
+// .home_page_post_config_form_container {
+//   width: 325px;
+//   height: 325px;
+//   border-radius: 6px;
+//   display: grid;
+//   grid-template-rows: 1.25fr 1fr .65fr 1fr 1fr 1fr;
+//   grid-template-columns: 50px 1fr 1fr 1fr 60px;
+//   grid-column-gap: 0px;
+//   grid-row-gap: 0px; 
+//   justify-content: center;
+//   grid-template-areas: 
+//     ". . . . ."
+//     ". ball0 ball0 ball0 ."
+//     ". . . . ."
+//     ". ball1 . ball2 ."
+//     "text text text text text"
+//     ". . . . ."; 
+// }
 
-.loading_form_container_text {
-  font-family: Lato-Regular, sans-serif;
-  color: $light-font;
-  grid-area: text;
-  text-align: center;
-  font-size: 17px;
-  font-weight: 150;
-}
-
-
-
-
-
-
-
-//**************************************************/
-//************** AWS CONTAINER STYLING *************/
-//**************************************************/
+//* ----------------------------------------------------------- *//
+//* --------------- AWS CONTAINER STYLING --------------------- *//
+//* ----------------------------------------------------------- *//
 
 .aws_cluster_page_container {
   display: flex;
@@ -403,10 +326,10 @@ body {
   align-items: center;
   width: 100%;
   height: calc(100vh - 40px);
-  background: $bg-gradient-dark;  /* fallback for old browsers */
+  background: $bg-gradient-dark; 
   background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); 
   /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  // background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: Lato-Regular, sans-serif;
 }
 
@@ -432,7 +355,7 @@ body {
   display: flex;
   justify-content: center;
   font-family: $title-font-family;
-  font-size: 25px;
+  font-size: 28px;
   flex-direction: column;
   align-items: center;
   padding-top: 30px;
@@ -442,11 +365,14 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  text-align: center;
   font-family: sans-serif;
   color: $light-font;
   font-size: 15px;
   line-height: 21px;
   width: 83%;
+  margin-bottom: 8px;
+  margin-top: 15px;
 }
 
 .aws_cluster_form_input_field_area {
@@ -461,7 +387,7 @@ body {
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  padding: 8px 0;
+  padding: 5px 0;
   opacity: 0.7;
 }
 
@@ -475,11 +401,10 @@ body {
   font-family: Lato-Light, sans-serif;
   font-size: 14px;
   color: $input-color;
-  padding-left: 10px;
 }
 
 .aws_cluster_form_container_inputs_item input[type=text] {
-  padding-left: 10px;
+  text-indent: 10px;
 }
 
 .aws_cluster_form_container_inputs_item input::placeholder {
@@ -493,7 +418,6 @@ body {
 .aws_cluster_form_container_explainer_text {
   font-size: 10px;
   font-family: 'Lato-Regular', sans-serif;
-  // color: $light-font;
   color: gray;
   margin-left: 6px;
   margin-bottom: 3px;
@@ -509,6 +433,10 @@ body {
 
 #aws_form_button{
   margin-right: 40px;
+}
+
+#aws_form_more_info_button {
+  margin-top: 3px;
 }
 
 //* ----------------------------------------------------------- *//
@@ -533,23 +461,24 @@ body {
   flex-direction: column;
   text-align: center;
   color: $light-font;
-  font-size: 20px;
+  font-size: 25px;
   font-weight: bold;
-  padding-top: 20px;
-
+  margin-top: 40px;
+  font-family: 'Lato-Bold';
 }
 
 .aws_loading_component_explainer_text {
   display: flex;
   flex-direction: row;
   text-align: center;
-  font-family: 'Lato-Regular', sans-serif;
+  font-family: sans-serif;
   font-size: 16px;
   color: $light-font;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 30px;
+  margin-bottom: 12px;
   padding-left: 40px;
   padding-right: 40px;
+  line-height: 1.4;
 }
 
 .aws_loading_form_component_item {
@@ -559,6 +488,7 @@ body {
   margin-left: 75px;
   margin-right: 100px;
   height: 35px;
+  font-family: sans-serif;
 }
 
 .aws_loading_component_status_text {
@@ -578,6 +508,7 @@ body {
   text-align: center;
   line-height: 13px;
   font-family: 'Lato-Regular', sans-serif;
+  opacity: .9;
   color: red;
   font-size: 10px;
   margin-bottom: 10px;
@@ -591,30 +522,18 @@ body {
 //* --------------- KUBECTL COMPONENT STYLING ----------------- *//
 //* ----------------------------------------------------------- *//
 
-@keyframes change {
-  12.5%{background-color: #2D5481;}
-  25%{background-color: #274B74;}
-  37.5%{background-color: #243B55;}
-  50%{background-color: #1F2D46;}
-  62.5%{background-color: #141E30;}
-  75%{background-color: #1F2D46;}
-  87.5%{background-color: #243B55;}
-  100%{background-color: #274B74;}
-}
-
 .kubectl_container {
   display: flex;
   flex-direction: row;
   align-content: space-around;
   background: $graph-background;
-  /* Cover the whole window */
   height: 100%;
-  animation: fadein 2s;
+  animation: fadein 4s;
 }
 
-/**************************************************/
-/*********** TreeGraphContainer Styling ***********/
-/**************************************************/
+//* ----------------------------------------------------------- *//
+//* --------------- GRAPH COMPONENT STYLING ------------------- *//
+//* ----------------------------------------------------------- *//
 .treegraph_container {
   display: flex;
   flex-direction: column;
@@ -627,7 +546,7 @@ body {
   background: none;
   color: $light-font;
   font-size: 12px;
-  font-family: 'Lato-Regular', sans-serif;
+  font-family: sans-serif;
 }
 
 .toolTip h4 {
@@ -635,14 +554,13 @@ body {
 }
 
 .toolTip p {
-  font-family: 'Lato-Regular', sans-serif;
+  font-family: sans-serif;
   margin: 1px 0;
 }
 
-/**************************************************/
-/************* POPUP CONTAINER STYLING ************/
-/**************************************************/
-
+//* ----------------------------------------------------------- *//
+//* --------------- POPUP CONTAINER STYLING ------------------- *//
+//* ----------------------------------------------------------- *//
 .popup_info {
   position: fixed;
   width: 100%;
@@ -665,18 +583,18 @@ body {
   min-width: 400px;
   background: $accent-darkest-blue;
   color: $cluster-element-text-color;
-  // padding: 20px 25px 20px 25px;
   border-radius: 3px;
-  font-family: 'Lato-Regular', sans-serif;
+  font-family: sans-serif;
   border: 1px solid #6E6B6B;
   opacity: .9;
 }
 
-/**************************************************/
-/********** CLUSTER MORE INFO COMPONENTS **********/
-/**************************************************/
 
-/* UNIVERSAL INFO COMPONENT */
+//* ----------------------------------------------------------- *//
+//* --------------- CLUSTER MORE INFO COMPONENTS  ------------- *//
+//* ----------------------------------------------------------- *//
+
+//* UNIVERSAL INFO COMPONENT
 .info_component_item {
   display: flex;
   flex-direction: row;
@@ -732,7 +650,6 @@ body {
 
 /* API SERVER INFO COMPONENT */
 .apiserver_info_component {
-    // padding: 20px 25px 20px 25px;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -805,7 +722,11 @@ body {
  margin: 100px auto 0px auto;
 }
 
-/* CONTAINER INFO COMPONENT */
+
+//* ----------------------------------------------------------- *//
+//* --------------- CONTAINER INFO COMPONENT ------------------ *//
+//* ----------------------------------------------------------- *//
+
 .container_info_component {
   display: flex;
   flex-direction: column;
@@ -820,9 +741,10 @@ body {
   margin: 3px 15px;
 }
 
-/**************************************************/
-/**************** NAVBAR COMPONENTS ***************/
-/**************************************************/
+
+//* ----------------------------------------------------------- *//
+//* --------------- NAVBAR COMPONENTS ------------------------- *//
+//* ----------------------------------------------------------- *//
 
 .nav_container {
   display: flex;
@@ -1042,9 +964,10 @@ body {
 .create_menu_item_component_help_info {
   //display: flex;
   width: 85%;
-  font-size: 13px;
+  font-size: 14px;
   margin: 5px;
-  line-height: 1.3;
+  line-height: 1.4;
+  font-family: sans-serif;
 }
 
 .create_menu_item_component_help_info_warning_text {
@@ -1114,22 +1037,22 @@ body {
 }
 
 .cluster_info_key {
-  font-family: 'Lato-Black', sans-serif;
+  font-family: sans-serif;
+  font-weight: bold;
 }
 
 .cluster_info_value {
-  font-family: 'Lato-Regular', sans-serif;
+  font-family: sans-serif;
 }
-
 
 .cluster_info_subnets {
   padding-left: 15px;
-  font-family: 'Lato-Regular', sans-serif;
+  font-family: sans-serif;
 }
 
 .cluster_info_server_end_point {
   padding-left: 29px;
-  font-family: 'Lato-Regular', sans-serif;
+  font-family: sans-serif;
 }
 
 
@@ -1310,6 +1233,38 @@ body {
   font-size: 14.5px;
 }
 
+//* ----------------------------------------------------------- *//
+//* --------------- ERROR STYLING --------------- *//
+//* 
+
+.errorClass {
+  color: red;
+  font-size: 10px;
+  margin-top: 4px;
+  margin-left: 7px;
+  opacity: .9;
+  font-family: sans-serif;
+  font-weight: lighter;
+}
+
+#create_menu_item_component_loading_error {
+  font-size: 12.5px;
+  text-align: center;
+  margin: 30px 45px;
+  opacity: .7;
+}
+
+.popup_form_inner_error_text_title {
+  font-size: 24px;
+  text-align: center;
+  margin: 40px 0 0 0;
+}
+
+.popup_form_inner_error_text_intro {
+  font-size: 14px;
+  text-align: left;
+  margin: 30px 40px 0 50px;
+}
 
 //* ----------------------------------------------------------- *//
 //* --------------- KUBERNETES COMPONENT HELP INFO COMPONENT STYLING --------------- *//

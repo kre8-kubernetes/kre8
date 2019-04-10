@@ -39,7 +39,7 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
       <text
         dy={textDY}
         fontSize={textFontSize}
-        fontFamily="Lato-Regular"
+        fontFamily="sans-serif"
         textAnchor="middle"
         style={{ pointerEvents: 'none' }}
         fill={textFill}

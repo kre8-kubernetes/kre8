@@ -27,7 +27,7 @@ const HomeComponent = props => {
       </div>
       {/* TEXT JUST BELOW THE HEADER */}
       <div className="home_page_form_container_intro_text">
-      Enter your Amazon Web Services account credentials to get started
+      Enter your Amazon Web Services account credentials to get started.
         {/* <p>To configure Kre8 with your AWS account, enter your credentials below.</p> */}
       </div>
       {/* HOME INPUT FORM CONTAINER */}
@@ -71,7 +71,9 @@ const HomeComponent = props => {
         </div>
         <div className="home_page_form_container_buttons_item">
           <ActionButton id="home_form_buttom" clickHandler={setAWSCredentials} buttonText="Submit" />
-          <HelpInfoButton clickHandler={displayInfoHandler} />
+          <div id="home_page_help_info_button">
+            <HelpInfoButton clickHandler={displayInfoHandler} />
+          </div>
         </div>
       </div>
       <div style={{ alignSelf: 'flex-start', marginLeft: '50px', marginTop: '-8px' }} className="errorClass">{errors.awsRegion}</div>

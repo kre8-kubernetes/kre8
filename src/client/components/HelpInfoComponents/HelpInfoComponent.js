@@ -43,15 +43,15 @@ const HelpInfoComponent = (props) => {
           </div>
           <div id="home_more_info_component_title" className="more_info_component_title">Amazon Web Services Account Details</div>
           <div id="home_more_info_component_explainer_text_1" className="more_info_component_explainer_text">
-            KRE8 needs your Amazon Web Services Access Key and Secret Key in order to interact with your AWS account.
+            KRE8 needs your Amazon Web Services Access Key and Secret Key in order to interact with your AWS account. To locate your account credentials:
           </div>
-          <div id="home_more_info_component_explainer_text_2" className="more_info_component_explainer_text">To locate your AWS account credentials:</div>
+          {/* <div id="home_more_info_component_explainer_text_2" className="more_info_component_explainer_text">To locate your AWS account credentials:</div> */}
           <ul id="home_more_info_component_list">
             <li className="home_more_info_component_list_item">Log into your&nbsp;<a href="https://aws.amazon.com">AWS Account</a></li>
-            <li className="home_more_info_component_list_item">Click your username at the top right of the page.</li>
-            <li className="home_more_info_component_list_item">Click “My Security Credentials” link from the drop-down menu.</li>
-            <li className="home_more_info_component_list_item">Navigate to the AWS IAM credentials section.</li>
-            <li className="home_more_info_component_list_item">Copy the Access Key ID and Secret Access Key.</li>
+            <li className="home_more_info_component_list_item">Click your username at the top right of the page</li>
+            <li className="home_more_info_component_list_item">Click “My Security Credentials” link from the drop-down menu</li>
+            <li className="home_more_info_component_list_item">Navigate to the AWS IAM credentials section</li>
+            <li className="home_more_info_component_list_item">Copy the Access Key ID and Secret Access Key</li>
           </ul>
           <div id="home_more_info_component_explainer_text_3" className="more_info_component_explainer_text">Don’t have an AWS account? Visit&nbsp;<a href="https://aws.amazon.com">Amazon Web Services</a>&nbsp;to create one.</div>
         </div>

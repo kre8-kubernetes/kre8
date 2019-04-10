@@ -15,10 +15,11 @@ $bg-gradient-dark: #1F3248;
 // $bg-color-right: #233352;
 $bg-gradient-light: #243B55;
 
-
+// DBE9F1
+$light-font: #DBE9F1;
 
 //font colors
-$light-font: #D7D7D7;
+//$light-font: #D7D7D7;
 //input elements
 $input-color: #D6D9E0;
 
@@ -39,18 +40,20 @@ $help-info-font-color: black;
 
 // graph-background
 $graph-background: #1F3248;
-// pod color border + text
 
+// pod color border + text
 $pods-color-hover: #C5DEEf;
 
 // treegraph component
 $treegraph-border-color: black;
 
-
 //errorClass
 $error-red: red;
 $error-font-size: 9px;
 
-
 //More Info Component
 $more-info-background-color: #1E2021;
+
+//Font sizes
+$title-font-size: 20px;
+$title-font-family: 'Lato-Bold', sans-serif;

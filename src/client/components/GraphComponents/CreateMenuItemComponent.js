@@ -40,7 +40,7 @@ const CreateMenuItemComponent = (props) => {
       containerName: '*253 character max, including lowercase alphanumeric and "-" and "."',
       image: '*253 character max, including lowercase alphanumeric and "-" and "."',
       containerPort: '*Port to expose from the container',
-      replicas: '*Kre8 enables the deployment of a maximum of 6 replicas',
+      replicas: '*Kre8 enables the deployment of a maximum of 4 replicas',
     },
   };
 

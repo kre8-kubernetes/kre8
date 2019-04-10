@@ -23,11 +23,12 @@ const HomeComponent = props => {
       {/* HOME CONTAINER HEADER */}
       <img className="kre8Logo" src={kre8Logo} alt="" />
       <div className="home_page_form_container_header">
-        Create and Deploy your Kubernetes Cluster
+        Build, Deploy and Monitor a Kubernetes Cluster
       </div>
       {/* TEXT JUST BELOW THE HEADER */}
       <div className="home_page_form_container_intro_text">
-        <p>To configure Kre8 with your AWS account, enter your credentials below.</p>
+      Enter your Amazon Web Services account credentials to get started
+        {/* <p>To configure Kre8 with your AWS account, enter your credentials below.</p> */}
       </div>
       {/* HOME INPUT FORM CONTAINER */}
       <div className="home_page_form_container_input_field_area">

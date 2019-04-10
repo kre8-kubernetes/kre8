@@ -141,60 +141,6 @@ const createWindowAndSetEnvironmentVariables = () => {
   childWin.on('closed', () => {
     childWin = null;
   });
-
-  // Creates browser window that displays Kubernetes Docs when user clicks more info while creating a pod, service or deployment
-  // For deployment
-  // let kubeDocsDeploymentWindow = new BrowserWindow({
-  //   width: 600,
-  //   height: 400,
-  //   show: false,
-  // });
-
-  //   kubeDocsDeploymentWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/controllers/deployment/');
-  //   ipcMain.on(events.SHOW_KUBE_DOCS_DEPLOYMENT, () => {
-  //     kubeDocsDeploymentWindow.show();
-  //   });
-
-  //   kubeDocsDeploymentWindow.on('close', (e) => {
-  //     e.preventDefault();
-  //     kubeDocsDeploymentWindow.hide();
-  //   });
-
-
-  //   //For service
-  // let kubeDocsServiceWindow = new BrowserWindow({
-  //   width: 600,
-  //   height: 400,
-  //   show: false,
-  // });
-
-  // kubeDocsServiceWindow.loadURL('https://kubernetes.io/docs/concepts/services-networking/service/');
-  // ipcMain.on(events.SHOW_KUBE_DOCS_SERVICE, () => {
-  //   kubeDocsServiceWindow.show();
-  // });
-
-  //   kubeDocsServiceWindow.on('close', (e) => {
-  //     e.preventDefault();
-  //     kubeDocsServiceWindow.hide();
-  //   });
-
-
-  //   //For pod
-  // let kubeDocsPodWindow = new BrowserWindow({
-  //   width: 600,
-  //   height: 400,
-  //   show: false,
-  // });
-
-  // kubeDocsPodWindow.loadURL('https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/');
-  // ipcMain.on(events.SHOW_KUBE_DOCS_POD, () => {
-  //   kubeDocsPodWindow.show();
-  // });
-
-//   kubeDocsPodWindow.on('close', (e) => {
-//     e.preventDefault();
-//     kubeDocsPodWindow.hide();
-//   });
 };
 
 /** ------- EXECUTES ON EVERY OPENING OF APPLICATION --------------------------
@@ -618,7 +564,7 @@ ipcMain.on(events.DELETE_DEPLOYMENT, async (event, data) => {
     if (stderr) throw new Error(stderr);
     // SEND STDOUT TO RENDERER PROCESS
     await awsHelperFunctions.timeout(1000 * 10);
-    win.webContents.send(events.HANDLE_RERENDER_NODE, stdout);
+    win.webContents.send(events.HANDLE_RERENDER_NODE, 'delete');
   } catch (err) {
     console.error('From DELETE_DEPLOYMENT:', err);
   }

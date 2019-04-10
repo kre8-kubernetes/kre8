@@ -57,7 +57,7 @@ class TreeGraphContainer extends Component {
     this.toolTipOff = this.toolTipOff.bind(this);
     this.deleteNode = this.deleteNode.bind(this);
     this.handleRerenderNode = this.handleRerenderNode.bind(this);
-    this.showLoadingScreen = this.showLoadingScreen.bind(this);
+    this.toggleLoadingScreen = this.toggleLoadingScreen.bind(this);
   }
 
   //* -------------- COMPONENT LIFECYCLE METHODS
@@ -199,7 +199,7 @@ class TreeGraphContainer extends Component {
   // Send the DELETE_DEPLOYMENT event to the main process to trigger the kubectl delete command
   deleteNode() {
     const { nodeInfoToShow } = this.state;
-    this.showLoadingScreen();
+    this.toggleLoadingScreen();
     ipcRenderer.send(events.DELETE_DEPLOYMENT, nodeInfoToShow);
   }
 
@@ -208,26 +208,30 @@ class TreeGraphContainer extends Component {
    * Call to get data on the current nodes -- this will update state and trigger
    * a re-render of the page, either removing the deleted node, or adding the newly created node
   */
-  handleRerenderNode() {
+  handleRerenderNode(event, data) {
     const { hideCreateMenuDropdown, toggleCreateMenuFormItem } = this.props;
-    console.log('handle rerender node called');
-    //ipcRenderer.send(events.START_LOADING_ICON, 'close');
+    console.log('handle rerender node called:', data);
     console.log('hit start loading icon inside handle render node handler');
-    hideCreateMenuDropdown();
+    if (data === 'delete') {
+      this.hideNodeInfo();
+      this.toggleLoadingScreen();
+    } else {
+      toggleCreateMenuFormItem();
+      this.toggleLoadingScreen();
+      this.hideNodeInfo();
+    }
+    // hideCreateMenuDropdown();
     this.getMasterNode();
     this.getWorkerNodes();
     this.getContainersAndPods();
-    toggleCreateMenuFormItem();
-    this.hideNodeInfo();
-    this.showLoadingScreen();
   }
 
   //* --------- DISPLAY OR CLOSE LOADING SCREEN
   /**
    * Triggered when delete node called, and closed when delete node completes
-   * when handleRerenderNode activated. Displays loading icon above graph.
+   * when handleRerenderNode is activated. Displays loading icon above graph.
   */
-  showLoadingScreen() {
+  toggleLoadingScreen() {
     const { loadingScreen } = this.state;
     if (!loadingScreen) {
       this.setState(prevState => ({ ...prevState, loadingScreen: true }));

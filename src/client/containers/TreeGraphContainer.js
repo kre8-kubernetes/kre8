@@ -3,11 +3,6 @@ import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-// import { Group } from '@vx/group';
-// import { Tree } from '@vx/hierarchy';
-// import { LinkHorizontal } from '@vx/shape';
-// import { hierarchy } from 'd3-hierarchy';
-// import { LinearGradient } from '@vx/gradient';
 import uuid from 'uuid';
 import * as events from '../../eventTypes';
 import * as actions from '../store/actions/actions';
@@ -201,11 +196,11 @@ class TreeGraphContainer extends Component {
   }
 
   //* --------- DELETE NODE METHOD
-  // Send the DELETE_NODE event to the main process to trigger the kubectl delete command
+  // Send the DELETE_DEPLOYMENT event to the main process to trigger the kubectl delete command
   deleteNode() {
     const { nodeInfoToShow } = this.state;
     this.showLoadingScreen();
-    ipcRenderer.send(events.DELETE_NODE, nodeInfoToShow);
+    ipcRenderer.send(events.DELETE_DEPLOYMENT, nodeInfoToShow);
   }
 
   //* --------- RERENDER GRAPH METHOD
@@ -223,11 +218,17 @@ class TreeGraphContainer extends Component {
     this.getWorkerNodes();
     this.getContainersAndPods();
     toggleCreateMenuFormItem();
+    this.hideNodeInfo();
+    this.showLoadingScreen();
   }
 
+  //* --------- DISPLAY OR CLOSE LOADING SCREEN
+  /**
+   * Triggered when delete node called, and closed when delete node completes
+   * when handleRerenderNode activated. Displays loading icon above graph.
+  */
   showLoadingScreen() {
     const { loadingScreen } = this.state;
-    console.log("showLoadingScreen callad");
     if (!loadingScreen) {
       this.setState(prevState => ({ ...prevState, loadingScreen: true }));
     } else {

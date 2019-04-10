@@ -7,10 +7,7 @@ import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
 
 import OutsideClick from '../helperFunctions/OutsideClick';
-import CreateMenuItemHelpInfoComponent from '../components/HelpInfoComponents/CreateMenuItemHelpInfoComponent';
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
-// import HelpInfoButton from '../../components/Buttons/HelpInfoButton';
-
 
 const mapStateToProps = store => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
@@ -70,8 +67,6 @@ class CreateMenuItemContainer extends Component {
     this.handleCreateService = this.handleCreateService.bind(this);
     this.handleNewService = this.handleNewService.bind(this);
 
-    //this.showKubeDocs = this.showKubeDocs.bind(this);
-    this.showHelpInfoComponent = this.showHelpInfoComponent.bind(this);
     this.handleFormClose = this.handleFormClose.bind(this);
     this.handleOutsideFormClick = this.handleOutsideFormClick.bind(this);
     this.handleCreateLoadingScreen = this.handleCreateLoadingScreen.bind(this);
@@ -94,9 +89,9 @@ class CreateMenuItemContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment);
   }
 
-  // ------------------- EVENT HANDLERS ------------------------
+  //* ------------------- EVENT HANDLERS ------------------------
 
-  // HANDLE CHANGE METHOD FOR FORMS
+  // HANDLE INPUT CHANGE METHOD FOR FORMS
   handleChange(e) {
     const { value } = e.target;
     e.preventDefault();
@@ -116,6 +111,18 @@ class CreateMenuItemContainer extends Component {
     });
   }
 
+  // GENERATES LOADING SCREEN WHEN KUBERNETES COMPONENTS ARE BEING CREATED
+  handleCreateLoadingScreen() {
+    this.setState(prevState => ({ ...prevState, createLoadingScreen: true }));
+  }
+
+  //* --------- CREATE COMPONENT METHODS
+  /**
+   * Called when user inputs cluster component data and submits
+   * Error handlers check data, if input passes, data is passed to main thread
+   * where data is sent to kubectl to create items
+  */
+
   // CREATE POD HANDLER
   handleCreatePod() {
     const { inputData } = this.state;
@@ -128,12 +135,10 @@ class CreateMenuItemContainer extends Component {
     schema.validate(pod, { abortEarly: false })
       .then((data) => {
         this.handleCreateLoadingScreen();
-        console.log('from the then', data);
         this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, pod: {} } }));
         ipcRenderer.send(events.CREATE_POD, data);
       })
       .catch((err) => {
-        console.log('err', err);
         const errorObj = err.inner.reduce((acc, error) => {
           acc[error.path] = error.message;
           return acc;
@@ -146,7 +151,6 @@ class CreateMenuItemContainer extends Component {
   handleCreateDeployment() {
     const { inputData } = this.state;
     const { deployment } = inputData;
-    // const { toggleCreateMenuFormItem } = this.props;
     const clone = Object.assign({}, deployment);
     clone.containerPort = Number(clone.containerPort);
     clone.replicas = Number(clone.replicas);
@@ -161,15 +165,10 @@ class CreateMenuItemContainer extends Component {
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
         this.handleCreateLoadingScreen();
-        // toggleCreateMenuFormItem();
-        console.log('from the then', data);
         this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, deployment: {} } }));
         ipcRenderer.send(events.CREATE_DEPLOYMENT, data);
-        // ipcRenderer.send(events.START_LOADING_ICON, 'open');
-        // console.log('sent start loading icon on front from createmenuitemcontainer');
       })
       .catch((err) => {
-        console.log('err', err);
         const errorObj = err.inner.reduce((acc, error) => {
           acc[error.path] = error.message;
           return acc;
@@ -180,7 +179,6 @@ class CreateMenuItemContainer extends Component {
 
   // CREATE SERVICE HANDLER
   handleCreateService() {
-    console.log('!!!!!!!!!!!!!!!!!!!this.state: ', this.state.inputData.service);
     const { inputData } = this.state;
     const { service } = inputData;
     const clone = Object.assign({}, service);
@@ -194,13 +192,11 @@ class CreateMenuItemContainer extends Component {
     });
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
-        console.log('from the then', data);
         this.handleCreateLoadingScreen();
         this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, service: {} } }));
         ipcRenderer.send(events.CREATE_SERVICE, data);
       })
       .catch((err) => {
-        console.log('err', err);
         const errorObj = err.inner.reduce((acc, error) => {
           acc[error.path] = error.message;
           return acc;
@@ -210,37 +206,13 @@ class CreateMenuItemContainer extends Component {
   }
 
 
-  showHelpInfoComponent(e) {
-    const { menuItemToShow } = this.props;
-    const { helpInfoComponent } = this.state;
-    console.log('***************e.target: ', e.target);
-    console.log('this.state.helpInfoComponent: ', helpInfoComponent);
-
-    if (helpInfoComponent === true) {
-      this.setState(prevState => ({ ...prevState, helpInfoComponent: false }));
-    } else {
-      this.setState(prevState => ({ ...prevState, helpInfoComponent: true }));
-    }
-  }
-
-  handleCreateLoadingScreen() {
-    console.log('handle create loading screen activated');
-    this.setState(prevState => ({ ...prevState, createLoadingScreen: true }));
-  }
+  
 
 
-  // SHOW KUBE DOCS
-  // showKubeDocs(modal) {
-  //   if (modal === 'deployment'){
-  //     ipcRenderer.send(events.SHOW_KUBE_DOCS_DEPLOYMENT);
-  //   } else if (modal === 'service'){
-  //     ipcRenderer.send(events.SHOW_KUBE_DOCS_SERVICE);
-  //   }else if (modal === 'pod'){
-  //     ipcRenderer.send(events.SHOW_KUBE_DOCS_POD);
-  //   }
-  // }
 
-  // --------------INCOMING DATA FROM MAIN THREAD-----------------
+
+
+  //* --------------INCOMING DATA FROM MAIN THREAD-----------------
 
   // INCOMING POD DATA
   handleNewPod(event, data) {
@@ -251,12 +223,33 @@ class CreateMenuItemContainer extends Component {
       acc[item[0]] = '';
       return acc;
     }, {});
-    this.setState(prevState => ({ ...prevState, inputData: { ...prevState.inputData, pod: emptyPodObj } }));
+    if (data.includes('error')) {
+      this.setState(prevState => ({
+        ...prevState,
+        creationError: true,
+        creationErrorText: data,
+        inputData: {
+          ...prevState.inputData,
+          pod: emptyPodObj,
+        },
+      }));
+    } else {
+      this.setState(prevState => ({
+        ...prevState,
+        inputData: {
+          ...prevState.inputData,
+          pod: emptyPodObj,
+        },
+      }));
+    }
   }
 
-  // INCOMING DEPLOYMENT DATA
+/** --------- DEPLOYMENT STATUS DATA PROCESSED FROM MAIN THREAD ------------------
+ * @param {Object} event
+ * @param {Object} data - object containing the data from kubectl regarding the status of the deployment user created
+ * @result set state
+*/
   handleNewDeployment(event, data) {
-    // The following is going to be the logic that occurs once a new role was created via the main thread process
     const { inputData } = this.state;
     const { deployment } = inputData;
     console.log('incoming data from kubectl deployment creation:', data);
@@ -329,7 +322,6 @@ class CreateMenuItemContainer extends Component {
     const {
       inputData,
       errors,
-      helpInfoComponent,
       createLoadingScreen,
       creationErrorText,
       creationError,
@@ -351,17 +343,10 @@ class CreateMenuItemContainer extends Component {
               handleFunction={handleFunction}
               errors={errors}
               inputDataToShow={inputDataToShow}
-              showHelpInfoComponent={this.showHelpInfoComponent}
               createLoadingScreen={createLoadingScreen}
               creationErrorText={creationErrorText}
               creationError={creationError}
             />
-            {helpInfoComponent && (
-              <CreateMenuItemHelpInfoComponent
-                showHelpInfoComponent={this.showHelpInfoComponent}
-              />
-            )
-            }
           </OutsideClick>
         )}
       </div>

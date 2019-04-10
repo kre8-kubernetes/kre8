@@ -532,18 +532,22 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
     const child = spawnSync('kubectl', ['apply', '-f', `${process.env.KUBECTL_STORAGE}pod_${data.podName}.json`]);
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
-    if (stderr) throw stderr;
-
-    // SEND STDOUT TO RENDERER PROCESS
     await awsHelperFunctions.timeout(1000 * 5);
-    win.webContents.send(events.HANDLE_NEW_POD, stdout);
+    // SEND STDOUT TO RENDERER PROCESS
+    if (stderr) {
+      console.error('From CREATE_POD:', stderr);
+      win.webContents.send(events.HANDLE_NEW_POD, stdout);
+    } else {
+      console.log('stdout from pod: ', stdout);
+      win.webContents.send(events.HANDLE_NEW_POD, stdout);
+      win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create deployment');
+    }
   } catch (err) {
     console.error('From CREATE_POD:', err);
   }
 });
 
-// -----------------------SERVICE--------------------------------
-// BUILD A SERVICE YAML
+//* -------------- CREATE A SERVICE -------------------- *//
 ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
   try {
     console.log('CREATE_SERVICE data:', data);
@@ -555,43 +559,24 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
     const child = spawnSync('kubectl', ['apply', '-f', `${process.env.KUBECTL_STORAGE}service_${data.serviceName}.json`]);
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
-    if (stderr) throw new Error(stderr);
-    // SEND STDOUT TO RENDERER PROCESS
-    win.webContents.send(events.HANDLE_NEW_SERVICE, stdout);
+    // SEND STATUS TO THE RENDERER PROCESS
+    if (stderr) {
+      console.error('From CREATE_SERVICE:', stderr);
+      win.webContents.send(events.HANDLE_NEW_SERVICE, stdout);
+    } else {
+      console.log('stdout from deployment: ', stdout);
+      win.webContents.send(events.HANDLE_NEW_SERVICE, stdout);
+      win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create service');
+    }
   } catch (err) {
     console.error('From CREATE_SERVICE', err);
   }
 });
 
-//* -------------- CREATE A DEPLOYMENT----------------- *//
+//* -------------- CREATE A DEPLOYMENT ----------------- *//
 
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
-
-  //let loadingChildWindow;
   try {
-    // Create Loading Icon Child Window
-    // const currentParentPosition = win.getPosition();
-    // const currentParentSize = win.getSize();
-    // const childX = Math.floor(currentParentPosition[0] + (currentParentSize[0] / 2) - (325 / 2));
-    // const childY = Math.floor((currentParentPosition[1] + (currentParentSize[1] / 2) - (325 / 2)));
-
-    // loadingChildWindow = new BrowserWindow({
-    //   height: 325,
-    //   width: 325,
-    //   maxHeight: 325,
-    //   maxWidth: 325,
-    //   minHeight: 325,
-    //   minWidth: 325,
-    //   parent: win,
-    //   show: true,
-    //   frame: false,
-    //   center: false,
-    //   backgroundColor: '#1F3248',
-    //   x: childX,
-    //   y: childY,
-    // });
-    // loadingChildWindow.loadURL(`file://${path.join(__dirname, '../childWindow/childIndex.html')}`);
-
     // START CREATING DEPLOYMENT
     if (data.replicas > 6) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 6 or less.`);
     // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
@@ -603,22 +588,16 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
     await awsHelperFunctions.timeout(1000 * 10);
+    // SEND STATUS TO THE RENDERER PROCESS
     if (stderr) {
-      console.log('an error ocurred: ', `error: ${stderr}`);
+      console.error('From CREATE_DEPLOYMENT:', stderr);
       win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stderr);
     } else {
+      console.log('stdout from deployment: ', stdout);
       win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stdout);
       win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create deployment');
     }
- 
-    // SEND STDOUT TO RENDERER PROCESS
-    
-    
-    // loadingChildWindow.close();
-    // loadingChildWindow = null;
   } catch (err) {
-    // loadingChildWindow.close();
-    // loadingChildWindow = null;
     console.error('From CREATE_DEPLOYMENT', err);
   }
 });
@@ -629,8 +608,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
  * the was clicked. This is used to determine the deployment to delete
  * @return {String} - stdout from kubectl
 */
-// TODO: rename to delete deployment
-ipcMain.on(events.DELETE_NODE, async (event, data) => {
+ipcMain.on(events.DELETE_DEPLOYMENT, async (event, data) => {
   try {
     // DELETE THE POD VIA kubectl
     const deploymentName = data.data.name.split('-')[0];
@@ -642,7 +620,7 @@ ipcMain.on(events.DELETE_NODE, async (event, data) => {
     await awsHelperFunctions.timeout(1000 * 10);
     win.webContents.send(events.HANDLE_RERENDER_NODE, stdout);
   } catch (err) {
-    console.error('From DELETE_NODE:', err);
+    console.error('From DELETE_DEPLOYMENT:', err);
   }
 });
 

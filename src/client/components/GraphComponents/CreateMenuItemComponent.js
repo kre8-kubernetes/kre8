@@ -9,9 +9,7 @@ const CreateMenuItemComponent = (props) => {
     handleFormClose,
     handleFunction,
     errors,
-    infoButton,
     inputDataToShow,
-    showHelpInfoComponent,
     createLoadingScreen,
     creationError,
     creationErrorText,
@@ -46,11 +44,9 @@ const CreateMenuItemComponent = (props) => {
     },
   };
 
-
   const componentNameFormatted = menuItemToShow.charAt(0).toUpperCase() + menuItemToShow.slice(1);
   const formItems = Object.entries(inputDataToShow).map((arr, i) => {
     const inputName = arr[0];
-    console.log('inputName: ', inputName)
     const inputVal = arr[1];
     const placeholder = inputName.charAt(0).toUpperCase() + inputName.split(/(?=[A-Z])/).join(' ').slice(1);
     const id = `${menuItemToShow}_${inputName}`;
@@ -81,10 +77,14 @@ const CreateMenuItemComponent = (props) => {
                 {/** ***CLOSE BUTTON*** */}
                 <CloseButton clickHandler={handleFormClose} />
                 {/** ***TITLE*** */}
-                <div className="create_menu_item_component_title"><h2>Create a {componentNameFormatted}</h2></div>
+                <div className="create_menu_item_component_title">
+                  <h2>Create a {componentNameFormatted}</h2>
+                </div>
                 {/** ***INTRO TEXT*** */}
                 <div className="create_menu_item_component_help_info">
-                  {infoText}&nbsp;<a href="https://kubernetes.io/docs/concepts/configuration/overview/">Explore the Kubernetes docs >></a>
+                  {infoText}
+                  &nbsp;
+                  <a href="https://kubernetes.io/docs/concepts/configuration/overview/">Explore the Kubernetes docs >></a>
                 </div>
                 {/** ** FORM *** */}
                 <div className="create_menu_item_component_inputs">

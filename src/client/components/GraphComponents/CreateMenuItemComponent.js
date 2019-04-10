@@ -1,7 +1,6 @@
 import React from 'react';
 import ActionButton from '../Buttons/ActionButton';
 import CloseButton from '../Buttons/CloseButton';
-import HelpInfoButton from '../Buttons/HelpInfoButton';
 
 const CreateMenuItemComponent = (props) => {
   const {
@@ -10,26 +9,20 @@ const CreateMenuItemComponent = (props) => {
     handleFormClose,
     handleFunction,
     errors,
-    //infoText,
     infoButton,
     inputDataToShow,
     showHelpInfoComponent,
+    createLoadingScreen,
+    creationError,
+    creationErrorText,
   } = props;
 
   const introText = {
     pod: 'Please input the details below to deploy a pod. Note that because pods do not attach to a Worker Node, they will not be displayed or editable from the graph.',
-    // pod: 'A Pod is the smallest deployable unit in the Kubernetes object model.',
     service: 'Please input the details below to deploy a Service. A Service is an abstraction which defines a set of Pods and a policy by which to access them. Note that once created, a service will not be displayed or editable from the graph.',
     deployment: 'Please input the details below to launch a Deployment.',
   };
   const infoText = introText[menuItemToShow];
-
-  // const warningText = {
-  //   pod: 'Because pods do not attach to a Worker Node, they will not be displayed or editable from the graph.',
-  //   service: 'Services will not be displayed or editable from the graph.',
-  //   deployment: '',
-  // };
-  // const warningTextToDisplay = warningText[menuItemToShow];
 
   const inputExplainerText = {
     pod: {
@@ -52,8 +45,6 @@ const CreateMenuItemComponent = (props) => {
       replicas: '*Kre8 enables the deployment of a maximum of 6 replicas',
     },
   };
-
-  // const inputExplainerTextToDisplay = inputExplainerText[menuItemToShow][inputName];
 
 
   const componentNameFormatted = menuItemToShow.charAt(0).toUpperCase() + menuItemToShow.slice(1);
@@ -81,36 +72,63 @@ const CreateMenuItemComponent = (props) => {
   });
 
   return (
-    <div className="popup_form_inner">
-      <div className="create_menu_item_component_container">
-        {/** ***TITLE*** */}
-        {/* <button onClick={handleFormClose} className="close_popup_button" type="button">X</button> */}
-        <CloseButton clickHandler={handleFormClose} />
-        <div className="create_menu_item_component_title">
-          <h2>Create a {componentNameFormatted}</h2>
-        </div>
-        <div className="create_menu_item_component_help_info">
-          {infoText}
-          &nbsp;
-          <a href="https://kubernetes.io/docs/concepts/configuration/overview/">Learn more >></a>
-        </div>
-        {/** ** FORM *** */}
-        <div className="create_menu_item_component_inputs">
-          {formItems}
-        </div>
-        <div className="create_menu_item_component_help_info_warning_text">
-          {/* {warningTextToDisplay}
-          &nbsp; */}
-          {/* <a href="https://kubernetes.io/docs/concepts/configuration/overview/">Kubernetes best practices >></a> */}
-        </div>
-        {/** ** BUTTONS *** */}
-        <div className="create_menu_item_component_buttons">
-          <ActionButton clickHandler={handleFunction} buttonText="Create" />
-          <a href="" alt="">
-            {/* <HelpInfoButton clickHandler={showHelpInfoComponent} /> */}
-          </a>
-        </div>
-      </div>
+    <div>
+      {
+        (!createLoadingScreen)
+          ? (
+            <div className="popup_form_inner">
+              <div className="create_menu_item_component_container">
+                {/** ***CLOSE BUTTON*** */}
+                <CloseButton clickHandler={handleFormClose} />
+                {/** ***TITLE*** */}
+                <div className="create_menu_item_component_title"><h2>Create a {componentNameFormatted}</h2></div>
+                {/** ***INTRO TEXT*** */}
+                <div className="create_menu_item_component_help_info">
+                  {infoText}&nbsp;<a href="https://kubernetes.io/docs/concepts/configuration/overview/">Explore the Kubernetes docs >></a>
+                </div>
+                {/** ** FORM *** */}
+                <div className="create_menu_item_component_inputs">
+                  {formItems}
+                </div>
+                {/** ** CREATE BUTTON *** */}
+                <div className="create_menu_item_component_buttons">
+                  <ActionButton clickHandler={handleFunction} buttonText="Create" />
+                </div>
+              </div>
+            </div>
+          )
+          : (
+            <div>
+              {(creationError === false)
+                ? (
+                  <div className="popup_form_inner popup_form_inner_create_loading">
+                    <svg id="heptagon_loading" className="pod_info_component_heptagon_loading pod_info_component_create_heptagon_loading">
+                      <g transform="translate(-3.722589840316431,-136.36553658320645) scale(2.2474316850393237) rotate(-15,101.04986267322434,131.70723811769813)">
+                        <path
+                          d="M140,
+                            152.83345844306322L109,
+                            175.880461372843L72,
+                            166.17923805805214L56,
+                            130.9218798280204L73,
+                            96.24675420539563L111,
+                            87.86058520236253L141,
+                            111Z"
+                        />
+                      </g>
+                    </svg>
+                  </div>
+                )
+                : (
+                  <div className="popup_form_inner popup_form_inner_create_loading">
+                    <CloseButton clickHandler={handleFormClose} />
+                    <div className="popup_form_inner_error_text_title">Error</div>
+                    <div className="popup_form_inner_error_text_intro">An error occurred while creating your component. Below is the error message from Kubernetes:</div>
+                    <div className="errorClass" id="create_menu_item_component_loading_error">{creationErrorText}</div>
+                  </div>
+                )}
+            </div>
+          )
+        }
     </div>
   );
 };

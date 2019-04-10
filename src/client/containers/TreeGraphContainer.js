@@ -27,7 +27,10 @@ const mapDispatchToProps = dispatch => ({
   hideCreateMenuDropdown: () => {
     dispatch(actions.hideCreateMenuDropdown())
   },
-})
+  toggleCreateMenuFormItem: (bool) => {
+    dispatch(actions.toggleCreateMenuFormItem(bool));
+  },
+});
 
 //* -------------- TREE GRAPH CONTAINER COMPONENT ----------------------------------- *//
 class TreeGraphContainer extends Component {
@@ -46,6 +49,7 @@ class TreeGraphContainer extends Component {
       showToolTip: false,
       toolTipTitle: '',
       toolTipText: '',
+      loadingScreen: false,
     };
 
     this.showNodeInfo = this.showNodeInfo.bind(this);
@@ -58,6 +62,7 @@ class TreeGraphContainer extends Component {
     this.toolTipOff = this.toolTipOff.bind(this);
     this.deleteNode = this.deleteNode.bind(this);
     this.handleRerenderNode = this.handleRerenderNode.bind(this);
+    this.showLoadingScreen = this.showLoadingScreen.bind(this);
   }
 
   //* -------------- COMPONENT LIFECYCLE METHODS
@@ -173,7 +178,6 @@ class TreeGraphContainer extends Component {
 
   //* --------- DISPLAY OR HIDE NODE INFO WHEN USER HOVERS OR CLICKS IN GRAPH
   showNodeInfo(node) {
-    console.log('node coming in', node);
     this.setState(prevState => ({ ...prevState, showInfo: true, nodeInfoToShow: node }));
   }
 
@@ -200,6 +204,7 @@ class TreeGraphContainer extends Component {
   // Send the DELETE_NODE event to the main process to trigger the kubectl delete command
   deleteNode() {
     const { nodeInfoToShow } = this.state;
+    this.showLoadingScreen();
     ipcRenderer.send(events.DELETE_NODE, nodeInfoToShow);
   }
 
@@ -209,14 +214,25 @@ class TreeGraphContainer extends Component {
    * a re-render of the page, either removing the deleted node, or adding the newly created node
   */
   handleRerenderNode() {
-    const { hideCreateMenuDropdown } = this.props;
+    const { hideCreateMenuDropdown, toggleCreateMenuFormItem } = this.props;
     console.log('handle rerender node called');
-    ipcRenderer.send(events.START_LOADING_ICON, 'close');
+    //ipcRenderer.send(events.START_LOADING_ICON, 'close');
     console.log('hit start loading icon inside handle render node handler');
     hideCreateMenuDropdown();
     this.getMasterNode();
     this.getWorkerNodes();
     this.getContainersAndPods();
+    toggleCreateMenuFormItem();
+  }
+
+  showLoadingScreen() {
+    const { loadingScreen } = this.state;
+    console.log("showLoadingScreen callad");
+    if (!loadingScreen) {
+      this.setState(prevState => ({ ...prevState, loadingScreen: true }));
+    } else {
+      this.setState(prevState => ({ ...prevState, loadingScreen: false }));
+    }
   }
 
   //* --------- RENDER METHOD
@@ -537,6 +553,7 @@ class TreeGraphContainer extends Component {
       toolTipText,
       dimensions,
       treeData,
+      loadingScreen,
     } = this.state;
 
     //* --------- RETURN
@@ -547,6 +564,7 @@ class TreeGraphContainer extends Component {
             nodeInfoToShow={nodeInfoToShow}
             hideNodeInfo={this.hideNodeInfo}
             deleteNode={this.deleteNode}
+            loadingScreen={loadingScreen}
           />
         )}
         {showToolTip === true && (

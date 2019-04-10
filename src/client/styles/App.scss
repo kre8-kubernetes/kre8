@@ -49,6 +49,25 @@ body {
   font-family: Lato-Regular, sans-serif;
 }
 
+#create_menu_item_component_loading_error {
+  font-size: 12.5px;
+  text-align: center;
+  margin: 30px 45px;
+  opacity: .7;
+}
+
+.popup_form_inner_error_text_title {
+  font-size: 24px;
+  text-align: center;
+  margin: 40px 0 0 0;
+}
+
+.popup_form_inner_error_text_intro {
+  font-size: 14px;
+  text-align: left;
+  margin: 30px 40px 0 50px;
+}
+
 //* ----------------------------------------------------------- *//
 //* --------------- BUTTON COMPONENTS------------------------- *//
 //* ----------------------------------------------------------- *//
@@ -725,6 +744,23 @@ body {
   width: 200px;
 }
 
+.pod_info_component_loading {
+  min-height: 590px;
+}
+
+.pod_info_component_heptagon_loading {
+  margin-top: 220px;
+}
+
+.popup_form_inner_create_loading {
+  margin: auto;
+  word-wrap: break-word
+}
+
+.pod_info_component_create_heptagon_loading {
+ margin: 100px auto 0px auto;
+}
+
 /* CONTAINER INFO COMPONENT */
 .container_info_component {
   display: flex;
@@ -880,6 +916,7 @@ body {
   right: 31%;
   top: 17%;
   min-width: 375px;
+  min-height: 375px;
   background: $accent-darkest-blue;
   color: $light-font;
   border-radius: 6px;

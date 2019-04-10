@@ -73,8 +73,9 @@ class NavContainer extends Component {
 
   //* --------------- COMPONENT METHODS --------------------------- *//
   handleMenuItemToShow(e) {
-    const { menuItemToShow, toggleCreateMenuFormItem } = this.props;
+    const { menuItemToShow, toggleCreateMenuFormItem, hideCreateMenuDropdown } = this.props;
     menuItemToShow(e.target.id);
+    hideCreateMenuDropdown();
     toggleCreateMenuFormItem(true);
   }
 

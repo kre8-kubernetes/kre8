@@ -55,6 +55,9 @@ class CreateMenuItemContainer extends Component {
       errors: { pod: {}, deployment: {}, service: {} },
       display_error: false,
       helpInfoComponent: false,
+      createLoadingScreen: false,
+      creationError: false,
+      creationErrorText: '',
     };
     this.handleChange = this.handleChange.bind(this);
 
@@ -71,7 +74,9 @@ class CreateMenuItemContainer extends Component {
     this.showHelpInfoComponent = this.showHelpInfoComponent.bind(this);
     this.handleFormClose = this.handleFormClose.bind(this);
     this.handleOutsideFormClick = this.handleOutsideFormClick.bind(this);
+    this.handleCreateLoadingScreen = this.handleCreateLoadingScreen.bind(this);
   }
+
 
   // -------------- COMPONENT LIFECYCLE METHODS -----------------
 
@@ -122,6 +127,7 @@ class CreateMenuItemContainer extends Component {
     });
     schema.validate(pod, { abortEarly: false })
       .then((data) => {
+        this.handleCreateLoadingScreen();
         console.log('from the then', data);
         this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, pod: {} } }));
         ipcRenderer.send(events.CREATE_POD, data);
@@ -140,7 +146,7 @@ class CreateMenuItemContainer extends Component {
   handleCreateDeployment() {
     const { inputData } = this.state;
     const { deployment } = inputData;
-    const { toggleCreateMenuFormItem } = this.props;
+    // const { toggleCreateMenuFormItem } = this.props;
     const clone = Object.assign({}, deployment);
     clone.containerPort = Number(clone.containerPort);
     clone.replicas = Number(clone.replicas);
@@ -150,16 +156,17 @@ class CreateMenuItemContainer extends Component {
       containerName: yup.string().required().lowercase(),
       image: yup.string().required().lowercase(),
       containerPort: yup.number().required().positive(),
-      replicas: yup.number().required().positive().max(4),
+      replicas: yup.number().required().positive().max(6),
     });
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
-        toggleCreateMenuFormItem();
+        this.handleCreateLoadingScreen();
+        // toggleCreateMenuFormItem();
         console.log('from the then', data);
         this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, deployment: {} } }));
         ipcRenderer.send(events.CREATE_DEPLOYMENT, data);
-        ipcRenderer.send(events.START_LOADING_ICON, 'open');
-        console.log('sent start loading icon on front from createmenuitemcontainer');
+        // ipcRenderer.send(events.START_LOADING_ICON, 'open');
+        // console.log('sent start loading icon on front from createmenuitemcontainer');
       })
       .catch((err) => {
         console.log('err', err);
@@ -188,6 +195,7 @@ class CreateMenuItemContainer extends Component {
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
         console.log('from the then', data);
+        this.handleCreateLoadingScreen();
         this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, service: {} } }));
         ipcRenderer.send(events.CREATE_SERVICE, data);
       })
@@ -213,6 +221,11 @@ class CreateMenuItemContainer extends Component {
     } else {
       this.setState(prevState => ({ ...prevState, helpInfoComponent: true }));
     }
+  }
+
+  handleCreateLoadingScreen() {
+    console.log('handle create loading screen activated');
+    this.setState(prevState => ({ ...prevState, createLoadingScreen: true }));
   }
 
 
@@ -251,7 +264,21 @@ class CreateMenuItemContainer extends Component {
       acc[item[0]] = '';
       return acc;
     }, {});
-    this.setState(prevState => ({ ...prevState, inputData: { ...prevState.inputData, deployment: emptyDeploymentObj } }));
+    if (data.includes('error')) {
+      this.setState(prevState => ({
+        ...prevState,
+        creationError: true,
+        creationErrorText: data,
+      }));
+    } else {
+      this.setState(prevState => ({
+        ...prevState,
+        inputData: {
+          ...prevState.inputData,
+          deployment: emptyDeploymentObj,
+        },
+      }));
+    }
   }
 
   // INCOMING SERVICE DATA
@@ -260,11 +287,30 @@ class CreateMenuItemContainer extends Component {
     const { inputData } = this.state;
     const { service } = inputData;
     console.log('incoming data from kubectl service creation:', data);
+
     const emptyServiceObj = Object.entries(service).reduce((acc, item) => {
       acc[item[0]] = '';
       return acc;
     }, {});
-    this.setState(prevState => ({ ...prevState, inputData: { ...prevState.inputData, service: emptyServiceObj } }));
+    if (data.includes('error')) {
+      this.setState(prevState => ({
+        ...prevState,
+        creationError: true,
+        creationErrorText: data,
+        inputData: {
+          ...prevState.inputData,
+          service: emptyServiceObj,
+        },
+      }));
+    } else {
+      this.setState(prevState => ({
+        ...prevState,
+        inputData: {
+          ...prevState.inputData,
+          service: emptyServiceObj,
+        },
+      }));
+    }
   }
 
   handleFormClose() {
@@ -280,27 +326,19 @@ class CreateMenuItemContainer extends Component {
 
   render() {
     const { menuItemToShow, showCreateMenuFormItem } = this.props;
-    const { inputData, errors, helpInfoComponent } = this.state;
+    const {
+      inputData,
+      errors,
+      helpInfoComponent,
+      createLoadingScreen,
+      creationErrorText,
+      creationError,
+    } = this.state;
     const inputDataToShow = inputData[menuItemToShow];
     const handleFunction = menuItemToShow === 'pod' ? this.handleCreatePod :
                            menuItemToShow === 'service' ? this.handleCreateService :
                            menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
     console.log('menuItemToShow: ', menuItemToShow);
-
-    const textObj = {
-      pod: 'To deploy a Pod, enter the below details. Kubernetes requires all text entries be lowercase.',
-      // pod: 'A Pod is the smallest deployable unit in the Kubernetes object model.',
-      service: 'A Service is an abstraction which defines a set of Pods and a policy by which to access them.',
-      deployment: 'A Deployment is a controller that maintains the number of Pod replicas the user declares.',
-    };
-    const infoText = textObj[menuItemToShow];
-
-    // const moreInfoButtons = {
-    //   pod: <button onClick={() => this.showKubeDocs('pod')} className="help_button" type="button">?</button>,
-    //   service: <button onClick={() => this.showKubeDocs('service')} className="help_button" type="button">?</button>,
-    //   deployment: <button onClick={() => this.showKubeDocs('deployment')} className="help_button" type="button">?</button>,
-    // };
-    // const button = moreInfoButtons[menuItemToShow];
 
     return (
       <div>
@@ -311,11 +349,12 @@ class CreateMenuItemContainer extends Component {
               menuItemToShow={menuItemToShow}
               handleFormClose={this.handleFormClose}
               handleFunction={handleFunction}
-              infoText={infoText}
-              // infoButton={button}
               errors={errors}
               inputDataToShow={inputDataToShow}
               showHelpInfoComponent={this.showHelpInfoComponent}
+              createLoadingScreen={createLoadingScreen}
+              creationErrorText={creationErrorText}
+              creationError={creationError}
             />
             {helpInfoComponent && (
               <CreateMenuItemHelpInfoComponent

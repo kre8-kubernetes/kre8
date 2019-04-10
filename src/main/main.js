@@ -91,9 +91,11 @@ const createWindowAndSetEnvironmentVariables = () => {
   });
 
   win.webContents.on('will-navigate', (event, url) => {
-    console.log('url: ', url);
     event.preventDefault();
-    shell.openExternal(url);
+    console.log('url: ', url);
+    if (url.includes('aws') || url.includes('kubernetes')) {
+      shell.openExternal(url);
+    }
   });
 
   // Creates the child window that appears during initial loading of the application
@@ -529,7 +531,6 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
     // CREATE THE POD VIA kubectl
     const child = spawnSync('kubectl', ['apply', '-f', `${process.env.KUBECTL_STORAGE}pod_${data.podName}.json`]);
     const stdout = child.stdout.toString();
-
     const stderr = child.stderr.toString();
     if (stderr) throw stderr;
 
@@ -566,33 +567,33 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
 
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
 
-  let loadingChildWindow;
+  //let loadingChildWindow;
   try {
     // Create Loading Icon Child Window
-    const currentParentPosition = win.getPosition();
-    const currentParentSize = win.getSize();
-    const childX = Math.floor(currentParentPosition[0] + (currentParentSize[0] / 2) - (325 / 2));
-    const childY = Math.floor((currentParentPosition[1] + (currentParentSize[1] / 2) - (325 / 2)));
+    // const currentParentPosition = win.getPosition();
+    // const currentParentSize = win.getSize();
+    // const childX = Math.floor(currentParentPosition[0] + (currentParentSize[0] / 2) - (325 / 2));
+    // const childY = Math.floor((currentParentPosition[1] + (currentParentSize[1] / 2) - (325 / 2)));
 
-    loadingChildWindow = new BrowserWindow({
-      height: 325,
-      width: 325,
-      maxHeight: 325,
-      maxWidth: 325,
-      minHeight: 325,
-      minWidth: 325,
-      parent: win,
-      show: true,
-      frame: false,
-      center: false,
-      backgroundColor: '#1F3248',
-      x: childX,
-      y: childY,
-    });
-    loadingChildWindow.loadURL(`file://${path.join(__dirname, '../childWindow/childIndex.html')}`);
+    // loadingChildWindow = new BrowserWindow({
+    //   height: 325,
+    //   width: 325,
+    //   maxHeight: 325,
+    //   maxWidth: 325,
+    //   minHeight: 325,
+    //   minWidth: 325,
+    //   parent: win,
+    //   show: true,
+    //   frame: false,
+    //   center: false,
+    //   backgroundColor: '#1F3248',
+    //   x: childX,
+    //   y: childY,
+    // });
+    // loadingChildWindow.loadURL(`file://${path.join(__dirname, '../childWindow/childIndex.html')}`);
 
     // START CREATING DEPLOYMENT
-    if (data.replicas > 5) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 5 or less.`);
+    if (data.replicas > 6) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 6 or less.`);
     // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
     const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
     const stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);
@@ -601,16 +602,23 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
     const child = spawnSync('kubectl', ['create', '-f', `${process.env.KUBECTL_STORAGE}deployment_${data.deploymentName}.json`]);
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
-    if (stderr) throw stderr;
-    // SEND STDOUT TO RENDERER PROCESS
     await awsHelperFunctions.timeout(1000 * 10);
-    win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stdout);
-    win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create deployment');
-    loadingChildWindow.close();
-    loadingChildWindow = null;
+    if (stderr) {
+      console.log('an error ocurred: ', `error: ${stderr}`);
+      win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stderr);
+    } else {
+      win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stdout);
+      win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create deployment');
+    }
+ 
+    // SEND STDOUT TO RENDERER PROCESS
+    
+    
+    // loadingChildWindow.close();
+    // loadingChildWindow = null;
   } catch (err) {
-    loadingChildWindow.close();
-    loadingChildWindow = null;
+    // loadingChildWindow.close();
+    // loadingChildWindow = null;
     console.error('From CREATE_DEPLOYMENT', err);
   }
 });
@@ -628,7 +636,6 @@ ipcMain.on(events.DELETE_NODE, async (event, data) => {
     const deploymentName = data.data.name.split('-')[0];
     const child = spawnSync('kubectl', ['delete', 'deployment', deploymentName]);
     const stdout = child.stdout.toString();
-
     const stderr = child.stderr.toString();
     if (stderr) throw new Error(stderr);
     // SEND STDOUT TO RENDERER PROCESS

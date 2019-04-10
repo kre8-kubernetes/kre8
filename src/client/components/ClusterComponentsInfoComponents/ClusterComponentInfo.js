@@ -10,6 +10,7 @@ const ClusterInfoComponent = (props) => {
     hideNodeInfo,
     deleteNode,
     nodeInfoToShow,
+    loadingScreen,
   } = props;
 
   const componentType = nodeInfoToShow.data.type;
@@ -40,6 +41,7 @@ const ClusterInfoComponent = (props) => {
                         data={nodeInfoToShow.data}
                         hideNodeInfo={hideNodeInfo}
                         deleteNode={deleteNode}
+                        loadingScreen={loadingScreen}
                       />
                     )
                     : (componentType === 'Container')

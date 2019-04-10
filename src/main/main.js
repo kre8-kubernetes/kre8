@@ -413,13 +413,19 @@ ipcMain.on(events.GET_MASTER_NODE, async (event, data) => {
     // string the data and log to the console;
     const stdout = apiServiceData.stdout.toString();
     const stdoutParsed = JSON.parse(stdout);
-    console.log('stdout:', stdoutParsed);
+    console.log('stdout:', stdoutParsed.items);
 
     const stderr = apiServiceData.stderr.toString();
     if (stderr) throw stderr;
 
-    const clusterApiData = stdoutParsed.items.find(item => item.metadata.labels.component === 'apiserver');
+    const clusterApiData = stdoutParsed.items.find((item) => {
+      if (item.metadata.labels) {
+        return item.metadata.labels.component === 'apiserver';
+      }
+    });
     win.webContents.send(events.HANDLE_MASTER_NODE, clusterApiData);
+    //win.webContents.send(events.HANDLE_MASTER_NODE, stdoutParsed);
+
   } catch (err) {
     console.error('From GET_MASTER_NODE:', err);
     win.webContents.send(events.HANDLE_MASTER_NODE, err);

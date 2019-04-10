@@ -114,6 +114,7 @@ class TreeGraphContainer extends Component {
 
   handleMasterNode(event, data) {
     console.log('handleMasterNode data: ', data);
+    
     const treeData = {
       name: data.metadata.labels.component,
       id: data.metadata.uid,

@@ -2,6 +2,7 @@
 import React from 'react';
 import ActionButton from './Buttons/ActionButton';
 import HelpInfoButton from './Buttons/HelpInfoButton';
+import kre8Logo from '../styles/assets/images/Kre8Logo.png';
 
 const HomeComponent = props => {
   const {
@@ -20,6 +21,7 @@ const HomeComponent = props => {
   return (
     <div className="home_page_form_container">
       {/* HOME CONTAINER HEADER */}
+      <img className="kre8Logo" src={kre8Logo} alt="" />
       <div className="home_page_form_container_header">
         Create and Deploy your Kubernetes Cluster
       </div>

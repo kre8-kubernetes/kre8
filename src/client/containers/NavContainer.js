@@ -6,14 +6,13 @@ import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
 import NavComponent from '../components/NavigationComponents/NavComponent';
 
-// TODO: seem not to be using the following, i commented them out, awaiting approval to delete
-// showCreateMenuFormItem,
-// hideCreateMenuButton,
-// displayCreateMenuButton,
+/** ------------ NAVIGATION CONTAINER — CONSTANTLY DISPLAYED AT SCREEN TOP ------------------
+  ** Renders the NavComponent, which renders the ClusterInfoComponent
+  *
+*/
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
-  // showCreateMenuFormItem: store.navbar.showCreateMenuFormItem;
   showCreateMenuButton: store.navbar.showCreateMenuButton,
   showCreateMenuDropdown: store.navbar.showCreateMenuDropdown,
   menuItemToShow: store.navbar.menuItemToShow,
@@ -22,12 +21,6 @@ const mapStateToProps = store => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  // displayCreateMenuButton: () => {
-  //   dispatch(actions.displayCreateMenuButton());
-  // },
-  // hideCreateMenuButton: () => {
-  //   dispatch(actions.hideCreateMenuButton());
-  // },
   toggleCreateMenuDropdown: (bool) => {
     dispatch(actions.toggleCreateMenuDropdown(bool));
   },
@@ -73,8 +66,9 @@ class NavContainer extends Component {
 
   //* --------------- COMPONENT METHODS --------------------------- *//
   handleMenuItemToShow(e) {
-    const { menuItemToShow, toggleCreateMenuFormItem } = this.props;
+    const { menuItemToShow, toggleCreateMenuFormItem, hideCreateMenuDropdown } = this.props;
     menuItemToShow(e.target.id);
+    hideCreateMenuDropdown();
     toggleCreateMenuFormItem(true);
   }
 
@@ -100,12 +94,10 @@ class NavContainer extends Component {
     const {
       showCreateMenuButton,
       showCreateMenuDropdown,
-
       clusterInfo,
       showClusterInfo,
       hideClusterInfo,
       displayClusterInfo,
-
       toggleCreateMenuDropdown,
     } = this.props;
 
@@ -114,14 +106,11 @@ class NavContainer extends Component {
       <div className="nav_container">
         <NavComponent
           handleNavBarClick={this.handleNavBarClick}
-
           showCreateMenuButton={showCreateMenuButton}
           showCreateMenuDropdown={showCreateMenuDropdown}
           toggleCreateMenuDropdown={toggleCreateMenuDropdown}
-
           handleMenuItemToShow={this.handleMenuItemToShow}
           handleOutsideDropdownClick={this.handleOutsideDropdownClick}
-
           clusterInfo={clusterInfo}
           showClusterInfo={showClusterInfo}
           displayClusterInfo={displayClusterInfo}

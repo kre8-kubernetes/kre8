@@ -3,19 +3,18 @@ import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-// import { Group } from '@vx/group';
-// import { Tree } from '@vx/hierarchy';
-// import { LinkHorizontal } from '@vx/shape';
-// import { hierarchy } from 'd3-hierarchy';
-// import { LinearGradient } from '@vx/gradient';
 import uuid from 'uuid';
 import * as events from '../../eventTypes';
 import * as actions from '../store/actions/actions';
 import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
 import ClusterInfoComponent from '../components/ClusterComponentsInfoComponents/ClusterComponentInfo';
 
-// TODO: Remove console.logs
-// TODO: check out node in handleWorkerNodes method
+/** ------------ HOME CONTAINER — FIRST PAGE USER ENCOUNTERS ----------------------
+ ** Rendered by KubectlContainer
+ ** Renders the Cluster Info Component + Tree Graph Component, which renders 
+ ** the MasterNodeComponent, WorkerNodeComponent, PodComponent and ContainerComponent
+* Displays the Tree Graph
+*/
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
@@ -27,7 +26,10 @@ const mapDispatchToProps = dispatch => ({
   hideCreateMenuDropdown: () => {
     dispatch(actions.hideCreateMenuDropdown())
   },
-})
+  toggleCreateMenuFormItem: (bool) => {
+    dispatch(actions.toggleCreateMenuFormItem(bool));
+  },
+});
 
 //* -------------- TREE GRAPH CONTAINER COMPONENT ----------------------------------- *//
 class TreeGraphContainer extends Component {
@@ -46,6 +48,7 @@ class TreeGraphContainer extends Component {
       showToolTip: false,
       toolTipTitle: '',
       toolTipText: '',
+      loadingScreen: false,
     };
 
     this.showNodeInfo = this.showNodeInfo.bind(this);
@@ -58,11 +61,12 @@ class TreeGraphContainer extends Component {
     this.toolTipOff = this.toolTipOff.bind(this);
     this.deleteNode = this.deleteNode.bind(this);
     this.handleRerenderNode = this.handleRerenderNode.bind(this);
+    this.toggleLoadingScreen = this.toggleLoadingScreen.bind(this);
   }
 
   //* -------------- COMPONENT LIFECYCLE METHODS
   componentDidMount() {
-    // on mount, get the master node, get the worker nodes
+    // on initial mount, get data on the master node and worker nodes to render the graph
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
     ipcRenderer.on(events.HANDLE_MASTER_NODE, this.handleMasterNode);
@@ -82,7 +86,7 @@ class TreeGraphContainer extends Component {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
-  //* --------- TREE GRAPH GENERATION METHODS ---------------------------- **//
+  //* --------- METHODS FOR GENERATING THE COMPONENTS OF THE TREE GRAPH ---------------- **//
 
   //* ----------- SEND REQUESTS TO MAINTHREAD TO ASK KUBECTL FOR NODE DATA
   getMasterNode() {
@@ -104,11 +108,11 @@ class TreeGraphContainer extends Component {
     }));
   }
 
-  //* ----------- METHODS TO PROCESS DATA COMING BACK FROM KUBECTL VIA MAIN THREAD
-  /**
-   * Methods to structure tree data object starting with the Master Node (Kubernetes API Server)
+
+  /** ------------ METHODS TO PROCESS DATA COMING BACK FROM KUBECTL VIA MAIN THREAD --------
+   * Structure tree data object starting with the Master Node (Kubernetes API Server)
    * at the top of the heirarchy. The subsequent children are then pushed into an array, Children
-   * Currently the heirarchy is: MasterNode => WorkerNode => Pod => Container
+   * The heirarchy is: MasterNode => WorkerNode => Pod => Container
    * @param {Object} data coming back from kubectl regarding the master node
   */
 
@@ -146,7 +150,6 @@ class TreeGraphContainer extends Component {
         acc[ele.name] = index;
         return acc;
       }, {});
-
       data.items.forEach((pod) => {
         const newPod = Object.assign({}, pod);
         if (newPod.status.phase !== 'Pending') {
@@ -170,7 +173,6 @@ class TreeGraphContainer extends Component {
 
   //* --------- DISPLAY OR HIDE NODE INFO WHEN USER HOVERS OR CLICKS IN GRAPH
   showNodeInfo(node) {
-    console.log('node coming in', node);
     this.setState(prevState => ({ ...prevState, showInfo: true, nodeInfoToShow: node }));
   }
 
@@ -194,10 +196,11 @@ class TreeGraphContainer extends Component {
   }
 
   //* --------- DELETE NODE METHOD
-  // Send the DELETE_NODE event to the main process to trigger the kubectl delete command
+  // Send the DELETE_DEPLOYMENT event to the main process to trigger the kubectl delete command
   deleteNode() {
     const { nodeInfoToShow } = this.state;
-    ipcRenderer.send(events.DELETE_NODE, nodeInfoToShow);
+    this.toggleLoadingScreen();
+    ipcRenderer.send(events.DELETE_DEPLOYMENT, nodeInfoToShow);
   }
 
   //* --------- RERENDER GRAPH METHOD
@@ -205,19 +208,41 @@ class TreeGraphContainer extends Component {
    * Call to get data on the current nodes -- this will update state and trigger
    * a re-render of the page, either removing the deleted node, or adding the newly created node
   */
-  handleRerenderNode() {
-    const { hideCreateMenuDropdown } = this.props;
-    console.log('handle rerender node called');
-    ipcRenderer.send(events.START_LOADING_ICON, 'close');
+  handleRerenderNode(event, data) {
+    const { hideCreateMenuDropdown, toggleCreateMenuFormItem } = this.props;
+    console.log('handle rerender node called:', data);
     console.log('hit start loading icon inside handle render node handler');
-    hideCreateMenuDropdown();
+    if (data === 'delete') {
+      this.hideNodeInfo();
+      this.toggleLoadingScreen();
+    } else {
+      toggleCreateMenuFormItem();
+      this.toggleLoadingScreen();
+      this.hideNodeInfo();
+    }
+    // hideCreateMenuDropdown();
     this.getMasterNode();
     this.getWorkerNodes();
     this.getContainersAndPods();
   }
 
+  /** --------- DISPLAY OR CLOSE LOADING SCREEN ---------------
+   * Triggered when delete node called, and closed when delete node completes
+   * when handleRerenderNode is activated. Displays loading icon above graph.
+  */
+  toggleLoadingScreen() {
+    const { loadingScreen } = this.state;
+    if (!loadingScreen) {
+      this.setState(prevState => ({ ...prevState, loadingScreen: true }));
+    } else {
+      this.setState(prevState => ({ ...prevState, loadingScreen: false }));
+    }
+  }
+
   //* --------- RENDER METHOD
   render() {
+
+    // DUMMY DATA FOR GRAPH SIMULATIONS
     // const dummyTreeData = {
     //   name: 'Master Node',
     //   id: uuid(),
@@ -534,6 +559,7 @@ class TreeGraphContainer extends Component {
       toolTipText,
       dimensions,
       treeData,
+      loadingScreen,
     } = this.state;
 
     //* --------- RETURN
@@ -544,6 +570,7 @@ class TreeGraphContainer extends Component {
             nodeInfoToShow={nodeInfoToShow}
             hideNodeInfo={this.hideNodeInfo}
             deleteNode={this.deleteNode}
+            loadingScreen={loadingScreen}
           />
         )}
         {showToolTip === true && (

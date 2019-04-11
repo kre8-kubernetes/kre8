@@ -5,13 +5,12 @@ import PodInfoComponent from './PodInfoComponent';
 import ContainerInfoComponent from './ContainerInfoComponent';
 import OutsideClick from '../../helperFunctions/OutsideClick';
 
-// TODO: Braden, doesn't like nested ifs, also what is: nothing_info_component (line 55)
-
 const ClusterInfoComponent = (props) => {
   const {
     hideNodeInfo,
     deleteNode,
     nodeInfoToShow,
+    loadingScreen,
   } = props;
 
   const componentType = nodeInfoToShow.data.type;
@@ -42,6 +41,7 @@ const ClusterInfoComponent = (props) => {
                         data={nodeInfoToShow.data}
                         hideNodeInfo={hideNodeInfo}
                         deleteNode={deleteNode}
+                        loadingScreen={loadingScreen}
                       />
                     )
                     : (componentType === 'Container')

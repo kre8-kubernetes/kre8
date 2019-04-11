@@ -48,7 +48,7 @@ kubernetesTemplates.createServiceYamlTemplate = (data) => {
     },
     spec: {
       selector: {
-        app: `${data.appName}`,
+        app: `${data.applicationName}`,
       },
       ports: [
         {
@@ -73,20 +73,20 @@ kubernetesTemplates.createDeploymentYamlTemplate = (data) => {
     metadata: {
       name: `${data.deploymentName}`,
       labels: {
-        app: `${data.appName}`,
+        app: `${data.applicationName}`,
       },
     },
     spec: {
       replicas: Number(`${data.replicas}`),
       selector: {
         matchLabels: {
-          app: `${data.appName}`,
+          app: `${data.applicationName}`,
         },
       },
       template: {
         metadata: {
           labels: {
-            app: `${data.appName}`,
+            app: `${data.applicationName}`,
           },
         },
         spec: {

@@ -5,6 +5,11 @@ import * as actions from '../store/actions/actions';
 import TreeGraphContainer from './TreeGraphContainer';
 import CreateMenuItemContainer from './CreateMenuItemContainer';
 
+/** ------------ KUBECTL CONTAINER  ----------------------
+ ** Renders the Tree Graph Container + CreateMenuItemContainer
+ * if showCreateMenuFormItem is true
+*/
+
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,

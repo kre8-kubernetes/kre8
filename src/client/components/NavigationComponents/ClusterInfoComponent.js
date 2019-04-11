@@ -1,12 +1,17 @@
 import React from 'react';
 
+/** ------------ NAVIGATION COMPONENT ------------------------------
+  ** Rendered by the NavComponent via NavContainer;
+  *Displays information on cluster when user  'Cluster Info' at top right of screen
+  *Data comes from file saved on user's machine
+*/
+
 const ClusterInfoComponent = (props) => {
   const { clusterInfo } = props;
 
   const halfOfServerEndpoint = Math.floor(clusterInfo.serverEndPoint.length / 2);
   const serverEndPointFrontHalf = clusterInfo.serverEndPoint.slice(0, halfOfServerEndpoint);
   const serverEndPointBackHalf = clusterInfo.serverEndPoint.slice(halfOfServerEndpoint);
-
 
   return (
     <div className="cluster_info_container">

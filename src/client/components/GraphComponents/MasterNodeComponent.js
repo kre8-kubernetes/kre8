@@ -40,7 +40,7 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo, toolTipOn, toolTip
       <text
         dy={textDY}
         fontSize={textFontSize}
-        fontFamily="Lato-Regular"
+        fontFamily="sans-serif"
         textAnchor="middle"
         style={{ pointerEvents: 'none' }}
         fill={textFill}

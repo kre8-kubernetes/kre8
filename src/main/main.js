@@ -53,7 +53,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   } else if (NODE_ENV === 'test') {
     process.env.APPLICATION_PATH = __dirname;
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
-  } else if (NODE_ENV === 'production') {
+  } else {
     // TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
     awsEventCallbacks.setEnvVarsAndMkDirsInProd();
   }
@@ -105,6 +105,7 @@ const createWindowAndSetEnvironmentVariables = () => {
     center: true,
     title: 'LOADING',
   });
+
   // set the win event listeners after create the child window
   win.once('ready-to-show', () => {
     win.show();
@@ -120,12 +121,14 @@ const createWindowAndSetEnvironmentVariables = () => {
     childWin.show();
     // load the renderer url onto window after the child window is ready to show
     const urlPath = `file://${path.join(__dirname, '..', '..', 'dist/index.html')}`;
-    console.log('\nNODE_ENV ========================> ', process.env.NODE_ENV);
-    if (process.env.NODE_ENV === 'development') {
+    console.log('\nNODE_ENV ========================> ', NODE_ENV);
+    console.log('\nAPPLICATION PATH ================> ', process.env.APPLICATION_PATH);
+    console.log('\nSTORAGE =========================> ', process.env.AWS_STORAGE);
+    if (NODE_ENV === 'development') {
       win.loadURL(`http://localhost:${PORT}`);
-    } else if (process.env.NODE_ENV === 'production') {
+    } else if (NODE_ENV === 'test') {
       win.loadURL(urlPath);
-    } else if (process.env.NODE_ENV === 'test') {
+    } else {
       win.loadURL(urlPath);
     }
   });

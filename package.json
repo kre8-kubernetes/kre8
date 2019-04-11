@@ -6,13 +6,14 @@
   "scripts": {
     "test": "NODE_ENV=test mocha",
     "build": "webpack --config webpack.config.js",
-    "build:test": "webpack --config webpack.prod.config.js",
-    "build:prod": "webpack --config webpack.prod.config.js",
-    "prod": "webpack --mode production --config webpack.prod.config.js && NODE_ENV=production electron --noDevServer src/main/main.js",
-    "prestart": "npm run build",
+    "build:test": "webpack --config webpack.prod.config.js --colors",
+    "build:prod": "webpack --config webpack.prod.config.js --colors",
+    "start:test": "NODE_ENV=test electron --noDevServer src/main/main.js",
+    "start:prod": "webpack --mode production --config webpack.prod.config.js --colors && NODE_ENV=production electron --noDevServer src/main/main.js",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron src/main/main.js",
-    "dist": "DEBUG=electron-builder electron-builder",
+    "dist": "electron-builder",
+    "dist:debug": "DEBUG=electron-builder electron-builder",
     "dev": "NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000 --config=./webpack.config.js"
   },
   "build": {
@@ -28,8 +29,7 @@
     },
     "files": [
       "**/*",
-      "./dist/**/*",
-      "./src/main/main.js"
+      "./src/main/**/*"
     ]
   },
   "repository": {

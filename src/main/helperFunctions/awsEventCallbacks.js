@@ -62,7 +62,7 @@ awsEventCallbacks.setEnvVarsAndMkDirsInDev = () => {
 };
 // Same as above, but for the production environment with the added caveat of setting APPLICATION_PATH
 awsEventCallbacks.setEnvVarsAndMkDirsInProd = () => {
-  process.env.APPLICATION_PATH = `${process.env.HOME}/Library/Application\ Support/KRE8`;
+  process.env.APPLICATION_PATH = `${process.env.HOME}/Library/Application\ Support/kre8`;
   process.env.AWS_STORAGE = `${process.env.APPLICATION_PATH}/Storage/AWS_Assets/`;
   process.env.KUBECTL_STORAGE = `${process.env.APPLICATION_PATH}/Storage/KUBECTL_Assets`;
   mkdirp.sync(`${process.env.AWS_STORAGE}AWS_Assets/`);

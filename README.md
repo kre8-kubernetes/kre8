@@ -21,9 +21,9 @@ KRE8's powerful dashboard tool provides the functionality to create and delete d
 *Steps 1 & 2 take AWS approximately 15 minutes to complete. While minimal user input is required, the application needs to remain open for the duration of the process, so please set aside that block of time before beginning.*
 
 #### STEP 1: AWS Elastic Container Service for Kubernetes (EKS) Setup
-**- Enter AWS Credentials:** Input your AWS Access Key + Secret Access Key into Kre8’s Welcome Page.
+* **Enter AWS Credentials:** Input your AWS Access Key + Secret Access Key into Kre8’s Welcome Page.
 
-**- AWS Component Creation:** After selecting names for the specified components, Kre8 will communicate with AWS to create the following services: an IAM Role, a Virtual Private Cloud (VPC) Stack, a Cluster and three Worker Nodes
+* **- AWS Component Creation:** After selecting names for the specified components, Kre8 will communicate with AWS to create the following services: an IAM Role, a Virtual Private Cloud (VPC) Stack, a Cluster and three Worker Nodes
 
 #### STEP 2: Kubernetes Kubectl Configuration
 **- Kubectl Configuration:** Kre8 will then configure Kubectl, the official Kubernetes CLI, to communicate with your AWS Cluster

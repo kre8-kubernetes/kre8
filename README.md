@@ -23,14 +23,14 @@ KRE8's powerful dashboard tool provides the functionality to create and delete d
 #### STEP 1: AWS Elastic Container Service for Kubernetes (EKS) Setup
 * **Enter AWS Credentials:** Input your AWS Access Key + Secret Access Key into Kre8’s Welcome Page.
 
-* **- AWS Component Creation:** After selecting names for the specified components, Kre8 will communicate with AWS to create the following services: an IAM Role, a Virtual Private Cloud (VPC) Stack, a Cluster and three Worker Nodes
+* **AWS Component Creation:** After selecting names for the specified components, Kre8 will communicate with AWS to create the following services: an IAM Role, a Virtual Private Cloud (VPC) Stack, a Cluster and three Worker Nodes
 
 #### STEP 2: Kubernetes Kubectl Configuration
-**- Kubectl Configuration:** Kre8 will then configure Kubectl, the official Kubernetes CLI, to communicate with your AWS Cluster
+* **Kubectl Configuration:** Kre8 will then configure Kubectl, the official Kubernetes CLI, to communicate with your AWS Cluster
 
 #### STEP 3: Create + Deploy Kubernetes Components
-**- Visualization:** At this point, you will be able to visualize and monitor your AWS-hosted components on KRE8.
-**- Launch Pods, Services and Deployments:** Enter the specifications for your desired Kubernetes components along with the Docker image of your application to deploy them to the cloud.
+* **Visualization:** At this point, you will be able to visualize and monitor your AWS-hosted components on KRE8.
+* **Launch Pods, Services and Deployments:** Enter the specifications for your desired Kubernetes components along with the Docker image of your application to deploy them to the cloud.
 
 ### Contributors
 [Braden Altstatt](https://github.com/bradenaa) | [Adrian Diamond](https://github.com/AdrianDiamond13) | [Carolyn Harrold](https://github.com/jinihendrix) 

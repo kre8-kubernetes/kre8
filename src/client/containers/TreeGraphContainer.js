@@ -61,7 +61,7 @@ class TreeGraphContainer extends Component {
     this.toolTipOff = this.toolTipOff.bind(this);
     this.deleteNode = this.deleteNode.bind(this);
     this.handleRerenderNode = this.handleRerenderNode.bind(this);
-    this.toggleLoadingScreen = this.toggleLoadingScreen.bind(this);
+    this.toggleLoadingScreenPostDelete = this.toggleLoadingScreenPostDelete.bind(this);
   }
 
   //* -------------- COMPONENT LIFECYCLE METHODS
@@ -199,7 +199,7 @@ class TreeGraphContainer extends Component {
   // Send the DELETE_DEPLOYMENT event to the main process to trigger the kubectl delete command
   deleteNode() {
     const { nodeInfoToShow } = this.state;
-    this.toggleLoadingScreen();
+    this.toggleLoadingScreenPostDelete();
     ipcRenderer.send(events.DELETE_DEPLOYMENT, nodeInfoToShow);
   }
 
@@ -214,10 +214,10 @@ class TreeGraphContainer extends Component {
     console.log('hit start loading icon inside handle render node handler');
     if (data === 'delete') {
       this.hideNodeInfo();
-      this.toggleLoadingScreen();
+      this.toggleLoadingScreenPostDelete();
     } else {
       toggleCreateMenuFormItem();
-      this.toggleLoadingScreen();
+      //this.toggleLoadingScreenPostDelete();
       this.hideNodeInfo();
     }
     // hideCreateMenuDropdown();
@@ -230,7 +230,7 @@ class TreeGraphContainer extends Component {
    * Triggered when delete node called, and closed when delete node completes
    * when handleRerenderNode is activated. Displays loading icon above graph.
   */
-  toggleLoadingScreen() {
+  toggleLoadingScreenPostDelete() {
     const { loadingScreen } = this.state;
     if (!loadingScreen) {
       this.setState(prevState => ({ ...prevState, loadingScreen: true }));

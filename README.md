@@ -1,7 +1,7 @@
 ![KRE8](src/client/styles/assets/images/Kre8LogoDark.png)
 
 ## Build, Deploy and Monitor a Kubernetes Cluster from your Desktop
-[Kre8](https://www.kre8.io) is a desktop application that empowers DevOps teams to build, deploy and monitor a Kubernetes cluster. This open source version enables users to configure their cluster from their desktop, and then deploy the necessary resources — pods, containers, deployments and services — to the Amazon Web Services cloud. The platform features an interactive visualizer with real-time metrics on the status of your cluster. The days of assembling metrics from AWS and kubectl to put together reports on your cluster are over! 
+[Kre8](https://www.kre8.io) is a desktop application that empowers DevOps teams to build, deploy and monitor a Kubernetes cluster. The open source version enables users to configure a cluster, and then deploy the necessary resources — pods, containers, deployments and services — to the Amazon Web Services cloud. The platform features an interactive visualizer with real-time metrics on the status of your cluster. The days of assembling metrics from AWS and kubectl to put together reports on your cluster are over! 
 
 ## Interactive Kubernetes Visualizer
 The interactive visualizer enables developers to view the status of their cluster in realtime. Click on the individual elements within your cluster to get realtime data and metrics.

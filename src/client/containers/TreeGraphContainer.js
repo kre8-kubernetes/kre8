@@ -9,8 +9,12 @@ import * as actions from '../store/actions/actions';
 import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
 import ClusterInfoComponent from '../components/ClusterComponentsInfoComponents/ClusterComponentInfo';
 
-// TODO: Remove console.logs
-// TODO: check out node in handleWorkerNodes method
+/** ------------ HOME CONTAINER — FIRST PAGE USER ENCOUNTERS ----------------------
+ ** Rendered by KubectlContainer
+ ** Renders the Cluster Info Component + Tree Graph Component, which renders 
+ ** the MasterNodeComponent, WorkerNodeComponent, PodComponent and ContainerComponent
+* Displays the Tree Graph
+*/
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
@@ -62,7 +66,7 @@ class TreeGraphContainer extends Component {
 
   //* -------------- COMPONENT LIFECYCLE METHODS
   componentDidMount() {
-    // on mount, get the master node, get the worker nodes
+    // on initial mount, get data on the master node and worker nodes to render the graph
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
     ipcRenderer.on(events.HANDLE_MASTER_NODE, this.handleMasterNode);
@@ -82,7 +86,7 @@ class TreeGraphContainer extends Component {
     window.removeEventListener('resize', this.updateWindowDimensions);
   }
 
-  //* --------- TREE GRAPH GENERATION METHODS ---------------------------- **//
+  //* --------- METHODS FOR GENERATING THE COMPONENTS OF THE TREE GRAPH ---------------- **//
 
   //* ----------- SEND REQUESTS TO MAINTHREAD TO ASK KUBECTL FOR NODE DATA
   getMasterNode() {
@@ -104,17 +108,15 @@ class TreeGraphContainer extends Component {
     }));
   }
 
-  //* ----------- METHODS TO PROCESS DATA COMING BACK FROM KUBECTL VIA MAIN THREAD
-  /**
-   * Methods to structure tree data object starting with the Master Node (Kubernetes API Server)
+
+  /** ------------ METHODS TO PROCESS DATA COMING BACK FROM KUBECTL VIA MAIN THREAD --------
+   * Structure tree data object starting with the Master Node (Kubernetes API Server)
    * at the top of the heirarchy. The subsequent children are then pushed into an array, Children
-   * Currently the heirarchy is: MasterNode => WorkerNode => Pod => Container
+   * The heirarchy is: MasterNode => WorkerNode => Pod => Container
    * @param {Object} data coming back from kubectl regarding the master node
   */
 
   handleMasterNode(event, data) {
-    console.log('handleMasterNode data: ', data);
-    
     const treeData = {
       name: data.metadata.labels.component,
       id: data.metadata.uid,
@@ -126,7 +128,6 @@ class TreeGraphContainer extends Component {
   }
 
   handleWorkerNodes(event, data) {
-    console.log('handleWorkerNodes data: ', data);
     this.setState((prevState) => {
       const newState = { ...prevState, treeData: { ...prevState.treeData } };
       data.items.forEach((node) => {
@@ -142,7 +143,6 @@ class TreeGraphContainer extends Component {
   }
 
   handleContainersAndPods(event, data) {
-    console.log('handleContainersAndPods data: ', data);
     this.setState((prevState) => {
       const { treeData } = prevState;
       const newState = { ...prevState, treeData: { ...treeData, children: [...treeData.children] } };
@@ -150,7 +150,6 @@ class TreeGraphContainer extends Component {
         acc[ele.name] = index;
         return acc;
       }, {});
-
       data.items.forEach((pod) => {
         const newPod = Object.assign({}, pod);
         if (newPod.status.phase !== 'Pending') {
@@ -227,8 +226,7 @@ class TreeGraphContainer extends Component {
     this.getContainersAndPods();
   }
 
-  //* --------- DISPLAY OR CLOSE LOADING SCREEN
-  /**
+  /** --------- DISPLAY OR CLOSE LOADING SCREEN ---------------
    * Triggered when delete node called, and closed when delete node completes
    * when handleRerenderNode is activated. Displays loading icon above graph.
   */
@@ -243,6 +241,8 @@ class TreeGraphContainer extends Component {
 
   //* --------- RENDER METHOD
   render() {
+
+    // DUMMY DATA FOR GRAPH SIMULATIONS
     // const dummyTreeData = {
     //   name: 'Master Node',
     //   id: uuid(),

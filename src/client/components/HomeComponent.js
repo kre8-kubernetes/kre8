@@ -1,10 +1,16 @@
-/* eslint-disable arrow-parens */
 import React from 'react';
 import ActionButton from './Buttons/ActionButton';
 import HelpInfoButton from './Buttons/HelpInfoButton';
 import kre8Logo from '../styles/assets/images/Kre8Logo.png';
 
-const HomeComponent = props => {
+/** ------------ HOME COMPONENT ------------------------------
+  ** Rendered by the HomeContainer
+  * First element user sees upon inital interaction with the application
+  * Features a form requesting AWS account credentials
+  * User can navigate back to the screen via Nav bar to enter new credentials
+*/
+
+const HomeComponent = (props) => {
   const {
     awsAccessKeyId,
     awsSecretAccessKey,
@@ -28,20 +34,11 @@ const HomeComponent = props => {
       {/* TEXT JUST BELOW THE HEADER */}
       <div className="home_page_form_container_intro_text">
       Enter your Amazon Web Services account credentials to get started.
-        {/* <p>To configure Kre8 with your AWS account, enter your credentials below.</p> */}
       </div>
       {/* HOME INPUT FORM CONTAINER */}
       <div className="home_page_form_container_input_field_area">
         <div className="home_page_form_container_inputs_item">
-          <input
-            id="awsAccessKeyId"
-            onChange={handleChange}
-            placeholder="AWS Access Key ID"
-            value={awsAccessKeyId}
-            type="text"
-            name="awsAccessKeyId"
-            maxLength="40"
-          />
+          <input id="awsAccessKeyId" onChange={handleChange} placeholder="AWS Access Key ID" value={awsAccessKeyId} type="text" name="awsAccessKeyId" maxLength="40" />
           <div className="errorClass">{errors.awsAccessKeyId}</div>
         </div>
         <div className="home_page_form_container_inputs_item">
@@ -49,7 +46,7 @@ const HomeComponent = props => {
           <div className="errorClass">{errors.awsSecretAccessKey}</div>
         </div>
       </div>
-      {/* BUTTONS AT THE BOTTOM CONTAINER */}
+      {/* DROPDOWN + BUTTONS AT THE BOTTOM CONTAINER */}
       <div className="home_page_form_container_buttons">
         <div className="home_page_form_container_buttons_item">
           <select className="dropDown" value={awsRegion} onChange={handleFormChange}>

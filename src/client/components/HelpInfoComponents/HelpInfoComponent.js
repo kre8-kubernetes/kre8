@@ -1,7 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import CloseButton from '../Buttons/CloseButton';
 
-// When user clicks the (?) button, display this modal
+/** ------------ HELP INFO ( ? ) COMPONENT ------------------------------
+  * Rendered by the AWSContainer or HomeContainer
+  * Appears when user clicks the ? button in either the AWS or Home Container
+*/
+
 const HelpInfoComponent = (props) => {
   const {
     aws,
@@ -45,7 +49,6 @@ const HelpInfoComponent = (props) => {
           <div id="home_more_info_component_explainer_text_1" className="more_info_component_explainer_text">
             KRE8 needs your Amazon Web Services Access Key and Secret Key in order to interact with your AWS account. To locate your account credentials:
           </div>
-          {/* <div id="home_more_info_component_explainer_text_2" className="more_info_component_explainer_text">To locate your AWS account credentials:</div> */}
           <ul id="home_more_info_component_list">
             <li className="home_more_info_component_list_item">Log into your&nbsp;<a href="https://aws.amazon.com">AWS Account</a></li>
             <li className="home_more_info_component_list_item">Click your username at the top right of the page</li>
@@ -53,7 +56,9 @@ const HelpInfoComponent = (props) => {
             <li className="home_more_info_component_list_item">Navigate to the AWS IAM credentials section</li>
             <li className="home_more_info_component_list_item">Copy the Access Key ID and Secret Access Key</li>
           </ul>
-          <div id="home_more_info_component_explainer_text_3" className="more_info_component_explainer_text">Don’t have an AWS account? Visit&nbsp;<a href="https://aws.amazon.com">Amazon Web Services</a>&nbsp;to create one.</div>
+          <div id="home_more_info_component_explainer_text_3" className="more_info_component_explainer_text">
+            Don’t have an AWS account? Visit&nbsp;<a href="https://aws.amazon.com">Amazon Web Services</a>&nbsp;to create one.
+          </div>
         </div>
       )
   );

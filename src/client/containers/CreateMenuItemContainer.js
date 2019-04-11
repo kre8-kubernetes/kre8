@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import * as yup from 'yup';
+//import * as yup from 'yup';
 import { setLocale, object, string, mixed } from 'yup';
 import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
@@ -10,6 +10,15 @@ import * as events from '../../eventTypes';
 import OutsideClick from '../helperFunctions/OutsideClick';
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 
+/** ------------ CREATE MENU ITEM CONTAINER  ------------------
+  ** Rendered by KubectlContainer
+  ** Renders the CreateMenuItemComponent
+  * Activated when a user clicks the hambureger icon at top left of nav bar
+  * Offers options of "Create a Pod", "Create a Service", "Create a Deployment"
+  * Generates the appropriate creation form (CreateMenuItemComponent) based on user selection
+*/
+
+//* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
   menuItemToShow: store.navbar.menuItemToShow,
@@ -24,6 +33,7 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
+//* --------------- CREATE MENU ITEM COMPONENT --------------------------- *//
 class CreateMenuItemContainer extends Component {
   constructor(props) {
     super(props);
@@ -74,16 +84,13 @@ class CreateMenuItemContainer extends Component {
   }
 
 
-  // -------------- COMPONENT LIFECYCLE METHODS -----------------
-
-  // DEPLOYMENT LIFECYCLE METHOD
+  //* -------------- COMPONENT LIFECYCLE METHODS -----------------
   componentDidMount() {
     ipcRenderer.on(events.HANDLE_NEW_POD, this.handleNewPod);
     ipcRenderer.on(events.HANDLE_NEW_SERVICE, this.handleNewService);
     ipcRenderer.on(events.HANDLE_NEW_DEPLOYMENT, this.handleNewDeployment);
   }
 
-  // On component unmount, we will unsubscribe to listeners
   componentWillUnmount() {
     ipcRenderer.removeListener(events.HANDLE_NEW_POD, this.handleNewPod);
     ipcRenderer.removeListener(events.HANDLE_NEW_SERVICE, this.handleNewService);
@@ -91,7 +98,6 @@ class CreateMenuItemContainer extends Component {
   }
 
   //* ------------------- EVENT HANDLERS ------------------------
-
   // HANDLE INPUT CHANGE METHOD FOR FORMS
   handleChange(e) {
     const { value } = e.target;
@@ -111,20 +117,31 @@ class CreateMenuItemContainer extends Component {
       return newState;
     });
   }
+  
+  // SIGNALS TO CLOSE THE DROPDOWN MENU, AND COMPONENT CREATION FORM WHEN PUSHES 'X' BUTTON
+  handleFormClose() {
+    const { toggleCreateMenuFormItem, toggleCreateMenuDropdown } = this.props;
+    toggleCreateMenuFormItem();
+    toggleCreateMenuDropdown(false);
+  }
 
-  // GENERATES LOADING SCREEN WHEN KUBERNETES COMPONENTS ARE BEING CREATED
+  // SIGNALS TO CLOSE THE COMPONENT CREATION FORM WHEN USER CLICKS OUTSIDE OF FORM
+  handleOutsideFormClick() {
+    const { toggleCreateMenuFormItem } = this.props;
+    toggleCreateMenuFormItem();
+  }
+
+  // GENERATES LOADING SCREEN AFTER USER SUBMITS DATA AND KUBERNETES COMPONENTS ARE BEING CREATED
   handleCreateLoadingScreen() {
     this.setState(prevState => ({ ...prevState, createLoadingScreen: true }));
   }
 
-  //* --------- CREATE COMPONENT METHODS
-  /**
-   * Called when user inputs cluster component data and submits
+  /** ------------ CREATE COMPONENT METHODS ------------------
+   * Called when user inputs cluster component data and submits to create the component
    * Error handlers check data, if input passes, data is passed to main thread
    * where data is sent to kubectl to create items
   */
-
-  // CREATE POD HANDLER
+  // CREATE POD METHOD
   handleCreatePod() {
     const { inputData } = this.state;
     const { pod } = inputData;
@@ -154,7 +171,7 @@ class CreateMenuItemContainer extends Component {
       });
   }
 
-  // CREATE DEPLOYMENT HANDLER
+  // CREATE DEPLOYMENT METHOD
   handleCreateDeployment() {
     const { inputData } = this.state;
     const { deployment } = inputData;
@@ -195,7 +212,7 @@ class CreateMenuItemContainer extends Component {
       });
   }
 
-  // CREATE SERVICE HANDLER
+  // CREATE SERVICE METHOD
   handleCreateService() {
     const { inputData } = this.state;
     const { service } = inputData;
@@ -234,16 +251,13 @@ class CreateMenuItemContainer extends Component {
       });
   }
 
+  /** --------------- COMPONENT CREATION STATUS -------------
+   * Called by event listeners as data returns from Main thread from kubectl
+   * @param {object} data if includes an error, display error for user, otherwise
+   * reset state
+  */
 
-  
-
-
-
-
-
-  //* --------------INCOMING DATA FROM MAIN THREAD-----------------
-
-  // INCOMING POD DATA
+  //* POD STATUS
   handleNewPod(event, data) {
     const { inputData } = this.state;
     const { pod } = inputData;
@@ -273,42 +287,11 @@ class CreateMenuItemContainer extends Component {
     }
   }
 
-/** --------- DEPLOYMENT STATUS DATA PROCESSED FROM MAIN THREAD ------------------
- * @param {Object} event
- * @param {Object} data - object containing the data from kubectl regarding the status of the deployment user created
- * @result set state
-*/
-  handleNewDeployment(event, data) {
-    const { inputData } = this.state;
-    const { deployment } = inputData;
-    console.log('incoming data from kubectl deployment creation:', data);
-    const emptyDeploymentObj = Object.entries(deployment).reduce((acc, item) => {
-      acc[item[0]] = '';
-      return acc;
-    }, {});
-    if (data.includes('error')) {
-      this.setState(prevState => ({
-        ...prevState,
-        creationError: true,
-        creationErrorText: data,
-      }));
-    } else {
-      this.setState(prevState => ({
-        ...prevState,
-        inputData: {
-          ...prevState.inputData,
-          deployment: emptyDeploymentObj,
-        },
-      }));
-    }
-  }
-
-  // INCOMING SERVICE DATA
+  //* SERVICE STATUS
   handleNewService(event, data) {
     // The following is going to be the logic that occurs once a new role was created via the main thread process
     const { inputData } = this.state;
     const { service } = inputData;
-    console.log('incoming data from kubectl service creation:', data);
 
     const emptyServiceObj = Object.entries(service).reduce((acc, item) => {
       acc[item[0]] = '';
@@ -335,17 +318,33 @@ class CreateMenuItemContainer extends Component {
     }
   }
 
-  handleFormClose() {
-    const { toggleCreateMenuFormItem, toggleCreateMenuDropdown } = this.props;
-    toggleCreateMenuFormItem();
-    toggleCreateMenuDropdown(false);
+  //* DEPLOYMENT STATUS
+  handleNewDeployment(event, data) {
+    const { inputData } = this.state;
+    const { deployment } = inputData;
+    console.log('incoming data from kubectl deployment creation:', data);
+    const emptyDeploymentObj = Object.entries(deployment).reduce((acc, item) => {
+      acc[item[0]] = '';
+      return acc;
+    }, {});
+    if (data.includes('error')) {
+      this.setState(prevState => ({
+        ...prevState,
+        creationError: true,
+        creationErrorText: data,
+      }));
+    } else {
+      this.setState(prevState => ({
+        ...prevState,
+        inputData: {
+          ...prevState.inputData,
+          deployment: emptyDeploymentObj,
+        },
+      }));
+    }
   }
 
-  handleOutsideFormClick() {
-    const { toggleCreateMenuFormItem } = this.props;
-    toggleCreateMenuFormItem();
-  }
-
+  //* --------- RENDER METHOD
   render() {
     const { menuItemToShow, showCreateMenuFormItem } = this.props;
     const {
@@ -359,8 +358,8 @@ class CreateMenuItemContainer extends Component {
     const handleFunction = menuItemToShow === 'pod' ? this.handleCreatePod :
                            menuItemToShow === 'service' ? this.handleCreateService :
                            menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
-    console.log('menuItemToShow: ', menuItemToShow);
-
+    
+    //* --------- RETURN
     return (
       <div>
         {showCreateMenuFormItem === true && (

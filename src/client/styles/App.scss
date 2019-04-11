@@ -166,7 +166,7 @@ body::-webkit-scrollbar {
   display: flex;
   justify-content: center;
   font-family: $title-font-family;
-  font-size: $title-font-size;
+  font-size: 20px;
   color: $light-font;
 }
 
@@ -751,7 +751,6 @@ body::-webkit-scrollbar {
   flex-direction: row;
   width: 100%;
   height: 40px;
-  /* background-color: #090927; */
   background-color: $accent-darkest-blue;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
@@ -827,7 +826,10 @@ body::-webkit-scrollbar {
   background: $light-font;
 }
 
-//**************** CREATE MENU (BUTTON + MENU)  ***************/
+//* ----------------------------------------------------------- *//
+//* --------------- CREATE MENU (BUTTON + MENU ---------------- *//
+//* ----------------------------------------------------------- *//
+
 .create_menu_component_container {
   position: absolute;
   left: 1px;
@@ -864,7 +866,9 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
-/**************** CREATE POPUP FORM  ***************/
+//* ----------------------------------------------------------- *//
+//* --------------- CREATE POPUP FORM ------------------------- *//
+//* ----------------------------------------------------------- *//
 .popup_form {
   position: fixed;
   width: 100%;
@@ -978,10 +982,9 @@ body::-webkit-scrollbar {
   text-align: center;
 }
 
-
-
-
-//** --------- NAV COMPONENT RIGHT ------------- **//
+//* ----------------------------------------------------------- *//
+//* ---------------- NAV COMPONENT RIGHT ---------------------- *//
+//* ----------------------------------------------------------- *//
 
 .nav_right_container {
   display: flex;
@@ -1017,7 +1020,9 @@ body::-webkit-scrollbar {
   outline: none;
 }
 
-//** --------- CLUSTER INFO COMPONENT --------- **//
+//* ----------------------------------------------------------- *//
+//* ---------------- CLUSTER INFO COMPONENT ------------------- *//
+//* ----------------------------------------------------------- *//
 
 .cluster_info_container {
   display: flex;
@@ -1055,8 +1060,9 @@ body::-webkit-scrollbar {
   font-family: sans-serif;
 }
 
-
-//** --------- MORE INFO (?) COMPONENTS --------- **//
+//* ----------------------------------------------------------- *//
+//* ---------------- MORE INFO (?) COMPONENTS ----------------- *//
+//* ----------------------------------------------------------- *//
 
 .more_info_component {
   color: $light-font;
@@ -1070,7 +1076,6 @@ body::-webkit-scrollbar {
 }
 
 .more_info_component_title {
-  //font-family: 'Lato-Bold', sans-serif;
   font-family: sans-serif;
   font-weight: 800;
   font-size: 24px;
@@ -1078,7 +1083,6 @@ body::-webkit-scrollbar {
 }
 
 .more_info_component_explainer_text {
-  //font-family: 'Lato-Regular';
   font-family: sans-serif;
   font-size: 14px;
   line-height: 1.4;
@@ -1086,7 +1090,6 @@ body::-webkit-scrollbar {
 }
 
 .more_info_component_explainer_text_ital {
-  //font-family: 'Lato-Regular';
   font-family: sans-serif;
   font-size: 13px;
   line-height: 1.3;
@@ -1096,11 +1099,9 @@ body::-webkit-scrollbar {
   font-family: sans-serif;
   font-size: 14px;
   font-weight: 800;
-  //line-height: 1.4;
 }
 
 .more_info_paragraph {
-  //font-family: 'Lato-Regular';
   font-family: sans-serif;
   font-size: 13px;
   line-height: 1.3;
@@ -1112,24 +1113,15 @@ body::-webkit-scrollbar {
   line-height: 1.7;
 }
 
-//* ------------ AWS MORE INFO COMPONENT
+//* ------------ AWS MORE INFO COMPONENT ---------
 
 #aws_more_info_component {
   min-width: 580px;
   max-width: 580px;
-  //min-height: 450px;
   min-height: 405px;
   display: grid;
   grid-template-columns: 10% 80% 10%;
-  grid-template-rows: 
-    43px
-    48px // Title
-    50px // ExplainerText
-    60px  // IAM Role
-    60px  // VPC Stack
-    68px // Cluster
-    25px // ExplainerTextItal
-    25px;
+  grid-template-rows: 43px 48px 50px 60px 60px 68px 25px 25px;
   grid-template-areas: 
   '. . Button'
   '. Title .'
@@ -1174,7 +1166,7 @@ body::-webkit-scrollbar {
 }
 
 
-//* -------- HOME MORE INFO COMPONENT
+//* -------- HOME MORE INFO COMPONENT ---------
 
 #home_more_info_component {
   min-width: 580px;
@@ -1183,14 +1175,7 @@ body::-webkit-scrollbar {
   min-height: 405px;
   display: grid;
   grid-template-columns: 10% 80% 9%;
-  grid-template-rows: 
-    53px
-    50px // Title
-    60px // ExplainerText1
-    3px  // ExplainerText2
-    160px  // List
-    15% // ExplainerText3
-    40px;
+  grid-template-rows: 53px 50px 60px 3px 160px 15% 40px;
   grid-template-areas: 
   '. . Button'
   '. Title .'
@@ -1234,8 +1219,8 @@ body::-webkit-scrollbar {
 }
 
 //* ----------------------------------------------------------- *//
-//* --------------- ERROR STYLING --------------- *//
-//* 
+//* ---------------- ERROR STYLING ---------------------------- *//
+//* ----------------------------------------------------------- *//
 
 .errorClass {
   color: red;
@@ -1267,46 +1252,9 @@ body::-webkit-scrollbar {
 }
 
 //* ----------------------------------------------------------- *//
-//* --------------- KUBERNETES COMPONENT HELP INFO COMPONENT STYLING --------------- *//
+//* ---------------- LINK STYLING ---------------------------- *//
 //* ----------------------------------------------------------- *//
 
-
-// .create_menu_item_help_info_component {
-//   //background-color: $accent-darkest-blue;
-//   min-width: 400px;
-//   max-width: 400px;
-//   max-height: 415px;
-//   min-height: 415px;
-//   display: grid;
-//   grid-template-columns: 60px auto 60px;
-//   grid-template-rows: 
-//     20px // Button
-//     60px // Title
-//     20px 
-//     80% // text
-//     10%;
-//   grid-template-areas: 
-//   '. . Button'
-//   '. Title .'
-//   '. . .'
-//   '. Text .'
-//   '. . .';
-//   padding: 0;
-//   margin-left: 30%;
-//   margin-right: 30%;
-// }
-
-// .create_menu_item_help_info_component_close_button {
-//   grid-area: Button;
-// }
-
-// .create_menu_item_help_info_component_title {
-//   grid-area: Title;
-// }
-
-// .create_menu_item_help_info_component_text {
-//   grid-area: Text;
-// }
 
 a {
   color: inherit;

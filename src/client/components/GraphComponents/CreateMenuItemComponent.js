@@ -2,6 +2,15 @@ import React from 'react';
 import ActionButton from '../Buttons/ActionButton';
 import CloseButton from '../Buttons/CloseButton';
 
+
+/** ------------ CREATE MENU ITEM COMPONENT ------------------------------
+  ** Rendered by the CreateMenuItemContainer
+  * Generates when user selects either "Create a Pod", "Create a Service", or "Create a Deployment"
+  * from left navigation dropdown. Presents a form depending on component user selects
+  * After user hits "Submit", loading form is triggered, which closes or displays an error based on data
+  * coming back from Main thread regarding status of component creation as per kubectl
+*/
+
 const CreateMenuItemComponent = (props) => {
   const {
     handleChange,
@@ -54,14 +63,8 @@ const CreateMenuItemComponent = (props) => {
       <div key={i} className="create_menu_item_component_inputs_item">
         <input id={id} value={inputVal} placeholder={placeholder} onChange={handleChange} type="text" />
         {(!errors[menuItemToShow][inputName])
-          ? (
-            <div className="aws_cluster_form_container_explainer_text">
-              {inputExplainerText[menuItemToShow][inputName]}
-            </div>
-          )
-          : (
-            <div className="errorClass">{errors[menuItemToShow][inputName]}</div>
-          )
+          ? (<div className="aws_cluster_form_container_explainer_text">{inputExplainerText[menuItemToShow][inputName]}</div>)
+          : (<div className="errorClass">{errors[menuItemToShow][inputName]}</div>)
         }
       </div>
     );

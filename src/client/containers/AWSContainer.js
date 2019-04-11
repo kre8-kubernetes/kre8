@@ -12,11 +12,16 @@ import AWSComponent from '../components/AWSComponent';
 import AWSLoadingComponent from '../components/AWSLoadingComponent';
 import HelpInfoComponent from '../components/HelpInfoComponents/HelpInfoComponent';
 
+/** ------------ HOME CONTAINER — SECOND PAGE USER ENCOUNTERS ON INITIAL APP USE----------------------
+  ** Renders the AWS Component and AWS Loading Component
+  * On user's initial encounter with the application, renders the
+  * AWSComponent, which features a form requesting the user input names for their
+  * IAM Role, VPC Stack and Cluster. After submitting, renders
+  * AWS Loading Component which displays the status of each of the items being created
+  * User can navigate back to page via the Nav bar to create a new cluster
+*/
 
 //* -------------- ACTIONS FROM REDUX ----------------------------------- *//
-
-// const mapStateToProps = store => ({
-// });
 
 const mapDispatchToProps = dispatch => ({
   hideCreateMenuButton: () => {
@@ -54,11 +59,10 @@ class AwsContainer extends Component {
     this.hideInfoHandler = this.hideInfoHandler.bind(this);
   }
 
-  //* -------------- COMPONENT LIFECYCLE METHODS
-  /*
-   * Once component mounts, activate listeners, to receive data from
-   * AWS regarding the cluster creation process
-  */
+  /** ------------ COMPONENT LIFECYCLE METHODS ----------------------
+  * Once component mounts, activate listeners, to receive data from
+  * AWS regarding the cluster creation process
+ */
   componentDidMount() {
     const { hideCreateMenuButton } = this.props;
     hideCreateMenuButton();
@@ -82,12 +86,12 @@ class AwsContainer extends Component {
     this.setState(prevState => ({ ...prevState, [id]: value }));
   }
 
-  //* --------- CONFIGURE CLUSTER + KUBECTL
-  /*
-   * When user submits cluster data, method takes data from state, checks for errors,
-   * and signals to Main process to begin configuring Kubectl
-  */
-
+  /** ------------ CONFIGURE CLUSTER + KUBECTL ----------------------
+  * When user submits IAM Role Name, VPC Stack Name and Cluter Name,
+  * method takes data from state, checks for errors using YUP,
+  * and signals to Main process to begin configuring creating the cluster and configuring kubectl.
+  * User is redirected to AWSLoadingComponent
+ */
   handleConfigAndMakeNodes() {
     const { iamRoleName, vpcStackName, clusterName } = this.state;
     const clusterData = {
@@ -95,7 +99,6 @@ class AwsContainer extends Component {
       vpcStackName,
       clusterName,
     };
-
     const clusterDataSchema = yup.object().strict().shape({
       iamRoleName: yup.string().required('IAM Role Name is required').max(64),
       vpcStackName: yup.string().required('VPC Stack Name is required').max(128),
@@ -111,9 +114,7 @@ class AwsContainer extends Component {
           errors: {},
           awsComponentSubmitted: true,
         }));
-
-        // TODO: uncomment
-        // ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
+        ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
       })
       .catch((err) => {
         const errorObj = err.inner.reduce((acc, error) => {
@@ -124,17 +125,17 @@ class AwsContainer extends Component {
       });
   }
 
-  //* --------- METHODS RUNNING DURING CLUSTER CREATION (10-15 MIN)
-  /**
+  //* ------------ METHODS RUNNING DURING CLUSTER CREATION (10-15 MIN) ----------------------
+  /** ------------ DISPLAYS STATUS UPDATES FOR USER ON LOADING PAGE ----------------------
    * Method updates state with data coming back from AWS during cluster creation.
-   * Data is displayed on the loading page.
+   * Data is displayed via the AWSLoadingComponent.
    * @param {String} 'CREATING', 'CREATED', 'ERROR'
   */
   handleStatusChange(event, data) {
     this.setState(prevState => ({ ...prevState, [data.type]: data.status }));
   }
 
-  /**
+  /** ------------ DISPLAYS ERRORS FOR USER ON LOADING PAGE ----------------------
    * Handles errors coming back from AWS and displays them for the user
    * Data is displayed on the loading page.
    * @param {String} Error message to display
@@ -147,7 +148,18 @@ class AwsContainer extends Component {
     }));
   }
 
-  //* --------- DISPLAY MORE INFO ( ? ) COMPONENT
+  //* ------------ METHOD MOVES USER TO GRAPH SCREEN AT END OF PROCESS ----------------------
+  /**
+  * Activated after last step in cluster creation process completes.
+  * If kubectl is successfully configured, moves user to the graph page (KubectlContainer)
+  */
+  handleNewNodes(event, data) {
+    const { history } = this.props;
+    history.push('/cluster');
+  }
+  
+  //* ------------ DISPLAY OR HIDE MORE INFO ( ? ) COMPONENT ----------------------
+  // DISPLAY
   displayInfoHandler(e) {
     const x = e.screenX;
     console.log('x: ', x);
@@ -161,19 +173,9 @@ class AwsContainer extends Component {
     }));
   }
 
-  //* --------- HIDE MORE INFO ( ? ) COMPONENT METHOD
+  // HIDE
   hideInfoHandler() {
     this.setState(prevState => ({ ...prevState, showInfo: false }));
-  }
-
-  //* --------- MOVES USER TO GRAPH SCREEN
-  /*
-   * Activated after last step in cluster creation process completes.
-   * If kubectl is successfully configured:
-  */
-  handleNewNodes(event, data) {
-    const { history } = this.props;
-    history.push('/cluster');
   }
 
   //* --------- RENDER
@@ -207,7 +209,7 @@ class AwsContainer extends Component {
           aws={aws}
         />
         )}
-
+        {/* **If the the user has not yet completed and submitted AWS Component Data, display form** */}
         {awsComponentSubmitted === false && (
           <AWSComponent
             handleChange={this.handleChange}
@@ -218,20 +220,18 @@ class AwsContainer extends Component {
             vpcStackName={vpcStackName}
             clusterName={clusterName}
             errors={errors}
-            // aws={aws}
             textInfo={textInfo}
             mouseCoords={mouseCoords}
             grabCoords={this.grabCoords}
           />
         )}
-
+        {/* **Once the user has submitted the AWS Component Data, display the AWSLoading page** */}
         {awsComponentSubmitted === true && (
         <AWSLoadingComponent
           handleChange={this.handleChange}
           iamRoleName={iamRoleName}
           vpcStackName={vpcStackName}
           clusterName={clusterName}
-
           iamRoleStatus={iamRoleStatus}
           stackStatus={stackStatus}
           clusterStatus={clusterStatus}

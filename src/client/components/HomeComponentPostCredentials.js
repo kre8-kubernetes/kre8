@@ -1,6 +1,13 @@
 import React from 'react';
 
-const HomeLoadingComponent = () => (
+/** ------------ HOME COMPONENT POST CREDENTIALS ----------------------
+  ** Rendered by the Home Container
+  * Page displays if users credentials have already been entered
+  * Features heptagon loading icon, displays until graph is ready to display
+  *
+*/
+
+const HomeComponentPostCredentials = () => (
   <div className="home_page_post_config_form_container">
     <svg id="heptagon_loading">
       <g transform="translate(-3.722589840316431,-136.36553658320645)
@@ -22,4 +29,4 @@ const HomeLoadingComponent = () => (
   </div>
 );
 
-export default HomeLoadingComponent;
+export default HomeComponentPostCredentials;

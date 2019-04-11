@@ -1,5 +1,12 @@
 import React from 'react';
 
+/** ------------ AWS LOADING COMPONENT ------------------------------
+  ** Rendered by the AWSContainer
+  * Appears after user enters credentials in AWSComponent,
+  * displays status update for user as their IAM Role, VPC Stack, Cluster and Worker Nodes are created
+  * and Kubectl is configured. Takes approximately 15 minutes.
+*/
+
 const AWSLoadingComponent = (props) => {
   const {
     iamRoleName,
@@ -15,7 +22,7 @@ const AWSLoadingComponent = (props) => {
 
   const yellow = '#F3D435';
   const lightBlue = '#DBE9F1';
-
+  const red = 'red';
 
   let iamTextColor;
   if (iamRoleStatus === 'CREATING') {
@@ -23,7 +30,7 @@ const AWSLoadingComponent = (props) => {
   } else if (iamRoleStatus === 'CREATED') {
     iamTextColor = lightBlue;
   } else if (iamRoleStatus === 'ERROR') {
-    iamTextColor = 'red';
+    iamTextColor = red;
   } else {
     iamTextColor = lightBlue;
   }
@@ -34,7 +41,7 @@ const AWSLoadingComponent = (props) => {
   } else if (stackStatus === 'CREATED') {
     stackTextColor = lightBlue;
   } else if (stackStatus === 'ERROR') {
-    stackTextColor = 'red';
+    stackTextColor = red;
   } else {
     stackTextColor = lightBlue;
   }
@@ -45,7 +52,7 @@ const AWSLoadingComponent = (props) => {
   } else if (clusterStatus === 'CREATED') {
     clusterTextColor = lightBlue;
   } else if (clusterStatus === 'ERROR') {
-    clusterTextColor = 'red';
+    clusterTextColor = red;
   } else {
     clusterTextColor = lightBlue;
   }
@@ -56,7 +63,7 @@ const AWSLoadingComponent = (props) => {
   } else if (workerNodeStatus === 'CREATED') {
     workerNodeTextColor = lightBlue;
   } else if (workerNodeStatus === 'ERROR') {
-    workerNodeTextColor = 'red';
+    workerNodeTextColor = red;
   } else {
     workerNodeTextColor = lightBlue;
   }
@@ -67,25 +74,10 @@ const AWSLoadingComponent = (props) => {
   } else if (kubectlConfigStatus === 'CREATED') {
     kubectlConfigTextColor = lightBlue;
   } else if (kubectlConfigStatus === 'ERROR') {
-    kubectlConfigTextColor = 'red';
+    kubectlConfigTextColor = red;
   } else {
     kubectlConfigTextColor = lightBlue;
   }
-
-  console.log('iamRoleStatus: ', iamRoleStatus);
-  console.log('iamTextColor: ', iamTextColor);
-
-  console.log('stackStatus: ', stackStatus);
-  console.log('stackTextColor: ', stackTextColor);
-
-  console.log('clusterStatus: ', clusterStatus);
-  console.log('clusterTextColor: ', clusterTextColor);
- 
-  console.log('workerNodeStatus: ', workerNodeStatus);
-  console.log('workerNodeTextColor: ', workerNodeTextColor);
-
-  console.log('kubectlConfigStatus: ', kubectlConfigStatus);
-  console.log('kubectlConfigTextColor: ', kubectlConfigTextColor);
 
   return (
     <div className="aws_loading_form_component">

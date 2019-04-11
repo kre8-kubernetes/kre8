@@ -1,9 +1,17 @@
-/* eslint-disable arrow-parens */
-import React from "react";
+import React from 'react';
 import ActionButton from './Buttons/ActionButton';
 import HelpInfoButton from './Buttons/HelpInfoButton';
 
-const AWSComponent = props => {
+
+/** ------------ AWS COMPONENT ------------------------------
+  ** Rendered by the AWSContainer
+  * On user's initial encounter with the application, component is rendered,
+  * features a form requesting the user input names for their
+  * IAM Role, VPC Stack and Cluster.
+  * User can navigate back to the screen via Nav bar to enter new credentials
+*/
+
+const AWSComponent = (props) => {
   const {
     handleChange,
     handleConfigAndMakeNodes,
@@ -30,36 +38,22 @@ const AWSComponent = props => {
         <div className="aws_cluster_form_container_inputs_item">
           <input id="iamRoleName" placeholder="IAM Role Name" onChange={handleChange} value={iamRoleName} type="text" />
           {(!errors.iamRoleName)
-            ? (
-              <div className="aws_cluster_form_container_explainer_text">*64 character max, including alphanumeric characters and &quot;+=,.@-_&quot;.</div>
-            )
-            : (
-              <div className="errorClass">{errors.iamRoleName}</div>
-            )
+            ? (<div className="aws_cluster_form_container_explainer_text">*64 character max, including alphanumeric characters and &quot;+=,.@-_&quot;.</div>)
+            : (<div className="errorClass">{errors.iamRoleName}</div>)
           }
         </div>
         <div className="aws_cluster_form_container_inputs_item">
           <input id="vpcStackName" placeholder="VPC Stack Name" onChange={handleChange} value={vpcStackName} type="text" />
           {(!errors.vpcStackName)
-            ? (
-              <div className="aws_cluster_form_container_explainer_text">*128 character max, including alphanumeric characters and dashes &quot;-&quot;.</div>
-            )
-            : (
-              <div className="errorClass">{errors.vpcStackName}</div>
-            )
+            ? (<div className="aws_cluster_form_container_explainer_text">*128 character max, including alphanumeric characters and dashes &quot;-&quot;.</div>)
+            : (<div className="errorClass">{errors.vpcStackName}</div>)
           }
         </div>
         <div className="aws_cluster_form_container_inputs_item">
           <input id="clusterName" placeholder="Cluster Name" onChange={handleChange} value={clusterName} type="text" />
           {(!errors.clusterName)
-            ? (
-              <div className="aws_cluster_form_container_explainer_text">
-                *100 character max, including alphanumeric characters, dashes &quot;-&quot; and underscores &quot;_&quot;.
-                </div>
-            )
-            : (
-              <div className="errorClass">{errors.clusterName}</div>
-            )
+            ? (<div className="aws_cluster_form_container_explainer_text">*100 character max, including alphanumeric characters, dashes &quot;-&quot; and underscores &quot;_&quot;.</div>)
+            : (<div className="errorClass">{errors.clusterName}</div>)
           }
         </div>
       </div>
@@ -69,7 +63,6 @@ const AWSComponent = props => {
           <HelpInfoButton clickHandler={displayInfoHandler} aws={aws} />
         </div>
       </div>
-
     </div>
   );
 };

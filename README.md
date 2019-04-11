@@ -1,6 +1,6 @@
 ![KRE8](src/client/styles/assets/images/Kre8LogoDark.png)
 
-# Build, deploy and monitor a Kubernetes cluster from your desktop
+## Build, deploy and monitor a Kubernetes cluster from your desktop
 
 Kre8 is a desktop application that empowers DevOps teams to build, deploy and monitor a Kubernetes cluster in the cloud. The open source version is available to Mac OS users with Amazon Web Services accounts. Users can configure their AWS cluster from their desktop, and then deploy the necessary resources, such as pods, containers, deployments and services. The app features an interactive visualizer with real-time metrics on the status of your pods, services and deployments. The days of assembling metrics from AWS and kubectl to put together reports on your cluster are over! 
 
@@ -15,7 +15,7 @@ KRE8's powerful dashboard tool provides the functionality to create and delete d
 ### Prerequisites
   1. MacOS
   2. Kubernetes [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) Installed
-  3. An [Amazon Web Services](https://aws.amazon.com) account and/or have your credentials available
+  3. [Amazon Web Services](https://aws.amazon.com) account
   4. Image(s) of the Application(s) you would like to deploy
 
 ### Instructions
@@ -24,6 +24,7 @@ KRE8's powerful dashboard tool provides the functionality to create and delete d
 
 #### STEP 1: AWS Elastic Container Service for Kubernetes (EKS) Setup
 **- Enter AWS Credentials:** Input your AWS Access Key + Secret Access Key into Kre8’s Welcome Page.
+
 **- AWS Component Creation:** After selecting names for the specified components, Kre8 will communicate with AWS to create the following services: an IAM Role, a Virtual Private Cloud (VPC) Stack, a Cluster and three Worker Nodes
 
 #### STEP 2: Kubernetes Kubectl Configuration

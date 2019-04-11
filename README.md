@@ -1,5 +1,5 @@
 # KRE8
-![KRE8](src/client/styles/assets/images/Kre8Logo.png)
+![KRE8](src/client/styles/assets/images/Kre8LogoDark.png)
 
 
 ### KRE8 empowers DevOps engineers to manage their Kubernetes cluster on AWS from their desktop

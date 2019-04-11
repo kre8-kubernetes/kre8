@@ -85,7 +85,7 @@ const AWSLoadingComponent = (props) => {
         Cluster Status
       </div>
       <div className="aws_loading_component_explainer_text">
-        Cluster configuration takes AWS approximately 10-15 minutes. Do not close the application, until the process completes.
+        Cluster configuration takes AWS approximately 10-15 minutes. Do not close the application until the process completes.
       </div>
       <div className="aws_loading_form_component_items">
         <div className="aws_loading_form_component_item">

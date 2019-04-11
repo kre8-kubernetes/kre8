@@ -3,20 +3,21 @@ import { Link } from 'react-router-dom';
 import ClusterInfoComponent from './ClusterInfoComponent';
 import OutsideClick from '../../helperFunctions/OutsideClick';
 
+/** ------------ NAVIGATION COMPONENT ------------------------------
+  ** Rendered by the NavContainer; Renders ClusterInfoComponent when user clicks 'Cluster Info'
+*/
+
 const NavComponent = (props) => {
   const {
     handleNavBarClick,
     handleMenuItemToShow,
     handleOutsideDropdownClick,
-
     showCreateMenuButton,
     showCreateMenuDropdown,
-
     displayClusterInfo,
     hideClusterInfo,
     clusterInfo,
     showClusterInfo,
-
     toggleCreateMenuDropdown,
   } = props;
 

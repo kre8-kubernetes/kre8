@@ -8,12 +8,18 @@ import { setLocale, object, string, mixed } from 'yup';
 
 import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
-
 import HomeComponent from '../components/HomeComponent';
-import HelpInfoComponent from '../components/HelpInfoComponent';
+import HelpInfoComponent from '../components/HelpInfoComponents/HelpInfoComponent';
 import HomeComponentPostCredentials from '../components/HomeComponentPostCredentials';
 
-// TODO: do we use displayError from state?
+/** ------------ HOME CONTAINER — FIRST PAGE USER ENCOUNTERS ----------------------
+  ** Renders the Home Component or Home Component Post Credentials
+  * On user's initial encounter with the application, renders the
+  * HomeComponent, which features a form requesting AWS account credentials.
+  * On subsequent application opens,renders Post Credentials page, which features a
+  * loading icon, while the graph renders
+  *
+*/
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 const mapStateToProps = store => ({
@@ -82,8 +88,7 @@ class HomeContainer extends Component {
     ipcRenderer.removeListener(events.HANDLE_AWS_CREDENTIALS, this.handleAWSCredentials);
   }
 
-  //* ------------ CONFIGURE AWS CREDENTIALS -------------------------------- **//
-  /*
+  /** ------------ CONFIGURE AWS CREDENTIALS --------------------------------
   * Activates when user enters AWS credentials. If the credentials pass error handlers,
   * reset values in state, and send data to the Main thread to verify entry data with AWS
   */
@@ -95,7 +100,6 @@ class HomeContainer extends Component {
       awsSecretAccessKey,
       awsRegion,
     };
-
     // Create custom instructions for Yup error handling
     setLocale({
       mixed: { notOneOf: 'AWS Region is required' },
@@ -110,7 +114,6 @@ class HomeContainer extends Component {
       awsSecretAccessKey: string().required('Please enter a valid AWS Secret Access Key').min(30).max(50),
       awsRegion: mixed().required('AWS Region is required').notOneOf(['default']),
     });
-
     awsCredentialsSchema.validate(awsCredentials, { abortEarly: false })
       .then((data) => {
         this.setState(prevState => ({
@@ -134,14 +137,13 @@ class HomeContainer extends Component {
       });
   }
 
-  //* ------------- PROCESS AWS CREDENTIALS ON APPLICATION OPEN ----------- *//
-  /*
+  /** ------------ PROCESS AWS CREDENTIALS ON APPLICATION OPENS --------------------------------
   * Check if credentials are already saved in file, signifying a user has previously logged
   * into the application successfully, and if so display Loading Page until advanced to
   * Cluster Display Page. Otherwise, take user to Home Page to enter AWS credentials for
   * the first time.
+  * @param {obejct} data coming back from main thread based on response from AWS
   */
-
   processAWSCredentialStatus(event, data) {
     const {
       setCredentialStatusTrue,
@@ -158,9 +160,11 @@ class HomeContainer extends Component {
     setCheckCredentialsTrue();
   }
 
-  /*
+  /** ------------ PROCESS AWS RESPONSE TO CREDENTIAL CHECK ---------------------
   * Based on AWS response, either move the user on to the AWS data entry page,
   * or display error alert, for user to reenter credentials
+  * @param {Object} data data returned from AWS regarding credentials, if data contains an Arn,
+  * the entered credentials were accepted. Otherwise, indicate an error to the user and ask them to retry
   */
   handleAWSCredentials(event, data) {
     const { history } = this.props;
@@ -188,21 +192,11 @@ class HomeContainer extends Component {
 
   //* --------- DISPLAY MORE INFO ( ? ) COMPONENT METHOD
   displayInfoHandler(e) {
-    const homeInfo = (
-      <div>
-        <h2>More Information</h2>
-        <p>In order to use KRE8 to create and launch your Kubernetes cluster on Amazon’s Elastic Container Service for Kubernetes (EKS), you must have an Amazon Web Services Account.</p>
-        <p>KRE8 needs the below details from your AWS account in order to deploy your cluster.</p>
-        <p>KRE8 will use these details to generate a file titled “credentials” in a folder named .aws in your root directory.</p>
-        <p>AWS will reference this file to verify your permissions as you build your Kubernetes cluster.</p>
-      </div>
-    );
     const x = e.screenX;
     const y = e.screenY;
     const newCoords = { top: y, left: x };
     this.setState(prevState => ({
       ...prevState,
-      textInfo: homeInfo,
       mouseCoords: newCoords,
       showInfo: true,
     }));
@@ -245,7 +239,8 @@ class HomeContainer extends Component {
           hideInfoHandler={this.hideInfoHandler}
         />
         )}
-
+        {/* **On Application Open, if the user has already entered credentials,
+        display loading screen while graph renders, else take them to credential entry page** */}
         {((hasCheckedCredentials === false) && (credentialStatus === true))
           ? <HomeComponentPostCredentials handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials} />
           : (
@@ -253,10 +248,8 @@ class HomeContainer extends Component {
               handleChange={this.handleChange}
               handleFormChange={this.handleFormChange}
               setAWSCredentials={this.setAWSCredentials}
-
               displayInfoHandler={this.displayInfoHandler}
               grabCoords={this.grabCoords}
-
               awsAccessKeyId={awsAccessKeyId}
               awsSecretAccessKey={awsSecretAccessKey}
               awsRegion={awsRegion}

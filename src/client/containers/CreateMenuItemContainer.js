@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-//import * as yup from 'yup';
-import { setLocale, object, string, mixed } from 'yup';
+import { setLocale, object, string, number } from 'yup';
 import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
 
@@ -151,10 +150,10 @@ class CreateMenuItemContainer extends Component {
         max: '${max} character maximum',
       },
     });
-    const schema = yup.object().strict().shape({
-      podName: yup.string().required('Pod name is required').lowercase().max(253),
-      containerName: yup.string().required('Container name is required').lowercase().max(253),
-      imageName: yup.string().required('Image name is required').lowercase().max(253),
+    const schema = object().strict().shape({
+      podName: string().required('Pod name is required').lowercase().max(253),
+      containerName: string().required('Container name is required').lowercase().max(253),
+      imageName: string().required('Image name is required').lowercase().max(253),
     });
     schema.validate(pod, { abortEarly: false })
       .then((data) => {
@@ -189,13 +188,13 @@ class CreateMenuItemContainer extends Component {
         positive: 'Entry must be a positive number',
       },
     });
-    const schema = yup.object().strict().shape({
-      deploymentName: yup.string().required('Deployment name is required').lowercase(),
-      applicationName: yup.string().required('Application name is required').lowercase(),
-      containerName: yup.string().required('Container name is required').lowercase(),
-      image: yup.string().required('Image name is required').lowercase(),
-      containerPort: yup.number().required('Container port is required').positive(),
-      replicas: yup.number().required('Number of replicas is required').positive().max(4),
+    const schema = object().strict().shape({
+      deploymentName: string().required('Deployment name is required').lowercase(),
+      applicationName: string().required('Application name is required').lowercase(),
+      containerName: string().required('Container name is required').lowercase(),
+      image: string().required('Image name is required').lowercase(),
+      containerPort: number().required('Container port is required').positive(),
+      replicas: number().required('Number of replicas is required').positive().max(4),
     });
     schema.validate(clone, { abortEarly: false })
       .then((data) => {
@@ -230,11 +229,11 @@ class CreateMenuItemContainer extends Component {
         positive: 'Entry must be a positive number',
       },
     });
-    const schema = yup.object().strict().shape({
-      serviceName: yup.string().required('Service name is required').lowercase(),
-      applicationName: yup.string().required('Application name is required').lowercase(),
-      port: yup.number().required('Port number is required').positive(),
-      targetPort: yup.number().required('Target port number is required').positive(),
+    const schema = object().strict().shape({
+      serviceName: string().required('Service name is required').lowercase(),
+      applicationName: string().required('Application name is required').lowercase(),
+      port: number().required('Port number is required').positive(),
+      targetPort: number().required('Target port number is required').positive(),
     });
     schema.validate(clone, { abortEarly: false })
       .then((data) => {

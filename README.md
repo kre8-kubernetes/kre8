@@ -1,7 +1,7 @@
 ![KRE8](src/client/styles/assets/images/Kre8LogoDark.png)
 
 ## Build, Deploy and Monitor a Kubernetes Cluster from your Desktop
-Kre8 is a desktop application that empowers DevOps teams to build, deploy and monitor a Kubernetes cluster in the cloud. The open source version is available to Mac OS users with Amazon Web Services accounts. Users can configure their AWS cluster from their desktop, and then deploy the necessary resources, such as pods, containers, deployments and services. The app features an interactive visualizer with real-time metrics on the status of your pods, services and deployments. The days of assembling metrics from AWS and kubectl to put together reports on your cluster are over! 
+[Kre8](https://www.kre8.io)is a desktop application that empowers DevOps teams to build, deploy and monitor a Kubernetes cluster in the cloud. The open source version is available to Mac OS users with Amazon Web Services accounts. Users can configure their AWS cluster from their desktop, and then deploy the necessary resources, such as pods, containers, deployments and services. The app features an interactive visualizer with real-time metrics on the status of your pods, services and deployments. The days of assembling metrics from AWS and kubectl to put together reports on your cluster are over! 
 
 ## Interactive Kubernetes Visualizer
 The interactive visualizer enables developers to view the status of their cluster in realtime. Click on the individual elements within your cluster to get realtime data and metrics.
@@ -33,4 +33,6 @@ KRE8's powerful dashboard tool provides the functionality to create and delete d
 * **Launch Pods, Services and Deployments:** Enter the specifications for your desired Kubernetes components along with the Docker image of your application to deploy them to the cloud.
 
 ### Contributors
-[Braden Altstatt](https://github.com/bradenaa) | [Adrian Diamond](https://github.com/AdrianDiamond13) | [Carolyn Harrold](https://github.com/jinihendrix) 
+[Braden Altstatt](https://github.com/bradenaa) | [Adrian Diamond](https://github.com/AdrianDiamond13) | [Carolyn Harrold](https://github.com/carolynharrold) 
+
+Visit us at [Kre8](https://www.kre8.io) for more information!

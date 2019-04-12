@@ -10,7 +10,7 @@ export default function awsReducers(state = initialState, action) {
     case types.SET_CREDENTIAL_STATUS_TO_TRUE:
       return { ...state, credentialStatus: true };
     case types.SET_CREDENTIAL_STATUS_TO_FALSE:
-      return { ...state, credentialStutus: false };
+      return { ...state, credentialStatus: false };
     case types.CHECK_CREDENTIALS_TRUE:
       return { ...state, hasCheckedCredentials: true };
     case types.CHECK_CREDENTIALS_FALSE:

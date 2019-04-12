@@ -24,12 +24,21 @@
       "category": "public.app-category.developer-tools"
     },
     "directories": {
-      "buildResources": "src/client/styles/assets",
+      "buildResources": "resources",
       "output": "build"
     },
     "files": [
       "**/*",
       "./src/main/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "./extraResources",
+        "to": "extraResources",
+        "filter": [
+          "**/*"
+        ]
+      }
     ]
   },
   "repository": {

@@ -2,7 +2,9 @@
 require('dotenv').config();
 
 // --------- ELECTRON MODULES -----------
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Menu } = require('electron');
+
+process.env.APP_PATH = app.getAppPath();
 
 // --------- NODE APIS -------------------
 const fs = require('fs');
@@ -48,12 +50,8 @@ const createWindowAndSetEnvironmentVariables = () => {
   } else if (NODE_ENV === 'test') {
     process.env.APPLICATION_PATH = __dirname;
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
-<<<<<<< HEAD
   } else {
     // TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
-=======
-  } else if (NODE_ENV === 'production') {
->>>>>>> master
     awsEventCallbacks.setEnvVarsAndMkDirsInProd();
   }
 
@@ -92,7 +90,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   win.webContents.on('will-navigate', (event, url) => {
     event.preventDefault();
     console.log('url: ', url);
-    if (url.includes('aws.com') || url.includes('kubernetes')) {
+    if (url.includes('amazon') || url.includes('kubernetes')) {
       shell.openExternal(url);
     }
   });
@@ -117,7 +115,7 @@ const createWindowAndSetEnvironmentVariables = () => {
   win.once('ready-to-show', () => {
     win.show();
     childWin.close();
-    console.timeEnd('init');
+    // console.timeEnd('init');
   });
   win.on('closed', () => { win = null; });
 
@@ -133,10 +131,12 @@ const createWindowAndSetEnvironmentVariables = () => {
     console.log('\nSTORAGE =========================> ', process.env.AWS_STORAGE);
     if (NODE_ENV === 'development') {
       win.loadURL(`http://localhost:${PORT}`);
+      win.webContents.openDevTools();
     } else if (NODE_ENV === 'test') {
       win.loadURL(urlPath);
     } else {
       win.loadURL(urlPath);
+      win.webContents.openDevTools();
     }
   });
 
@@ -592,8 +592,80 @@ ipcMain.on(events.DELETE_DEPLOYMENT, async (event, data) => {
 
 //* --------- APPLICATION OBJECT EVENT EMITTERS ---------- *//
 
+function createMenu() {
+
+  const application = {
+    label: 'Application',
+    submenu: [
+      {
+        label: 'About Application',
+        selector: 'orderFrontStandardAboutPanel:',
+      },
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Quit',
+        accelerator: 'Command+Q',
+        click: () => {
+          app.quit()
+        }
+      },
+    ],
+  };
+
+  const edit = {
+    label: 'Edit',
+    submenu: [
+      {
+        label: 'Undo',
+        accelerator: 'CmdOrCtrl+Z',
+        selector: 'undo:',
+      },
+      {
+        label: 'Redo',
+        accelerator: 'Shift+CmdOrCtrl+Z',
+        selector: 'redo:',
+      },
+      {
+        type: 'separator',
+      },
+      {
+        label: 'Cut',
+        accelerator: 'CmdOrCtrl+X',
+        selector: 'cut:',
+      },
+      {
+        label: 'Copy',
+        accelerator: 'CmdOrCtrl+C',
+        selector: 'copy:',
+      },
+      {
+        label: 'Paste',
+        accelerator: 'CmdOrCtrl+V',
+        selector: 'paste:',
+      },
+      {
+        label: 'Select All',
+        accelerator: 'CmdOrCtrl+A',
+        selector: 'selectAll:',
+      },
+    ],
+  };
+
+  const template = [application, edit];
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
 // HANDLE app ready
-app.on('ready', createWindowAndSetEnvironmentVariables);
+app.on('ready', () => {
+  if (NODE_ENV === 'development' || NODE_ENV === 'test') {
+    createWindowAndSetEnvironmentVariables();
+  } else {
+    createWindowAndSetEnvironmentVariables();
+    createMenu();
+  }
+});
 
 // HANDLE app shutdown
 app.on('window-all-closed', () => {

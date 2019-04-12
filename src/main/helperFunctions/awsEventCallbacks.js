@@ -1,7 +1,10 @@
+const { NODE_ENV } = process.env;
+
 // --------- NODE APIS ----------------
 const fs = require('fs');
 const fsp = require('fs').promises;
 const mkdirp = require('mkdirp');
+const path = require('path');
 
 // --------- AWS SDK ELEMENTS ---------
 const EKS = require('aws-sdk/clients/eks');
@@ -10,8 +13,8 @@ const CloudFormation = require('aws-sdk/clients/cloudformation');
 
 // --------- INSTANTIATE AWS CLASSES ------
 const iam = new IAM();
-const eks = new EKS({ region: process.env.REGION });
-const cloudformation = new CloudFormation({ region: process.env.REGION });
+const eks = new EKS({ region: 'us-west-2' });
+const cloudformation = new CloudFormation({ region: 'us-west-2' });
 
 // --------- IMPORT MODULES -----------
 const onDownload = require(__dirname + '/onDownloadFunctions');
@@ -21,6 +24,7 @@ const awsProps = require(__dirname + '/../awsPropertyNames');
 const kubectlConfigFunctions = require(__dirname + '/kubectlConfigFunctions');
 
 // --------- IMPORT DOCUMENT TEMPLATES -------
+
 const iamRolePolicyDocument = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/iamRoleTrustPolicy.json');
 const stackTemplate = require(__dirname + '/../Storage/AWS_Assets/Policy_Documents/amazon-stack-template-eks-vpc-real.json');
 
@@ -41,7 +45,7 @@ awsEventCallbacks.installAndConfigureAWS_IAM_Authenticator = async () => {
     if (!iamAuthenticatorExists) {
       onDownload.installIAMAuthenticator();
       onDownload.enableIAMAuthenticator();
-      onDownload.copyIAMAuthenticatorToBinFolder();
+      // onDownload.copyIAMAuthenticatorToBinFolder();
     }
     await onDownload.setPATHAndAppendToBashProfile();
   } catch (err) {
@@ -64,8 +68,9 @@ awsEventCallbacks.setEnvVarsAndMkDirsInDev = () => {
 awsEventCallbacks.setEnvVarsAndMkDirsInProd = () => {
   process.env.APPLICATION_PATH = `${process.env.HOME}/Library/Application\ Support/kre8`;
   process.env.AWS_STORAGE = `${process.env.APPLICATION_PATH}/Storage/AWS_Assets/`;
-  process.env.KUBECTL_STORAGE = `${process.env.APPLICATION_PATH}/Storage/KUBECTL_Assets`;
-  mkdirp.sync(`${process.env.AWS_STORAGE}AWS_Assets/`);
+  process.env.KUBECTL_STORAGE = `${process.env.APPLICATION_PATH}/Storage/KUBECTL_Assets/`;
+  mkdirp.sync(`${process.env.AWS_STORAGE}/AWS_Private`);
+  mkdirp.sync(`${process.env.AWS_STORAGE}/Policy_Documents`);
   mkdirp.sync(process.env.KUBECTL_STORAGE);
 };
 
@@ -121,7 +126,7 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
       process.env.AWS_ACCESS_KEY_ID = data.awsAccessKeyId;
       process.env.AWS_SECRET_ACCESS_KEY = data.awsSecretAccessKey;
       process.env.REGION = data.awsRegion;
-      console.log('environment variables:', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.REGION);
+      console.log('environment variables:', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, 'us-west-2');
 
       const stringifiedCredentialFile = JSON.stringify(parsedCredentialsFile, null, 2);
       await fsp.writeFile(`${process.env.AWS_STORAGE}AWS_Private/awsCredentials.json`, stringifiedCredentialFile);
@@ -129,7 +134,7 @@ awsEventCallbacks.configureAWSCredentials = async (data) => {
       process.env.AWS_ACCESS_KEY_ID = data.awsAccessKeyId;
       process.env.AWS_SECRET_ACCESS_KEY = data.awsSecretAccessKey;
       process.env.REGION = data.awsRegion;
-      console.log('environment variables: ', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, process.env.REGION);
+      console.log('environment variables: ', process.env.AWS_ACCESS_KEY_ID, process.env.AWS_SECRET_ACCESS_KEY, 'us-west-2');
 
       const dataForCredentialsFile = {
         AWS_ACCESS_KEY_ID: data.awsAccessKeyId,

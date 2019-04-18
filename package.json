@@ -9,17 +9,24 @@
     "build:test": "webpack --config webpack.prod.config.js --colors",
     "build:prod": "webpack --config webpack.prod.config.js --colors",
     "start:test": "NODE_ENV=test electron --noDevServer src/main/main.js",
-    "start:prod": "webpack --mode production --config webpack.prod.config.js --colors && NODE_ENV=production electron --noDevServer src/main/main.js",
+    "start:prod": "webpack --mode production --config webpack.prod.config.js --colors && electron --noDevServer src/main/main.js",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron src/main/main.js",
     "dist": "electron-builder",
-    "publish": "electron-builder --publish",
+    "build:publish": "DEBUG=electron-builder electron-builder --publish always",
     "dist:debug": "DEBUG=electron-builder electron-builder",
     "dev": "NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000 --config=./webpack.config.js"
   },
   "build": {
     "appId": "com.kre8.app",
     "productName": "Kre8",
+    "publish": [
+      {
+        "provider": "github",
+        "releaseType": "draft",
+        "private": false
+      }
+    ],
     "mac": {
       "target": "dmg",
       "category": "public.app-category.developer-tools"
@@ -44,14 +51,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bradenaa/kre8.git"
+    "url": "https://github.com/kre8-kubernetes/kre8.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bradenaa/kre8/issues"
+    "url": "https://github.com/kre8-kubernetes/kre8"
   },
-  "homepage": "https://github.com/bradenaa/kre8#readme",
+  "homepage": "https://kre8.io",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
@@ -68,8 +75,8 @@
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-react": "^7.11.1",
-    "fsevents": "^1.2.7",
     "file-loader": "^3.0.1",
+    "fsevents": "^1.2.7",
     "html-webpack-plugin": "^3.2.0",
     "mocha": "^6.0.2",
     "node-sass": "^4.11.0",

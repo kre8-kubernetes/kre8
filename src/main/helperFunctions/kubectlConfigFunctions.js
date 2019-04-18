@@ -306,7 +306,7 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
     while (stdout.includes('NotReady')) {
       console.log('stdout status: ', stdout);
       // wait 10 seconds before rerunning function
-    await awsHelperFunctions.timeout(10000);
+      await awsHelperFunctions.timeout(10000);
       getKubectlStatus();
     }
     if ((stdout.includes('Ready')) && (!stdout.includes('Not'))) {

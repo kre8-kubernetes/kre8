@@ -127,7 +127,7 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
 kubectlConfigFunctions.testKubectlGetSvc = () => {
   try {
     console.log('this is the current KUBECONFIG at kubectl get svc time:', process.env.KUBECONFIG);
-    const child = spawnSync('kubectl', ['get', 'svc']);
+    const child = spawnSync('kubectl', ['get', 'svc'], { env: process.env });
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
 
@@ -266,7 +266,7 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
     const filePathToAuthFile = path.join(process.env.KUBECTL_STORAGE, `AUTH_FILE_${workerNodeStackName}.yaml`);
 
     // Command Kubectl to configure by applying the AUTH_FILE
-    const kubectlApplyChild = spawnSync('kubectl', ['apply', '-f', filePathToAuthFile]);
+    const kubectlApplyChild = spawnSync('kubectl', ['apply', '-f', filePathToAuthFile], { env: process.env });
     const stdout = kubectlApplyChild.stdout.toString();
     const stderr = kubectlApplyChild.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);
@@ -293,7 +293,8 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
     let stderr;
     const getKubectlStatus = () => {
       console.log('getting status');
-      const kubectlStatus = spawnSync('kubectl', ['get', 'nodes'], { timeout: 15000 });
+      console.log('process.env', process.env);
+      const kubectlStatus = spawnSync('kubectl', ['get', 'nodes'], { timeout: 15000, env: process.env });
       stdout = kubectlStatus.stdout.toString();
       stderr = kubectlStatus.stderr.toString();
       console.log('stdout: ', `===>\n${stdout}\n`, 'stderr:', stderr);
@@ -305,7 +306,7 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
     while (stdout.includes('NotReady')) {
       console.log('stdout status: ', stdout);
       // wait 10 seconds before rerunning function
-      await awsHelperFunctions.timeout(10000);
+    await awsHelperFunctions.timeout(10000);
       getKubectlStatus();
     }
     if ((stdout.includes('Ready')) && (!stdout.includes('Not'))) {
@@ -313,6 +314,7 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
       return true;
     }
     return false;
+    // return true;
   } catch (err) {
     console.error('From testKubectlStatus', err);
     return false;

@@ -27,6 +27,9 @@ const mapDispatchToProps = dispatch => ({
   hideCreateMenuButton: () => {
     dispatch(actions.hideCreateMenuButton());
   },
+  setCredentialStatusTrue: () => {
+    dispatch(actions.setCredentialStatusTrue());
+  }
 });
 
 //* -------------- AWS CONTAINER --------------------------------------- *//
@@ -141,6 +144,7 @@ class AwsContainer extends Component {
    * @param {String} Error message to display
   */
   handleError(event, data) {
+    console.log('DATA FROM HANDLE ERROR: ', data);
     this.setState(prevState => ({
       ...prevState,
       [data.type]: data.status,
@@ -154,7 +158,8 @@ class AwsContainer extends Component {
   * If kubectl is successfully configured, moves user to the graph page (KubectlContainer)
   */
   handleNewNodes(event, data) {
-    const { history } = this.props;
+    const { history, setCredentialStatusTrue } = this.props;
+    setCredentialStatusTrue();
     history.push('/cluster');
   }
   

@@ -69,6 +69,7 @@ awsEventCallbacks.setEnvVarsAndMkDirsInProd = () => {
   process.env.APPLICATION_PATH = `${process.env.HOME}/Library/Application\ Support/kre8`;
   process.env.AWS_STORAGE = `${process.env.APPLICATION_PATH}/Storage/AWS_Assets/`;
   process.env.KUBECTL_STORAGE = `${process.env.APPLICATION_PATH}/Storage/KUBECTL_Assets/`;
+  process.env.PATH = `${process.env.PATH}:usr/local/bin:${process.env.HOME}/bin`;
   mkdirp.sync(`${process.env.AWS_STORAGE}/AWS_Private`);
   mkdirp.sync(`${process.env.AWS_STORAGE}/Policy_Documents`);
   mkdirp.sync(process.env.KUBECTL_STORAGE);

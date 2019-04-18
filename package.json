@@ -13,6 +13,7 @@
     "postinstall": "electron-builder install-app-deps",
     "start": "electron src/main/main.js",
     "dist": "electron-builder",
+    "publish": "electron-builder --publish",
     "dist:debug": "DEBUG=electron-builder electron-builder",
     "dev": "NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000 --config=./webpack.config.js"
   },

@@ -52,16 +52,24 @@ class NavContainer extends Component {
     this.handleNavBarClick = this.handleNavBarClick.bind(this);
     this.handleClusterData = this.handleClusterData.bind(this);
     this.handleOutsideDropdownClick = this.handleOutsideDropdownClick.bind(this);
+    // for debugging main in production
+    this.handleKubectlData = this.handleKubectlData.bind(this);
+    this.handleMainError = this.handleMainError.bind(this);
   }
 
   //* --------------- COMPONENT LIFECYCLE METHODS ----------------- *//
   componentDidMount() {
     ipcRenderer.on(events.SEND_CLUSTER_DATA, this.handleClusterData);
     ipcRenderer.send(events.GET_CLUSTER_DATA);
+    // for debugging main in production
+    ipcRenderer.on('kubectl', this.handleKubectlData);
+    ipcRenderer.on('error', this.handleMainError);
   }
 
   componentWillUnmount() {
     ipcRenderer.removeListener(events.SEND_CLUSTER_DATA, this.handleClusterData);
+    ipcRenderer.removeListener('kubectl', this.handleKubectlData);
+    ipcRenderer.removeListener('error', this.handleMainError);
   }
 
   //* --------------- COMPONENT METHODS --------------------------- *//
@@ -75,6 +83,16 @@ class NavContainer extends Component {
   handleNavBarClick(e) {
     const { hideCreateMenuDropdown } = this.props;
     hideCreateMenuDropdown();
+  }
+
+  // FOR DEBUGGING the main in production
+  handleKubectlData(event, data) {
+    console.log('Errors from stderr', data.stderr);
+    console.log('Errors from stdout', data.stdout);
+  }
+
+  handleMainError(event, data) {
+    console.error('errror:', data);
   }
 
   handleClusterData(event, data) {

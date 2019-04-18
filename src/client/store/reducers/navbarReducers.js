@@ -24,8 +24,6 @@ const initialState = {
 };
 
 export default function navbarReducers(state = initialState, action) {
-  console.log('incoming action!!!', action);
-  console.log('State in reducer', state);
   switch (action.type) {
     case types.SHOW_CREATE_MENU_BUTTON:
       return { ...state, showCreateMenuButton: true };

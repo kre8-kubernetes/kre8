@@ -1,7 +1,9 @@
 // --------- NODE APIS ----------------
 const fs = require('fs');
 const fsp = require('fs').promises;
-const { spawnSync } = require('child_process');
+const path = require('path');
+const mkdirp = require('mkdirp');
+const { spawnSync, execFileSync } = require('child_process');
 
 // --------- DECLARE EXPORT OBJECT ----------------------------------
 const onDownload = {};
@@ -13,11 +15,16 @@ const onDownload = {};
 */
 onDownload.installIAMAuthenticator = () => {
   console.log('now installing IAM authenticator');
-  const child = spawnSync('curl', ['-o', 'aws-iam-authenticator', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator']);
+  const target = `${process.env.HOME}/bin/aws-iam-authenticator`;
+  mkdirp.sync(`${process.env.HOME}/bin`);
+  const child = spawnSync('curl', ['-o', target, '--create-dirs', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator'], { shell: true });
+  // const iamAuth = path.join(process.env.APP_PATH, '..', 'extraResources', 'aws-iam-authenticator');
+  // console.log('AWS I AM PATH ====> ', iamAuth);
+  // const child = spawnSync(iamAuth, []);
+  // console.log('CHILD\n', child.toString());
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
   console.log('stdout', stdout, 'stderr', stderr);
-  if (stderr) throw new Error(stderr);
 };
 
 /** --------- APPLY PERMISSIONS TO BINARY FILE TO MAKE EXECUTABLE -----
@@ -26,11 +33,11 @@ onDownload.installIAMAuthenticator = () => {
  */
 onDownload.enableIAMAuthenticator = () => {
   console.log('now enabling IAM authenticator');
-  const child = spawnSync('chmod', ['+x', './aws-iam-authenticator']);
+  // const iamAuth = path.join(process.env.APP_PATH, '..', 'extraResources', 'aws-iam-authenticator');
+  const child = spawnSync('chmod', ['+x', `${process.env.HOME}/bin/aws-iam-authenticator`]);
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
   console.log('stdout', stdout, 'stderr', stderr);
-  if (stderr) throw new Error(stderr);
 };
 
 
@@ -44,12 +51,11 @@ onDownload.copyIAMAuthenticatorToBinFolder = () => {
   if (!binFolderExists) {
     fs.mkdirSync(`${process.env.HOME}/bin`);
   }
-
-  const child = spawnSync('mv', ['./aws-iam-authenticator', `${process.env.HOME}/bin/aws-iam-authenticator`]);
+  const iamAuth = path.join(process.env.APP_PATH, '..', 'extraResources', 'aws-iam-authenticator');
+  const child = spawnSync('mv', [iamAuth, `${process.env.HOME}/bin/aws-iam-authenticator`]);
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
   console.log('stdout', stdout, 'stderr', stderr);
-  if (stderr) throw new Error(stderr);
 };
 
 /** ---- SET PATH ENVIRONTMENT VARIABLE & APPEND TO BASH_PROFILE FILE ---
@@ -81,6 +87,7 @@ onDownload.setPATHAndAppendToBashProfile = async () => {
     } else {
       console.log('profile didnt exist', textToAppendToBashProfile);
       await fsp.writeFile(`${process.env.HOME}/.bash_profile`, textToAppendToBashProfile);
+      process.env.PATH = `${process.env.HOME}/bin:${process.env.PATH}`;
     }
   } catch (err) {
     console.error('From setPATHAndAppendToBashProfile', err);

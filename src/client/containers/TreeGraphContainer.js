@@ -20,6 +20,7 @@ import ClusterInfoComponent from '../components/ClusterComponentsInfoComponents/
 const mapStateToProps = store => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
   menuItemToShow: store.navbar.menuItemToShow,
+  credentialStatus: store.aws.credentialStatus,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -73,9 +74,11 @@ class TreeGraphContainer extends Component {
     ipcRenderer.on(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
     ipcRenderer.on(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
     ipcRenderer.on(events.HANDLE_RERENDER_NODE, this.handleRerenderNode);
-    this.getMasterNode();
-    this.getWorkerNodes();
-    this.getContainersAndPods();
+    if (this.props.credentialStatus) {
+      this.getMasterNode();
+      this.getWorkerNodes();
+      this.getContainersAndPods();
+    }
   }
 
   componentWillUnmount() {

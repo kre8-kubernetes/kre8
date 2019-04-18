@@ -1,3 +1,5 @@
+const { NODE_ENV } = process.env;
+
 // --------- NPM MODULES ----------------
 const YAML = require('yamljs');
 
@@ -12,8 +14,8 @@ const CloudFormation = require('aws-sdk/clients/cloudformation');
 const EC2 = require('aws-sdk/clients/ec2');
 
 // --------- INSTANTIATE AWS CLASSES -----------
-const ec2 = new EC2({ region: process.env.REGION });
-const cloudformation = new CloudFormation({ region: process.env.REGION });
+const ec2 = new EC2({ region: 'us-west-2' });
+const cloudformation = new CloudFormation({ region: 'us-west-2' });
 
 // --------- IMPORT MODULES -----------
 const awsHelperFunctions = require(__dirname + '/awsHelperFunctions'); 
@@ -25,7 +27,6 @@ const stackTemplateForWorkerNode = require(path.join(__dirname, '/../Storage/AWS
 
 // --------- DECLARE EXPORT OBJECT ----------------------------------
 const kubectlConfigFunctions = {};
-
 
 /** --------- GENERATE AND SAVE CONFIG FILE ON USER COMPUTER -------------
  * This function will make a .kube folder, check if there is a config file in there
@@ -126,7 +127,7 @@ kubectlConfigFunctions.configureKubectl = async (clusterName) => {
 kubectlConfigFunctions.testKubectlGetSvc = () => {
   try {
     console.log('this is the current KUBECONFIG at kubectl get svc time:', process.env.KUBECONFIG);
-    const child = spawnSync('kubectl', ['get', 'svc']);
+    const child = spawnSync('kubectl', ['get', 'svc'], { env: process.env });
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
 
@@ -246,13 +247,26 @@ kubectlConfigFunctions.inputNodeInstance = async (clusterName) => {
 
     // use nodeInstanceRoleArn to replace the template file with correct string and write the AUTH_FILE
     const workerNodeStackName = `${clusterName}-worker-node`;
-    const nodeInstanceTemplateRead = await fsp.readFile(`${process.env.AWS_STORAGE}Policy_Documents/node-instance-template.yaml`, 'utf-8');
+
+    let nodeInstanceTemplate;
+    if (NODE_ENV === 'development') {
+      nodeInstanceTemplate = path.join(__dirname, '/../Storage/AWS_Assets/Policy_Documents/node-instance-template.yaml');
+    } else if (NODE_ENV === 'test') {
+      nodeInstanceTemplate = path.join(__dirname, '/../Storage/AWS_Assets/Policy_Documents/node-instance-template.yaml');
+    } else {
+      nodeInstanceTemplate = path.join(process.env.APP_PATH, '..', 'extraResources', 'node-instance-template.yaml');
+    }
+
+    console.log('\nnodeInstanceTemplate ===>', nodeInstanceTemplate);
+
+    const nodeInstanceTemplateRead = await fsp.readFile(nodeInstanceTemplate, 'utf-8');
     const updatedNodeInstanceTemplate = nodeInstanceTemplateRead.replace(/<NodeInstanceARN>/, nodeInstanceRoleArn);
-    await fsp.writeFile(`${process.env.KUBECTL_STORAGE}AUTH_FILE_${workerNodeStackName}.yaml`, updatedNodeInstanceTemplate);
+    console.log('\njust wrote to file in storage..... \n', `${process.env.KUBECTL_STORAGE}/AUTH_FILE_${workerNodeStackName}.yaml\n`)
+    await fsp.writeFile(`${process.env.KUBECTL_STORAGE}/AUTH_FILE_${workerNodeStackName}.yaml`, updatedNodeInstanceTemplate);
     const filePathToAuthFile = path.join(process.env.KUBECTL_STORAGE, `AUTH_FILE_${workerNodeStackName}.yaml`);
 
     // Command Kubectl to configure by applying the AUTH_FILE
-    const kubectlApplyChild = spawnSync('kubectl', ['apply', '-f', filePathToAuthFile]);
+    const kubectlApplyChild = spawnSync('kubectl', ['apply', '-f', filePathToAuthFile], { env: process.env });
     const stdout = kubectlApplyChild.stdout.toString();
     const stderr = kubectlApplyChild.stderr.toString();
     console.log('stdout', stdout, 'stderr', stderr);
@@ -279,7 +293,8 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
     let stderr;
     const getKubectlStatus = () => {
       console.log('getting status');
-      const kubectlStatus = spawnSync('kubectl', ['get', 'nodes'], { timeout: 15000 });
+      console.log('process.env', process.env);
+      const kubectlStatus = spawnSync('kubectl', ['get', 'nodes'], { timeout: 15000, env: process.env });
       stdout = kubectlStatus.stdout.toString();
       stderr = kubectlStatus.stderr.toString();
       console.log('stdout: ', `===>\n${stdout}\n`, 'stderr:', stderr);
@@ -299,6 +314,7 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
       return true;
     }
     return false;
+    // return true;
   } catch (err) {
     console.error('From testKubectlStatus', err);
     return false;

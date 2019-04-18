@@ -11,7 +11,7 @@ import ClusterInfoComponent from '../components/ClusterComponentsInfoComponents/
 
 /** ------------ HOME CONTAINER — FIRST PAGE USER ENCOUNTERS ----------------------
  ** Rendered by KubectlContainer
- ** Renders the Cluster Info Component + Tree Graph Component, which renders 
+ ** Renders the Cluster Info Component + Tree Graph Component, which renders
  ** the MasterNodeComponent, WorkerNodeComponent, PodComponent and ContainerComponent
 * Displays the Tree Graph
 */

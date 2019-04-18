@@ -29,7 +29,10 @@ const mapDispatchToProps = dispatch => ({
   },
   setCredentialStatusTrue: () => {
     dispatch(actions.setCredentialStatusTrue());
-  }
+  },
+  toggleCreatingCluster: (bool) => {
+    dispatch(actions.toggleCreatingCluster(bool));
+  },
 });
 
 //* -------------- AWS CONTAINER --------------------------------------- *//
@@ -97,6 +100,7 @@ class AwsContainer extends Component {
  */
   handleConfigAndMakeNodes() {
     const { iamRoleName, vpcStackName, clusterName } = this.state;
+    const { toggleCreatingCluster } = this.props;
     const clusterData = {
       iamRoleName,
       vpcStackName,
@@ -118,6 +122,7 @@ class AwsContainer extends Component {
           awsComponentSubmitted: true,
         }));
         ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
+        toggleCreatingCluster(true);
       })
       .catch((err) => {
         const errorObj = err.inner.reduce((acc, error) => {
@@ -158,11 +163,12 @@ class AwsContainer extends Component {
   * If kubectl is successfully configured, moves user to the graph page (KubectlContainer)
   */
   handleNewNodes(event, data) {
-    const { history, setCredentialStatusTrue } = this.props;
+    const { history, setCredentialStatusTrue, toggleCreatingCluster } = this.props;
     setCredentialStatusTrue();
+    toggleCreatingCluster(false);
     history.push('/cluster');
   }
-  
+
   //* ------------ DISPLAY OR HIDE MORE INFO ( ? ) COMPONENT ----------------------
   // DISPLAY
   displayInfoHandler(e) {

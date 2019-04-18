@@ -18,6 +18,7 @@ const mapStateToProps = store => ({
   menuItemToShow: store.navbar.menuItemToShow,
   showClusterInfo: store.navbar.showClusterInfo,
   clusterInfo: store.navbar.clusterInfo,
+  creatingCluster: store.aws.creatingCluster,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -117,6 +118,7 @@ class NavContainer extends Component {
       hideClusterInfo,
       displayClusterInfo,
       toggleCreateMenuDropdown,
+      creatingCluster,
     } = this.props;
 
     //* --------------- RETURNING ----------------------------------- *//
@@ -133,6 +135,7 @@ class NavContainer extends Component {
           showClusterInfo={showClusterInfo}
           displayClusterInfo={displayClusterInfo}
           hideClusterInfo={hideClusterInfo}
+          creatingCluster={creatingCluster}
         />
       </div>
     );

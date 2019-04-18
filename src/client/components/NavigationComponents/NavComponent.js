@@ -19,6 +19,7 @@ const NavComponent = (props) => {
     clusterInfo,
     showClusterInfo,
     toggleCreateMenuDropdown,
+    creatingCluster,
   } = props;
 
   return (
@@ -40,9 +41,9 @@ const NavComponent = (props) => {
             <div className="ham_bar" />
           </div>
         )}
-        <Link to="/" className="nav_left_container_item" onClick={handleNavBarClick}>HOME</Link>
+        <Link to={creatingCluster ? '/aws' : '/'} className="nav_left_container_item" onClick={handleNavBarClick}>HOME</Link>
         <Link to="/aws" className="nav_left_container_item" onClick={handleNavBarClick}>AWS</Link>
-        <Link to="/cluster" className="nav_left_container_item" onClick={handleNavBarClick}>KUBECTL</Link>
+        <Link to={creatingCluster ? '/aws' : '/cluster'} className="nav_left_container_item" onClick={handleNavBarClick}>KUBECTL</Link>
       </div>
       {/* NAV RIGHT CONTAINER */}
       <div className="nav_right_container">

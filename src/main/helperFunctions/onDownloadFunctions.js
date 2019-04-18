@@ -3,7 +3,7 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
 const mkdirp = require('mkdirp');
-const { spawnSync, execFileSync } = require('child_process');
+const { spawnSync } = require('child_process');
 
 // --------- DECLARE EXPORT OBJECT ----------------------------------
 const onDownload = {};

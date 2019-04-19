@@ -16,6 +16,20 @@ export const setCheckCredentialsTrue = () => ({
   type: types.CHECK_CREDENTIALS_TRUE,
 });
 
+export const toggleCreatingCluster = bool => ({
+  type: types.TOGGLE_CREATING_CLUSTER,
+  payload: bool,
+});
+
+export const handleFormString = objProp => ({
+  type: types.HANDLE_FORM_STRING,
+  payload: objProp,
+});
+
+export const clearFormStrings = () => ({
+  type: types.CLEAR_FORM_STRINGS,
+});
+
 //* ---------------------------------------------------------------- *//
 //* ------------- NAVBAR ACTIONS ----------------------------------- *//
 //* ---------------------------------------------------------------- *//

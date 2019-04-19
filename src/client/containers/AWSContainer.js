@@ -21,7 +21,14 @@ import HelpInfoComponent from '../components/HelpInfoComponents/HelpInfoComponen
   * User can navigate back to page via the Nav bar to create a new cluster
 */
 
-//* -------------- ACTIONS FROM REDUX ----------------------------------- *//
+//* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
+
+const mapStateToProps = store => ({
+  creatingCluster: store.aws.creatingCluster,
+  iamRoleName: store.aws.formStrings.iamRoleName,
+  vpcStackName: store.aws.formStrings.vpcStackName,
+  clusterName: store.aws.formStrings.clusterName,
+});
 
 const mapDispatchToProps = dispatch => ({
   hideCreateMenuButton: () => {
@@ -29,7 +36,16 @@ const mapDispatchToProps = dispatch => ({
   },
   setCredentialStatusTrue: () => {
     dispatch(actions.setCredentialStatusTrue());
-  }
+  },
+  toggleCreatingCluster: (bool) => {
+    dispatch(actions.toggleCreatingCluster(bool));
+  },
+  handleFormString: (objProp) => {
+    dispatch(actions.handleFormString(objProp));
+  },
+  clearFormStrings: () => {
+    dispatch(actions.clearFormStrings());
+  },
 });
 
 //* -------------- AWS CONTAINER --------------------------------------- *//
@@ -37,10 +53,6 @@ class AwsContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      iamRoleName: '',
-      vpcStackName: '',
-      clusterName: '',
-      awsComponentSubmitted: false,
       iamRoleStatus: 'CREATING',
       stackStatus: '—',
       clusterStatus: '—',
@@ -50,7 +62,6 @@ class AwsContainer extends Component {
       aws: true,
       textInfo: '',
       showInfo: false,
-      mouseCoords: {},
       errors: {},
     };
     this.handleChange = this.handleChange.bind(this);
@@ -84,9 +95,10 @@ class AwsContainer extends Component {
   //* -------------- FORM EVENT HANDLER METHOD
   // Handles text changes in form input fields
   handleChange(e) {
+    const { handleFormString } = this.props;
     const { id, value } = e.target;
     e.preventDefault();
-    this.setState(prevState => ({ ...prevState, [id]: value }));
+    handleFormString({ name: id, value });
   }
 
   /** ------------ CONFIGURE CLUSTER + KUBECTL ----------------------
@@ -96,12 +108,9 @@ class AwsContainer extends Component {
   * User is redirected to AWSLoadingComponent
  */
   handleConfigAndMakeNodes() {
-    const { iamRoleName, vpcStackName, clusterName } = this.state;
-    const clusterData = {
-      iamRoleName,
-      vpcStackName,
-      clusterName,
-    };
+    const { toggleCreatingCluster, iamRoleName, vpcStackName, clusterName } = this.props;
+    const clusterData = { iamRoleName, vpcStackName, clusterName };
+
     const clusterDataSchema = yup.object().strict().shape({
       iamRoleName: yup.string().required('IAM Role Name is required').max(64),
       vpcStackName: yup.string().required('VPC Stack Name is required').max(128),
@@ -109,15 +118,8 @@ class AwsContainer extends Component {
     });
     clusterDataSchema.validate(clusterData, { abortEarly: false })
       .then((data) => {
-        this.setState(prevState => ({
-          ...prevState,
-          iamRoleName: '',
-          vpcStackName: '',
-          clusterName: '',
-          errors: {},
-          awsComponentSubmitted: true,
-        }));
-        ipcRenderer.send(events.CREATE_CLUSTER, clusterData);
+        ipcRenderer.send(events.CREATE_CLUSTER, data);
+        toggleCreatingCluster(true);
       })
       .catch((err) => {
         const errorObj = err.inner.reduce((acc, error) => {
@@ -158,24 +160,21 @@ class AwsContainer extends Component {
   * If kubectl is successfully configured, moves user to the graph page (KubectlContainer)
   */
   handleNewNodes(event, data) {
-    const { history, setCredentialStatusTrue } = this.props;
-    setCredentialStatusTrue();
-    history.push('/cluster');
-  }
-  
-  //* ------------ DISPLAY OR HIDE MORE INFO ( ? ) COMPONENT ----------------------
-  // DISPLAY
-  displayInfoHandler(e) {
-    const x = e.screenX;
-    console.log('x: ', x);
-    const y = e.screenY;
-    console.log('y: ', y);
-    const newCoords = { top: y, left: x };
+    const { history, setCredentialStatusTrue, toggleCreatingCluster, clearFormStrings } = this.props;
     this.setState(prevState => ({
       ...prevState,
-      mouseCoords: newCoords,
-      showInfo: true,
+      errors: {},
     }));
+    clearFormStrings();
+    setCredentialStatusTrue();
+    toggleCreatingCluster(false);
+    history.push('/cluster');
+  }
+
+  //* ------------ DISPLAY OR HIDE MORE INFO ( ? ) COMPONENT ----------------------
+  // DISPLAY
+  displayInfoHandler() {
+    this.setState(prevState => ({ ...prevState, showInfo: true }));
   }
 
   // HIDE
@@ -186,10 +185,6 @@ class AwsContainer extends Component {
   //* --------- RENDER
   render() {
     const {
-      iamRoleName,
-      vpcStackName,
-      clusterName,
-      awsComponentSubmitted,
       iamRoleStatus,
       stackStatus,
       clusterStatus,
@@ -203,19 +198,26 @@ class AwsContainer extends Component {
       errors,
     } = this.state;
 
+    const {
+      creatingCluster,
+      iamRoleName,
+      vpcStackName,
+      clusterName,
+    } = this.props;
+
     //* --------- RETURN
     return (
       <div className="aws_cluster_page_container">
         {showInfo === true && (
-        <HelpInfoComponent
-          textInfo={textInfo}
-          hideInfoHandler={this.hideInfoHandler}
-          mouseCoords={mouseCoords}
-          aws={aws}
-        />
+          <HelpInfoComponent
+            textInfo={textInfo}
+            hideInfoHandler={this.hideInfoHandler}
+            mouseCoords={mouseCoords}
+            aws={aws}
+          />
         )}
         {/* **If the the user has not yet completed and submitted AWS Component Data, display form** */}
-        {awsComponentSubmitted === false && (
+        {creatingCluster === false && (
           <AWSComponent
             handleChange={this.handleChange}
             handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
@@ -231,23 +233,23 @@ class AwsContainer extends Component {
           />
         )}
         {/* **Once the user has submitted the AWS Component Data, display the AWSLoading page** */}
-        {awsComponentSubmitted === true && (
-        <AWSLoadingComponent
-          handleChange={this.handleChange}
-          iamRoleName={iamRoleName}
-          vpcStackName={vpcStackName}
-          clusterName={clusterName}
-          iamRoleStatus={iamRoleStatus}
-          stackStatus={stackStatus}
-          clusterStatus={clusterStatus}
-          workerNodeStatus={workerNodeStatus}
-          kubectlConfigStatus={kubectlConfigStatus}
-          errorMessage={errorMessage}
-        />
+        {creatingCluster === true && (
+          <AWSLoadingComponent
+            handleChange={this.handleChange}
+            iamRoleName={iamRoleName}
+            vpcStackName={vpcStackName}
+            clusterName={clusterName}
+            iamRoleStatus={iamRoleStatus}
+            stackStatus={stackStatus}
+            clusterStatus={clusterStatus}
+            workerNodeStatus={workerNodeStatus}
+            kubectlConfigStatus={kubectlConfigStatus}
+            errorMessage={errorMessage}
+          />
         )}
       </div>
     );
   }
 }
 
-export default withRouter(connect(null, mapDispatchToProps)(AwsContainer));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AwsContainer));

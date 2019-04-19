@@ -140,9 +140,9 @@ const createWindowAndSetEnvironmentVariables = () => {
       win.webContents.openDevTools();
     } else if (NODE_ENV === 'test') {
       win.loadURL(urlPath);
+      win.webContents.openDevTools();
     } else {
       win.loadURL(urlPath);
-      win.webContents.openDevTools();
     }
   });
 
@@ -160,7 +160,6 @@ const createWindowAndSetEnvironmentVariables = () => {
 ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
   try {
     const credentialStatusToReturn = await awsEventCallbacks.returnKubectlAndCredentialsStatus();
-    win.webContents.send('error', process.env);
     win.webContents.send(events.RETURN_CREDENTIAL_STATUS, credentialStatusToReturn);
   } catch (err) {
     console.error('FROM CHECK_CREDENTIALS_STATUS:', err);

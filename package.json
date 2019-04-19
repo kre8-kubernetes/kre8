@@ -11,10 +11,9 @@
     "start:test": "NODE_ENV=test electron --noDevServer src/main/main.js",
     "start:prod": "webpack --mode production --config webpack.prod.config.js --colors && electron --noDevServer src/main/main.js",
     "postinstall": "electron-builder install-app-deps",
-    "start": "electron src/main/main.js",
-    "dist": "electron-builder",
-    "build:publish": "DEBUG=electron-builder electron-builder --publish always",
-    "dist:debug": "DEBUG=electron-builder electron-builder",
+    "dist": "yarn build:prod && electron-builder",
+    "dist:debug": "DEBUG=electron-builder yarn dist",
+    "build:publish": "DEBUG=electron-builder yarn dist --publish always",
     "dev": "NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0 --port 3000 --config=./webpack.config.js"
   },
   "build": {

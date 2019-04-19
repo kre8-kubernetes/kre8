@@ -85,6 +85,7 @@ class HomeContainer extends Component {
   }
 
   componentWillUnmount() {
+    ipcRenderer.removeListener(events.RETURN_CREDENTIAL_STATUS, this.processAWSCredentialStatus);
     ipcRenderer.removeListener(events.HANDLE_AWS_CREDENTIALS, this.handleAWSCredentials);
   }
 
@@ -95,11 +96,7 @@ class HomeContainer extends Component {
   setAWSCredentials(e) {
     e.preventDefault();
     const { awsAccessKeyId, awsSecretAccessKey, awsRegion } = this.state;
-    const awsCredentials = {
-      awsAccessKeyId,
-      awsSecretAccessKey,
-      awsRegion,
-    };
+    const awsCredentials = { awsAccessKeyId, awsSecretAccessKey, awsRegion };
     // Create custom instructions for Yup error handling
     setLocale({
       mixed: { notOneOf: 'AWS Region is required' },
@@ -123,7 +120,7 @@ class HomeContainer extends Component {
           awsRegion: '',
           errors: {},
         }));
-        ipcRenderer.send(events.SET_AWS_CREDENTIALS, awsCredentials);
+        ipcRenderer.send(events.SET_AWS_CREDENTIALS, data);
       })
       .catch((err) => {
         const errorObj = err.inner.reduce((acc, error) => {
@@ -191,13 +188,9 @@ class HomeContainer extends Component {
   }
 
   //* --------- DISPLAY MORE INFO ( ? ) COMPONENT METHOD
-  displayInfoHandler(e) {
-    const x = e.screenX;
-    const y = e.screenY;
-    const newCoords = { top: y, left: x };
+  displayInfoHandler() {
     this.setState(prevState => ({
       ...prevState,
-      mouseCoords: newCoords,
       showInfo: true,
     }));
   }
@@ -242,7 +235,7 @@ class HomeContainer extends Component {
         {/* **On Application Open, if the user has already entered credentials,
         display loading screen while graph renders, else take them to credential entry page** */}
         {((hasCheckedCredentials === false) && (credentialStatus === true))
-          ? <HomeComponentPostCredentials handleButtonClickOnHomeComponentPostCredentials={this.handleButtonClickOnHomeComponentPostCredentials} />
+          ? <HomeComponentPostCredentials />
           : (
             <HomeComponent
               handleChange={this.handleChange}

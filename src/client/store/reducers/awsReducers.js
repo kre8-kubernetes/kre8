@@ -1,6 +1,11 @@
 import * as types from '../actionTypes';
 
 const initialState = {
+  formStrings: {
+    iamRoleName: '',
+    vpcStackName: '',
+    clusterName: '',
+  },
   credentialStatus: true,
   hasCheckedCredentials: false,
   creatingCluster: false,
@@ -20,6 +25,19 @@ export default function awsReducers(state = initialState, action) {
       return {
         ...state,
         creatingCluster: typeof action.payload === 'boolean' ? action.payload : !state.creatingCluster,
+      };
+    case types.HANDLE_FORM_STRING:
+      return {
+        ...state,
+        formStrings: { ...state.formStrings, [action.payload.name]: action.payload.value },
+      };
+    case types.CLEAR_FORM_STRINGS:
+      return {
+        ...state,
+        formStrings: Object.keys(state.formStrings).reduce((acc, key) => {
+          acc[key] = '';
+          return acc;
+        }, {}),
       };
     default:
       return state;

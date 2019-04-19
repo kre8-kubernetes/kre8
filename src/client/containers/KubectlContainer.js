@@ -25,8 +25,7 @@ const mapDispatchToProps = dispatch => ({
 class KubectlContainer extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {};
   }
 
   //* -------------- COMPONENT LIFECYCLE METHODS

@@ -293,7 +293,6 @@ kubectlConfigFunctions.testKubectlStatus = async () => {
     let stderr;
     const getKubectlStatus = () => {
       console.log('getting status');
-      console.log('process.env', process.env);
       const kubectlStatus = spawnSync('kubectl', ['get', 'nodes'], { timeout: 15000, env: process.env });
       stdout = kubectlStatus.stdout.toString();
       stderr = kubectlStatus.stderr.toString();

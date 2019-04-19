@@ -12,7 +12,7 @@ const initialState = {
     clusterArn: '',
     iamRoleName: '',
     iamRoleArn: '',
-    šstackName: '',
+    stackName: '',
     vpcId: '',
     securityGroupIds: '',
     subnetIdsArray: '',

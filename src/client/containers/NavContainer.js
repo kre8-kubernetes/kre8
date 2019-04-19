@@ -56,12 +56,13 @@ class NavContainer extends Component {
     // for debugging main in production
     this.handleKubectlData = this.handleKubectlData.bind(this);
     this.handleMainError = this.handleMainError.bind(this);
+    this.getAndDisplayClusterData = this.getAndDisplayClusterData.bind(this);
   }
 
   //* --------------- COMPONENT LIFECYCLE METHODS ----------------- *//
   componentDidMount() {
+    ipcRenderer.send(events.GET_CLUSTER_DATA, 'request cluster data');
     ipcRenderer.on(events.SEND_CLUSTER_DATA, this.handleClusterData);
-    ipcRenderer.send(events.GET_CLUSTER_DATA);
     // for debugging main in production
     ipcRenderer.on('kubectl', this.handleKubectlData);
     ipcRenderer.on('error', this.handleMainError);
@@ -74,6 +75,15 @@ class NavContainer extends Component {
   }
 
   //* --------------- COMPONENT METHODS --------------------------- *//
+
+  getAndDisplayClusterData(e) {
+    const { clusterInfo, displayClusterInfo } = this.props;
+    if (clusterInfo.clusterName === '') {
+      ipcRenderer.send(events.GET_CLUSTER_DATA, 'request cluster data');
+    }
+    displayClusterInfo();
+  }
+
   handleMenuItemToShow(e) {
     const { menuItemToShow, toggleCreateMenuFormItem, hideCreateMenuDropdown } = this.props;
     menuItemToShow(e.target.id);
@@ -85,6 +95,7 @@ class NavContainer extends Component {
     const { hideCreateMenuDropdown } = this.props;
     hideCreateMenuDropdown();
   }
+
 
   // FOR DEBUGGING the main in production
   handleKubectlData(event, data) {
@@ -136,6 +147,7 @@ class NavContainer extends Component {
           displayClusterInfo={displayClusterInfo}
           hideClusterInfo={hideClusterInfo}
           creatingCluster={creatingCluster}
+          getAndDisplayClusterData={this.getAndDisplayClusterData}
         />
       </div>
     );

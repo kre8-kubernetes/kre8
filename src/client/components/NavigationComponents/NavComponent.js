@@ -20,6 +20,7 @@ const NavComponent = (props) => {
     showClusterInfo,
     toggleCreateMenuDropdown,
     creatingCluster,
+    getAndDisplayClusterData,
   } = props;
 
   return (
@@ -48,7 +49,7 @@ const NavComponent = (props) => {
       {/* NAV RIGHT CONTAINER */}
       <div className="nav_right_container">
         <div className="nav_component_container_item">
-          <button className="nav_component_cluster_button" type="button" onMouseEnter={displayClusterInfo} onMouseLeave={hideClusterInfo}>CLUSTER DATA</button>
+          <button className="nav_component_cluster_button" type="button" onMouseEnter={getAndDisplayClusterData} onMouseLeave={hideClusterInfo}>CLUSTER DATA</button>
           {/* CLUSTER INFO DROPDOWN CONTAINER */}
           {showClusterInfo === true && (
           <ClusterInfoComponent clusterInfo={clusterInfo} />

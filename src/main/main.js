@@ -59,7 +59,6 @@ const createWindowAndSetEnvironmentVariables = () => {
     process.env.APPLICATION_PATH = __dirname;
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
   } else {
-    // TODO: Braden check if we need to create directories, or if we can do in the configuration of electron we do it then
     awsEventCallbacks.setEnvVarsAndMkDirsInProd();
   }
 
@@ -370,6 +369,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     const kubectlConfigStatusTest = await kubectlConfigFunctions.testKubectlStatus();
 
     if (kubectlConfigStatusTest === true) {
+      await awsHelperFunctions.timeout(1000 * 15);
       kubectlConfigStatus.status = awsProps.CREATED;
       // Send kubectl status to render thread to display
       win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigStatus);
@@ -575,7 +575,7 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
     win.webContents.send('kubectl', { stdout, stderr });
-    await awsHelperFunctions.timeout(1000 * 10);
+    await awsHelperFunctions.timeout(1000 * 25);
     // SEND STATUS TO THE RENDERER PROCESS
     if (stderr) {
       console.error('From CREATE_DEPLOYMENT:', stderr);

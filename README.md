@@ -35,4 +35,4 @@ KRE8's powerful dashboard tool provides the functionality to create and delete d
 ### Contributors
 [Braden Altstatt](https://github.com/bradenaa) | [Adrian Diamond](https://github.com/AdrianDiamond13) | [Carolyn Harrold](https://github.com/carolynharrold) 
 
-Visit us at [Kre8](https://www.kre8.io) for more information!
+Visit us at [kre8.io](https://www.kre8.io) for more information!

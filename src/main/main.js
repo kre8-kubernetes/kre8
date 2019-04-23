@@ -133,14 +133,14 @@ const createWindowAndSetEnvironmentVariables = () => {
     // load the renderer url onto window after the child window is ready to show
     const urlPath = `file://${path.join(__dirname, '..', '..', 'dist/index.html')}`;
     console.log('\nNODE_ENV ========================> ', NODE_ENV);
-    console.log('\nAPPLICATION PATH ================> ', process.env.APPLICATION_PATH);
+    console.log('\nAPPLICATION_PATH ================> ', process.env.APPLICATION_PATH);
     console.log('\nSTORAGE =========================> ', process.env.AWS_STORAGE);
+    console.log('\nAPP_PATH =========================> ', process.env.APP_PATH);
     if (NODE_ENV === 'development') {
       win.loadURL(`http://localhost:${PORT}`);
       win.webContents.openDevTools();
     } else if (NODE_ENV === 'test') {
       win.loadURL(urlPath);
-      win.webContents.openDevTools();
     } else {
       win.loadURL(urlPath);
     }
@@ -164,7 +164,6 @@ ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async (event, data) => {
   } catch (err) {
     console.error('FROM CHECK_CREDENTIALS_STATUS:', err);
     win.webContents.send(events.RETURN_CREDENTIAL_STATUS, 'Credentials have not yet been set, or there is an error with the file');
-    win.webContents.send('error', { from: 'CHECK_CREDENTIAL_STATUS', message: err });
   }
 });
 
@@ -228,7 +227,6 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
     loadingChildWindow.close();
     loadingChildWindow = null;
     win.webContents.send(events.HANDLE_AWS_CREDENTIALS, 'Login details were incorrect. Please check your credentials and try again.');
-    win.webContents.send('error', { from: 'SET_AWS_CREDENTIALS', message: err });
   }
 });
 
@@ -280,7 +278,6 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     errorData.errorMessage = `Error occurred while creating IAM Role: ${err}`;
     // Send error status to render thread to display
     win.webContents.send(events.HANDLE_ERRORS, errorData);
-    win.webContents.send('error', { from: 'CREATE_CLUSTER--CREATE_IAM_ROLE', message: err });
   }
 
   // ---------------------- CREATE AWS STACK (approx 1 - 1.5 mins) -------------------
@@ -310,7 +307,6 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     errorData.errorMessage = `Error occurred while creating VPC Stack: ${err}`;
     // Send Error message to render thread to display
     win.webContents.send(events.HANDLE_ERRORS, errorData);
-    win.webContents.send('error', { from: 'CREATE_CLUSTER--CREATE_TECH_STACK', message: err });
   }
 
   // ------------------------ CREATE AWS CLUSTER --------------------------------------
@@ -335,7 +331,6 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     errorData.errorMessage = `Error occurred while creating Cluster: ${err}`;
     // Send Error message to render thread to display
     win.webContents.send(events.HANDLE_ERRORS, errorData);
-    win.webContents.send('error', { from: 'CREATE_CLUSTER--CREATE_CLUSTER', message: err });
   }
 
   // ----- CREATE KUBECONFIG FILE, CONFIGURE KUBECTL, CREATE WORKER NODE STACK ----------
@@ -360,7 +355,6 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     errorData.errorMessage = `Error occurred while creating Worker Node Stack: ${err}`;
     // Send error message to render thread to display
     win.webContents.send(events.HANDLE_ERRORS, errorData);
-    win.webContents.send('error', { from: 'CREATE_CLUSTER--CREATE_WORKER_NODE_STACK', message: err });
   }
 
   // --------- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS -------------
@@ -386,7 +380,6 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     errorData.errorMessage = `Error occurred while configuring kubectl: ${err}`;
     // Send error message to render thread to display
     win.webContents.send(events.HANDLE_ERRORS, errorData);
-    win.webContents.send('error', { from: 'CREATE_CLUSTER--CREATE_NODE_&&_CONFIG_KUBECTL', message: err });
   }
 });
 
@@ -418,7 +411,6 @@ ipcMain.on(events.GET_CLUSTER_DATA, async (event) => {
     win.webContents.send(events.SEND_CLUSTER_DATA, parsedAWSMasterFileData);
   } catch (err) {
     console.error('From GET_CLUSTER_DATA', err);
-    win.webContents.send('error', { from: 'GET_CLUSTER_DATA', message: err });
   }
 });
 
@@ -443,7 +435,6 @@ ipcMain.on(events.GET_MASTER_NODE, async (event, data) => {
     const stdout = apiServiceData.stdout.toString();
     const stdoutParsed = JSON.parse(stdout);
     const stderr = apiServiceData.stderr.toString();
-    win.webContents.send('error', apiServiceData);
     // win.webContents.send('kubectl', { stdout, stderr });
     if (stderr) throw stderr;
     const clusterApiData = stdoutParsed.items.find((item) => {
@@ -457,7 +448,6 @@ ipcMain.on(events.GET_MASTER_NODE, async (event, data) => {
     console.error('From GET_MASTER_NODE:', err);
     // send error message to the render thread to display
     win.webContents.send(events.HANDLE_MASTER_NODE, err);
-    win.webContents.send('error', { from: 'CREATE_CLUSTER--GET MASTER NODE', message: err });
   }
 });
 
@@ -469,7 +459,6 @@ ipcMain.on(events.GET_WORKER_NODES, async (event, data) => {
     const stdoutParsed = JSON.parse(stdout);
     const stderr = apiNodeData.stderr.toString();
 
-    win.webContents.send('error', stderr);
     if (stderr) throw stderr;
     // return worker node data to the render thread
     win.webContents.send(events.HANDLE_WORKER_NODES, stdoutParsed);
@@ -488,7 +477,6 @@ ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
     const stdoutParsed = JSON.parse(stdout);
 
     const stderr = apiNodeData.stderr.toString();
-    win.webContents.send('kubectl', { stdout, stderr });
     if (stderr) throw stderr;
     // return pod data to the render thread
     win.webContents.send(events.HANDLE_CONTAINERS_AND_PODS, stdoutParsed);
@@ -517,7 +505,7 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
     const child = spawnSync('kubectl', ['apply', '-f', `${process.env.KUBECTL_STORAGE}pod_${data.podName}.json`], { env: process.env });
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
-    win.webContents.send('kubectl', { stdout, stderr });
+
     await awsHelperFunctions.timeout(1000 * 5);
     // SEND STDOUT TO RENDERER PROCESS
     if (stderr) {
@@ -545,7 +533,6 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
     const child = spawnSync('kubectl', ['apply', '-f', `${process.env.KUBECTL_STORAGE}service_${data.serviceName}.json`], { env: process.env });
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
-    win.webContents.send('kubectl', { stdout, stderr });
     // SEND STATUS TO THE RENDERER PROCESS
     if (stderr) {
       console.error('From CREATE_SERVICE:', stderr);
@@ -574,8 +561,8 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
     const child = spawnSync('kubectl', ['create', '-f', `${process.env.KUBECTL_STORAGE}deployment_${data.deploymentName}.json`], { env: process.env });
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
-    win.webContents.send('kubectl', { stdout, stderr });
-    await awsHelperFunctions.timeout(1000 * 25);
+
+    await awsHelperFunctions.timeout(1000 * 30);
     // SEND STATUS TO THE RENDERER PROCESS
     if (stderr) {
       console.error('From CREATE_DEPLOYMENT:', stderr);
@@ -599,11 +586,13 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
 ipcMain.on(events.DELETE_DEPLOYMENT, async (event, data) => {
   try {
     // DELETE THE POD VIA kubectl
-    const deploymentName = data.data.name.split('-')[0];
+    console.log(data.data);
+    const split = data.data.name.split('-');
+    const deploymentName = split.slice(0, split.length - 2).join('-');
     const child = spawnSync('kubectl', ['delete', 'deployment', deploymentName], { env: process.env });
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
-    win.webContents.send('kubectl', { stdout, stderr });
+
     if (stderr) throw new Error(stderr);
     // WAIT 10 SECONDS TO ALLOW DEPLOYMENT DELETION TO COMPLETE
     await awsHelperFunctions.timeout(1000 * 10);

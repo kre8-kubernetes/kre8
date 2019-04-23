@@ -3,9 +3,12 @@
 const { Application } = require('spectron');
 const { assert } = require('chai');
 const path = require('path');
+const electronPath = require('electron');
 
 const electronBinary = path.join(__dirname, '..', 'node_modules', '.bin', 'electron');
-const baseDir = path.join(path.join(__dirname, '..', 'src', 'main'));
+const baseDir = path.join(path.join(__dirname, '..', 'src', 'main', 'main.js'));
+console.log('electronBin ===> ', electronBinary);
+console.log('baseDir ===> ', baseDir);
 
 const sleep = time => new Promise(resolve => setTimeout(resolve, time));
 
@@ -17,11 +20,11 @@ describe('Application launch', function () {
     args: [baseDir],
   });
 
-  before(() => {
+  before(function () {
     return app.start();
   });
 
-  after(async () => {
+  after(function () {
     return app.stop();
   });
 

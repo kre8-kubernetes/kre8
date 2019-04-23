@@ -18,10 +18,6 @@ onDownload.installIAMAuthenticator = () => {
   const target = `${process.env.HOME}/bin/aws-iam-authenticator`;
   mkdirp.sync(`${process.env.HOME}/bin`);
   const child = spawnSync('curl', ['-o', target, '--create-dirs', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator'], { shell: true });
-  // const iamAuth = path.join(process.env.APP_PATH, '..', 'extraResources', 'aws-iam-authenticator');
-  // console.log('AWS I AM PATH ====> ', iamAuth);
-  // const child = spawnSync(iamAuth, []);
-  // console.log('CHILD\n', child.toString());
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
   console.log('stdout', stdout, 'stderr', stderr);
@@ -33,7 +29,6 @@ onDownload.installIAMAuthenticator = () => {
  */
 onDownload.enableIAMAuthenticator = () => {
   console.log('now enabling IAM authenticator');
-  // const iamAuth = path.join(process.env.APP_PATH, '..', 'extraResources', 'aws-iam-authenticator');
   const child = spawnSync('chmod', ['+x', `${process.env.HOME}/bin/aws-iam-authenticator`]);
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();

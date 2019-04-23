@@ -1,6 +1,6 @@
 {
   "name": "kre8",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Kre8 electron app",
   "main": "./src/main/main.js",
   "scripts": {

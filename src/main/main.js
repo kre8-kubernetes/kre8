@@ -3,6 +3,7 @@ require('dotenv').config();
 
 // --------- ELECTRON MODULES -----------
 const { app, BrowserWindow, ipcMain, shell, Menu, crashReporter } = require('electron');
+const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
 crashReporter.start({
   productName: 'kre8-awslaunched',
@@ -54,7 +55,9 @@ const createWindowAndSetEnvironmentVariables = () => {
   if (NODE_ENV === 'development') {
     process.env.APPLICATION_PATH = __dirname;
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
-    BrowserWindow.addDevToolsExtension(REACT_DEV_TOOLS_PATH);
+    installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log('An error occurred: ', err));
   } else if (NODE_ENV === 'test') {
     process.env.APPLICATION_PATH = __dirname;
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();

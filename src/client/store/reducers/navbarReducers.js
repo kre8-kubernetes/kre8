@@ -48,6 +48,7 @@ export default function navbarReducers(state = initialState, action) {
     case types.HIDE_CLUSTER_INFO:
       return { ...state, showClusterInfo: false };
     case types.UPDATE_CLUSTER_DATA:
+      console.log(action.payload);
       return { ...state, clusterInfo: action.payload };
     default:
       return state;

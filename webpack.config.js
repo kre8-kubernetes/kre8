@@ -55,7 +55,7 @@ module.exports = {
     //   'process.env.NODE_ENV': JSON.stringify('development'),
     // }),
   ],
-  devtool: 'cheap-source-map',
+  devtool: 'eval-source-map',
   devServer: {
     contentBase: OUTPUT_DIR,
     historyApiFallback: true,

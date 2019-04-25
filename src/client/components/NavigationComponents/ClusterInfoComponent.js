@@ -8,10 +8,26 @@ import React from 'react';
 
 const ClusterInfoComponent = (props) => {
   const { clusterInfo } = props;
+  let halfOfServerEndpoint;
+  let serverEndPointFrontHalf;
+  let serverEndPointBackHalf;
+  let subnetIds;
 
-  const halfOfServerEndpoint = Math.floor(clusterInfo.serverEndPoint.length / 2);
-  const serverEndPointFrontHalf = clusterInfo.serverEndPoint.slice(0, halfOfServerEndpoint);
-  const serverEndPointBackHalf = clusterInfo.serverEndPoint.slice(halfOfServerEndpoint);
+  console.log(clusterInfo);
+  console.log(Object.prototype.hasOwnProperty.call(clusterInfo, 'serverEndPoint'));
+  if (Object.prototype.hasOwnProperty.call(clusterInfo, 'serverEndPoint')) {
+    halfOfServerEndpoint = Math.floor(clusterInfo.serverEndPoint.length / 2);
+    serverEndPointFrontHalf = clusterInfo.serverEndPoint.slice(0, halfOfServerEndpoint);
+    serverEndPointBackHalf = clusterInfo.serverEndPoint.slice(halfOfServerEndpoint);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(clusterInfo, 'subnetIdsArray')) {
+    subnetIds = clusterInfo.subnetIdsArray.map((subnet) => {
+      return (
+        <div key={subnet} className="cluster_info_subnets">{subnet}</div>
+      );
+    });
+  }
 
   return (
     <div className="cluster_info_container">
@@ -45,9 +61,7 @@ const ClusterInfoComponent = (props) => {
       </div>
       <div className="cluster_info_minor">
         <div className="cluster_info_key">SUBNET IDS: </div>
-        <div className="cluster_info_subnets">{clusterInfo.subnetIdsArray[0]}</div>
-        <div className="cluster_info_subnets">{clusterInfo.subnetIdsArray[1]}</div>
-        <div className="cluster_info_subnets">{clusterInfo.subnetIdsArray[2]}</div>
+        {subnetIds}
       </div>
       <div className="cluster_info_minor">
         <div className="cluster_info_key">SERVER END POINT: </div>

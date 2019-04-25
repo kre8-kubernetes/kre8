@@ -77,11 +77,13 @@ class NavContainer extends Component {
   //* --------------- COMPONENT METHODS --------------------------- *//
 
   getAndDisplayClusterData(e) {
-    const { clusterInfo, displayClusterInfo } = this.props;
-    if (clusterInfo.clusterName === '') {
-      ipcRenderer.send(events.GET_CLUSTER_DATA, 'request cluster data');
+    const { clusterInfo, displayClusterInfo, creatingCluster } = this.props;
+    if (!creatingCluster) {
+      if (clusterInfo.clusterName === '') {
+        ipcRenderer.send(events.GET_CLUSTER_DATA, 'request cluster data');
+      }
+      displayClusterInfo();
     }
-    displayClusterInfo();
   }
 
   handleMenuItemToShow(e) {
@@ -92,10 +94,11 @@ class NavContainer extends Component {
   }
 
   handleNavBarClick(e) {
-    const { hideCreateMenuDropdown } = this.props;
-    hideCreateMenuDropdown();
+    const { hideCreateMenuDropdown, creatingCluster } = this.props;
+    if (!creatingCluster) {
+      hideCreateMenuDropdown();
+    }
   }
-
 
   // FOR DEBUGGING the main in production
   handleKubectlData(event, data) {

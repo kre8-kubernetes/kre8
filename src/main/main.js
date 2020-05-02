@@ -2,8 +2,14 @@
 require('dotenv').config();
 
 // --------- ELECTRON MODULES -----------
-const { app, BrowserWindow, ipcMain, shell, Menu, crashReporter } = require('electron');
-const { default: installExtension, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
+const { 
+  app,
+  BrowserWindow,
+  ipcMain,
+  shell,
+  Menu,
+  crashReporter,
+} = require('electron');
 
 crashReporter.start({
   productName: 'kre8-awslaunched',
@@ -35,7 +41,7 @@ const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemp
 const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions'); 
 
 // --------- .ENV Variables --------------
-const { PORT, REACT_DEV_TOOLS_PATH, NODE_ENV } = process.env;
+const { PORT, NODE_ENV } = process.env;
 
 
 // --------- CREATE WINDOW OBJECT --------------------------------------------
@@ -55,9 +61,6 @@ const createWindowAndSetEnvironmentVariables = () => {
   if (NODE_ENV === 'development') {
     process.env.APPLICATION_PATH = __dirname;
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
-    installExtension(REACT_DEVELOPER_TOOLS)
-      .then((name) => console.log(`Added Extension:  ${name}`))
-      .catch((err) => console.log('An error occurred: ', err));
   } else if (NODE_ENV === 'test') {
     process.env.APPLICATION_PATH = __dirname;
     awsEventCallbacks.setEnvVarsAndMkDirsInDev();
@@ -141,7 +144,6 @@ const createWindowAndSetEnvironmentVariables = () => {
     console.log('\nAPP_PATH =========================> ', process.env.APP_PATH);
     if (NODE_ENV === 'development') {
       win.loadURL(`http://localhost:${PORT}`);
-      win.webContents.openDevTools();
     } else if (NODE_ENV === 'test') {
       win.loadURL(urlPath);
     } else {

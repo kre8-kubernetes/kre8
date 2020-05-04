@@ -1,0 +1,57 @@
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  /* src: url('path/to/OpenSans.eot'); */
+  src: local('Lato'), local('Lato'), url('./Lato/Lato-Black.ttf') format('truetype');
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+body {
+  /* background:#071526; */
+  /* background:#071526;
+  background: -webkit-linear-gradient(to right, #243B55, #141E30);  
+  background: linear-gradient(to right, #243B55, #141E30);
+  font-family: Lato; */
+
+  /* background:#1F3248; */
+  background:#0E1E31;
+
+  /* background: -webkit-linear-gradient(to right, #1F3248, #243B55);  
+  background: linear-gradient(to right, #1F3248, #243B55); */
+  font-family: Lato;
+
+  animation: fadein 2s;
+  /* align-items: center; */
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+svg {
+  position: absolute;
+  bottom: 50;
+  left: -58px;
+  height: 300px;
+  width: 325px;
+}
+
+path {
+  fill: none;
+  stroke: #4368C9;
+  stroke-width: 1.5;
+  stroke-dasharray: 275;
+  stroke-dashoffset: 10000;
+  animation: dash 50s linear infinite running;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -100;
+  }
+}

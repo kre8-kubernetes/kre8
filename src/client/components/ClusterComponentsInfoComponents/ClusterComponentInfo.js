@@ -22,7 +22,7 @@ const ClusterInfoComponent = (props) => {
   const { data } = nodeInfoToShow.data;
 
   const renderComponent = () => {
-    switch(componentType) {
+    switch (componentType) {
       case NODE:
         return (
           <NodeInfoComponent
@@ -50,14 +50,14 @@ const ClusterInfoComponent = (props) => {
             hideNodeInfo={hideNodeInfo}/>
         );
       default:
-      return (
-        <div className="nothing_info_component">
-          This is the nothing component
-          <button onClick={hideNodeInfo} type="button">Close</button>
-        </div>
-      );
+        return (
+          <div className="nothing_info_component">
+            This is the nothing component
+            <button onClick={hideNodeInfo} type="button">Close</button>
+          </div>
+        );
     }
-  }
+  };
 
   return (
     <div className="popup_info">

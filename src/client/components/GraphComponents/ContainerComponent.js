@@ -2,7 +2,6 @@ import React from 'react';
 import { Group } from '@vx/group';
 
 const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
-  // const bg = '#1D2541';
   const bg = '#16273B';
   const stroke = '#82EFFF';
   const strokeWidth = 0.65;
@@ -25,7 +24,6 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
         d="M5 40 l215 0"
         onClick={() => {
           showNodeInfo(node);
-          console.log('from circle', node);
         }}
         onMouseOver={(e) => {
           toolTipOn(e, { title: 'Container,  Image:', text: node.data.image });

@@ -100,10 +100,9 @@ class NavContainer extends Component {
     }
   }
 
-  // FOR DEBUGGING the main in production
+  // TODO (braden): should remove from here and main process
   handleKubectlData(event, data) {
-    console.log('Errors from stderr', data.stderr);
-    console.log('Errors from stdout', data.stdout);
+    console.error('Errors from stderr', data.stderr);
   }
 
   handleMainError(event, data) {

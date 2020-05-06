@@ -6,7 +6,7 @@ import AWSContainer from './AWSContainer';
 import KubectlContainer from './KubectlContainer';
 import HomeContainer from './HomeContainer';
 
-const Main = props => (
+const Main = () => (
   <div>
     <Switch>
       <Route

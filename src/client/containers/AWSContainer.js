@@ -146,7 +146,6 @@ class AwsContainer extends Component {
    * @param {String} Error message to display
   */
   handleError(event, data) {
-    console.log('DATA FROM HANDLE ERROR: ', data);
     this.setState(prevState => ({
       ...prevState,
       [data.type]: data.status,
@@ -160,11 +159,18 @@ class AwsContainer extends Component {
   * If kubectl is successfully configured, moves user to the graph page (KubectlContainer)
   */
   handleNewNodes(event, data) {
-    const { history, setCredentialStatusTrue, toggleCreatingCluster, clearFormStrings } = this.props;
+    const {
+      history,
+      setCredentialStatusTrue,
+      toggleCreatingCluster,
+      clearFormStrings,
+    } = this.props;
+
     this.setState(prevState => ({
       ...prevState,
       errors: {},
     }));
+
     clearFormStrings();
     setCredentialStatusTrue();
     toggleCreatingCluster(false);
@@ -172,17 +178,14 @@ class AwsContainer extends Component {
   }
 
   //* ------------ DISPLAY OR HIDE MORE INFO ( ? ) COMPONENT ----------------------
-  // DISPLAY
   displayInfoHandler() {
     this.setState(prevState => ({ ...prevState, showInfo: true }));
   }
 
-  // HIDE
   hideInfoHandler() {
     this.setState(prevState => ({ ...prevState, showInfo: false }));
   }
 
-  //* --------- RENDER
   render() {
     const {
       iamRoleStatus,
@@ -205,7 +208,6 @@ class AwsContainer extends Component {
       clusterName,
     } = this.props;
 
-    //* --------- RETURN
     return (
       <div className="aws_cluster_page_container">
         {showInfo === true && (

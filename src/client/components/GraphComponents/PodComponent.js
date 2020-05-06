@@ -1,8 +1,14 @@
 import React from 'react';
 import { Group } from '@vx/group';
 
-const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
-  // const bg = '#1D2541';
+const PodComponent = ({
+  node,
+  top,
+  left,
+  showNodeInfo,
+  toolTipOff,
+  toolTipOn,
+}) => {
   const bg = '#16273B';
   const stroke = '#228EB5';
   const strokeWidth = 1;

@@ -13,6 +13,12 @@ import {
   makeError,
 } from '../utils/validation';
 
+import {
+  handleNewPod,
+  handleNewService,
+  handleNewDeployment,
+} from '../utils/parsers';
+
 import OutsideClick from '../utils/OutsideClick';
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 
@@ -73,17 +79,15 @@ class CreateMenuItemContainer extends Component {
       creationError: false,
       creationErrorText: '',
     };
-    this.handleChange = this.handleChange.bind(this);
+    this.handleNewPod = handleNewPod.bind(this);
+    this.handleNewService = handleNewService.bind(this);
+    this.handleNewDeployment = handleNewDeployment.bind(this);
 
     this.handleCreatePod = this.handleCreatePod.bind(this);
-    this.handleNewPod = this.handleNewPod.bind(this);
-
     this.handleCreateDeployment = this.handleCreateDeployment.bind(this);
-    this.handleNewDeployment = this.handleNewDeployment.bind(this);
-
     this.handleCreateService = this.handleCreateService.bind(this);
-    this.handleNewService = this.handleNewService.bind(this);
 
+    this.handleChange = this.handleChange.bind(this);
     this.handleFormClose = this.handleFormClose.bind(this);
     this.handleOutsideFormClick = this.handleOutsideFormClick.bind(this);
     this.handleCreateLoadingScreen = this.handleCreateLoadingScreen.bind(this);
@@ -249,98 +253,6 @@ class CreateMenuItemContainer extends Component {
       });
   }
 
-  /** --------------- COMPONENT CREATION STATUS -------------
-   * Called by event listeners as data returns from Main thread from kubectl
-   * @param {object} data if includes an error, display error for user, otherwise
-   * reset state
-  */
-
-  //* POD STATUS
-  handleNewPod(event, data) {
-    const { inputData } = this.state;
-    const { pod } = inputData;
-    const emptyPodObj = Object.entries(pod).reduce((acc, item) => {
-      acc[item[0]] = '';
-      return acc;
-    }, {});
-    if (data.includes('error')) {
-      this.setState(prevState => ({
-        ...prevState,
-        creationError: true,
-        creationErrorText: data,
-        inputData: {
-          ...prevState.inputData,
-          pod: emptyPodObj,
-        },
-      }));
-    } else {
-      this.setState(prevState => ({
-        ...prevState,
-        inputData: {
-          ...prevState.inputData,
-          pod: emptyPodObj,
-        },
-      }));
-    }
-  }
-
-  //* SERVICE STATUS
-  handleNewService(event, data) {
-    // The following is going to be the logic that occurs once a new role was created via the main thread process
-    const { inputData } = this.state;
-    const { service } = inputData;
-
-    const emptyServiceObj = Object.entries(service).reduce((acc, item) => {
-      acc[item[0]] = '';
-      return acc;
-    }, {});
-    if (data.includes('error')) {
-      this.setState(prevState => ({
-        ...prevState,
-        creationError: true,
-        creationErrorText: data,
-        inputData: {
-          ...prevState.inputData,
-          service: emptyServiceObj,
-        },
-      }));
-    } else {
-      this.setState(prevState => ({
-        ...prevState,
-        inputData: {
-          ...prevState.inputData,
-          service: emptyServiceObj,
-        },
-      }));
-    }
-  }
-
-  //* DEPLOYMENT STATUS
-  handleNewDeployment(event, data) {
-    const { inputData } = this.state;
-    const { deployment } = inputData;
-    const emptyDeploymentObj = Object.entries(deployment).reduce((acc, item) => {
-      acc[item[0]] = '';
-      return acc;
-    }, {});
-    if (data.includes('error')) {
-      this.setState(prevState => ({
-        ...prevState,
-        creationError: true,
-        creationErrorText: data,
-      }));
-    } else {
-      this.setState(prevState => ({
-        ...prevState,
-        inputData: {
-          ...prevState.inputData,
-          deployment: emptyDeploymentObj,
-        },
-      }));
-    }
-  }
-
-  //* --------- RENDER METHOD
   render() {
     const { menuItemToShow, showCreateMenuFormItem } = this.props;
     const {
@@ -351,11 +263,19 @@ class CreateMenuItemContainer extends Component {
       creationError,
     } = this.state;
     const inputDataToShow = inputData[menuItemToShow];
-    const handleFunction = menuItemToShow === 'pod' ? this.handleCreatePod :
-                           menuItemToShow === 'service' ? this.handleCreateService :
-                           menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
-    
-    //* --------- RETURN
+    const getHandleFunction = () => {
+      switch (menuItemToShow) {
+        case 'pod':
+          return this.handleCreatePod;
+        case 'service':
+          return this.handleCreateService;
+        case 'deployment':
+          return this.handleCreateDeployment;
+        default:
+          return null;
+      }
+    };
+
     return (
       <div>
         {showCreateMenuFormItem === true && (
@@ -364,7 +284,7 @@ class CreateMenuItemContainer extends Component {
               handleChange={this.handleChange}
               menuItemToShow={menuItemToShow}
               handleFormClose={this.handleFormClose}
-              handleFunction={handleFunction}
+              handleFunction={getHandleFunction()}
               errors={errors}
               inputDataToShow={inputDataToShow}
               createLoadingScreen={createLoadingScreen}

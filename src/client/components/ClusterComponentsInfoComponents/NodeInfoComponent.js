@@ -6,7 +6,7 @@ const NodeInfoComponent = (props) => {
   const { data, hideNodeInfo } = props;
 
   const addresses = data.status.addresses.map((address, i) => (
-    <div key={i} className="additional_info_body_item">
+    <div key={`${address.address}${String(i)}`} className="additional_info_body_item">
       <div className="additional_info_body_item_row">
         <p>{address.type}</p>
         <p>{address.address}</p>

@@ -1,5 +1,5 @@
 @import "theme";
-
+// TODO (braden): split this up?
 //* ----------------------------------------------------------- *//
 //* --------------- HTML FUNDAMENTAL--------------------------- *//
 //* ----------------------------------------------------------- *//
@@ -296,25 +296,6 @@ body::-webkit-scrollbar {
   }
 }
 
-// .home_page_post_config_form_container {
-//   width: 325px;
-//   height: 325px;
-//   border-radius: 6px;
-//   display: grid;
-//   grid-template-rows: 1.25fr 1fr .65fr 1fr 1fr 1fr;
-//   grid-template-columns: 50px 1fr 1fr 1fr 60px;
-//   grid-column-gap: 0px;
-//   grid-row-gap: 0px; 
-//   justify-content: center;
-//   grid-template-areas: 
-//     ". . . . ."
-//     ". ball0 ball0 ball0 ."
-//     ". . . . ."
-//     ". ball1 . ball2 ."
-//     "text text text text text"
-//     ". . . . ."; 
-// }
-
 //* ----------------------------------------------------------- *//
 //* --------------- AWS CONTAINER STYLING --------------------- *//
 //* ----------------------------------------------------------- *//
@@ -328,8 +309,6 @@ body::-webkit-scrollbar {
   height: calc(100vh - 40px);
   background: $bg-gradient-dark; 
   background: -webkit-linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); 
-  /* Chrome 10-25, Safari 5.1-6 */
-  // background: linear-gradient(to right, $bg-gradient-light, $bg-gradient-dark); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   font-family: Lato-Regular, sans-serif;
 }
 

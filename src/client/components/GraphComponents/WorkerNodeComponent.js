@@ -1,8 +1,14 @@
 import React from 'react';
 import { Group } from '@vx/group';
 
-const WorkerNodeComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) => {
-  // const bg = '#1D2541';
+const WorkerNodeComponent = ({
+  node,
+  top,
+  left,
+  showNodeInfo,
+  toolTipOff,
+  toolTipOn,
+}) => {
   const bg = '#16273B';
   const stroke = '#5499D9';
   const strokeWidth = 1.25;

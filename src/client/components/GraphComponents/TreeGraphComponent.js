@@ -1,5 +1,4 @@
 import React from 'react';
-import uuid from 'uuid';
 import { Group } from '@vx/group';
 import { Tree } from '@vx/hierarchy';
 import { LinkVerticalLine } from '@vx/shape';
@@ -9,17 +8,15 @@ import WorkerNodeComponent from './WorkerNodeComponent';
 import PodComponent from './PodComponent';
 import ContainerComponent from './ContainerComponent';
 
-const TreeGraphComponent = (props) => {
-  const {
-    height,
-    width,
-    treeData,
-    margin,
-    showNodeInfo,
-    toolTipOff,
-    toolTipOn,
-  } = props;
-
+const TreeGraphComponent = ({
+  height,
+  width,
+  treeData,
+  margin,
+  showNodeInfo,
+  toolTipOff,
+  toolTipOn,
+}) => {
   const innerHeight = height - margin.top - margin.bottom;
   const innerWidth = width - margin.left - margin.right;
   const lightpurple = '#374469';

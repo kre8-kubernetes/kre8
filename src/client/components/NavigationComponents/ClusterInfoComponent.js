@@ -13,8 +13,6 @@ const ClusterInfoComponent = (props) => {
   let serverEndPointBackHalf;
   let subnetIds;
 
-  console.log(clusterInfo);
-  console.log(Object.prototype.hasOwnProperty.call(clusterInfo, 'serverEndPoint'));
   if (Object.prototype.hasOwnProperty.call(clusterInfo, 'serverEndPoint')) {
     halfOfServerEndpoint = Math.floor(clusterInfo.serverEndPoint.length / 2);
     serverEndPointFrontHalf = clusterInfo.serverEndPoint.slice(0, halfOfServerEndpoint);

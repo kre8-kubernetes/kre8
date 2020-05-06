@@ -3,11 +3,12 @@ import React, { Component } from 'react';
 import { ipcRenderer } from 'electron';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import uuid from 'uuid';
 import * as events from '../../eventTypes';
 import * as actions from '../store/actions/actions';
 import TreeGraphComponent from '../components/GraphComponents/TreeGraphComponent';
 import ClusterInfoComponent from '../components/ClusterComponentsInfoComponents/ClusterComponentInfo';
+// eslint-disable-next-line no-unused-vars
+import dummyTreeData from '../utils/dummyData';
 
 /** ------------ HOME CONTAINER — FIRST PAGE USER ENCOUNTERS ----------------------
  ** Rendered by KubectlContainer
@@ -17,15 +18,15 @@ import ClusterInfoComponent from '../components/ClusterComponentsInfoComponents/
 */
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
   menuItemToShow: store.navbar.menuItemToShow,
   credentialStatus: store.aws.credentialStatus,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   hideCreateMenuDropdown: () => {
-    dispatch(actions.hideCreateMenuDropdown())
+    dispatch(actions.hideCreateMenuDropdown());
   },
   toggleCreateMenuFormItem: (bool) => {
     dispatch(actions.toggleCreateMenuFormItem(bool));
@@ -67,6 +68,7 @@ class TreeGraphContainer extends Component {
 
   //* -------------- COMPONENT LIFECYCLE METHODS
   componentDidMount() {
+    const { credentialStatus } = this.props;
     // on initial mount, get data on the master node and worker nodes to render the graph
     this.updateWindowDimensions();
     window.addEventListener('resize', this.updateWindowDimensions);
@@ -74,7 +76,7 @@ class TreeGraphContainer extends Component {
     ipcRenderer.on(events.HANDLE_WORKER_NODES, this.handleWorkerNodes);
     ipcRenderer.on(events.HANDLE_CONTAINERS_AND_PODS, this.handleContainersAndPods);
     ipcRenderer.on(events.HANDLE_RERENDER_NODE, this.handleRerenderNode);
-    if (this.props.credentialStatus) {
+    if (credentialStatus) {
       this.getMasterNode();
       this.getWorkerNodes();
       this.getContainersAndPods();
@@ -105,7 +107,7 @@ class TreeGraphContainer extends Component {
   }
 
   updateWindowDimensions() {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       dimensions: { width: window.innerWidth, height: window.innerHeight },
     }));
@@ -127,7 +129,7 @@ class TreeGraphContainer extends Component {
       data,
       children: [],
     };
-    this.setState(prevState => ({ ...prevState, treeData }));
+    this.setState((prevState) => ({ ...prevState, treeData }));
   }
 
   handleWorkerNodes(event, data) {
@@ -148,11 +150,20 @@ class TreeGraphContainer extends Component {
   handleContainersAndPods(event, data) {
     this.setState((prevState) => {
       const { treeData } = prevState;
-      const newState = { ...prevState, treeData: { ...treeData, children: [...treeData.children] } };
+      // TODO (braden): use cloneDeep util or something in project.
+      const newState = {
+        ...prevState,
+        treeData: {
+          ...treeData,
+          children: [...treeData.children],
+        },
+      };
+
       const addressMap = newState.treeData.children.reduce((acc, ele, index) => {
         acc[ele.name] = index;
         return acc;
       }, {});
+
       data.items.forEach((pod) => {
         const newPod = Object.assign({}, pod);
         if (newPod.status.phase !== 'Pending') {
@@ -170,22 +181,23 @@ class TreeGraphContainer extends Component {
           newState.treeData.children[addressMap[nodeName]].children.push(newPod);
         }
       });
+
       return newState;
     });
   }
 
   //* --------- DISPLAY OR HIDE NODE INFO WHEN USER HOVERS OR CLICKS IN GRAPH
   showNodeInfo(node) {
-    this.setState(prevState => ({ ...prevState, showInfo: true, nodeInfoToShow: node }));
+    this.setState((prevState) => ({ ...prevState, showInfo: true, nodeInfoToShow: node }));
   }
 
   hideNodeInfo() {
-    this.setState(prevState => ({ ...prevState, showInfo: false }));
+    this.setState((prevState) => ({ ...prevState, showInfo: false }));
   }
 
   toolTipOn(e, data) {
     const newCoords = { top: e.clientY - 75, left: e.clientX - 50 };
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       mouseCoords: newCoords,
       showToolTip: true,
@@ -194,8 +206,8 @@ class TreeGraphContainer extends Component {
     }));
   }
 
-  toolTipOff(e) {
-    this.setState(prevState => ({ ...prevState, showToolTip: false }));
+  toolTipOff() {
+    this.setState((prevState) => ({ ...prevState, showToolTip: false }));
   }
 
   //* --------- DELETE NODE METHOD
@@ -212,15 +224,13 @@ class TreeGraphContainer extends Component {
    * a re-render of the page, either removing the deleted node, or adding the newly created node
   */
   handleRerenderNode(event, data) {
-    const { hideCreateMenuDropdown, toggleCreateMenuFormItem } = this.props;
-    console.log('handle rerender node called:', data);
-    console.log('hit start loading icon inside handle render node handler');
+    const { toggleCreateMenuFormItem } = this.props;
+
     if (data === 'delete') {
       this.hideNodeInfo();
       this.toggleLoadingScreenPostDelete();
     } else {
       toggleCreateMenuFormItem();
-      //this.toggleLoadingScreenPostDelete();
       this.hideNodeInfo();
     }
     // hideCreateMenuDropdown();
@@ -236,316 +246,13 @@ class TreeGraphContainer extends Component {
   toggleLoadingScreenPostDelete() {
     const { loadingScreen } = this.state;
     if (!loadingScreen) {
-      this.setState(prevState => ({ ...prevState, loadingScreen: true }));
+      this.setState((prevState) => ({ ...prevState, loadingScreen: true }));
     } else {
-      this.setState(prevState => ({ ...prevState, loadingScreen: false }));
+      this.setState((prevState) => ({ ...prevState, loadingScreen: false }));
     }
   }
 
-  //* --------- RENDER METHOD
   render() {
-
-    // DUMMY DATA FOR GRAPH SIMULATIONS
-    // const dummyTreeData = {
-    //   name: 'Master Node',
-    //   id: uuid(),
-    //   type: 'apiserver',
-    //   children: [
-    //     {
-    //       name: 'Worker Node #1',
-    //       id: uuid(),
-    //       worder_node_id: 0,
-    //       type: 'Node',
-    //       children: [
-    //         {
-    //           name: '#1',
-    //           id: uuid(),
-    //           pod_id: 0,
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         {
-    //           name: '#2',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         {
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         {
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         {
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         { 
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //       ]
-    //     },
-    //     {
-    //       name: 'Worker Node #2',
-    //       id: uuid(),
-    //       worder_node_id: 1,
-    //       type: 'Node',
-    //       children: [
-    //         { 
-    //           name: '#1',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         { 
-    //           name: '#2',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         { 
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         { 
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         { 
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         { 
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       name: 'Worker Node #3',
-    //       id: uuid(),
-    //       worder_node_id: 2,
-    //       type: 'Node',
-    //       children: [
-    //         {
-    //           name: '#1',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         {
-    //           name: '#2',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         {
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         {
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         {
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //         {
-    //           name: '#3',
-    //           id: uuid(),
-    //           type: 'Pod',
-    //           children: [{
-    //             name: '',
-    //             id: uuid(),
-    //             type: 'Container',
-    //           }],
-    //         },
-    //       ],
-    //     },
-    //     // {
-    //     //   name: 'Worker Node #4',
-    //     //   id: uuid(),
-    //     //   worder_node_id: 3,
-    //     //   type: 'Node',
-    //     //   children: [
-    //     //     {
-    //     //       name: '#1',
-    //     //       id: uuid(),
-    //     //       type: 'Pod',
-    //     //       children: [{
-    //     //         name: '',
-    //     //         id: uuid(),
-    //     //         type: 'Container',
-    //     //       }]
-    //     //     },
-    //     //     {
-    //     //       name: '#2',
-    //     //       id: uuid(),
-    //     //       type: 'Pod',
-    //     //       children: [{
-    //     //         name: '',
-    //     //         id: uuid(),
-    //     //         type: 'Container',
-    //     //       }]
-    //     //     },
-    //     //     {
-    //     //       name: '#3',
-    //     //       id: uuid(),
-    //     //       type: 'Pod',
-    //     //       children: [{
-    //     //         name: '',
-    //     //         id: uuid(),
-    //     //         type: 'Container',
-    //     //       }]
-    //     //     },
-    //     //     {
-    //     //       name: '#3',
-    //     //       id: uuid(),
-    //     //       type: 'Pod',
-    //     //       children: [{
-    //     //         name: '',
-    //     //         id: uuid(),
-    //     //         type: 'Container',
-    //     //       }]
-    //     //     },
-    //     //     {
-    //     //       name: '#3',
-    //     //       id: uuid(),
-    //     //       type: 'Pod',
-    //     //       children: [{
-    //     //         name: '',
-    //     //         id: uuid(),
-    //     //         type: 'Container',
-    //     //       }]
-    //     //     },
-    //     //     {
-    //     //       name: '#3',
-    //     //       id: uuid(),
-    //     //       type: 'Pod',
-    //     //       children: [{
-    //     //         name: '',
-    //     //         id: uuid(),
-    //     //         type: 'Container',
-    //     //       }]
-    //     //     },
-    //     //   ]
-    //     // },
-    //     // {
-    //     //   name: 'kube-apiserver',
-    //     //   id: uuid(),
-    //     //   type: 'master-component',
-    //     // },
-    //     // {
-    //     //   name: 'etcd',
-    //     //   id: uuid(),
-    //     //   type: 'master-component',
-    //     // },
-    //     // {
-    //     //   name: 'kube-scheduler',
-    //     //   id: uuid(),
-    //     //   type': 'master-component',
-    //     // },
-    //     // {
-    //     //   name: 'kube-controller-manager',
-    //     //   type': 'master-component',
-    //     // },
-    //   ],
-    // };
-
     const margin = {
       top: 110,
       left: 30,
@@ -565,31 +272,30 @@ class TreeGraphContainer extends Component {
       loadingScreen,
     } = this.state;
 
-    //* --------- RETURN
     return (
       <div className="treegraph_container">
-        {showInfo === true && (
+        { showInfo === true && (
           <ClusterInfoComponent
-            nodeInfoToShow={nodeInfoToShow}
-            hideNodeInfo={this.hideNodeInfo}
-            deleteNode={this.deleteNode}
-            loadingScreen={loadingScreen}
+            nodeInfoToShow={ nodeInfoToShow }
+            hideNodeInfo={ this.hideNodeInfo }
+            deleteNode={ this.deleteNode }
+            loadingScreen={ loadingScreen }
           />
-        )}
-        {showToolTip === true && (
-          <div className="toolTip" style={mouseCoords}>
-            <h4>{toolTipTitle}</h4>
-            <p>{toolTipText}</p>
+        ) }
+        { showToolTip === true && (
+          <div className="toolTip" style={ mouseCoords }>
+            <h4>{ toolTipTitle }</h4>
+            <p>{ toolTipText }</p>
           </div>
-        )}
+        ) }
         <TreeGraphComponent
-          showNodeInfo={this.showNodeInfo}
-          toolTipOn={this.toolTipOn}
-          toolTipOff={this.toolTipOff}
-          width={dimensions.width}
-          height={dimensions.height}
-          treeData={treeData}
-          margin={margin}
+          showNodeInfo={ this.showNodeInfo }
+          toolTipOn={ this.toolTipOn }
+          toolTipOff={ this.toolTipOff }
+          width={ dimensions.width }
+          height={ dimensions.height }
+          treeData={ treeData }
+          margin={ margin }
         />
       </div>
     );

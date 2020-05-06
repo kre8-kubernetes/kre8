@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -12,7 +13,7 @@ import NavComponent from '../components/NavigationComponents/NavComponent';
 */
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   showCreateMenuButton: store.navbar.showCreateMenuButton,
   showCreateMenuDropdown: store.navbar.showCreateMenuDropdown,
   menuItemToShow: store.navbar.menuItemToShow,
@@ -21,7 +22,7 @@ const mapStateToProps = store => ({
   creatingCluster: store.aws.creatingCluster,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   toggleCreateMenuDropdown: (bool) => {
     dispatch(actions.toggleCreateMenuDropdown(bool));
   },
@@ -76,7 +77,7 @@ class NavContainer extends Component {
 
   //* --------------- COMPONENT METHODS --------------------------- *//
 
-  getAndDisplayClusterData(e) {
+  getAndDisplayClusterData() {
     const { clusterInfo, displayClusterInfo, creatingCluster } = this.props;
     if (!creatingCluster) {
       if (clusterInfo.clusterName === '') {
@@ -93,24 +94,25 @@ class NavContainer extends Component {
     toggleCreateMenuFormItem(true);
   }
 
-  handleNavBarClick(e) {
+  handleNavBarClick() {
     const { hideCreateMenuDropdown, creatingCluster } = this.props;
     if (!creatingCluster) {
       hideCreateMenuDropdown();
     }
   }
 
-  // FOR DEBUGGING the main in production
-  handleKubectlData(event, data) {
-    console.log('Errors from stderr', data.stderr);
-    console.log('Errors from stdout', data.stdout);
+  // TODO (braden): should remove from here and main process
+  handleKubectlData(_event, data) {
+    // eslint-disable-next-line no-console
+    console.error('Errors from stderr', data.stderr);
   }
 
-  handleMainError(event, data) {
+  handleMainError(_event, data) {
+    // eslint-disable-next-line no-console
     console.error('errror:', data);
   }
 
-  handleClusterData(event, data) {
+  handleClusterData(_event, data) {
     const { updateClusterData } = this.props;
     updateClusterData(data);
   }
@@ -139,18 +141,18 @@ class NavContainer extends Component {
     return (
       <div className="nav_container">
         <NavComponent
-          handleNavBarClick={this.handleNavBarClick}
-          showCreateMenuButton={showCreateMenuButton}
-          showCreateMenuDropdown={showCreateMenuDropdown}
-          toggleCreateMenuDropdown={toggleCreateMenuDropdown}
-          handleMenuItemToShow={this.handleMenuItemToShow}
-          handleOutsideDropdownClick={this.handleOutsideDropdownClick}
-          clusterInfo={clusterInfo}
-          showClusterInfo={showClusterInfo}
-          displayClusterInfo={displayClusterInfo}
-          hideClusterInfo={hideClusterInfo}
-          creatingCluster={creatingCluster}
-          getAndDisplayClusterData={this.getAndDisplayClusterData}
+          handleNavBarClick={ this.handleNavBarClick }
+          showCreateMenuButton={ showCreateMenuButton }
+          showCreateMenuDropdown={ showCreateMenuDropdown }
+          toggleCreateMenuDropdown={ toggleCreateMenuDropdown }
+          handleMenuItemToShow={ this.handleMenuItemToShow }
+          handleOutsideDropdownClick={ this.handleOutsideDropdownClick }
+          clusterInfo={ clusterInfo }
+          showClusterInfo={ showClusterInfo }
+          displayClusterInfo={ displayClusterInfo }
+          hideClusterInfo={ hideClusterInfo }
+          creatingCluster={ creatingCluster }
+          getAndDisplayClusterData={ this.getAndDisplayClusterData }
         />
       </div>
     );

@@ -1,4 +1,5 @@
 import * as types from '../actionTypes';
+import { isBool } from '../../utils/typeChecks';
 
 const initialState = {
   showCreateMenuButton: false,
@@ -24,7 +25,8 @@ const initialState = {
 };
 
 export default function navbarReducers(state = initialState, action) {
-  switch (action.type) {
+  const { type, payload } = action;
+  switch (type) {
     case types.SHOW_CREATE_MENU_BUTTON:
       return { ...state, showCreateMenuButton: true };
     case types.HIDE_CREATE_MENU_BUTTON:
@@ -32,14 +34,14 @@ export default function navbarReducers(state = initialState, action) {
     case types.TOGGLE_CREATE_MENU_DROPDOWN:
       return {
         ...state,
-        showCreateMenuDropdown: typeof action.payload === 'boolean' ? action.payload : !state.showCreateMenuDropdown,
+        showCreateMenuDropdown: isBool(payload) ? payload : !state.showCreateMenuDropdown,
       };
     case types.HIDE_CREATE_MENU_DROPDOWN:
       return { ...state, showCreateMenuDropdown: false };
     case types.TOGGLE_CREATE_MENU_FORM_ITEM:
       return {
         ...state,
-        showCreateMenuFormItem: typeof action.payload === 'boolean' ? action.payload : !state.showCreateMenuFormItem,
+        showCreateMenuFormItem: isBool(payload) ? payload : !state.showCreateMenuFormItem,
       };
     case types.MENU_FORM_ITEM_TO_SHOW:
       return { ...state, menuItemToShow: action.payload };
@@ -48,7 +50,6 @@ export default function navbarReducers(state = initialState, action) {
     case types.HIDE_CLUSTER_INFO:
       return { ...state, showClusterInfo: false };
     case types.UPDATE_CLUSTER_DATA:
-      console.log(action.payload);
       return { ...state, clusterInfo: action.payload };
     default:
       return state;

@@ -6,23 +6,23 @@ import AWSContainer from './AWSContainer';
 import KubectlContainer from './KubectlContainer';
 import HomeContainer from './HomeContainer';
 
-const Main = props => (
+const Main = () => (
   <div>
     <Switch>
       <Route
         exact
         path="/"
-        component={HomeContainer}
+        component={ HomeContainer }
       />
       <Route
         exact
         path="/aws"
-        component={AWSContainer}
+        component={ AWSContainer }
       />
       <Route
         exact
         path="/cluster"
-        component={KubectlContainer}
+        component={ KubectlContainer }
       />
     </Switch>
   </div>

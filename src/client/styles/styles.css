@@ -2,7 +2,6 @@
   font-family: 'Lato';
   font-style: normal;
   font-weight: normal;
-  /* src: url('path/to/OpenSans.eot'); */
   src: local('Lato'), local('Lato'), url('./Lato/Lato-Black.ttf') format('truetype');
 }
 
@@ -12,21 +11,9 @@
 }
 
 body {
-  /* background:#071526; */
-  /* background:#071526;
-  background: -webkit-linear-gradient(to right, #243B55, #141E30);  
-  background: linear-gradient(to right, #243B55, #141E30);
-  font-family: Lato; */
-
-  /* background:#1F3248; */
   background:#0E1E31;
-
-  /* background: -webkit-linear-gradient(to right, #1F3248, #243B55);  
-  background: linear-gradient(to right, #1F3248, #243B55); */
   font-family: Lato;
-
   animation: fadein 2s;
-  /* align-items: center; */
 }
 
 body::-webkit-scrollbar {

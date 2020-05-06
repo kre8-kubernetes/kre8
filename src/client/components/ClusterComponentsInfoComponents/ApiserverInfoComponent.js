@@ -6,8 +6,8 @@ const ApiserverInfoComponent = (props) => {
   const { data, hideNodeInfo } = props;
   return (
     <div className="apiserver_info_component">
-      <CloseButton clickHandler={hideNodeInfo} />
-      <InfoBodyComponent data={data} />
+      <CloseButton clickHandler={ hideNodeInfo } />
+      <InfoBodyComponent data={ data } />
     </div>
   );
 };

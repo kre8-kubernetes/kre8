@@ -2,11 +2,24 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import { setLocale, object, string, number } from 'yup';
+import { setLocale } from 'yup';
 import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
 
-import OutsideClick from '../helperFunctions/OutsideClick';
+import {
+  podFormValidate,
+  deploymentFormValidate,
+  serviceFormValidate,
+  makeError,
+} from '../utils/validation';
+
+import {
+  handleNewPod,
+  handleNewService,
+  handleNewDeployment,
+} from '../utils/parsers';
+
+import OutsideClick from '../utils/OutsideClick';
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 
 /** ------------ CREATE MENU ITEM CONTAINER  ------------------
@@ -18,12 +31,12 @@ import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuIte
 */
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
   menuItemToShow: store.navbar.menuItemToShow,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   toggleCreateMenuFormItem: (bool) => {
     dispatch(actions.toggleCreateMenuFormItem(bool));
   },
@@ -66,17 +79,15 @@ class CreateMenuItemContainer extends Component {
       creationError: false,
       creationErrorText: '',
     };
-    this.handleChange = this.handleChange.bind(this);
+    this.handleNewPod = handleNewPod.bind(this);
+    this.handleNewService = handleNewService.bind(this);
+    this.handleNewDeployment = handleNewDeployment.bind(this);
 
     this.handleCreatePod = this.handleCreatePod.bind(this);
-    this.handleNewPod = this.handleNewPod.bind(this);
-
     this.handleCreateDeployment = this.handleCreateDeployment.bind(this);
-    this.handleNewDeployment = this.handleNewDeployment.bind(this);
-
     this.handleCreateService = this.handleCreateService.bind(this);
-    this.handleNewService = this.handleNewService.bind(this);
 
+    this.handleChange = this.handleChange.bind(this);
     this.handleFormClose = this.handleFormClose.bind(this);
     this.handleOutsideFormClick = this.handleOutsideFormClick.bind(this);
     this.handleCreateLoadingScreen = this.handleCreateLoadingScreen.bind(this);
@@ -116,7 +127,7 @@ class CreateMenuItemContainer extends Component {
       return newState;
     });
   }
-  
+
   // SIGNALS TO CLOSE THE DROPDOWN MENU, AND COMPONENT CREATION FORM WHEN PUSHES 'X' BUTTON
   handleFormClose() {
     const { toggleCreateMenuFormItem, toggleCreateMenuDropdown } = this.props;
@@ -132,7 +143,7 @@ class CreateMenuItemContainer extends Component {
 
   // GENERATES LOADING SCREEN AFTER USER SUBMITS DATA AND KUBERNETES COMPONENTS ARE BEING CREATED
   handleCreateLoadingScreen() {
-    this.setState(prevState => ({ ...prevState, createLoadingScreen: true }));
+    this.setState((prevState) => ({ ...prevState, createLoadingScreen: true }));
   }
 
   /** ------------ CREATE COMPONENT METHODS ------------------
@@ -144,29 +155,29 @@ class CreateMenuItemContainer extends Component {
   handleCreatePod() {
     const { inputData } = this.state;
     const { pod } = inputData;
+
     setLocale({
       string: {
         lowercase: 'Entry must be lowercase',
+        // eslint-disable-next-line no-template-curly-in-string
         max: '${max} character maximum',
       },
     });
-    const schema = object().strict().shape({
-      podName: string().required('Pod name is required').lowercase().max(253),
-      containerName: string().required('Container name is required').lowercase().max(253),
-      imageName: string().required('Image name is required').lowercase().max(253),
-    });
-    schema.validate(pod, { abortEarly: false })
+
+    podFormValidate(pod)
       .then((data) => {
         this.handleCreateLoadingScreen();
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, pod: {} } }));
+        this.setState((prevState) => ({
+          ...prevState,
+          errors: { ...prevState.errors, pod: {} },
+        }));
         ipcRenderer.send(events.CREATE_POD, data);
       })
       .catch((err) => {
-        const errorObj = err.inner.reduce((acc, error) => {
-          acc[error.path] = error.message;
-          return acc;
-        }, {});
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, pod: errorObj } }));
+        this.setState((prevState) => ({
+          ...prevState,
+          errors: { ...prevState.errors, pod: makeError(err) },
+        }));
       });
   }
 
@@ -174,40 +185,36 @@ class CreateMenuItemContainer extends Component {
   handleCreateDeployment() {
     const { inputData } = this.state;
     const { deployment } = inputData;
-    const clone = Object.assign({}, deployment);
-    clone.containerPort = Number(clone.containerPort);
-    clone.replicas = Number(clone.replicas);
+    const deploymentClonne = Object.assign({}, deployment);
+    deploymentClonne.containerPort = Number(deploymentClonne.containerPort);
+    deploymentClonne.replicas = Number(deploymentClonne.replicas);
+
     setLocale({
       string: {
         lowercase: 'Entry must be lowercase',
+        // eslint-disable-next-line no-template-curly-in-string
         max: '${max} character maximum',
-        
       },
       number: {
         num: 'Entry must be a number',
         positive: 'Entry must be a positive number',
       },
     });
-    const schema = object().strict().shape({
-      deploymentName: string().required('Deployment name is required').lowercase(),
-      applicationName: string().required('Application name is required').lowercase(),
-      containerName: string().required('Container name is required').lowercase(),
-      image: string().required('Image name is required').lowercase(),
-      containerPort: number().required('Container port is required').positive(),
-      replicas: number().required('Number of replicas is required').positive().max(4),
-    });
-    schema.validate(clone, { abortEarly: false })
+
+    deploymentFormValidate(deploymentClonne)
       .then((data) => {
         this.handleCreateLoadingScreen();
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, deployment: {} } }));
+        this.setState((prevState) => ({
+          ...prevState,
+          errors: { ...prevState.errors, deployment: {} },
+        }));
         ipcRenderer.send(events.CREATE_DEPLOYMENT, data);
       })
       .catch((err) => {
-        const errorObj = err.inner.reduce((acc, error) => {
-          acc[error.path] = error.message;
-          return acc;
-        }, {});
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, deployment: errorObj } }));
+        this.setState((prevState) => ({
+          ...prevState,
+          errors: { ...prevState.errors, deployment: makeError(err) },
+        }));
       });
   }
 
@@ -215,13 +222,15 @@ class CreateMenuItemContainer extends Component {
   handleCreateService() {
     const { inputData } = this.state;
     const { service } = inputData;
-    const clone = Object.assign({}, service);
-    clone.port = Number(clone.port);
-    clone.targetPort = Number(clone.targetPort);
+    const serviceClone = Object.assign({}, service);
+    serviceClone.port = Number(serviceClone.port);
+    serviceClone.targetPort = Number(serviceClone.targetPort);
+
     setLocale({
       string: {
         lowercase: 'Entry must be lowercase',
         num: 'Entry must be a number',
+        // eslint-disable-next-line no-template-curly-in-string
         max: '${max} character maximum',
       },
       number: {
@@ -229,121 +238,24 @@ class CreateMenuItemContainer extends Component {
         positive: 'Entry must be a positive number',
       },
     });
-    const schema = object().strict().shape({
-      serviceName: string().required('Service name is required').lowercase(),
-      applicationName: string().required('Application name is required').lowercase(),
-      port: number().required('Port number is required').positive(),
-      targetPort: number().required('Target port number is required').positive(),
-    });
-    schema.validate(clone, { abortEarly: false })
+
+    serviceFormValidate(serviceClone)
       .then((data) => {
         this.handleCreateLoadingScreen();
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, service: {} } }));
+        this.setState((prevState) => ({
+          ...prevState,
+          errors: { ...prevState.errors, service: {} },
+        }));
         ipcRenderer.send(events.CREATE_SERVICE, data);
       })
       .catch((err) => {
-        const errorObj = err.inner.reduce((acc, error) => {
-          acc[error.path] = error.message;
-          return acc;
-        }, {});
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, service: errorObj } }));
+        this.setState((prevState) => ({
+          ...prevState,
+          errors: { ...prevState.errors, service: makeError(err) },
+        }));
       });
   }
 
-  /** --------------- COMPONENT CREATION STATUS -------------
-   * Called by event listeners as data returns from Main thread from kubectl
-   * @param {object} data if includes an error, display error for user, otherwise
-   * reset state
-  */
-
-  //* POD STATUS
-  handleNewPod(event, data) {
-    const { inputData } = this.state;
-    const { pod } = inputData;
-    console.log('incoming data from kubectl pod creation:', data);
-    const emptyPodObj = Object.entries(pod).reduce((acc, item) => {
-      acc[item[0]] = '';
-      return acc;
-    }, {});
-    if (data.includes('error')) {
-      this.setState(prevState => ({
-        ...prevState,
-        creationError: true,
-        creationErrorText: data,
-        inputData: {
-          ...prevState.inputData,
-          pod: emptyPodObj,
-        },
-      }));
-    } else {
-      this.setState(prevState => ({
-        ...prevState,
-        inputData: {
-          ...prevState.inputData,
-          pod: emptyPodObj,
-        },
-      }));
-    }
-  }
-
-  //* SERVICE STATUS
-  handleNewService(event, data) {
-    // The following is going to be the logic that occurs once a new role was created via the main thread process
-    const { inputData } = this.state;
-    const { service } = inputData;
-
-    const emptyServiceObj = Object.entries(service).reduce((acc, item) => {
-      acc[item[0]] = '';
-      return acc;
-    }, {});
-    if (data.includes('error')) {
-      this.setState(prevState => ({
-        ...prevState,
-        creationError: true,
-        creationErrorText: data,
-        inputData: {
-          ...prevState.inputData,
-          service: emptyServiceObj,
-        },
-      }));
-    } else {
-      this.setState(prevState => ({
-        ...prevState,
-        inputData: {
-          ...prevState.inputData,
-          service: emptyServiceObj,
-        },
-      }));
-    }
-  }
-
-  //* DEPLOYMENT STATUS
-  handleNewDeployment(event, data) {
-    const { inputData } = this.state;
-    const { deployment } = inputData;
-    console.log('incoming data from kubectl deployment creation:', data);
-    const emptyDeploymentObj = Object.entries(deployment).reduce((acc, item) => {
-      acc[item[0]] = '';
-      return acc;
-    }, {});
-    if (data.includes('error')) {
-      this.setState(prevState => ({
-        ...prevState,
-        creationError: true,
-        creationErrorText: data,
-      }));
-    } else {
-      this.setState(prevState => ({
-        ...prevState,
-        inputData: {
-          ...prevState.inputData,
-          deployment: emptyDeploymentObj,
-        },
-      }));
-    }
-  }
-
-  //* --------- RENDER METHOD
   render() {
     const { menuItemToShow, showCreateMenuFormItem } = this.props;
     const {
@@ -354,28 +266,36 @@ class CreateMenuItemContainer extends Component {
       creationError,
     } = this.state;
     const inputDataToShow = inputData[menuItemToShow];
-    const handleFunction = menuItemToShow === 'pod' ? this.handleCreatePod :
-                           menuItemToShow === 'service' ? this.handleCreateService :
-                           menuItemToShow === 'deployment' ? this.handleCreateDeployment : null;
-    
-    //* --------- RETURN
+    const getHandleFunction = () => {
+      switch (menuItemToShow) {
+        case 'pod':
+          return this.handleCreatePod;
+        case 'service':
+          return this.handleCreateService;
+        case 'deployment':
+          return this.handleCreateDeployment;
+        default:
+          return null;
+      }
+    };
+
     return (
       <div>
-        {showCreateMenuFormItem === true && (
-          <OutsideClick handleOutsideClick={this.handleOutsideFormClick}>
+        { showCreateMenuFormItem === true && (
+          <OutsideClick handleOutsideClick={ this.handleOutsideFormClick }>
             <CreateMenuItemComponent
-              handleChange={this.handleChange}
-              menuItemToShow={menuItemToShow}
-              handleFormClose={this.handleFormClose}
-              handleFunction={handleFunction}
-              errors={errors}
-              inputDataToShow={inputDataToShow}
-              createLoadingScreen={createLoadingScreen}
-              creationErrorText={creationErrorText}
-              creationError={creationError}
+              handleChange={ this.handleChange }
+              menuItemToShow={ menuItemToShow }
+              handleFormClose={ this.handleFormClose }
+              handleFunction={ getHandleFunction() }
+              errors={ errors }
+              inputDataToShow={ inputDataToShow }
+              createLoadingScreen={ createLoadingScreen }
+              creationErrorText={ creationErrorText }
+              creationError={ creationError }
             />
           </OutsideClick>
-        )}
+        ) }
       </div>
     );
   }

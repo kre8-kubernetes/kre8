@@ -23,14 +23,14 @@ import HelpInfoComponent from '../components/HelpInfoComponents/HelpInfoComponen
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
 
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   creatingCluster: store.aws.creatingCluster,
   iamRoleName: store.aws.formStrings.iamRoleName,
   vpcStackName: store.aws.formStrings.vpcStackName,
   clusterName: store.aws.formStrings.clusterName,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   hideCreateMenuButton: () => {
     dispatch(actions.hideCreateMenuButton());
   },
@@ -108,7 +108,12 @@ class AwsContainer extends Component {
   * User is redirected to AWSLoadingComponent
  */
   handleConfigAndMakeNodes() {
-    const { toggleCreatingCluster, iamRoleName, vpcStackName, clusterName } = this.props;
+    const {
+      toggleCreatingCluster,
+      iamRoleName,
+      vpcStackName,
+      clusterName,
+    } = this.props;
     const clusterData = { iamRoleName, vpcStackName, clusterName };
 
     const clusterDataSchema = yup.object().strict().shape({
@@ -126,7 +131,7 @@ class AwsContainer extends Component {
           acc[error.path] = error.message;
           return acc;
         }, {});
-        this.setState(prevState => ({ ...prevState, errors: errorObj }));
+        this.setState((prevState) => ({ ...prevState, errors: errorObj }));
       });
   }
 
@@ -136,8 +141,8 @@ class AwsContainer extends Component {
    * Data is displayed via the AWSLoadingComponent.
    * @param {String} 'CREATING', 'CREATED', 'ERROR'
   */
-  handleStatusChange(event, data) {
-    this.setState(prevState => ({ ...prevState, [data.type]: data.status }));
+  handleStatusChange(_event, data) {
+    this.setState((prevState) => ({ ...prevState, [data.type]: data.status }));
   }
 
   /** ------------ DISPLAYS ERRORS FOR USER ON LOADING PAGE ----------------------
@@ -145,9 +150,8 @@ class AwsContainer extends Component {
    * Data is displayed on the loading page.
    * @param {String} Error message to display
   */
-  handleError(event, data) {
-    console.log('DATA FROM HANDLE ERROR: ', data);
-    this.setState(prevState => ({
+  handleError(_event, data) {
+    this.setState((prevState) => ({
       ...prevState,
       [data.type]: data.status,
       errorMessage: data.errorMessage,
@@ -159,12 +163,19 @@ class AwsContainer extends Component {
   * Activated after last step in cluster creation process completes.
   * If kubectl is successfully configured, moves user to the graph page (KubectlContainer)
   */
-  handleNewNodes(event, data) {
-    const { history, setCredentialStatusTrue, toggleCreatingCluster, clearFormStrings } = this.props;
-    this.setState(prevState => ({
+  handleNewNodes() {
+    const {
+      history,
+      setCredentialStatusTrue,
+      toggleCreatingCluster,
+      clearFormStrings,
+    } = this.props;
+
+    this.setState((prevState) => ({
       ...prevState,
       errors: {},
     }));
+
     clearFormStrings();
     setCredentialStatusTrue();
     toggleCreatingCluster(false);
@@ -172,17 +183,14 @@ class AwsContainer extends Component {
   }
 
   //* ------------ DISPLAY OR HIDE MORE INFO ( ? ) COMPONENT ----------------------
-  // DISPLAY
   displayInfoHandler() {
-    this.setState(prevState => ({ ...prevState, showInfo: true }));
+    this.setState((prevState) => ({ ...prevState, showInfo: true }));
   }
 
-  // HIDE
   hideInfoHandler() {
-    this.setState(prevState => ({ ...prevState, showInfo: false }));
+    this.setState((prevState) => ({ ...prevState, showInfo: false }));
   }
 
-  //* --------- RENDER
   render() {
     const {
       iamRoleStatus,
@@ -205,48 +213,47 @@ class AwsContainer extends Component {
       clusterName,
     } = this.props;
 
-    //* --------- RETURN
     return (
       <div className="aws_cluster_page_container">
-        {showInfo === true && (
+        { showInfo === true && (
           <HelpInfoComponent
-            textInfo={textInfo}
-            hideInfoHandler={this.hideInfoHandler}
-            mouseCoords={mouseCoords}
-            aws={aws}
+            textInfo={ textInfo }
+            hideInfoHandler={ this.hideInfoHandler }
+            mouseCoords={ mouseCoords }
+            aws={ aws }
           />
-        )}
-        {/* **If the the user has not yet completed and submitted AWS Component Data, display form** */}
-        {creatingCluster === false && (
+        ) }
+        { /* **If the the user has not yet completed and submitted AWS Component Data, display form** */ }
+        { creatingCluster === false && (
           <AWSComponent
-            handleChange={this.handleChange}
-            handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
-            hideInfoHandler={this.hideInfoHandler}
-            displayInfoHandler={this.displayInfoHandler}
-            iamRoleName={iamRoleName}
-            vpcStackName={vpcStackName}
-            clusterName={clusterName}
-            errors={errors}
-            textInfo={textInfo}
-            mouseCoords={mouseCoords}
-            grabCoords={this.grabCoords}
+            handleChange={ this.handleChange }
+            handleConfigAndMakeNodes={ this.handleConfigAndMakeNodes }
+            hideInfoHandler={ this.hideInfoHandler }
+            displayInfoHandler={ this.displayInfoHandler }
+            iamRoleName={ iamRoleName }
+            vpcStackName={ vpcStackName }
+            clusterName={ clusterName }
+            errors={ errors }
+            textInfo={ textInfo }
+            mouseCoords={ mouseCoords }
+            grabCoords={ this.grabCoords }
           />
-        )}
-        {/* **Once the user has submitted the AWS Component Data, display the AWSLoading page** */}
-        {creatingCluster === true && (
+        ) }
+        { /* **Once the user has submitted the AWS Component Data, display the AWSLoading page** */ }
+        { creatingCluster === true && (
           <AWSLoadingComponent
-            handleChange={this.handleChange}
-            iamRoleName={iamRoleName}
-            vpcStackName={vpcStackName}
-            clusterName={clusterName}
-            iamRoleStatus={iamRoleStatus}
-            stackStatus={stackStatus}
-            clusterStatus={clusterStatus}
-            workerNodeStatus={workerNodeStatus}
-            kubectlConfigStatus={kubectlConfigStatus}
-            errorMessage={errorMessage}
+            handleChange={ this.handleChange }
+            iamRoleName={ iamRoleName }
+            vpcStackName={ vpcStackName }
+            clusterName={ clusterName }
+            iamRoleStatus={ iamRoleStatus }
+            stackStatus={ stackStatus }
+            clusterStatus={ clusterStatus }
+            workerNodeStatus={ workerNodeStatus }
+            kubectlConfigStatus={ kubectlConfigStatus }
+            errorMessage={ errorMessage }
           />
-        )}
+        ) }
       </div>
     );
   }

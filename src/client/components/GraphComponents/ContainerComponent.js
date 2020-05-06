@@ -12,37 +12,37 @@ const PodComponent = ({ node, top, left, showNodeInfo, toolTipOff, toolTipOn }) 
   const textFontSize = 9;
 
   return (
-    <Group top={top} left={left}>
+    <Group top={ top } left={ left }>
       <ellipse
         className="graph_component"
-        rx={width}
-        ry={height}
-        fill={bg}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
+        rx={ width }
+        ry={ height }
+        fill={ bg }
+        stroke={ stroke }
+        strokeWidth={ strokeWidth }
         strokeDasharray="6,1.26"
         d="M5 40 l215 0"
-        onClick={() => {
+        onClick={ () => {
           showNodeInfo(node);
-        }}
-        onMouseOver={(e) => {
+        } }
+        onMouseOver={ (e) => {
           toolTipOn(e, { title: 'Container,  Image:', text: node.data.image });
-        }}
-        onMouseLeave={toolTipOff}
-        onFocus={(e) => {
+        } }
+        onMouseLeave={ toolTipOff }
+        onFocus={ (e) => {
           toolTipOn(e, { title: 'Container,  Image:', text: node.data.image });
-        }}
+        } }
       />
 
       <text
-        dy={textDY}
-        fontSize={textFontSize}
+        dy={ textDY }
+        fontSize={ textFontSize }
         fontFamily="sans-serif"
         textAnchor="middle"
-        style={{ pointerEvents: 'none' }}
-        fill={textFill}
+        style={ { pointerEvents: 'none' } }
+        fill={ textFill }
       >
-        {'C'}
+        { 'C' }
       </text>
     </Group>
   );

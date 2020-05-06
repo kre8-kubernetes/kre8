@@ -17,7 +17,7 @@ const HelpInfoComponent = (props) => {
       ? (
         <div id="aws_more_info_component" className="more_info_component">
           <div id="aws_more_info_component_button">
-            <CloseButton clickHandler={hideInfoHandler} />
+            <CloseButton clickHandler={ hideInfoHandler } />
           </div>
           <div id="aws_more_info_component_title" className="more_info_component_title">Amazon Web Services EKS Setup</div>
           <div id="aws_more_info_component_explainer_text" className="more_info_component_explainer_text">
@@ -43,7 +43,7 @@ const HelpInfoComponent = (props) => {
       : (
         <div id="home_more_info_component" className="more_info_component">
           <div id="home_more_info_component_button">
-            <CloseButton clickHandler={hideInfoHandler} />
+            <CloseButton clickHandler={ hideInfoHandler } />
           </div>
           <div id="home_more_info_component_title" className="more_info_component_title">Amazon Web Services Account Details</div>
           <div id="home_more_info_component_explainer_text_1" className="more_info_component_explainer_text">

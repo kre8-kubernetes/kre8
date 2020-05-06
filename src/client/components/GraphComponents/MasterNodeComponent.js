@@ -16,34 +16,34 @@ const MasterNodeComponent = ({ node, top, left, showNodeInfo, toolTipOn, toolTip
 
 
   return (
-    <Group top={top} left={left}>
+    <Group top={ top } left={ left }>
       <Polygon
         className="graph_component"
-        sides={numberOfSides}
-        size={size}
-        fill={bg}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        rotate={rotate}
-        onClick={() => {
+        sides={ numberOfSides }
+        size={ size }
+        fill={ bg }
+        stroke={ stroke }
+        strokeWidth={ strokeWidth }
+        rotate={ rotate }
+        onClick={ () => {
           showNodeInfo(node);
-        }}
-        onMouseOver={(e) => {
+        } }
+        onMouseOver={ (e) => {
           toolTipOn(e, { title: 'API Server:', text: node.data.data.metadata.uid });
-        }}
-        onMouseLeave={toolTipOff}
-        onFocus={(e) => {
+        } }
+        onMouseLeave={ toolTipOff }
+        onFocus={ (e) => {
           toolTipOn(e, { title: 'API Server:', text: node.data.data.metadata.uid });
-        }}
+        } }
       />
 
       <text
-        dy={textDY}
-        fontSize={textFontSize}
+        dy={ textDY }
+        fontSize={ textFontSize }
         fontFamily="sans-serif"
         textAnchor="middle"
-        style={{ pointerEvents: 'none' }}
-        fill={textFill}
+        style={ { pointerEvents: 'none' } }
+        fill={ textFill }
       >
         <tspan x="0" dy="-.2em">Kubernetes</tspan>
         <tspan x="0" dy="1.2em">API Server</tspan>

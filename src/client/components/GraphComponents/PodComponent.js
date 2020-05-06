@@ -19,35 +19,35 @@ const PodComponent = ({
   const width = 20;
 
   return (
-    <Group top={top} left={left}>
+    <Group top={ top } left={ left }>
       <ellipse
         className="pods"
-        rx={width}
-        ry={height}
-        fill={bg}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        onClick={() => {
+        rx={ width }
+        ry={ height }
+        fill={ bg }
+        stroke={ stroke }
+        strokeWidth={ strokeWidth }
+        onClick={ () => {
           showNodeInfo(node);
-        }}
-        onMouseOver={(e) => {
+        } }
+        onMouseOver={ (e) => {
           toolTipOn(e, { title: 'Pod,  Replica  Set:', text: node.data.metadata.generateName.slice(0, -1) });
-        }}
-        onMouseLeave={toolTipOff}
-        onFocus={(e) => {
+        } }
+        onMouseLeave={ toolTipOff }
+        onFocus={ (e) => {
           toolTipOn(e, { title: 'Pod,  Replica  Set:', text: node.data.metadata.generateName.slice(0, -1) });
-        }}
+        } }
       />
       <text
         className="podText"
-        dy={textDY}
-        fontSize={textFontSize}
+        dy={ textDY }
+        fontSize={ textFontSize }
         fontFamily="sans-serif"
         textAnchor="middle"
-        style={{ pointerEvents: 'none' }}
-        fill={textFill}
+        style={ { pointerEvents: 'none' } }
+        fill={ textFill }
       >
-        {'Pod'}
+        { 'Pod' }
       </text>
     </Group>
   );

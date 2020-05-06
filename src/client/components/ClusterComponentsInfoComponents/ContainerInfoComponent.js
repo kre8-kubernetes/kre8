@@ -1,6 +1,5 @@
 import React from 'react';
 import InfoBodyComponent from './InfoBodyComponent';
-import ActionButton from '../Buttons/ActionButton';
 import CloseButton from '../Buttons/CloseButton';
 
 const ContainerInfoComponent = (props) => {
@@ -8,8 +7,8 @@ const ContainerInfoComponent = (props) => {
 
   return (
     <div className="container_info_component">
-      <CloseButton clickHandler={hideNodeInfo} />
-      <InfoBodyComponent data={data} />
+      <CloseButton clickHandler={ hideNodeInfo } />
+      <InfoBodyComponent data={ data } />
     </div>
   );
 };

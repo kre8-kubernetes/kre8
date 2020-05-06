@@ -39,7 +39,7 @@ class KubectlContainer extends Component {
 
     return (
       <div className="kubectl_container">
-        {showCreateMenuFormItem === true && <CreateMenuItemContainer />}
+        { showCreateMenuFormItem === true && <CreateMenuItemContainer /> }
         <TreeGraphContainer />
       </div>
     );

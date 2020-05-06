@@ -28,7 +28,8 @@ export const handleNewPod = (event, data) => {
 };
 
 export const handleNewService = (event, data) => {
-  // The following is going to be the logic that occurs once a new role was created via the main thread process
+  // The following is going to be the logic that occurs once a new
+  // role was created via the main thread process
   const { inputData } = this.state;
   const { service } = inputData;
 

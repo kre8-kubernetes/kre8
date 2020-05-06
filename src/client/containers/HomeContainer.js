@@ -225,30 +225,30 @@ class HomeContainer extends Component {
     //* --------- RETURN
     return (
       <div className="home_page_container">
-        {showInfo === true && (
+        { showInfo === true && (
         <HelpInfoComponent
-          textInfo={textInfo}
-          mouseCoords={mouseCoords}
-          hideInfoHandler={this.hideInfoHandler}
+          textInfo={ textInfo }
+          mouseCoords={ mouseCoords }
+          hideInfoHandler={ this.hideInfoHandler }
         />
-        )}
-        {/* **On Application Open, if the user has already entered credentials,
-        display loading screen while graph renders, else take them to credential entry page** */}
-        {((hasCheckedCredentials === false) && (credentialStatus === true))
+        ) }
+        { /* **On Application Open, if the user has already entered credentials,
+        display loading screen while graph renders, else take them to credential entry page** */ }
+        { ((hasCheckedCredentials === false) && (credentialStatus === true))
           ? <HomeComponentPostCredentials />
           : (
             <HomeComponent
-              handleChange={this.handleChange}
-              handleFormChange={this.handleFormChange}
-              setAWSCredentials={this.setAWSCredentials}
-              displayInfoHandler={this.displayInfoHandler}
-              grabCoords={this.grabCoords}
-              awsAccessKeyId={awsAccessKeyId}
-              awsSecretAccessKey={awsSecretAccessKey}
-              awsRegion={awsRegion}
-              errors={errors}
-              credentialError={credentialError}
-              displayError={displayError}
+              handleChange={ this.handleChange }
+              handleFormChange={ this.handleFormChange }
+              setAWSCredentials={ this.setAWSCredentials }
+              displayInfoHandler={ this.displayInfoHandler }
+              grabCoords={ this.grabCoords }
+              awsAccessKeyId={ awsAccessKeyId }
+              awsSecretAccessKey={ awsSecretAccessKey }
+              awsRegion={ awsRegion }
+              errors={ errors }
+              credentialError={ credentialError }
+              displayError={ displayError }
             />
           )
         }

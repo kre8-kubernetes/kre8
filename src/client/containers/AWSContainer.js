@@ -210,45 +210,45 @@ class AwsContainer extends Component {
 
     return (
       <div className="aws_cluster_page_container">
-        {showInfo === true && (
+        { showInfo === true && (
           <HelpInfoComponent
-            textInfo={textInfo}
-            hideInfoHandler={this.hideInfoHandler}
-            mouseCoords={mouseCoords}
-            aws={aws}
+            textInfo={ textInfo }
+            hideInfoHandler={ this.hideInfoHandler }
+            mouseCoords={ mouseCoords }
+            aws={ aws }
           />
-        )}
-        {/* **If the the user has not yet completed and submitted AWS Component Data, display form** */}
-        {creatingCluster === false && (
+        ) }
+        { /* **If the the user has not yet completed and submitted AWS Component Data, display form** */ }
+        { creatingCluster === false && (
           <AWSComponent
-            handleChange={this.handleChange}
-            handleConfigAndMakeNodes={this.handleConfigAndMakeNodes}
-            hideInfoHandler={this.hideInfoHandler}
-            displayInfoHandler={this.displayInfoHandler}
-            iamRoleName={iamRoleName}
-            vpcStackName={vpcStackName}
-            clusterName={clusterName}
-            errors={errors}
-            textInfo={textInfo}
-            mouseCoords={mouseCoords}
-            grabCoords={this.grabCoords}
+            handleChange={ this.handleChange }
+            handleConfigAndMakeNodes={ this.handleConfigAndMakeNodes }
+            hideInfoHandler={ this.hideInfoHandler }
+            displayInfoHandler={ this.displayInfoHandler }
+            iamRoleName={ iamRoleName }
+            vpcStackName={ vpcStackName }
+            clusterName={ clusterName }
+            errors={ errors }
+            textInfo={ textInfo }
+            mouseCoords={ mouseCoords }
+            grabCoords={ this.grabCoords }
           />
-        )}
-        {/* **Once the user has submitted the AWS Component Data, display the AWSLoading page** */}
-        {creatingCluster === true && (
+        ) }
+        { /* **Once the user has submitted the AWS Component Data, display the AWSLoading page** */ }
+        { creatingCluster === true && (
           <AWSLoadingComponent
-            handleChange={this.handleChange}
-            iamRoleName={iamRoleName}
-            vpcStackName={vpcStackName}
-            clusterName={clusterName}
-            iamRoleStatus={iamRoleStatus}
-            stackStatus={stackStatus}
-            clusterStatus={clusterStatus}
-            workerNodeStatus={workerNodeStatus}
-            kubectlConfigStatus={kubectlConfigStatus}
-            errorMessage={errorMessage}
+            handleChange={ this.handleChange }
+            iamRoleName={ iamRoleName }
+            vpcStackName={ vpcStackName }
+            clusterName={ clusterName }
+            iamRoleStatus={ iamRoleStatus }
+            stackStatus={ stackStatus }
+            clusterStatus={ clusterStatus }
+            workerNodeStatus={ workerNodeStatus }
+            kubectlConfigStatus={ kubectlConfigStatus }
+            errorMessage={ errorMessage }
           />
-        )}
+        ) }
       </div>
     );
   }

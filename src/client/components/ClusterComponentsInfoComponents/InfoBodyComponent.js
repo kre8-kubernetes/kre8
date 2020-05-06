@@ -7,7 +7,7 @@ const InfoComponentBody = (props) => {
 
   return (
     <div className="info_body_component">
-      {body}
+      { body }
     </div>
   );
 };

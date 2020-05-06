@@ -26,34 +26,38 @@ const ClusterInfoComponent = (props) => {
       case NODE:
         return (
           <NodeInfoComponent
-            data={nodeInfoToShow.data}
-            hideNodeInfo={hideNodeInfo}/>
+            data={ nodeInfoToShow.data }
+            hideNodeInfo={ hideNodeInfo }
+          />
         );
       case API_SERVER:
         return (
           <ApiserverInfoComponent
-            data={data}
-            hideNodeInfo={hideNodeInfo}/>
+            data={ data }
+            hideNodeInfo={ hideNodeInfo }
+          />
         );
       case POD:
         return (
           <PodInfoComponent
-            data={nodeInfoToShow.data}
-            hideNodeInfo={hideNodeInfo}
-            deleteNode={deleteNode}
-            loadingScreen={loadingScreen}/>
+            data={ nodeInfoToShow.data }
+            hideNodeInfo={ hideNodeInfo }
+            deleteNode={ deleteNode }
+            loadingScreen={ loadingScreen }
+          />
         );
       case CONTAINER:
         return (
           <ContainerInfoComponent
-            data={nodeInfoToShow.data}
-            hideNodeInfo={hideNodeInfo}/>
+            data={ nodeInfoToShow.data }
+            hideNodeInfo={ hideNodeInfo }
+          />
         );
       default:
         return (
           <div className="nothing_info_component">
             This is the nothing component
-            <button onClick={hideNodeInfo} type="button">Close</button>
+            <button onClick={ hideNodeInfo } type="button">Close</button>
           </div>
         );
     }
@@ -61,9 +65,9 @@ const ClusterInfoComponent = (props) => {
 
   return (
     <div className="popup_info">
-      <OutsideClick handleOutsideClick={hideNodeInfo}>
+      <OutsideClick handleOutsideClick={ hideNodeInfo }>
         <div className="popup_info_inner">
-          {renderComponent()}
+          { renderComponent() }
         </div>
       </OutsideClick>
     </div>

@@ -138,18 +138,18 @@ class NavContainer extends Component {
     return (
       <div className="nav_container">
         <NavComponent
-          handleNavBarClick={this.handleNavBarClick}
-          showCreateMenuButton={showCreateMenuButton}
-          showCreateMenuDropdown={showCreateMenuDropdown}
-          toggleCreateMenuDropdown={toggleCreateMenuDropdown}
-          handleMenuItemToShow={this.handleMenuItemToShow}
-          handleOutsideDropdownClick={this.handleOutsideDropdownClick}
-          clusterInfo={clusterInfo}
-          showClusterInfo={showClusterInfo}
-          displayClusterInfo={displayClusterInfo}
-          hideClusterInfo={hideClusterInfo}
-          creatingCluster={creatingCluster}
-          getAndDisplayClusterData={this.getAndDisplayClusterData}
+          handleNavBarClick={ this.handleNavBarClick }
+          showCreateMenuButton={ showCreateMenuButton }
+          showCreateMenuDropdown={ showCreateMenuDropdown }
+          toggleCreateMenuDropdown={ toggleCreateMenuDropdown }
+          handleMenuItemToShow={ this.handleMenuItemToShow }
+          handleOutsideDropdownClick={ this.handleOutsideDropdownClick }
+          clusterInfo={ clusterInfo }
+          showClusterInfo={ showClusterInfo }
+          displayClusterInfo={ displayClusterInfo }
+          hideClusterInfo={ hideClusterInfo }
+          creatingCluster={ creatingCluster }
+          getAndDisplayClusterData={ this.getAndDisplayClusterData }
         />
       </div>
     );

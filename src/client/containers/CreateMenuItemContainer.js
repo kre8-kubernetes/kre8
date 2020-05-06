@@ -278,21 +278,21 @@ class CreateMenuItemContainer extends Component {
 
     return (
       <div>
-        {showCreateMenuFormItem === true && (
-          <OutsideClick handleOutsideClick={this.handleOutsideFormClick}>
+        { showCreateMenuFormItem === true && (
+          <OutsideClick handleOutsideClick={ this.handleOutsideFormClick }>
             <CreateMenuItemComponent
-              handleChange={this.handleChange}
-              menuItemToShow={menuItemToShow}
-              handleFormClose={this.handleFormClose}
-              handleFunction={getHandleFunction()}
-              errors={errors}
-              inputDataToShow={inputDataToShow}
-              createLoadingScreen={createLoadingScreen}
-              creationErrorText={creationErrorText}
-              creationError={creationError}
+              handleChange={ this.handleChange }
+              menuItemToShow={ menuItemToShow }
+              handleFormClose={ this.handleFormClose }
+              handleFunction={ getHandleFunction() }
+              errors={ errors }
+              inputDataToShow={ inputDataToShow }
+              createLoadingScreen={ createLoadingScreen }
+              creationErrorText={ creationErrorText }
+              creationError={ creationError }
             />
           </OutsideClick>
-        )}
+        ) }
       </div>
     );
   }

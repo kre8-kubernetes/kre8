@@ -22,7 +22,7 @@ const ClusterInfoComponent = (props) => {
   if (Object.prototype.hasOwnProperty.call(clusterInfo, 'subnetIdsArray')) {
     subnetIds = clusterInfo.subnetIdsArray.map((subnet) => {
       return (
-        <div key={subnet} className="cluster_info_subnets">{subnet}</div>
+        <div key={ subnet } className="cluster_info_subnets">{ subnet }</div>
       );
     });
   }
@@ -31,44 +31,44 @@ const ClusterInfoComponent = (props) => {
     <div className="cluster_info_container">
       <div className="cluster_info_major">
         <span className="cluster_info_key">CLUSTER NAME: </span>
-        <span className="cluster_info_value">{clusterInfo.clusterName}</span>
+        <span className="cluster_info_value">{ clusterInfo.clusterName }</span>
       </div>
       <div className="cluster_info_minor">
         <span className="cluster_info_key">CLUSTER ARN: </span>
-        <div className="cluster_info_subnets">{clusterInfo.clusterArn}</div>
+        <div className="cluster_info_subnets">{ clusterInfo.clusterArn }</div>
       </div>
       <div className="cluster_info_major">
         <span className="cluster_info_key">IAM ROLE: </span>
-        <span className="cluster_info_value">{clusterInfo.iamRoleName}</span>
+        <span className="cluster_info_value">{ clusterInfo.iamRoleName }</span>
       </div>
       <div className="cluster_info_minor">
         <span className="cluster_info_key">IAM ROLE ARN: </span>
-        <div className="cluster_info_subnets">{clusterInfo.iamRoleArn}</div>
+        <div className="cluster_info_subnets">{ clusterInfo.iamRoleArn }</div>
       </div>
       <div className="cluster_info_major">
         <span className="cluster_info_key"> STACK NAME: </span>
-        <span className="cluster_info_value">{clusterInfo.stackName}</span>
+        <span className="cluster_info_value">{ clusterInfo.stackName }</span>
       </div>
       <div className="cluster_info_minor">
         <span className="cluster_info_key">VPC ID: </span>
-        <span className="cluster_info_value">{clusterInfo.vpcId}</span>
+        <span className="cluster_info_value">{ clusterInfo.vpcId }</span>
       </div>
       <div className="cluster_info_minor">
         <span className="cluster_info_key">SECURITY GROUP ID: </span>
-        <span className="cluster_info_value">{clusterInfo.securityGroupIds}</span>
+        <span className="cluster_info_value">{ clusterInfo.securityGroupIds }</span>
       </div>
       <div className="cluster_info_minor">
         <div className="cluster_info_key">SUBNET IDS: </div>
-        {subnetIds}
+        { subnetIds }
       </div>
       <div className="cluster_info_minor">
         <div className="cluster_info_key">SERVER END POINT: </div>
-        <div className="cluster_info_subnets">{serverEndPointFrontHalf}</div>
-        <div className="cluster_info_server_end_point">{serverEndPointBackHalf}</div>
+        <div className="cluster_info_subnets">{ serverEndPointFrontHalf }</div>
+        <div className="cluster_info_server_end_point">{ serverEndPointBackHalf }</div>
       </div>
       <div className="cluster_info_minor">
         <span className="cluster_info_key">KEY NAME: </span>
-        <span className="cluster_info_value">{clusterInfo.KeyName}</span>
+        <span className="cluster_info_value">{ clusterInfo.KeyName }</span>
       </div>
     </div>
   );

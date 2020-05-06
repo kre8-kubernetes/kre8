@@ -21,16 +21,16 @@ const NavComponent = (props) => {
   return (
     <div className="nav_component_container">
 
-      {/* THE CREATE DROP DOWN MENU */}
-      {showCreateMenuDropdown === true && (
+      { /* THE CREATE DROP DOWN MENU */ }
+      { showCreateMenuDropdown === true && (
         <OutsideClick
           className="create_menu_component_container"
-          handleOutsideClick={handleOutsideDropdownClick}
+          handleOutsideClick={ handleOutsideDropdownClick }
         >
           <button
             id="pod"
             className="create_menu_component_container_button"
-            onClick={handleMenuItemToShow}
+            onClick={ handleMenuItemToShow }
             type="button"
           >
               Create a Pod
@@ -38,7 +38,7 @@ const NavComponent = (props) => {
           <button
             id="service"
             className="create_menu_component_container_button"
-            onClick={handleMenuItemToShow}
+            onClick={ handleMenuItemToShow }
             type="button"
           >
               Create a Service
@@ -46,68 +46,68 @@ const NavComponent = (props) => {
           <button
             id="deployment"
             className="create_menu_component_container_button"
-            onClick={handleMenuItemToShow}
+            onClick={ handleMenuItemToShow }
             type="button"
           >
             Create a Deployment
           </button>
         </OutsideClick>
-      )}
+      ) }
 
-      {/* NAV LEFT CONTAINER */}
+      { /* NAV LEFT CONTAINER */ }
       <div className="nav_left_container">
-        {showCreateMenuButton === true && (
+        { showCreateMenuButton === true && (
           <div
             id="nav_drop_down"
             className="nav_left_container_item"
-            onClick={toggleCreateMenuDropdown}
-            onKeyPress={toggleCreateMenuDropdown}
+            onClick={ toggleCreateMenuDropdown }
+            onKeyPress={ toggleCreateMenuDropdown }
             role="button"
-            tabIndex={0}
+            tabIndex={ 0 }
           >
             <div className="ham_bar" />
             <div className="ham_bar" />
             <div className="ham_bar" />
           </div>
-        )}
+        ) }
         <Link
-          to={creatingCluster ? '/aws' : '/'}
+          to={ creatingCluster ? '/aws' : '/' }
           className="nav_left_container_item"
-          onClick={handleNavBarClick}
+          onClick={ handleNavBarClick }
         >
             HOME
         </Link>
         <Link
           to="/aws"
           className="nav_left_container_item"
-          onClick={handleNavBarClick}
+          onClick={ handleNavBarClick }
         >
             AWS
         </Link>
         <Link
-          to={creatingCluster ? '/aws' : '/cluster'}
+          to={ creatingCluster ? '/aws' : '/cluster' }
           className="nav_left_container_item"
-          onClick={handleNavBarClick}
+          onClick={ handleNavBarClick }
         >
           KUBECTL
         </Link>
       </div>
 
-      {/* NAV RIGHT CONTAINER */}
+      { /* NAV RIGHT CONTAINER */ }
       <div className="nav_right_container">
         <div className="nav_component_container_item">
           <button
             className="nav_component_cluster_button"
             type="button"
-            onMouseEnter={getAndDisplayClusterData}
-            onMouseLeave={hideClusterInfo}>
+            onMouseEnter={ getAndDisplayClusterData }
+            onMouseLeave={ hideClusterInfo }>
               CLUSTER DATA
           </button>
 
-          {/* CLUSTER INFO DROPDOWN CONTAINER */}
-          {showClusterInfo === true && (
-            <ClusterInfoComponent clusterInfo={clusterInfo} />
-          )}
+          { /* CLUSTER INFO DROPDOWN CONTAINER */ }
+          { showClusterInfo === true && (
+            <ClusterInfoComponent clusterInfo={ clusterInfo } />
+          ) }
         </div>
       </div>
     </div>

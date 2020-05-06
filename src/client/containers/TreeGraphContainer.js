@@ -262,28 +262,28 @@ class TreeGraphContainer extends Component {
 
     return (
       <div className="treegraph_container">
-        {showInfo === true && (
+        { showInfo === true && (
           <ClusterInfoComponent
-            nodeInfoToShow={nodeInfoToShow}
-            hideNodeInfo={this.hideNodeInfo}
-            deleteNode={this.deleteNode}
-            loadingScreen={loadingScreen}
+            nodeInfoToShow={ nodeInfoToShow }
+            hideNodeInfo={ this.hideNodeInfo }
+            deleteNode={ this.deleteNode }
+            loadingScreen={ loadingScreen }
           />
-        )}
-        {showToolTip === true && (
-          <div className="toolTip" style={mouseCoords}>
-            <h4>{toolTipTitle}</h4>
-            <p>{toolTipText}</p>
+        ) }
+        { showToolTip === true && (
+          <div className="toolTip" style={ mouseCoords }>
+            <h4>{ toolTipTitle }</h4>
+            <p>{ toolTipText }</p>
           </div>
-        )}
+        ) }
         <TreeGraphComponent
-          showNodeInfo={this.showNodeInfo}
-          toolTipOn={this.toolTipOn}
-          toolTipOff={this.toolTipOff}
-          width={dimensions.width}
-          height={dimensions.height}
-          treeData={treeData}
-          margin={margin}
+          showNodeInfo={ this.showNodeInfo }
+          toolTipOn={ this.toolTipOn }
+          toolTipOff={ this.toolTipOff }
+          width={ dimensions.width }
+          height={ dimensions.height }
+          treeData={ treeData }
+          margin={ margin }
         />
       </div>
     );

@@ -1,8 +1,7 @@
 import {
-  setLocale,
   object,
   string,
-  number 
+  number,
 } from 'yup';
 
 const stringRequired = (requiredError, minLength = 1, maxLength = 500) => (

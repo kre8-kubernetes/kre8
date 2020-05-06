@@ -4,7 +4,7 @@
     "max-len": [
       "error",
       {
-        "code": 150
+        "code": 110
       }
     ],
     "react/jsx-filename-extension": [
@@ -16,6 +16,24 @@
         ]
       }
     ],
-    "react/prop-types": 0
+    "react/prop-types": 0,
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true,
+        "optionalDependencies": false,
+        "peerDependencies": false
+      }
+    ],
+    "react/jsx-curly-spacing": [
+      2, 
+      {
+        "when": "always",
+        "attributes": {
+          "allowMultiline": false
+        },
+        "children": true
+      }
+    ]
   }
 }

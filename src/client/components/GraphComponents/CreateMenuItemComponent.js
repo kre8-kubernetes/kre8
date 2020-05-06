@@ -63,11 +63,11 @@ const CreateMenuItemComponent = (props) => {
     const placeholder = inputName.charAt(0).toUpperCase() + inputName.split(/(?=[A-Z])/).join(' ').slice(1);
     const id = `${menuItemToShow}_${inputName}`;
     return (
-      <div key={i} className="create_menu_item_component_inputs_item">
-        <input id={id} value={inputVal} placeholder={placeholder} onChange={handleChange} type="text" />
-        {(!errors[menuItemToShow][inputName])
-          ? (<div className="aws_cluster_form_container_explainer_text">{inputExplainerText[menuItemToShow][inputName]}</div>)
-          : (<div className="errorClass">{errors[menuItemToShow][inputName]}</div>)
+      <div key={ i } className="create_menu_item_component_inputs_item">
+        <input id={ id } value={ inputVal } placeholder={ placeholder } onChange={ handleChange } type="text" />
+        { (!errors[menuItemToShow][inputName])
+          ? (<div className="aws_cluster_form_container_explainer_text">{ inputExplainerText[menuItemToShow][inputName] }</div>)
+          : (<div className="errorClass">{ errors[menuItemToShow][inputName] }</div>)
         }
       </div>
     );
@@ -81,36 +81,36 @@ const CreateMenuItemComponent = (props) => {
             <div className="popup_form_inner">
               <div className="create_menu_item_component_container">
 
-                {/** ***CLOSE BUTTON*** */}
-                <CloseButton clickHandler={handleFormClose} />
+                { /** ***CLOSE BUTTON*** */ }
+                <CloseButton clickHandler={ handleFormClose } />
 
-                {/** ***TITLE*** */}
+                { /** ***TITLE*** */ }
                 <div className="create_menu_item_component_title">
-                  <h2>{`Create a ${componentNameFormatted}`}</h2>
+                  <h2>{ `Create a ${componentNameFormatted}` }</h2>
                 </div>
 
-                {/** ***INTRO TEXT*** */}
+                { /** ***INTRO TEXT*** */ }
                 <div className="create_menu_item_component_help_info">
-                  {infoText}
+                  { infoText }
                   &nbsp;
                   <a href="https://kubernetes.io/docs/concepts/configuration/overview/">Explore the Kubernetes docs >></a>
                 </div>
 
-                {/** ** FORM *** */}
+                { /** ** FORM *** */ }
                 <div className="create_menu_item_component_inputs">
-                  {formItems}
+                  { formItems }
                 </div>
 
-                {/** ** CREATE BUTTON *** */}
+                { /** ** CREATE BUTTON *** */ }
                 <div className="create_menu_item_component_buttons">
-                  <ActionButton clickHandler={handleFunction} buttonText="Create" />
+                  <ActionButton clickHandler={ handleFunction } buttonText="Create" />
                 </div>
               </div>
             </div>
           )
           : (
             <div>
-              {(creationError === false)
+              { (creationError === false)
                 ? (
                   <div className="popup_form_inner popup_form_inner_create_loading">
                     <svg id="heptagon_loading" className="pod_info_component_heptagon_loading pod_info_component_create_heptagon_loading">
@@ -135,14 +135,14 @@ const CreateMenuItemComponent = (props) => {
                 )
                 : (
                   <div className="popup_form_inner popup_form_inner_create_loading">
-                    <CloseButton clickHandler={handleFormClose} />
+                    <CloseButton clickHandler={ handleFormClose } />
                     <div className="popup_form_inner_error_text_title">Error</div>
                     <div className="popup_form_inner_error_text_intro">
                       An error occurred while creating your component. Below is the error message from Kubernetes:
                     </div>
-                    <div className="errorClass" id="create_menu_item_component_loading_error">{creationErrorText}</div>
+                    <div className="errorClass" id="create_menu_item_component_loading_error">{ creationErrorText }</div>
                   </div>
-                )}
+                ) }
             </div>
           )
         }

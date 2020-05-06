@@ -12,17 +12,17 @@ const Main = () => (
       <Route
         exact
         path="/"
-        component={HomeContainer}
+        component={ HomeContainer }
       />
       <Route
         exact
         path="/aws"
-        component={AWSContainer}
+        component={ AWSContainer }
       />
       <Route
         exact
         path="/cluster"
-        component={KubectlContainer}
+        component={ KubectlContainer }
       />
     </Switch>
   </div>

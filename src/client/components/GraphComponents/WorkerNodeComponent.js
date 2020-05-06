@@ -10,8 +10,6 @@ const WorkerNodeComponent = ({
   toolTipOff,
   toolTipOn,
 }) => {
-  console.log(node);
-
   const bg = '#16273B';
   const stroke = '#5499D9';
   const strokeWidth = 1.25;

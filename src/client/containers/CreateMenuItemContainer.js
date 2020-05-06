@@ -2,9 +2,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
-import { setLocale, object, string, number } from 'yup';
+import { setLocale } from 'yup';
 import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
+
+import {
+  podFormValidate,
+  deploymentFormValidate,
+  serviceFormValidate,
+  makeError,
+} from '../utils/validation';
 
 import OutsideClick from '../utils/OutsideClick';
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
@@ -144,29 +151,28 @@ class CreateMenuItemContainer extends Component {
   handleCreatePod() {
     const { inputData } = this.state;
     const { pod } = inputData;
+
     setLocale({
       string: {
         lowercase: 'Entry must be lowercase',
         max: '${max} character maximum',
       },
     });
-    const schema = object().strict().shape({
-      podName: string().required('Pod name is required').lowercase().max(253),
-      containerName: string().required('Container name is required').lowercase().max(253),
-      imageName: string().required('Image name is required').lowercase().max(253),
-    });
-    schema.validate(pod, { abortEarly: false })
+
+    podFormValidate(pod)
       .then((data) => {
         this.handleCreateLoadingScreen();
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, pod: {} } }));
+        this.setState(prevState => ({
+          ...prevState,
+          errors: { ...prevState.errors, pod: {} },
+        }));
         ipcRenderer.send(events.CREATE_POD, data);
       })
       .catch((err) => {
-        const errorObj = err.inner.reduce((acc, error) => {
-          acc[error.path] = error.message;
-          return acc;
-        }, {});
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, pod: errorObj } }));
+        this.setState(prevState => ({
+          ...prevState,
+          errors: { ...prevState.errors, pod: makeError(err) },
+        }));
       });
   }
 
@@ -174,40 +180,35 @@ class CreateMenuItemContainer extends Component {
   handleCreateDeployment() {
     const { inputData } = this.state;
     const { deployment } = inputData;
-    const clone = Object.assign({}, deployment);
-    clone.containerPort = Number(clone.containerPort);
-    clone.replicas = Number(clone.replicas);
+    const deploymentClonne = Object.assign({}, deployment);
+    deploymentClonne.containerPort = Number(deploymentClonne.containerPort);
+    deploymentClonne.replicas = Number(deploymentClonne.replicas);
+
     setLocale({
       string: {
         lowercase: 'Entry must be lowercase',
-        max: '${max} character maximum',
-        
+        max: '${max} character maximum'        
       },
       number: {
         num: 'Entry must be a number',
         positive: 'Entry must be a positive number',
       },
     });
-    const schema = object().strict().shape({
-      deploymentName: string().required('Deployment name is required').lowercase(),
-      applicationName: string().required('Application name is required').lowercase(),
-      containerName: string().required('Container name is required').lowercase(),
-      image: string().required('Image name is required').lowercase(),
-      containerPort: number().required('Container port is required').positive(),
-      replicas: number().required('Number of replicas is required').positive().max(4),
-    });
-    schema.validate(clone, { abortEarly: false })
+
+    deploymentFormValidate(deploymentClonne)
       .then((data) => {
         this.handleCreateLoadingScreen();
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, deployment: {} } }));
+        this.setState(prevState => ({
+          ...prevState,
+          errors: { ...prevState.errors, deployment: {} },
+        }));
         ipcRenderer.send(events.CREATE_DEPLOYMENT, data);
       })
       .catch((err) => {
-        const errorObj = err.inner.reduce((acc, error) => {
-          acc[error.path] = error.message;
-          return acc;
-        }, {});
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, deployment: errorObj } }));
+        this.setState(prevState => ({
+          ...prevState,
+          errors: { ...prevState.errors, deployment: makeError(err) },
+        }));
       });
   }
 
@@ -215,9 +216,10 @@ class CreateMenuItemContainer extends Component {
   handleCreateService() {
     const { inputData } = this.state;
     const { service } = inputData;
-    const clone = Object.assign({}, service);
-    clone.port = Number(clone.port);
-    clone.targetPort = Number(clone.targetPort);
+    const serviceClone = Object.assign({}, service);
+    serviceClone.port = Number(serviceClone.port);
+    serviceClone.targetPort = Number(serviceClone.targetPort);
+
     setLocale({
       string: {
         lowercase: 'Entry must be lowercase',
@@ -229,24 +231,21 @@ class CreateMenuItemContainer extends Component {
         positive: 'Entry must be a positive number',
       },
     });
-    const schema = object().strict().shape({
-      serviceName: string().required('Service name is required').lowercase(),
-      applicationName: string().required('Application name is required').lowercase(),
-      port: number().required('Port number is required').positive(),
-      targetPort: number().required('Target port number is required').positive(),
-    });
-    schema.validate(clone, { abortEarly: false })
+
+    serviceFormValidate(serviceClone)
       .then((data) => {
         this.handleCreateLoadingScreen();
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, service: {} } }));
+        this.setState(prevState => ({
+          ...prevState,
+          errors: { ...prevState.errors, service: {} },
+        }));
         ipcRenderer.send(events.CREATE_SERVICE, data);
       })
       .catch((err) => {
-        const errorObj = err.inner.reduce((acc, error) => {
-          acc[error.path] = error.message;
-          return acc;
-        }, {});
-        this.setState(prevState => ({ ...prevState, errors: { ...prevState.errors, service: errorObj } }));
+        this.setState(prevState => ({
+          ...prevState,
+          errors: { ...prevState.errors, service: makeError(err) },
+        }));
       });
   }
 
@@ -260,7 +259,6 @@ class CreateMenuItemContainer extends Component {
   handleNewPod(event, data) {
     const { inputData } = this.state;
     const { pod } = inputData;
-    console.log('incoming data from kubectl pod creation:', data);
     const emptyPodObj = Object.entries(pod).reduce((acc, item) => {
       acc[item[0]] = '';
       return acc;
@@ -321,7 +319,6 @@ class CreateMenuItemContainer extends Component {
   handleNewDeployment(event, data) {
     const { inputData } = this.state;
     const { deployment } = inputData;
-    console.log('incoming data from kubectl deployment creation:', data);
     const emptyDeploymentObj = Object.entries(deployment).reduce((acc, item) => {
       acc[item[0]] = '';
       return acc;

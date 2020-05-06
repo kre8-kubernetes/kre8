@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeInfoComponentBody } from '../../helperFunctions/renderFunctions';
+import { makeInfoComponentBody } from '../../utils/renderFunctions';
 
 const InfoComponentBody = (props) => {
   const { data } = props;

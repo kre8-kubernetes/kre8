@@ -6,7 +6,7 @@ import { setLocale, object, string, number } from 'yup';
 import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
 
-import OutsideClick from '../helperFunctions/OutsideClick';
+import OutsideClick from '../utils/OutsideClick';
 import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuItemComponent';
 
 /** ------------ CREATE MENU ITEM CONTAINER  ------------------
@@ -116,7 +116,7 @@ class CreateMenuItemContainer extends Component {
       return newState;
     });
   }
-  
+
   // SIGNALS TO CLOSE THE DROPDOWN MENU, AND COMPONENT CREATION FORM WHEN PUSHES 'X' BUTTON
   handleFormClose() {
     const { toggleCreateMenuFormItem, toggleCreateMenuDropdown } = this.props;

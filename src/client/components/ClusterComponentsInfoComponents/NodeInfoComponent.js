@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeInfoItemFromObjectProperties } from '../../helperFunctions/renderFunctions';
+import { makeInfoItemFromObjectProperties } from '../../utils/renderFunctions';
 import CloseButton from '../Buttons/CloseButton';
 
 const NodeInfoComponent = (props) => {

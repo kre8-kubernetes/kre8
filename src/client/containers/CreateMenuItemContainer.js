@@ -31,12 +31,12 @@ import CreateMenuItemComponent from '../components/GraphComponents/CreateMenuIte
 */
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
   menuItemToShow: store.navbar.menuItemToShow,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   toggleCreateMenuFormItem: (bool) => {
     dispatch(actions.toggleCreateMenuFormItem(bool));
   },
@@ -143,7 +143,7 @@ class CreateMenuItemContainer extends Component {
 
   // GENERATES LOADING SCREEN AFTER USER SUBMITS DATA AND KUBERNETES COMPONENTS ARE BEING CREATED
   handleCreateLoadingScreen() {
-    this.setState(prevState => ({ ...prevState, createLoadingScreen: true }));
+    this.setState((prevState) => ({ ...prevState, createLoadingScreen: true }));
   }
 
   /** ------------ CREATE COMPONENT METHODS ------------------
@@ -159,6 +159,7 @@ class CreateMenuItemContainer extends Component {
     setLocale({
       string: {
         lowercase: 'Entry must be lowercase',
+        // eslint-disable-next-line no-template-curly-in-string
         max: '${max} character maximum',
       },
     });
@@ -166,14 +167,14 @@ class CreateMenuItemContainer extends Component {
     podFormValidate(pod)
       .then((data) => {
         this.handleCreateLoadingScreen();
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ...prevState,
           errors: { ...prevState.errors, pod: {} },
         }));
         ipcRenderer.send(events.CREATE_POD, data);
       })
       .catch((err) => {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ...prevState,
           errors: { ...prevState.errors, pod: makeError(err) },
         }));
@@ -191,7 +192,8 @@ class CreateMenuItemContainer extends Component {
     setLocale({
       string: {
         lowercase: 'Entry must be lowercase',
-        max: '${max} character maximum'        
+        // eslint-disable-next-line no-template-curly-in-string
+        max: '${max} character maximum',
       },
       number: {
         num: 'Entry must be a number',
@@ -202,14 +204,14 @@ class CreateMenuItemContainer extends Component {
     deploymentFormValidate(deploymentClonne)
       .then((data) => {
         this.handleCreateLoadingScreen();
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ...prevState,
           errors: { ...prevState.errors, deployment: {} },
         }));
         ipcRenderer.send(events.CREATE_DEPLOYMENT, data);
       })
       .catch((err) => {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ...prevState,
           errors: { ...prevState.errors, deployment: makeError(err) },
         }));
@@ -228,6 +230,7 @@ class CreateMenuItemContainer extends Component {
       string: {
         lowercase: 'Entry must be lowercase',
         num: 'Entry must be a number',
+        // eslint-disable-next-line no-template-curly-in-string
         max: '${max} character maximum',
       },
       number: {
@@ -239,14 +242,14 @@ class CreateMenuItemContainer extends Component {
     serviceFormValidate(serviceClone)
       .then((data) => {
         this.handleCreateLoadingScreen();
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ...prevState,
           errors: { ...prevState.errors, service: {} },
         }));
         ipcRenderer.send(events.CREATE_SERVICE, data);
       })
       .catch((err) => {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ...prevState,
           errors: { ...prevState.errors, service: makeError(err) },
         }));

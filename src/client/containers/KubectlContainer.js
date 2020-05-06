@@ -11,11 +11,11 @@ import CreateMenuItemContainer from './CreateMenuItemContainer';
 */
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   displayCreateMenuButton: () => {
     dispatch(actions.displayCreateMenuButton());
   },

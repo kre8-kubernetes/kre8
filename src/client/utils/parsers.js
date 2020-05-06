@@ -6,8 +6,9 @@ export const handleNewPod = (event, data) => {
     acc[item[0]] = '';
     return acc;
   }, {});
+
   if (data.includes('error')) {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       creationError: true,
       creationErrorText: data,
@@ -17,7 +18,7 @@ export const handleNewPod = (event, data) => {
       },
     }));
   } else {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       inputData: {
         ...prevState.inputData,
@@ -37,8 +38,9 @@ export const handleNewService = (event, data) => {
     acc[item[0]] = '';
     return acc;
   }, {});
+
   if (data.includes('error')) {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       creationError: true,
       creationErrorText: data,
@@ -48,7 +50,7 @@ export const handleNewService = (event, data) => {
       },
     }));
   } else {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       inputData: {
         ...prevState.inputData,
@@ -65,14 +67,15 @@ export const handleNewDeployment = (event, data) => {
     acc[item[0]] = '';
     return acc;
   }, {});
+
   if (data.includes('error')) {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       creationError: true,
       creationErrorText: data,
     }));
   } else {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       inputData: {
         ...prevState.inputData,

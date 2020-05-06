@@ -1,5 +1,9 @@
 {
   "extends": "airbnb",
+  "env": {
+    "browser": true,
+    "node": true
+  },
   "rules": {
     "max-len": [
       "error",
@@ -34,6 +38,15 @@
         },
         "children": true
       }
-    ]
+    ],
+    "arrow-body-style": [
+      "error",
+      "as-needed"
+    ],
+    "arrow-parens": [
+      "error",
+      "always"
+    ],
+    "import/prefer-default-export": 0
   }
 }

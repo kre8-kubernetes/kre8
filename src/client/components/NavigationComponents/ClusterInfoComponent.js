@@ -20,11 +20,14 @@ const ClusterInfoComponent = (props) => {
   }
 
   if (Object.prototype.hasOwnProperty.call(clusterInfo, 'subnetIdsArray')) {
-    subnetIds = clusterInfo.subnetIdsArray.map((subnet) => {
-      return (
-        <div key={ subnet } className="cluster_info_subnets">{ subnet }</div>
-      );
-    });
+    subnetIds = clusterInfo.subnetIdsArray.map((subnet) => (
+      <div
+        key={ subnet }
+        className="cluster_info_subnets"
+      >
+        { subnet }
+      </div>
+    ));
   }
 
   return (

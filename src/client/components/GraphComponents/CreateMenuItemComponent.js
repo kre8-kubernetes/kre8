@@ -63,11 +63,23 @@ const CreateMenuItemComponent = (props) => {
     const placeholder = inputName.charAt(0).toUpperCase() + inputName.split(/(?=[A-Z])/).join(' ').slice(1);
     const id = `${menuItemToShow}_${inputName}`;
     return (
-      <div key={ i } className="create_menu_item_component_inputs_item">
-        <input id={ id } value={ inputVal } placeholder={ placeholder } onChange={ handleChange } type="text" />
-        { (!errors[menuItemToShow][inputName])
-          ? (<div className="aws_cluster_form_container_explainer_text">{ inputExplainerText[menuItemToShow][inputName] }</div>)
-          : (<div className="errorClass">{ errors[menuItemToShow][inputName] }</div>)
+      <div key={ `item-${String(i)}` } className="create_menu_item_component_inputs_item">
+        <input
+          id={ id }
+          value={ inputVal }
+          placeholder={ placeholder }
+          onChange={ handleChange }
+          type="text"
+        />
+
+        {
+          (!errors[menuItemToShow][inputName]) ? (
+            <div className="aws_cluster_form_container_explainer_text">
+              { inputExplainerText[menuItemToShow][inputName] }
+            </div>
+          ) : (
+            <div className="errorClass">{ errors[menuItemToShow][inputName] }</div>
+          )
         }
       </div>
     );
@@ -93,7 +105,9 @@ const CreateMenuItemComponent = (props) => {
                 <div className="create_menu_item_component_help_info">
                   { infoText }
                   &nbsp;
-                  <a href="https://kubernetes.io/docs/concepts/configuration/overview/">Explore the Kubernetes docs >></a>
+                  <a href="https://kubernetes.io/docs/concepts/configuration/overview/">
+                    Explore the Kubernetes docs &gt&gt
+                  </a>
                 </div>
 
                 { /** ** FORM *** */ }
@@ -113,7 +127,11 @@ const CreateMenuItemComponent = (props) => {
               { (creationError === false)
                 ? (
                   <div className="popup_form_inner popup_form_inner_create_loading">
-                    <svg id="heptagon_loading" className="pod_info_component_heptagon_loading pod_info_component_create_heptagon_loading">
+                    <svg
+                      id="heptagon_loading"
+                      // eslint-disable-next-line max-len
+                      className="pod_info_component_heptagon_loading pod_info_component_create_heptagon_loading"
+                    >
                       <g transform="
                         translate(-3.722589840316431,-136.36553658320645)
                         scale(2.2474316850393237)
@@ -138,9 +156,12 @@ const CreateMenuItemComponent = (props) => {
                     <CloseButton clickHandler={ handleFormClose } />
                     <div className="popup_form_inner_error_text_title">Error</div>
                     <div className="popup_form_inner_error_text_intro">
-                      An error occurred while creating your component. Below is the error message from Kubernetes:
+                      An error occurred while creating your component. Below is the
+                       error message from Kubernetes:
                     </div>
-                    <div className="errorClass" id="create_menu_item_component_loading_error">{ creationErrorText }</div>
+                    <div className="errorClass" id="create_menu_item_component_loading_error">
+                      { creationErrorText }
+                    </div>
                   </div>
                 ) }
             </div>

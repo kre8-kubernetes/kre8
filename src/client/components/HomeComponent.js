@@ -26,30 +26,46 @@ const HomeComponent = (props) => {
 
   return (
     <div className="home_page_form_container">
-      {/* HOME CONTAINER HEADER */}
-      <img className="kre8Logo" src={kre8Logo} alt="" />
+      { /* HOME CONTAINER HEADER */ }
+      <img className="kre8Logo" src={ kre8Logo } alt="" />
       <div className="home_page_form_container_header">
         Build, Deploy and Monitor a Kubernetes Cluster
       </div>
-      {/* TEXT JUST BELOW THE HEADER */}
+      { /* TEXT JUST BELOW THE HEADER */ }
       <div className="home_page_form_container_intro_text">
       Enter your Amazon Web Services account credentials to get started.
       </div>
-      {/* HOME INPUT FORM CONTAINER */}
+      { /* HOME INPUT FORM CONTAINER */ }
       <div className="home_page_form_container_input_field_area">
         <div className="home_page_form_container_inputs_item">
-          <input id="awsAccessKeyId" onChange={handleChange} placeholder="AWS Access Key ID" value={awsAccessKeyId} type="text" name="awsAccessKeyId" maxLength="40" />
-          <div className="errorClass">{errors.awsAccessKeyId}</div>
+          <input
+            id="awsAccessKeyId"
+            onChange={ handleChange }
+            placeholder="AWS Access Key ID"
+            value={ awsAccessKeyId }
+            type="text"
+            name="awsAccessKeyId"
+            maxLength="40"
+          />
+          <div className="errorClass">{ errors.awsAccessKeyId }</div>
         </div>
         <div className="home_page_form_container_inputs_item">
-          <input id="awsSecretAccessKey" onChange={handleChange} placeholder="AWS Secret Access Key" value={awsSecretAccessKey} type="text" maxLength="50" name="awsSecretAccessKey" />
-          <div className="errorClass">{errors.awsSecretAccessKey}</div>
+          <input
+            id="awsSecretAccessKey"
+            onChange={ handleChange }
+            placeholder="AWS Secret Access Key"
+            value={ awsSecretAccessKey }
+            type="text"
+            maxLength="50"
+            name="awsSecretAccessKey"
+          />
+          <div className="errorClass">{ errors.awsSecretAccessKey }</div>
         </div>
       </div>
-      {/* DROPDOWN + BUTTONS AT THE BOTTOM CONTAINER */}
+      { /* DROPDOWN + BUTTONS AT THE BOTTOM CONTAINER */ }
       <div className="home_page_form_container_buttons">
         <div className="home_page_form_container_buttons_item">
-          <select className="dropDown" value={awsRegion} onChange={handleFormChange}>
+          <select className="dropDown" value={ awsRegion } onChange={ handleFormChange }>
             <option value="default">Select Region</option>
             <option value="us-west-2">US West (Oregon) (us-west-2)</option>
             <option value="us-east-1">US East (N. Virginia) (us-east-1)</option>
@@ -67,16 +83,23 @@ const HomeComponent = (props) => {
           </select>
         </div>
         <div className="home_page_form_container_buttons_item">
-          <ActionButton id="home_form_buttom" clickHandler={setAWSCredentials} buttonText="Submit" />
+          <ActionButton id="home_form_buttom" clickHandler={ setAWSCredentials } buttonText="Submit" />
           <div id="home_page_help_info_button">
-            <HelpInfoButton clickHandler={displayInfoHandler} />
+            <HelpInfoButton clickHandler={ displayInfoHandler } />
           </div>
         </div>
       </div>
-      <div style={{ alignSelf: 'flex-start', marginLeft: '50px', marginTop: '-8px' }} className="errorClass">{errors.awsRegion}</div>
-      {displayError === true
-      && (<div className="errorClass" id="home_page_container_error">{credentialError}</div>)
-      }
+
+      <div
+        style={ { alignSelf: 'flex-start', marginLeft: '50px', marginTop: '-8px' } }
+        className="errorClass"
+      >
+        { errors.awsRegion }
+      </div>
+
+      { displayError === true && (
+        <div className="errorClass" id="home_page_container_error">{ credentialError }</div>
+      ) }
     </div>
   );
 };

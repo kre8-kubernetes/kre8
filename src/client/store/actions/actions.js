@@ -16,12 +16,12 @@ export const setCheckCredentialsTrue = () => ({
   type: types.CHECK_CREDENTIALS_TRUE,
 });
 
-export const toggleCreatingCluster = bool => ({
+export const toggleCreatingCluster = (bool) => ({
   type: types.TOGGLE_CREATING_CLUSTER,
   payload: bool,
 });
 
-export const handleFormString = objProp => ({
+export const handleFormString = (objProp) => ({
   type: types.HANDLE_FORM_STRING,
   payload: objProp,
 });
@@ -42,7 +42,7 @@ export const hideCreateMenuButton = () => ({
   type: types.HIDE_CREATE_MENU_BUTTON,
 });
 
-export const toggleCreateMenuDropdown = bool => ({
+export const toggleCreateMenuDropdown = (bool) => ({
   type: types.TOGGLE_CREATE_MENU_DROPDOWN,
   payload: bool,
 });
@@ -51,12 +51,12 @@ export const hideCreateMenuDropdown = () => ({
   type: types.HIDE_CREATE_MENU_DROPDOWN,
 });
 
-export const toggleCreateMenuFormItem = bool => ({
+export const toggleCreateMenuFormItem = (bool) => ({
   type: types.TOGGLE_CREATE_MENU_FORM_ITEM,
   payload: bool,
 });
 
-export const menuItemToShow = menuItem => ({
+export const menuItemToShow = (menuItem) => ({
   type: types.MENU_FORM_ITEM_TO_SHOW,
   payload: menuItem,
 });
@@ -69,7 +69,7 @@ export const hideClusterInfo = () => ({
   type: types.HIDE_CLUSTER_INFO,
 });
 
-export const updateClusterData = clusterData => ({
+export const updateClusterData = (clusterData) => ({
   type: types.UPDATE_CLUSTER_DATA,
   payload: clusterData,
 });

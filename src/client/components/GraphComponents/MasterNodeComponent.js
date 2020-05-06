@@ -2,7 +2,14 @@ import React from 'react';
 import { Group } from '@vx/group';
 import { Polygon } from '@vx/shape';
 
-const MasterNodeComponent = ({ node, top, left, showNodeInfo, toolTipOn, toolTipOff }) => {
+const MasterNodeComponent = ({
+  node,
+  top,
+  left,
+  showNodeInfo,
+  toolTipOn,
+  toolTipOff,
+}) => {
   // const bg = '#1D2541';
   const bg = '#16273B';
   const stroke = '#4368C9';

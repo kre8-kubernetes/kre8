@@ -38,11 +38,11 @@ const TreeGraphComponent = ({
           size={ [innerWidth, innerHeight] }
           separation={ (a, b) => (a.parent === b.parent ? 1 : 0.5) / a.depth }
         >
-          { tree => (
+          { (tree) => (
             <Group top={ 100 } left={ 25 }>
               { tree.links().map((link, i) => (
                 <LinkVerticalLine
-                  key={ `link-${i}` }
+                  key={ `link-${String(i)}` }
                   data={ link }
                   stroke={ lightpurple }
                   strokeWidth="2"
@@ -103,7 +103,7 @@ const TreeGraphComponent = ({
                       node={ node }
                       top={ top }
                       left={ left }
-                      key={ i }
+                      key={ `container-${String(i)}` }
                     />
                   );
                 }

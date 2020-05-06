@@ -72,7 +72,7 @@ export default {
             type: 'Container',
           }],
         },
-      ]
+      ],
     },
     {
       name: 'Worker Node #2',

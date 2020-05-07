@@ -1,9 +1,11 @@
 import React from 'react';
 import { makeInfoComponentBody } from '../../utils/renderFunctions';
 
-const InfoComponentBody = (props) => {
-  const { data } = props;
-  const body = makeInfoComponentBody(data);
+const InfoComponentBody = ({ data }) => {
+  let body = [];
+  if (data) {
+    body = makeInfoComponentBody(data);
+  }
 
   return (
     <div className="info_body_component">

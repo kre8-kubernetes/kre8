@@ -97,6 +97,9 @@ const createWindowAndSetEnvironmentVariables = () => {
     center: true,
     defaultFontFamily: 'sansSerif',
     title: 'MAIN',
+    webPreferences: {
+      nodeIntegration: true,
+    }
   });
 
   win.webContents.on('will-navigate', (event, url) => {
@@ -121,6 +124,9 @@ const createWindowAndSetEnvironmentVariables = () => {
     backgroundColor: '#1F3248',
     center: true,
     title: 'LOADING',
+    webPreferences: {
+      nodeIntegration: true,
+    }
   });
 
   // set the win event listeners after create the child window

@@ -14,11 +14,26 @@ const eks = new EKS({ region: 'us-west-2' });
 const cloudformation = new CloudFormation({ region: 'us-west-2' });
 
 // --------- IMPORT MODULES -----------
-const onDownload = require(__dirname + '/onDownloadFunctions');
-const awsHelperFunctions = require(__dirname + '/awsHelperFunctions'); 
-const awsParameters = require(__dirname + '/awsParameters');
+const {
+  installIAMAuthenticator,
+  enableIAMAuthenticator,
+  copyIAMAuthenticatorToBinFolder,
+  setPATHAndAppendToBashProfile,
+} = require(__dirname + '/onDownloadFunctions');
+const {
+  timeout,
+  checkAWSMasterFile,
+  appendAWSMasterFile,
+} = require(__dirname + '/awsHelperFunctions'); 
+
+const {
+  createIAMRoleParam,
+  createVPCStackParam,
+  createClusterParam,
+} = require(__dirname + '/awsParameters');
+
 const awsProps = require(__dirname + '/../awsPropertyNames'); 
-const kubectlConfigFunctions = require(__dirname + '/kubectlConfigFunctions');
+const { testKubectlStatus } = require(__dirname + '/kubectlConfigFunctions');
 
 const {
   logWithLabel,
@@ -43,11 +58,11 @@ const installAndConfigureAWS_IAM_Authenticator = async () => {
   try {
     const iamAuthenticatorExists = fs.existsSync(`${process.env.HOME}/bin/aws-iam-authenticator`);
     if (!iamAuthenticatorExists) {
-      onDownload.installIAMAuthenticator();
-      onDownload.enableIAMAuthenticator();
-      // onDownload.copyIAMAuthenticatorToBinFolder();
+      installIAMAuthenticator();
+      enableIAMAuthenticator();
+      // copyIAMAuthenticatorToBinFolder();
     }
-    await onDownload.setPATHAndAppendToBashProfile();
+    await setPATHAndAppendToBashProfile();
   } catch (err) {
     throw err;
   }
@@ -82,7 +97,7 @@ const setEnvVarsAndMkDirsInProd = () => {
 */
 const returnKubectlAndCredentialsStatus = async () => {
   try {
-    const kubectlStatus = await kubectlConfigFunctions.testKubectlStatus();
+    const kubectlStatus = await testKubectlStatus();
     const awsCredentialFileExists = fs.existsSync(
       `${process.env.AWS_STORAGE}AWS_Private/awsCredentials.json`,
     );
@@ -188,14 +203,14 @@ const createIAMRole = async (iamRoleName) => {
   try {
     logStep('awsEventCallbacks.createIAMRole');
 
-    const isIAMRoleNameInMasterFile = await awsHelperFunctions.checkAWSMasterFile(
+    const isIAMRoleNameInMasterFile = await checkAWSMasterFile(
       awsProps.IAM_ROLE_NAME,
       iamRoleName,
     );
     logWithLabel('isIAMRoleNameInMasterFile: ', isIAMRoleNameInMasterFile);
 
     if (!isIAMRoleNameInMasterFile) {
-      const iamParams = awsParameters.createIAMRoleParam(iamRoleName, iamRolePolicyDocument);
+      const iamParams = createIAMRoleParam(iamRoleName, iamRolePolicyDocument);
       const iamRoleDataReturnedFromAWS = await iam.createRole(iamParams).promise();
 
       // TODO: handle error info from AWS
@@ -206,7 +221,7 @@ const createIAMRole = async (iamRoleName) => {
           iamRoleName: iamRoleDataReturnedFromAWS.Role.RoleName,
           iamRoleArn: iamRoleDataReturnedFromAWS.Role.Arn,
         };
-        await awsHelperFunctions.appendAWSMasterFile(iamRoleData);
+        await appendAWSMasterFile(iamRoleData);
 
         const clusterPolicyParam = { RoleName: iamRoleName, PolicyArn: awsProps.CLUSTER_POLICY_ARN };
         const servicePolicyParam = { RoleName: iamRoleName, PolicyArn: awsProps.SERVICE_POLICY_ARN };
@@ -238,7 +253,7 @@ const createVPCStack = async (stackName) => {
   try {
     logStep('awsEventCallbacks.createVPCStack');
 
-    const isVPCStackInMasterFile = await awsHelperFunctions.checkAWSMasterFile(
+    const isVPCStackInMasterFile = await checkAWSMasterFile(
       awsProps.VPC_STACK_NAME,
       stackName,
     );
@@ -247,7 +262,7 @@ const createVPCStack = async (stackName) => {
     let parsedStackData;
 
     if (!isVPCStackInMasterFile) {
-      const vpcStackParam = await awsParameters.createVPCStackParam(stackName, stackTemplate);
+      const vpcStackParam = await createVPCStackParam(stackName, stackTemplate);
 
       await cloudformation.createStack(vpcStackParam).promise();
       let stringifiedStackData;
@@ -272,7 +287,7 @@ const createVPCStack = async (stackName) => {
         logWithLabel('stackStatus in while loop', stackStatus);
         // wait 30 seconds before rerunning function
         // eslint-disable-next-line no-await-in-loop
-        await awsHelperFunctions.timeout(1000 * 30);
+        await timeout(1000 * 30);
         getStackData();
       }
 
@@ -285,7 +300,7 @@ const createVPCStack = async (stackName) => {
         };
         stackDataForMasterFile.subnetIdsArray = stackDataForMasterFile.subnetIdsString.split(',');
 
-        await awsHelperFunctions.appendAWSMasterFile(stackDataForMasterFile);
+        await appendAWSMasterFile(stackDataForMasterFile);
       } else {
         console.error(`Error in creating stack. Stack Status = ${stackStatus}`);
         throw new Error(`Stack Status: ${stackStatus}`);
@@ -314,7 +329,7 @@ const createCluster = async (clusterName) => {
     logWithLabel('ClusterCreating: ', clusterName);
 
     // Check if cluster has been created
-    const isClusterInMasterFile = await awsHelperFunctions.checkAWSMasterFile(
+    const isClusterInMasterFile = await checkAWSMasterFile(
       awsProps.CLUSTER_NAME,
       clusterName,
     );
@@ -330,7 +345,7 @@ const createCluster = async (clusterName) => {
       const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
       const { iamRoleArn, subnetIdsArray, securityGroupIds } = parsedAWSMasterFileData;
 
-      const clusterParam = awsParameters.createClusterParam(
+      const clusterParam = createClusterParam(
         clusterName,
         subnetIdsArray,
         securityGroupIds,
@@ -360,13 +375,13 @@ const createCluster = async (clusterName) => {
 
       console.log('6 min blocking timeout starting');
       // Timeout execution thread for 6 minutes to give AWS time to create cluster
-      await awsHelperFunctions.timeout(1000 * 60 * 6);
+      await timeout(1000 * 60 * 6);
       // Ask Amazon for cluster data
       getClusterData();
 
       while (clusterCreationStatus === 'CREATING') {
         // Timeout execution thread for 30 seconds before resending request to AWS for cluster data
-        await awsHelperFunctions.timeout(1000 * 30);
+        await timeout(1000 * 30);
         getClusterData();
       }
 
@@ -381,7 +396,7 @@ const createCluster = async (clusterName) => {
           serverEndPoint: parsedClusterData.cluster.endpoint,
           certificateAuthorityData: parsedClusterData.cluster.certificateAuthority.data,
         };
-        await awsHelperFunctions.appendAWSMasterFile(clusterDataforMasterFile);
+        await appendAWSMasterFile(clusterDataforMasterFile);
 
         console.log('Cluster created');
         return `AWS Cluster ${clusterName} created.`;

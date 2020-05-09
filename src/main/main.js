@@ -36,9 +36,24 @@ const {
   createCluster,
 } = require(__dirname + '/helperFunctions/awsEventCallbacks');
 
-const kubectlConfigFunctions = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
-const kubernetesTemplates = require(__dirname + '/helperFunctions/kubernetesTemplates');
-const awsHelperFunctions = require(__dirname + '/helperFunctions/awsHelperFunctions');
+const {
+  createConfigFile,
+  configureKubectl,
+  testKubectlGetSvc,
+  createStackForWorkerNode,
+  inputNodeInstance,
+  testKubectlStatus,
+} = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
+
+const {
+  createPodYamlTemplate,
+  createServiceYamlTemplate,
+  createDeploymentYamlTemplate,
+} = require(__dirname + '/helperFunctions/kubernetesTemplates');
+const {
+  timeout,
+  updateCredentialsFile,
+} = require(__dirname + '/helperFunctions/awsHelperFunctions');
 
 const { PORT, NODE_ENV } = process.env;
 
@@ -229,14 +244,13 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
 
     if (credentialStatus.Arn) {
       loadingChildWindow.close();
-      await awsHelperFunctions.updateCredentialsFile(
+      await updateCredentialsFile(
         awsProps.AWS_CREDENTIALS_STATUS,
         awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED,
       );
       win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
     }
   } catch (err) {
-
     logEvtError(events.SET_AWS_CREDENTIALS, err);
     loadingChildWindow.close();
     loadingChildWindow = null;
@@ -270,12 +284,10 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
     // Set CLUSTER_NAME environment variable based on user input and save to credentials file
     process.env.CLUSTER_NAME = data.clusterName;
 
-    await awsHelperFunctions.updateCredentialsFile(awsProps.CLUSTER_NAME, data.clusterName);
+    await updateCredentialsFile(awsProps.CLUSTER_NAME, data.clusterName);
 
     // -------------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS -------------------------
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-    console.log('============  ipcMain.on(events.CREATE_IAM_ROLE)... =================');
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+    logStep('ipcMain.on(events.CREATE_IAM_ROLE)');
 
     // Send data to AWS to create IAM Role, timing: 10 - 30 seconds
     await createIAMRole(data.iamRoleName);
@@ -300,12 +312,10 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   // ---------------------- CREATE AWS STACK (approx 1 - 1.5 mins) -------------------
   try {
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-    console.log('============  ipcMain.on(events.CREATE_TECH_STACK),... ==============');
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+    logStep('ipcMain.on(events.CREATE_TECH_STACK)');
 
     const { vpcStackName } = data;
-    
+
     // Send data to AWS to create VPC Stack, timing: 30 seconds - 1 minute
     await createVPCStack(vpcStackName);
 
@@ -329,9 +339,7 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   // ------------------------ CREATE AWS CLUSTER --------------------------------------
   try {
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
-    console.log('============  ipcMain.on(events.CREATE_CLUSTER),... =================');
-    console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+    logStep('ipcMain.on(events.CREATE_CLUSTER)');
 
     await createCluster(data.clusterName);
     clusterStatus.status = awsProps.CREATED;
@@ -353,10 +361,10 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   // ----- CREATE KUBECONFIG FILE, CONFIGURE KUBECTL, CREATE WORKER NODE STACK ----------
   try {
-    await kubectlConfigFunctions.createConfigFile(data.clusterName);
-    await kubectlConfigFunctions.configureKubectl(data.clusterName);
-    // kubectlConfigFunctions.testKubectlGetSvc();
-    await kubectlConfigFunctions.createStackForWorkerNode(data.clusterName);
+    await createConfigFile(data.clusterName);
+    await configureKubectl(data.clusterName);
+    // testKubectlGetSvc();
+    await createStackForWorkerNode(data.clusterName);
 
     workerNodeStatus.status = awsProps.CREATED;
     // Send Worker Node status to render thread to display
@@ -377,11 +385,11 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 
   // --------- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS -------------
   try {
-    await kubectlConfigFunctions.inputNodeInstance(data.clusterName);
-    const kubectlConfigStatusTest = await kubectlConfigFunctions.testKubectlStatus();
+    await inputNodeInstance(data.clusterName);
+    const kubectlConfigStatusTest = await testKubectlStatus();
 
     if (kubectlConfigStatusTest === true) {
-      await awsHelperFunctions.timeout(1000 * 15);
+      await timeout(1000 * 15);
       kubectlConfigStatus.status = awsProps.CREATED;
       // Send kubectl status to render thread to display
       win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigStatus);
@@ -410,19 +418,25 @@ ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
 // -------------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------
 /**
  * Check credentials file to determine if user needs to configure the application
- * If credential's file hasn't been created yet (meaning user hasn't entered credentials previously),
- * serve HomeComponent page, else, serve HomeComponentPostCredentials
+ * If credential's file hasn't been created yet (meaning user hasn't entered credentials
+ * previously), serve HomeComponent page, else, serve HomeComponentPostCredentials
  * @param {Object} event
  * @return {Object} - object containing information from masterFile
 */
 ipcMain.on(events.GET_CLUSTER_DATA, async (event) => {
   try {
-    const dataFromCredentialsFile = await fsp.readFile(`${process.env.AWS_STORAGE}AWS_Private/awsCredentials.json`, 'utf-8');
+    const dataFromCredentialsFile = await fsp.readFile(
+      `${process.env.AWS_STORAGE}AWS_Private/awsCredentials.json`,
+      'utf-8',
+    );
 
     const parsedCredentialsFileData = JSON.parse(dataFromCredentialsFile);
     const { clusterName } = parsedCredentialsFileData;
 
-    const dataFromMasterFile = await fsp.readFile(`${process.env.AWS_STORAGE}AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
+    const dataFromMasterFile = await fsp.readFile(
+      `${process.env.AWS_STORAGE}AWS_Private/${clusterName}_MASTER_FILE.json`,
+      'utf-8',
+    );
     const parsedAWSMasterFileData = JSON.parse(dataFromMasterFile);
     delete parsedAWSMasterFileData.certificateAuthorityData;
     // Send cluster data to render thread to generate graph
@@ -469,7 +483,6 @@ ipcMain.on(events.GET_MASTER_NODE, async (event, data) => {
   }
 });
 
-// -------------- Get Worker Nodes --------------------
 ipcMain.on(events.GET_WORKER_NODES, async (event, data) => {
   try {
     const apiNodeData = spawnSync('kubectl', ['get', 'nodes', '-o=json'], { env: process.env });
@@ -487,7 +500,6 @@ ipcMain.on(events.GET_WORKER_NODES, async (event, data) => {
   }
 });
 
-// -------------- Get the Containers and Pods --------------------
 ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
   try {
     const apiNodeData = spawnSync('kubectl', ['get', 'pods', '-o=json'], { env: process.env });
@@ -505,7 +517,7 @@ ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
   }
 });
 
-/** ----------- CREATE A POD --------------------------------
+/**
  * The following functions pass user input into a function a that creates a json object
  * based on a template. The new .json file is used to apply to kubectl in order to create
  * the appropriate kubernetes deployment
@@ -516,15 +528,22 @@ ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
 ipcMain.on(events.CREATE_POD, async (event, data) => {
   try {
     // CREATE AND WRITE A POD FILE FROM TEMPLATE
-    const podYamlTemplate = kubernetesTemplates.createPodYamlTemplate(data);
+    const podYamlTemplate = createPodYamlTemplate(data);
     const stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate, null, 2);
-    await fsp.writeFile(`${process.env.KUBECTL_STORAGE}pod_${data.podName}.json`, stringifiedPodYamlTemplate);
+    await fsp.writeFile(
+      `${process.env.KUBECTL_STORAGE}pod_${data.podName}.json`,
+      stringifiedPodYamlTemplate,
+    );
     // CREATE THE POD VIA kubectl
-    const child = spawnSync('kubectl', ['apply', '-f', `${process.env.KUBECTL_STORAGE}pod_${data.podName}.json`], { env: process.env });
+    const child = spawnSync(
+      'kubectl',
+      ['apply', '-f', `${process.env.KUBECTL_STORAGE}pod_${data.podName}.json`],
+      { env: process.env },
+    );
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
 
-    await awsHelperFunctions.timeout(1000 * 5);
+    await timeout(1000 * 5);
     // SEND STDOUT TO RENDERER PROCESS
     if (stderr) {
       console.error('From CREATE_POD:', stderr);
@@ -539,16 +558,22 @@ ipcMain.on(events.CREATE_POD, async (event, data) => {
   }
 });
 
-//* -------------- CREATE A SERVICE -------------------- *//
 ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
   try {
     console.log('CREATE_SERVICE data:', data);
     // CREATE AND WRITE THE SERVICE FILE FROM TEMPLATE
-    const serviceYamlTemplate = kubernetesTemplates.createServiceYamlTemplate(data);
+    const serviceYamlTemplate = createServiceYamlTemplate(data);
     const stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate, null, 2);
-    await fsp.writeFile(`${process.env.KUBECTL_STORAGE}service_${data.serviceName}.json`, stringifiedServiceYamlTemplate);
+    await fsp.writeFile(
+      `${process.env.KUBECTL_STORAGE}service_${data.serviceName}.json`,
+      stringifiedServiceYamlTemplate,
+    );
     // CREATE THE SERVICE VIA kubectl
-    const child = spawnSync('kubectl', ['apply', '-f', `${process.env.KUBECTL_STORAGE}service_${data.serviceName}.json`], { env: process.env });
+    const child = spawnSync(
+      'kubectl',
+      ['apply', '-f', `${process.env.KUBECTL_STORAGE}service_${data.serviceName}.json`],
+      { env: process.env },
+    );
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
     // SEND STATUS TO THE RENDERER PROCESS
@@ -565,22 +590,29 @@ ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
   }
 });
 
-//* -------------- CREATE A DEPLOYMENT ----------------- *//
-
 ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
   try {
     // START CREATING DEPLOYMENT
-    if (data.replicas > 6) throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 6 or less.`);
+    if (data.replicas > 6) {
+      throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 6 or less.`);
+    }
     // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
-    const deploymentYamlTemplate = kubernetesTemplates.createDeploymentYamlTemplate(data);
+    const deploymentYamlTemplate = createDeploymentYamlTemplate(data);
     const stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);
-    await fsp.writeFile(`${process.env.KUBECTL_STORAGE}deployment_${data.deploymentName}.json`, stringifiedDeploymentYamlTemplate);
+    await fsp.writeFile(
+      `${process.env.KUBECTL_STORAGE}deployment_${data.deploymentName}.json`,
+      stringifiedDeploymentYamlTemplate,
+    );
     // CREATE THE DEPOYMENT VIA kubectl
-    const child = spawnSync('kubectl', ['create', '-f', `${process.env.KUBECTL_STORAGE}deployment_${data.deploymentName}.json`], { env: process.env });
+    const child = spawnSync(
+      'kubectl',
+      ['create', '-f', `${process.env.KUBECTL_STORAGE}deployment_${data.deploymentName}.json`],
+      { env: process.env },
+    );
     const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
 
-    await awsHelperFunctions.timeout(1000 * 30);
+    await timeout(1000 * 30);
     // SEND STATUS TO THE RENDERER PROCESS
     if (stderr) {
       console.error('From CREATE_DEPLOYMENT:', stderr);
@@ -604,16 +636,14 @@ ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
 ipcMain.on(events.DELETE_DEPLOYMENT, async (event, data) => {
   try {
     // DELETE THE POD VIA kubectl
-    console.log(data.data);
     const split = data.data.name.split('-');
     const deploymentName = split.slice(0, split.length - 2).join('-');
     const child = spawnSync('kubectl', ['delete', 'deployment', deploymentName], { env: process.env });
-    const stdout = child.stdout.toString();
     const stderr = child.stderr.toString();
 
     if (stderr) throw new Error(stderr);
     // WAIT 10 SECONDS TO ALLOW DEPLOYMENT DELETION TO COMPLETE
-    await awsHelperFunctions.timeout(1000 * 10);
+    await timeout(1000 * 10);
     // SEND STDOUT TO RENDERER PROCESS
     win.webContents.send(events.HANDLE_RERENDER_NODE, 'delete');
   } catch (err) {

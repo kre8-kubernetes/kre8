@@ -1,13 +1,8 @@
-// --------- NODE APIS ----------------
-
-// --------- DECLARE EXPORT OBJECT --------------------------
-const kubernetesTemplates = {};
-
-/** --------- GENERATES TEMPLATE FOR CREATING POD YAML FILE----------
+/** GENERATES TEMPLATE FOR CREATING POD YAML FILE
  * @param {Object} data
  * @return {Object}
  */
-kubernetesTemplates.createPodYamlTemplate = (data) => {
+const createPodYamlTemplate = (data) => {
   const podYamlTemplate = {
     apiVersion: 'v1',
     kind: 'Pod',
@@ -35,11 +30,11 @@ kubernetesTemplates.createPodYamlTemplate = (data) => {
   return podYamlTemplate;
 };
 
-/** --------- GENERATES TEMPLATE FOR CREATING SERVICE YAML FILE----------
+/** GENERATES TEMPLATE FOR CREATING SERVICE YAML FILE
  * @param {Object} data
  * @return {Object}
  */
-kubernetesTemplates.createServiceYamlTemplate = (data) => {
+const createServiceYamlTemplate = (data) => {
   const serviceYamlTemplate = {
     apiVersion: 'v1',
     kind: 'Service',
@@ -62,11 +57,11 @@ kubernetesTemplates.createServiceYamlTemplate = (data) => {
   return serviceYamlTemplate;
 };
 
-/** --------- GENERATES TEMPLATE FOR CREATING DEPLOYMENT YAML FILE ----
+/** GENERATES TEMPLATE FOR CREATING DEPLOYMENT YAML FILE
  * @param {Object} data
  * @return {Object}
  */
-kubernetesTemplates.createDeploymentYamlTemplate = (data) => {
+const createDeploymentYamlTemplate = (data) => {
   const deploymentTemplate = {
     apiVersion: 'apps/v1',
     kind: 'Deployment',
@@ -108,4 +103,8 @@ kubernetesTemplates.createDeploymentYamlTemplate = (data) => {
   return deploymentTemplate;
 };
 
-module.exports = kubernetesTemplates;
+module.exports = {
+  createPodYamlTemplate,
+  createServiceYamlTemplate,
+  createDeploymentYamlTemplate,
+};

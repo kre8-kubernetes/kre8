@@ -1,46 +1,71 @@
-const awsPropertyNames = {};
+const AWS_CREDENTIALS_STATUS = 'STATUS';
+const AWS_CREDENTIALS_STATUS_CONFIGURED = 'CONFIGURED';
 
-awsPropertyNames.AWS_CREDENTIALS_STATUS = 'STATUS';
-awsPropertyNames.AWS_CREDENTIALS_STATUS_CONFIGURED = 'CONFIGURED';
+const CREATED = 'CREATED';
+const CREATING = 'CREATING';
+const ERROR = 'ERROR';
 
-awsPropertyNames.CREATED = 'CREATED';
-awsPropertyNames.CREATING = 'CREATING';
-awsPropertyNames.ERROR = 'ERROR';
+const IAM_ROLE_STATUS = 'iamRoleStatus';
+const VPC_STACK_STATUS = 'stackStatus';
+const CLUSTER_STATUS = 'clusterStatus';
+const WORKER_NODE_STATUS = 'workerNodeStatus';
+const KUBECTL_CONFIG_STATUS = 'kubectlConfigStatus';
+const ERROR_MESSAGE = 'errorMessage';
 
-awsPropertyNames.IAM_ROLE_STATUS = 'iamRoleStatus';
-awsPropertyNames.VPC_STACK_STATUS = 'stackStatus';
-awsPropertyNames.CLUSTER_STATUS = 'clusterStatus';
-awsPropertyNames.WORKER_NODE_STATUS = 'workerNodeStatus';
-awsPropertyNames.KUBECTL_CONFIG_STATUS = 'kubectlConfigStatus';
-awsPropertyNames.ERROR_MESSAGE = 'errorMessage';
+const CLUSTER_POLICY_ARN = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
+const SERVICE_POLICY_ARN = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
 
-awsPropertyNames.CLUSTER_POLICY_ARN = 'arn:aws:iam::aws:policy/AmazonEKSClusterPolicy';
-awsPropertyNames.SERVICE_POLICY_ARN = 'arn:aws:iam::aws:policy/AmazonEKSServicePolicy';
-
-awsPropertyNames.IAM_ROLE_NAME = 'iamRoleName';
-awsPropertyNames.VPC_STACK_NAME = 'stackName';
-awsPropertyNames.CLUSTER_NAME = 'clusterName';
+const IAM_ROLE_NAME = 'iamRoleName';
+const VPC_STACK_NAME = 'stackName';
+const CLUSTER_NAME = 'clusterName';
 
 
-awsPropertyNames.VPC_ID = 'vpcId';
-awsPropertyNames.SECURITY_GROUP_IDS = 'securityGroupIds';
+const VPC_ID = 'vpcId';
+const SECURITY_GROUP_IDS = 'securityGroupIds';
 
-awsPropertyNames.SUBNET_IDS_STRING = 'subnetIdsString';
-awsPropertyNames.SUBNET_IDS_ARRAY = 'subnetIdsArray';
+const SUBNET_IDS_STRING = 'subnetIdsString';
+const SUBNET_IDS_ARRAY = 'subnetIdsArray';
 
-// awsPropertyNames.KUBECONFIG_FILE_STATUS = 'KubeConfigFileStatus';
-awsPropertyNames.KUBECONFIG_FILE_STATUS_CREATED = 'Created';
+// KUBECONFIG_FILE_STATUS = 'KubeConfigFileStatus';
+const KUBECONFIG_FILE_STATUS_CREATED = 'Created';
 
-awsPropertyNames.KUBECTL_CONFIG_STATUS_CONFIGURED = 'Configured';
+const KUBECTL_CONFIG_STATUS_CONFIGURED = 'Configured';
 
 
-awsPropertyNames.WORKER_NODE_STACK_NAME = 'workerNodeStackName';
-awsPropertyNames.EC2_KEY_PAIR = 'KeyName';
+const WORKER_NODE_STACK_NAME = 'workerNodeStackName';
+const EC2_KEY_PAIR = 'KeyName';
 
-awsPropertyNames.NODE_INSTANCE = 'nodeInstance';
-awsPropertyNames.NODE_INSTANCE_STATUS_CONFIGURED = 'Created';
+const NODE_INSTANCE = 'nodeInstance';
+const NODE_INSTANCE_STATUS_CONFIGURED = 'Created';
 
 // folderName
-awsPropertyNames.KUBE = '.kube';
+const KUBE = '.kube';
 
-module.exports = awsPropertyNames;
+module.exports = {
+  AWS_CREDENTIALS_STATUS,
+  AWS_CREDENTIALS_STATUS_CONFIGURED,
+  CREATED,
+  CREATING,
+  ERROR,
+  IAM_ROLE_STATUS,
+  VPC_STACK_STATUS,
+  CLUSTER_STATUS,
+  WORKER_NODE_STATUS,
+  KUBECTL_CONFIG_STATUS,
+  ERROR_MESSAGE,
+  CLUSTER_POLICY_ARN,
+  IAM_ROLE_NAME,
+  VPC_STACK_NAME,
+  CLUSTER_NAME,
+  VPC_ID,
+  SECURITY_GROUP_IDS,
+  SUBNET_IDS_STRING,
+  SUBNET_IDS_ARRAY,
+  KUBECONFIG_FILE_STATUS_CREATED,
+  KUBECTL_CONFIG_STATUS_CONFIGURED,
+  WORKER_NODE_STACK_NAME,
+  EC2_KEY_PAIR,
+  NODE_INSTANCE,
+  NODE_INSTANCE_STATUS_CONFIGURED,
+  KUBE,
+};

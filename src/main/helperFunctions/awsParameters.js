@@ -1,3 +1,5 @@
+/* eslint-disable quotes */
+/* eslint-disable quote-props */
 // --------- NODE APIS ----------------
 const fs = require('fs');
 
@@ -67,16 +69,28 @@ const createClusterParam = (clusterName, subnetIds, securityGroupIds, roleArn) =
  * @return {Object}
  */
 const createConfigParam = (clusterName, serverEndpoint, certificateAuthorityData) => {
-  // TODO: clean this up according to eslint if possible. Currently, it might be 
+  // TODO: clean this up according to eslint if possible. Currently, it might be
   // required due to specific yaml parsing
   const AWSClusterConfigFileParam = {
     "apiVersion": "v1",
     "clusters": [
-      { "cluster": { "server": serverEndpoint, "certificate-authority-data": certificateAuthorityData, },
-          "name": "kubernetes" },
+      {
+        "cluster": {
+          "server": serverEndpoint,
+          "certificate-authority-data": certificateAuthorityData,
+        },
+        "name": "kubernetes",
+      },
     ],
-    "contexts": [ { "context": { "cluster": "kubernetes", "user": "aws" },
-            "name": "aws" }, ],
+    "contexts": [
+      {
+        "context": {
+          "cluster": "kubernetes",
+          "user": "aws",
+        },
+        "name": "aws",
+      },
+    ],
     "current-context": "aws",
     "kind": "Config",
     "preferences": {},
@@ -87,11 +101,11 @@ const createConfigParam = (clusterName, serverEndpoint, certificateAuthorityData
           "exec": {
             "apiVersion": "client.authentication.k8s.io/v1alpha1",
             "command": "aws-iam-authenticator",
-            "args": [ "token", "-i", clusterName ]
-            }
+            "args": ["token", "-i", clusterName],
+          },
         }
       },
-    ]
+    ],
   };
   return AWSClusterConfigFileParam;
 };

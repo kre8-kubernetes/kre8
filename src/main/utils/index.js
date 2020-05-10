@@ -8,10 +8,6 @@ const logStep = (step) => {
   console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
 };
 
-const logEvtError = (event, err) => {
-  console.error(`ERROR from ${event}`, err);
-};
-
 const logError = (err) => console.error('Error : ', err);
 
 const logLabeledError = (label, err) => {
@@ -21,7 +17,6 @@ const logLabeledError = (label, err) => {
 module.exports = {
   logWithLabel,
   logStep,
-  logEvtError,
   logError,
   logLabeledError,
 };

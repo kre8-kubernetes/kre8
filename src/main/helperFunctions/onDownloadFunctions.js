@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // --------- NODE APIS ----------------
 const fs = require('fs');
 const fsp = require('fs').promises;
@@ -5,19 +6,25 @@ const path = require('path');
 const mkdirp = require('mkdirp');
 const { spawnSync } = require('child_process');
 
-// --------- DECLARE EXPORT OBJECT ----------------------------------
-const onDownload = {};
-
 /** --------- INSTALL AWS IAM AUTHENTICATOR FOR EKS ------------------
  * To communicate with AWS, user must have the aws-iam-authenticator installed.
  * This downloads it from an S3 bucket
  * @return {undefined}
 */
-onDownload.installIAMAuthenticator = () => {
+const installIAMAuthenticator = () => {
   console.log('now installing IAM authenticator');
   const target = `${process.env.HOME}/bin/aws-iam-authenticator`;
   mkdirp.sync(`${process.env.HOME}/bin`);
-  const child = spawnSync('curl', ['-o', target, '--create-dirs', 'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator'], { shell: true });
+  const child = spawnSync(
+    'curl',
+    [
+      '-o',
+      target,
+      '--create-dirs',
+      'https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/darwin/amd64/aws-iam-authenticator',
+    ],
+    { shell: true },
+  );
   const stdout = child.stdout.toString();
   const stderr = child.stderr.toString();
   console.log('stdout', stdout, 'stderr', stderr);
@@ -27,7 +34,7 @@ onDownload.installIAMAuthenticator = () => {
  * To make sure the file is executable, we chmod +x it
  * @return {undefined}
  */
-onDownload.enableIAMAuthenticator = () => {
+const enableIAMAuthenticator = () => {
   console.log('now enabling IAM authenticator');
   const child = spawnSync('chmod', ['+x', `${process.env.HOME}/bin/aws-iam-authenticator`]);
   const stdout = child.stdout.toString();
@@ -41,7 +48,7 @@ onDownload.enableIAMAuthenticator = () => {
  * and the aws-iam-authenticator is copied into the directory
  * @return {undefined}
  */
-onDownload.copyIAMAuthenticatorToBinFolder = () => {
+const copyIAMAuthenticatorToBinFolder = () => {
   const binFolderExists = fs.existsSync(`${process.env.HOME}/bin`);
   if (!binFolderExists) {
     fs.mkdirSync(`${process.env.HOME}/bin`);
@@ -59,7 +66,7 @@ onDownload.copyIAMAuthenticatorToBinFolder = () => {
  * If not, these instructions are appended to the file
  * @return {undefined}
  */
-onDownload.setPATHAndAppendToBashProfile = async () => {
+const setPATHAndAppendToBashProfile = async () => {
   try {
     console.log('now appending path to bash profile');
     const textToAppendToBashProfile = '\nexport PATH=$HOME/bin:$PATH';
@@ -90,4 +97,9 @@ onDownload.setPATHAndAppendToBashProfile = async () => {
   }
 };
 
-module.exports = onDownload;
+module.exports = {
+  installIAMAuthenticator,
+  enableIAMAuthenticator,
+  copyIAMAuthenticatorToBinFolder,
+  setPATHAndAppendToBashProfile,
+};

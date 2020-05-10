@@ -19,8 +19,10 @@ const {
   enableIAMAuthenticator,
   setPATHAndAppendToBashProfile,
 } = require(__dirname + '/onDownloadFunctions');
+
+const { timeout } = require('../utils/async');
+
 const {
-  timeout,
   checkAWSMasterFile,
   appendAWSMasterFile,
 } = require(__dirname + '/awsHelperFunctions'); 

@@ -8,14 +8,6 @@ const {
   logStep,
 } = require('../utils');
 
-/** --------- Timeout function blocks excution thread for ms Miliseconds ---
- * timeout() returns a promise that will will resolve after a number of milliseconds
- * that are passed in as an argument
- * @param {Number} ms milliseconds
- * @return {Promise}
-*/
-const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 /** --------- Check the Filesystem for a specific directory -----------------
  * Will make the desired folder from the user's root folder if it does not exist
  * @param {string} folderName name of folder of interest
@@ -145,7 +137,6 @@ const appendAWSMasterFile = async (awsDataObject) => {
 };
 
 module.exports = {
-  timeout,
   checkFileSystemForDirectoryAndMkDir,
   updateCredentialsFile,
   checkAWSMasterFile,

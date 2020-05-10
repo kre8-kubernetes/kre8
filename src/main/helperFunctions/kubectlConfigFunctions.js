@@ -26,8 +26,9 @@ const {
   logLabeledError,
 } = require('../utils');
 
+const { timeout } = require('../utils/async');
+
 const {
-  timeout,
   checkFileSystemForDirectoryAndMkDir,
   checkAWSMasterFile,
   appendAWSMasterFile,

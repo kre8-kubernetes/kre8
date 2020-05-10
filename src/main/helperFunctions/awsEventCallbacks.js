@@ -17,7 +17,6 @@ const cloudformation = new CloudFormation({ region: 'us-west-2' });
 const {
   installIAMAuthenticator,
   enableIAMAuthenticator,
-  copyIAMAuthenticatorToBinFolder,
   setPATHAndAppendToBashProfile,
 } = require(__dirname + '/onDownloadFunctions');
 const {
@@ -401,7 +400,7 @@ const createCluster = async (clusterName) => {
         console.log('Cluster created');
         return `AWS Cluster ${clusterName} created.`;
       }
-      logLabeledError('creating cluster. Cluster Status', clusterCreationStatus);
+      logLabeledError('Cluster Status', clusterCreationStatus);
       throw new Error(`Cluster Status: ${clusterCreationStatus}`);
     } else {
       console.log('Cluster already exists');

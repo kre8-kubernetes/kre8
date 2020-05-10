@@ -277,7 +277,10 @@ const inputNodeInstance = async (clusterName) => {
 
     // read and parse masterFile
     console.log('!!!!!!!!!!!!!!!!!!!!!--------auth file time--------------!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    const awsMasterFileData = await fsp.readFile(`${process.env.AWS_STORAGE}AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
+    const awsMasterFileData = await fsp.readFile(
+      `${process.env.AWS_STORAGE}AWS_Private/${clusterName}_MASTER_FILE.json`,
+      'utf-8',
+    );
     const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
     const { nodeInstanceRoleArn } = parsedAWSMasterFileData;
     logWithLabel('node instance role arn from master file: ', nodeInstanceRoleArn);

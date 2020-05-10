@@ -22,7 +22,6 @@ const cloudformation = new CloudFormation({ region: 'us-west-2' });
 const {
   logWithLabel,
   logStep,
-  logEvtError,
   logError,
   logLabeledError,
 } = require('../utils');

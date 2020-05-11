@@ -3,8 +3,12 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { ipcRenderer } from 'electron';
 
-// Form error handling with Yup
-import { setLocale, object, string, mixed } from 'yup';
+import {
+  setLocale,
+  object,
+  string,
+  mixed,
+} from 'yup';
 
 import * as actions from '../store/actions/actions';
 import * as events from '../../eventTypes';
@@ -22,12 +26,12 @@ import HomeComponentPostCredentials from '../components/HomeComponentPostCredent
 */
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   credentialStatus: store.aws.credentialStatus,
   hasCheckedCredentials: store.aws.hasCheckedCredentials,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   hideCreateMenuButton: () => {
     dispatch(actions.hideCreateMenuButton());
   },
@@ -113,7 +117,7 @@ class HomeContainer extends Component {
     });
     awsCredentialsSchema.validate(awsCredentials, { abortEarly: false })
       .then((data) => {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ...prevState,
           awsAccessKeyId: '',
           awsSecretAccessKey: '',
@@ -127,7 +131,7 @@ class HomeContainer extends Component {
           acc[error.path] = error.message;
           return acc;
         }, {});
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ...prevState,
           errors: errorObj,
         }));
@@ -169,7 +173,11 @@ class HomeContainer extends Component {
     if (credentialData.Arn) {
       history.push('/aws');
     } else {
-      this.setState(prevState => ({ ...prevState, displayError: true, credentialError: credentialData }));
+      this.setState((prevState) => ({
+        ...prevState,
+        displayError: true,
+        credentialError: credentialData,
+      }));
     }
   }
 
@@ -178,18 +186,18 @@ class HomeContainer extends Component {
   handleChange(e) {
     const { id, value } = e.target;
     e.preventDefault();
-    this.setState(prevState => ({ ...prevState, [id]: value }));
+    this.setState((prevState) => ({ ...prevState, [id]: value }));
   }
 
   // Handles region selection from dropdown menu
   handleFormChange(e) {
     const { value } = e.target;
-    this.setState(prevState => ({ ...prevState, awsRegion: value }));
+    this.setState((prevState) => ({ ...prevState, awsRegion: value }));
   }
 
   //* --------- DISPLAY MORE INFO ( ? ) COMPONENT METHOD
   displayInfoHandler() {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       showInfo: true,
     }));
@@ -197,7 +205,7 @@ class HomeContainer extends Component {
 
   //* --------- HIDE MORE INFO ( ? ) COMPONENT METHOD
   hideInfoHandler() {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       showInfo: false,
     }));
@@ -225,30 +233,30 @@ class HomeContainer extends Component {
     //* --------- RETURN
     return (
       <div className="home_page_container">
-        {showInfo === true && (
+        { showInfo === true && (
         <HelpInfoComponent
-          textInfo={textInfo}
-          mouseCoords={mouseCoords}
-          hideInfoHandler={this.hideInfoHandler}
+          textInfo={ textInfo }
+          mouseCoords={ mouseCoords }
+          hideInfoHandler={ this.hideInfoHandler }
         />
-        )}
-        {/* **On Application Open, if the user has already entered credentials,
-        display loading screen while graph renders, else take them to credential entry page** */}
-        {((hasCheckedCredentials === false) && (credentialStatus === true))
+        ) }
+        { /* **On Application Open, if the user has already entered credentials,
+        display loading screen while graph renders, else take them to credential entry page** */ }
+        { ((hasCheckedCredentials === false) && (credentialStatus === true))
           ? <HomeComponentPostCredentials />
           : (
             <HomeComponent
-              handleChange={this.handleChange}
-              handleFormChange={this.handleFormChange}
-              setAWSCredentials={this.setAWSCredentials}
-              displayInfoHandler={this.displayInfoHandler}
-              grabCoords={this.grabCoords}
-              awsAccessKeyId={awsAccessKeyId}
-              awsSecretAccessKey={awsSecretAccessKey}
-              awsRegion={awsRegion}
-              errors={errors}
-              credentialError={credentialError}
-              displayError={displayError}
+              handleChange={ this.handleChange }
+              handleFormChange={ this.handleFormChange }
+              setAWSCredentials={ this.setAWSCredentials }
+              displayInfoHandler={ this.displayInfoHandler }
+              grabCoords={ this.grabCoords }
+              awsAccessKeyId={ awsAccessKeyId }
+              awsSecretAccessKey={ awsSecretAccessKey }
+              awsRegion={ awsRegion }
+              errors={ errors }
+              credentialError={ credentialError }
+              displayError={ displayError }
             />
           )
         }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeInfoComponentBody } from '../../helperFunctions/renderFunctions';
+import { makeInfoComponentBody } from '../../utils/renderFunctions';
 
 const InfoComponentBody = (props) => {
   const { data } = props;
@@ -7,7 +7,7 @@ const InfoComponentBody = (props) => {
 
   return (
     <div className="info_body_component">
-      {body}
+      { body }
     </div>
   );
 };

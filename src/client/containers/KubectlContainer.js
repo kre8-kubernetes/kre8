@@ -11,11 +11,11 @@ import CreateMenuItemContainer from './CreateMenuItemContainer';
 */
 
 //* --------------- STATE + ACTIONS FROM REDUX ----------------- *//
-const mapStateToProps = store => ({
+const mapStateToProps = (store) => ({
   showCreateMenuFormItem: store.navbar.showCreateMenuFormItem,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   displayCreateMenuButton: () => {
     dispatch(actions.displayCreateMenuButton());
   },
@@ -39,7 +39,7 @@ class KubectlContainer extends Component {
 
     return (
       <div className="kubectl_container">
-        {showCreateMenuFormItem === true && <CreateMenuItemContainer />}
+        { showCreateMenuFormItem === true && <CreateMenuItemContainer /> }
         <TreeGraphContainer />
       </div>
     );

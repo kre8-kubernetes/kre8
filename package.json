@@ -1,6 +1,6 @@
 {
   "name": "kre8",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Kre8 electron app",
   "main": "./src/main/main.js",
   "scripts": {
@@ -67,7 +67,7 @@
     "babel-preset-airbnb": "^3.1.0",
     "chai": "^4.2.0",
     "css-loader": "^2.1.0",
-    "electron": "^4.0.4",
+    "electron": "^8.2.5",
     "electron-builder": "^20.39.0",
     "electron-devtools-installer": "^2.2.4",
     "eslint": "^5.10.0",
@@ -85,7 +85,7 @@
     "style-loader": "^0.23.1",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
     "@vx/gradient": "0.0.183",

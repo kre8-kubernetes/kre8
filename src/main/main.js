@@ -11,8 +11,6 @@ const {
 process.env.APP_PATH = app.getAppPath();
 
 const fs = require('fs');
-const fsp = require('fs').promises;
-const { spawnSync } = require('child_process');
 const path = require('path');
 
 const STS = require('aws-sdk/clients/sts');
@@ -21,37 +19,36 @@ const sts = new STS({ signatureCache: false });
 
 const events = require('../eventTypes.js');
 
-const { logWithLabel, logStep, logEvtError } = require('./utils');
+const { logWithLabel, logStep, logLabeledError } = require('./utils');
 
-const awsProps = require(__dirname + '/awsPropertyNames');
+const {
+  getClusterDataHandler,
+  getMasterNodeHandler,
+  getWorkerNodesHandler,
+  getContainersAndPodsHandler,
+  createPodHandler,
+  createServiceHandler,
+  createDeploymentHandler,
+  deleteDeploymentHandler,
+} = require('./eventHandlers/clusterActions');
+
+const { createClusterHandler } = require('./eventHandlers/clusterSetup');
+
+const { checkCrendentialsStatusHandler } = require('./eventHandlers/authentication');
+
+const {
+  AWS_CREDENTIALS_STATUS,
+  AWS_CREDENTIALS_STATUS_CONFIGURED,
+} = require(__dirname + '/awsPropertyNames');
 
 const {
   installAndConfigureAWS_IAM_Authenticator,
   setEnvVarsAndMkDirsInDev,
   setEnvVarsAndMkDirsInProd,
-  returnKubectlAndCredentialsStatus,
   configureAWSCredentials,
-  createIAMRole,
-  createVPCStack,
-  createCluster,
 } = require(__dirname + '/helperFunctions/awsEventCallbacks');
 
 const {
-  createConfigFile,
-  configureKubectl,
-  testKubectlGetSvc,
-  createStackForWorkerNode,
-  inputNodeInstance,
-  testKubectlStatus,
-} = require(__dirname + '/helperFunctions/kubectlConfigFunctions');
-
-const {
-  createPodYamlTemplate,
-  createServiceYamlTemplate,
-  createDeploymentYamlTemplate,
-} = require(__dirname + '/helperFunctions/kubernetesTemplates');
-const {
-  timeout,
   updateCredentialsFile,
 } = require(__dirname + '/helperFunctions/awsHelperFunctions');
 
@@ -181,23 +178,10 @@ const createWindowAndSetEnvironmentVariables = () => {
   });
 };
 
-/**
- * Check credentials file to determine if user needs to configure the
- * application. This will execute on every opening of the application
- */
-ipcMain.on(events.CHECK_CREDENTIAL_STATUS, async () => {
-  try {
-    const hasAwsCredentials = await returnKubectlAndCredentialsStatus();
-    win.webContents.send(events.RETURN_CREDENTIAL_STATUS, hasAwsCredentials);
-  } catch (err) {
-    logEvtError(events.CHECK_CREDENTIAL_STATUS, err);
-    win.webContents.send(
-      events.RETURN_CREDENTIAL_STATUS,
-      'Credentials have not yet been set, or there is an error with the file',
-    );
-  }
-});
-
+// EVENT LISTENERS
+ipcMain.on(events.CHECK_CREDENTIAL_STATUS, checkCrendentialsStatusHandler);
+// TODO (braden): not sure how to move this one to a handlerFunction outside
+// of the main.js file. Need to read up on electron.
 /**
  * Function fires when user submits AWS credential information on homepage
  * Writes credentials to file, sets environment variables with data from user,
@@ -245,13 +229,13 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
     if (credentialStatus.Arn) {
       loadingChildWindow.close();
       await updateCredentialsFile(
-        awsProps.AWS_CREDENTIALS_STATUS,
-        awsProps.AWS_CREDENTIALS_STATUS_CONFIGURED,
+        AWS_CREDENTIALS_STATUS,
+        AWS_CREDENTIALS_STATUS_CONFIGURED,
       );
       win.webContents.send(events.HANDLE_AWS_CREDENTIALS, credentialStatus);
     }
   } catch (err) {
-    logEvtError(events.SET_AWS_CREDENTIALS, err);
+    logLabeledError(events.SET_AWS_CREDENTIALS, err);
     loadingChildWindow.close();
     loadingChildWindow = null;
     win.webContents.send(
@@ -261,400 +245,24 @@ ipcMain.on(events.SET_AWS_CREDENTIALS, async (event, data) => {
   }
 });
 
-// TODO (braden): since these have their own category of tasks, can we split these
-// up into their own module.
-/**  
- * createCluster() executes on the first interaction with the app when user submits data from
- * the AWS container from the renderer thread. The whole process will take approximately 10-15 minutes
- * This will create an IAM Role, a VPC stack, an EKS Cluster, and a Stack for EC2 worker nodes.
- * @param {Object} event
- * @param {Object} data - this is an object container role name, VPC name and cluster name
- * @return {Object} - this will continuously emit status object back to communicate with the renderer
- * thread, where in the process this function is at. Done to better inform user.
- */
-ipcMain.on(events.CREATE_CLUSTER, async (event, data) => {
-  const iamRoleStatus = {};
-  const vpcStackStatus = {};
-  const clusterStatus = {};
-  const workerNodeStatus = {};
-  const kubectlConfigStatus = {};
-  const errorData = {};
+// The main event listener for creating a cluster
+ipcMain.on(events.CREATE_CLUSTER, createClusterHandler);
 
-  try {
-    // Set CLUSTER_NAME environment variable based on user input and save to credentials file
-    process.env.CLUSTER_NAME = data.clusterName;
+// Event listener the gets called on application startup
+// to find cluster data if available.
+ipcMain.on(events.GET_CLUSTER_DATA, getClusterDataHandler);
 
-    await updateCredentialsFile(awsProps.CLUSTER_NAME, data.clusterName);
-
-    // -------------- CREATE AWS IAM ROLE + ATTACH POLICY DOCS -------------------------
-    logStep('ipcMain.on(events.CREATE_IAM_ROLE)');
-
-    // Send data to AWS to create IAM Role, timing: 10 - 30 seconds
-    await createIAMRole(data.iamRoleName);
-
-    iamRoleStatus.type = awsProps.IAM_ROLE_STATUS;
-    iamRoleStatus.status = awsProps.CREATED;
-    // Send IAM Role status to render thread to display
-    win.webContents.send(events.HANDLE_STATUS_CHANGE, iamRoleStatus);
-
-    vpcStackStatus.type = awsProps.VPC_STACK_STATUS;
-    vpcStackStatus.status = awsProps.CREATING;
-    // Send VPC Stack status to render thread to display
-    win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
-  } catch (err) {
-    console.error('Error from CREATE_IAM_ROLE in index.js:', err);
-    errorData.type = awsProps.IAM_ROLE_STATUS;
-    errorData.status = awsProps.ERROR;
-    errorData.errorMessage = `Error occurred while creating IAM Role: ${err}`;
-    // Send error status to render thread to display
-    win.webContents.send(events.HANDLE_ERRORS, errorData);
-  }
-
-  // ---------------------- CREATE AWS STACK (approx 1 - 1.5 mins) -------------------
-  try {
-    logStep('ipcMain.on(events.CREATE_TECH_STACK)');
-
-    const { vpcStackName } = data;
-
-    // Send data to AWS to create VPC Stack, timing: 30 seconds - 1 minute
-    await createVPCStack(vpcStackName);
-
-    vpcStackStatus.status = awsProps.CREATED;
-    console.log('vpcStackStatus: ', vpcStackStatus);
-    // Send VPC Stack status to render thread to display
-    win.webContents.send(events.HANDLE_STATUS_CHANGE, vpcStackStatus);
-
-    clusterStatus.type = awsProps.CLUSTER_STATUS;
-    clusterStatus.status = awsProps.CREATING;
-    // Send Cluster status to render thread to display
-    win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
-  } catch (err) {
-    console.error('Error from CREATE_TECH_STACK: in index.js: ', err);
-    errorData.type = awsProps.VPC_STACK_STATUS;
-    errorData.status = awsProps.ERROR;
-    errorData.errorMessage = `Error occurred while creating VPC Stack: ${err}`;
-    // Send Error message to render thread to display
-    win.webContents.send(events.HANDLE_ERRORS, errorData);
-  }
-
-  // ------------------------ CREATE AWS CLUSTER --------------------------------------
-  try {
-    logStep('ipcMain.on(events.CREATE_CLUSTER)');
-
-    await createCluster(data.clusterName);
-    clusterStatus.status = awsProps.CREATED;
-    // Send Cluster status to render thread to display
-    win.webContents.send(events.HANDLE_STATUS_CHANGE, clusterStatus);
-
-    workerNodeStatus.type = awsProps.WORKER_NODE_STATUS;
-    workerNodeStatus.status = awsProps.CREATING;
-    // Send Worker Node status to render thread to display
-    win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
-  } catch (err) {
-    console.error('Error from CLUSTER_STATUS: in index.js: ', err);
-    errorData.type = awsProps.CLUSTER_STATUS;
-    errorData.status = awsProps.ERROR;
-    errorData.errorMessage = `Error occurred while creating Cluster: ${err}`;
-    // Send Error message to render thread to display
-    win.webContents.send(events.HANDLE_ERRORS, errorData);
-  }
-
-  // ----- CREATE KUBECONFIG FILE, CONFIGURE KUBECTL, CREATE WORKER NODE STACK ----------
-  try {
-    await createConfigFile(data.clusterName);
-    await configureKubectl(data.clusterName);
-    // testKubectlGetSvc();
-    await createStackForWorkerNode(data.clusterName);
-
-    workerNodeStatus.status = awsProps.CREATED;
-    // Send Worker Node status to render thread to display
-    win.webContents.send(events.HANDLE_STATUS_CHANGE, workerNodeStatus);
-
-    kubectlConfigStatus.type = awsProps.KUBECTL_CONFIG_STATUS;
-    kubectlConfigStatus.status = awsProps.CREATING;
-    // Send kubectl status to render thread to display
-    win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigStatus);
-  } catch (err) {
-    console.error('Error from CREATE_TECH_STACK: in index.js: ', err);
-    errorData.type = awsProps.WORKER_NODE_STATUS;
-    errorData.status = awsProps.ERROR;
-    errorData.errorMessage = `Error occurred while creating Worker Node Stack: ${err}`;
-    // Send error message to render thread to display
-    win.webContents.send(events.HANDLE_ERRORS, errorData);
-  }
-
-  // --------- CREATE NODE INSTANCE AND TEST KUBECTL CONFIG STATUS -------------
-  try {
-    await inputNodeInstance(data.clusterName);
-    const kubectlConfigStatusTest = await testKubectlStatus();
-
-    if (kubectlConfigStatusTest === true) {
-      await timeout(1000 * 15);
-      kubectlConfigStatus.status = awsProps.CREATED;
-      // Send kubectl status to render thread to display
-      win.webContents.send(events.HANDLE_STATUS_CHANGE, kubectlConfigStatus);
-      // Send instructions to render thread to generate graph
-      win.webContents.send(events.HANDLE_NEW_NODES, kubectlConfigStatusTest);
-    } else {
-      // Send error message to render thread to display
-      win.webContents.send(events.HANDLE_ERRORS, 'An error ocurred while configuring kubectl');
-    }
-  } catch (err) {
-    console.error('Error from configuring Kubectl', err);
-    errorData.type = awsProps.KUBECTL_CONFIG_STATUS;
-    errorData.status = awsProps.ERROR;
-    errorData.errorMessage = `Error occurred while configuring kubectl: ${err}`;
-    // Send error message to render thread to display
-    win.webContents.send(events.HANDLE_ERRORS, errorData);
-  }
-});
-
-/**
- * ---------------------------------------------------------------------------
- * --------------- FUNCTION TO SEND CLUSTER DATA TO DISPLAY ------------------
- * ---------------------------------------------------------------------------
- */
-
-// -------------- EXECUTES ON EVERY OPENING OF APPLICATION -------------------
-/**
- * Check credentials file to determine if user needs to configure the application
- * If credential's file hasn't been created yet (meaning user hasn't entered credentials
- * previously), serve HomeComponent page, else, serve HomeComponentPostCredentials
- * @param {Object} event
- * @return {Object} - object containing information from masterFile
-*/
-ipcMain.on(events.GET_CLUSTER_DATA, async (event) => {
-  try {
-    const dataFromCredentialsFile = await fsp.readFile(
-      `${process.env.AWS_STORAGE}AWS_Private/awsCredentials.json`,
-      'utf-8',
-    );
-
-    const parsedCredentialsFileData = JSON.parse(dataFromCredentialsFile);
-    const { clusterName } = parsedCredentialsFileData;
-
-    const dataFromMasterFile = await fsp.readFile(
-      `${process.env.AWS_STORAGE}AWS_Private/${clusterName}_MASTER_FILE.json`,
-      'utf-8',
-    );
-    const parsedAWSMasterFileData = JSON.parse(dataFromMasterFile);
-    delete parsedAWSMasterFileData.certificateAuthorityData;
-    // Send cluster data to render thread to generate graph
-    win.webContents.send(events.SEND_CLUSTER_DATA, parsedAWSMasterFileData);
-  } catch (err) {
-    console.error('From GET_CLUSTER_DATA', err);
-  }
-});
-
-/**
- * ---------------------------------------------------------------------------
- * ----------------------- KUBECTL EVENTS ------------------------------------
- * ---------------------------------------------------------------------------
-*/
-
-/** ---------- Get the Master Node -------------------
- * The following run 'kubectl get [component] -o=json' to get the services, one element in the item
- * array will contain the apiserver. result.items[x].metadata.labels.component = 'apiserver'
- * @param {Object} event
- * @param {String} data
- * @return {Object} - apiserver information from kubernetes api
-*/
-ipcMain.on(events.GET_MASTER_NODE, async (event, data) => {
-  try {
-    // command kubctl to get service data
-    const apiServiceData = spawnSync('kubectl', ['get', 'svc', '-o=json'], { env: process.env });
-    // string the data and log to the console;
-    const stdout = apiServiceData.stdout.toString();
-    const stdoutParsed = JSON.parse(stdout);
-    const stderr = apiServiceData.stderr.toString();
-    // win.webContents.send('kubectl', { stdout, stderr });
-    if (stderr) throw stderr;
-    const clusterApiData = stdoutParsed.items.find((item) => {
-      if (item.metadata.labels) {
-        return item.metadata.labels.component === 'apiserver';
-      }
-    });
-    // return service data to the render thread
-    win.webContents.send(events.HANDLE_MASTER_NODE, clusterApiData);
-  } catch (err) {
-    console.error('From GET_MASTER_NODE:', err);
-    // send error message to the render thread to display
-    win.webContents.send(events.HANDLE_MASTER_NODE, err);
-  }
-});
-
-ipcMain.on(events.GET_WORKER_NODES, async (event, data) => {
-  try {
-    const apiNodeData = spawnSync('kubectl', ['get', 'nodes', '-o=json'], { env: process.env });
-    const stdout = apiNodeData.stdout.toString();
-    const stdoutParsed = JSON.parse(stdout);
-    const stderr = apiNodeData.stderr.toString();
-
-    if (stderr) throw stderr;
-    // return worker node data to the render thread
-    win.webContents.send(events.HANDLE_WORKER_NODES, stdoutParsed);
-  } catch (err) {
-    console.error('From GET_WORKER_NODES:', err);
-    // send error message to the render thread to display
-    win.webContents.send(events.HANDLE_WORKER_NODES, err);
-  }
-});
-
-ipcMain.on(events.GET_CONTAINERS_AND_PODS, async (event, data) => {
-  try {
-    const apiNodeData = spawnSync('kubectl', ['get', 'pods', '-o=json'], { env: process.env });
-    const stdout = apiNodeData.stdout.toString();
-    const stdoutParsed = JSON.parse(stdout);
-
-    const stderr = apiNodeData.stderr.toString();
-    if (stderr) throw stderr;
-    // return pod data to the render thread
-    win.webContents.send(events.HANDLE_CONTAINERS_AND_PODS, stdoutParsed);
-  } catch (err) {
-    console.error('From GET_CONTAINERS_AND_PODS:', err);
-    // return error message to the render thread to display
-    win.webContents.send(events.HANDLE_CONTAINERS_AND_PODS, err);
-  }
-});
-
-/**
- * The following functions pass user input into a function a that creates a json object
- * based on a template. The new .json file is used to apply to kubectl in order to create
- * the appropriate kubernetes deployment
- * @param {Object} event
- * @param {Object} data - this is an object from the users form inputs
- * @return {String} - stdout from kubectl
-*/
-ipcMain.on(events.CREATE_POD, async (event, data) => {
-  try {
-    // CREATE AND WRITE A POD FILE FROM TEMPLATE
-    const podYamlTemplate = createPodYamlTemplate(data);
-    const stringifiedPodYamlTemplate = JSON.stringify(podYamlTemplate, null, 2);
-    await fsp.writeFile(
-      `${process.env.KUBECTL_STORAGE}pod_${data.podName}.json`,
-      stringifiedPodYamlTemplate,
-    );
-    // CREATE THE POD VIA kubectl
-    const child = spawnSync(
-      'kubectl',
-      ['apply', '-f', `${process.env.KUBECTL_STORAGE}pod_${data.podName}.json`],
-      { env: process.env },
-    );
-    const stdout = child.stdout.toString();
-    const stderr = child.stderr.toString();
-
-    await timeout(1000 * 5);
-    // SEND STDOUT TO RENDERER PROCESS
-    if (stderr) {
-      console.error('From CREATE_POD:', stderr);
-      win.webContents.send(events.HANDLE_NEW_POD, stdout);
-    } else {
-      console.log('stdout from pod: ', stdout);
-      win.webContents.send(events.HANDLE_NEW_POD, stdout);
-      win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create deployment');
-    }
-  } catch (err) {
-    console.error('From CREATE_POD:', err);
-  }
-});
-
-ipcMain.on(events.CREATE_SERVICE, async (event, data) => {
-  try {
-    console.log('CREATE_SERVICE data:', data);
-    // CREATE AND WRITE THE SERVICE FILE FROM TEMPLATE
-    const serviceYamlTemplate = createServiceYamlTemplate(data);
-    const stringifiedServiceYamlTemplate = JSON.stringify(serviceYamlTemplate, null, 2);
-    await fsp.writeFile(
-      `${process.env.KUBECTL_STORAGE}service_${data.serviceName}.json`,
-      stringifiedServiceYamlTemplate,
-    );
-    // CREATE THE SERVICE VIA kubectl
-    const child = spawnSync(
-      'kubectl',
-      ['apply', '-f', `${process.env.KUBECTL_STORAGE}service_${data.serviceName}.json`],
-      { env: process.env },
-    );
-    const stdout = child.stdout.toString();
-    const stderr = child.stderr.toString();
-    // SEND STATUS TO THE RENDERER PROCESS
-    if (stderr) {
-      console.error('From CREATE_SERVICE:', stderr);
-      win.webContents.send(events.HANDLE_NEW_SERVICE, stdout);
-    } else {
-      console.log('stdout from deployment: ', stdout);
-      win.webContents.send(events.HANDLE_NEW_SERVICE, stdout);
-      win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create service');
-    }
-  } catch (err) {
-    console.error('From CREATE_SERVICE', err);
-  }
-});
-
-ipcMain.on(events.CREATE_DEPLOYMENT, async (event, data) => {
-  try {
-    // START CREATING DEPLOYMENT
-    if (data.replicas > 6) {
-      throw new Error(`Replica amount entered was ${data.replicas}. This value has to be 6 or less.`);
-    }
-    // CREATE AND WRITE THE DEPLOYMENT FILE FROM TEMPLATE
-    const deploymentYamlTemplate = createDeploymentYamlTemplate(data);
-    const stringifiedDeploymentYamlTemplate = JSON.stringify(deploymentYamlTemplate, null, 2);
-    await fsp.writeFile(
-      `${process.env.KUBECTL_STORAGE}deployment_${data.deploymentName}.json`,
-      stringifiedDeploymentYamlTemplate,
-    );
-    // CREATE THE DEPOYMENT VIA kubectl
-    const child = spawnSync(
-      'kubectl',
-      ['create', '-f', `${process.env.KUBECTL_STORAGE}deployment_${data.deploymentName}.json`],
-      { env: process.env },
-    );
-    const stdout = child.stdout.toString();
-    const stderr = child.stderr.toString();
-
-    await timeout(1000 * 30);
-    // SEND STATUS TO THE RENDERER PROCESS
-    if (stderr) {
-      console.error('From CREATE_DEPLOYMENT:', stderr);
-      win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stderr);
-    } else {
-      console.log('stdout from deployment: ', stdout);
-      win.webContents.send(events.HANDLE_NEW_DEPLOYMENT, stdout);
-      win.webContents.send(events.HANDLE_RERENDER_NODE, 'handle rerender node for create deployment');
-    }
-  } catch (err) {
-    console.error('From CREATE_DEPLOYMENT', err);
-  }
-});
-
-/** ----------------- DELETE A DEPLOYMENT -------------------------
- * @param {Object} event
- * @param {Object} data - object containing the information regarding the pod
- * the was clicked. This is used to determine the deployment to delete
- * @return {String} - stdout from kubectl
-*/
-ipcMain.on(events.DELETE_DEPLOYMENT, async (event, data) => {
-  try {
-    // DELETE THE POD VIA kubectl
-    const split = data.data.name.split('-');
-    const deploymentName = split.slice(0, split.length - 2).join('-');
-    const child = spawnSync('kubectl', ['delete', 'deployment', deploymentName], { env: process.env });
-    const stderr = child.stderr.toString();
-
-    if (stderr) throw new Error(stderr);
-    // WAIT 10 SECONDS TO ALLOW DEPLOYMENT DELETION TO COMPLETE
-    await timeout(1000 * 10);
-    // SEND STDOUT TO RENDERER PROCESS
-    win.webContents.send(events.HANDLE_RERENDER_NODE, 'delete');
-  } catch (err) {
-    console.error('From DELETE_DEPLOYMENT:', err);
-  }
-});
+// Kubectl event listeners
+ipcMain.on(events.GET_MASTER_NODE, getMasterNodeHandler);
+ipcMain.on(events.GET_WORKER_NODES, getWorkerNodesHandler);
+ipcMain.on(events.GET_CONTAINERS_AND_PODS, getContainersAndPodsHandler);
+ipcMain.on(events.CREATE_POD, createPodHandler);
+ipcMain.on(events.CREATE_SERVICE, createServiceHandler);
+ipcMain.on(events.CREATE_DEPLOYMENT, createDeploymentHandler);
+ipcMain.on(events.DELETE_DEPLOYMENT, deleteDeploymentHandler);
 
 //* --------- APPLICATION OBJECT EVENT EMITTERS ---------- *//
-
 function createMenu() {
-
   const application = {
     label: 'Application',
     submenu: [
@@ -669,8 +277,8 @@ function createMenu() {
         label: 'Quit',
         accelerator: 'Command+Q',
         click: () => {
-          app.quit()
-        }
+          app.quit();
+        },
       },
     ],
   };

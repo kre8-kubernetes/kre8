@@ -7,19 +7,22 @@ import React from 'react';
 const makeKey = (string, i) => `${string}${String(i)}`;
 
 export const makeInfoItemFromObjectProperties = (dataObject, title) => {
-  const additionalData = Object.entries(dataObject).reduce((acc, item, i) => {
-    if (typeof item[1] !== 'object') {
-      acc.push(
-        <div key={ makeKey(item, i) } className="additional_info_body_item">
-          <div className="additional_info_body_item_row">
-            <p>{ item[0][0].toUpperCase() + item[0].slice(1) }</p>
-            <p>{ item[1] }</p>
-          </div>
-        </div>,
-      );
-    }
-    return acc;
-  }, []);
+  let additionalData = [];
+  if (dataObject) {
+    additionalData = Object.entries(dataObject).reduce((acc, item, i) => {
+      if (typeof item[1] !== 'object') {
+        acc.push(
+          <div key={ makeKey(item, i) } className="additional_info_body_item">
+            <div className="additional_info_body_item_row">
+              <p>{ item[0][0].toUpperCase() + item[0].slice(1) }</p>
+              <p>{ item[1] }</p>
+            </div>
+          </div>,
+        );
+      }
+      return acc;
+    }, []);
+  }
 
   return (
     <div className="info_component_additional_items">

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Group } from '@vx/group';
+import { getNested } from '../../utils/typeChecks';
 
 const WorkerNodeComponent = ({
   node,
@@ -20,6 +21,8 @@ const WorkerNodeComponent = ({
   const height = 47;
   const centerX = -width / 2;
   const centerY = -height / 2;
+
+  const systemUUID = getNested(node, 'data', 'status', 'nodeInfo', 'systemUUID');
 
   return (
     <Group top={ top } left={ left }>
@@ -53,7 +56,7 @@ const WorkerNodeComponent = ({
         fill={ textFill }
       >
         <tspan x="0" dy="-.3em">AWS Worker Node</tspan>
-        <tspan x="0" dy="1.5em">{ node.data.status.nodeInfo.systemUUID.slice(0, 8) }</tspan>
+        <tspan x="0" dy="1.5em">{ systemUUID ? systemUUID.slice(0, 8) : null }</tspan>
       </text>
     </Group>
   );

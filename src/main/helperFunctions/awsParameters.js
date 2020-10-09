@@ -1,15 +1,18 @@
+/* eslint-disable quotes */
+/* eslint-disable quote-props */
 // --------- NODE APIS ----------------
 const fs = require('fs');
 
-// --------- DECLARE EXPORT OBJECT -------------------------
-const awsParameters = {};
+const {
+  logWithLabel,
+} = require('../utils');
 
-/** --------- GENERATES PARAMETER FOR CREATING IAM ROLE---------------
+/** GENERATES PARAMETER FOR CREATING IAM ROLE
  * @param {String} rolename
  * @param {Object} iamRolePolicyDocumen JSON object for the IAM role policy
  * @return {Object}
  */
-awsParameters.createIAMRoleParam = (roleName, iamRolePolicyDocument) => {
+const createIAMRoleParam = (roleName, iamRolePolicyDocument) => {
   const iamRoleParam = {
     AssumeRolePolicyDocument: JSON.stringify(iamRolePolicyDocument),
     RoleName: roleName,
@@ -18,12 +21,12 @@ awsParameters.createIAMRoleParam = (roleName, iamRolePolicyDocument) => {
   return iamRoleParam;
 };
 
-/** --------- GENERATES PARAMETER FOR CREATING TECH STACK --------------
+/** GENERATES PARAMETER FOR CREATING TECH STACK
  * @param {String} stackName
  * @param {String} stackTemplate
  * @return {Object}
  */
-awsParameters.createVPCStackParam = (vpcStackName, stackTemplate) => {
+const createVPCStackParam = (vpcStackName, stackTemplate) => {
   const vpcStackParam = {
     StackName: vpcStackName,
     DisableRollback: false,
@@ -39,13 +42,13 @@ awsParameters.createVPCStackParam = (vpcStackName, stackTemplate) => {
   return vpcStackParam;
 };
 
-/** --------- GENERATES PARAMETER FOR CREATING CLUSTER --------------
+/** GENERATES PARAMETER FOR CREATING CLUSTER
  * @param {String} clusterName
  * @param {Array} subnetIds
  * @param {String} securityGroupIds
  * @param {String} roleArn
  */
-awsParameters.createClusterParam = (clusterName, subnetIds, securityGroupIds, roleArn) => {
+const createClusterParam = (clusterName, subnetIds, securityGroupIds, roleArn) => {
   const clusterParam = {
     name: clusterName,
     resourcesVpcConfig: {
@@ -59,22 +62,35 @@ awsParameters.createClusterParam = (clusterName, subnetIds, securityGroupIds, ro
   return clusterParam;
 };
 
-/** --------- GENERATES PARAMETER FOR CREATE_CONFIG_FILE --------------
+/** GENERATES PARAMETER FOR CREATE_CONFIG_FILE
  * @param {String} clusterName
  * @param {String} serverEndpoint
  * @param {String} certificateAuthorityData
  * @return {Object}
  */
-awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAuthorityData) => {
-  // TODO: clean this up according to eslint if possible. Currently, it might be required due to specific yaml parsing
+const createConfigParam = (clusterName, serverEndpoint, certificateAuthorityData) => {
+  // TODO: clean this up according to eslint if possible. Currently, it might be
+  // required due to specific yaml parsing
   const AWSClusterConfigFileParam = {
     "apiVersion": "v1",
     "clusters": [
-      { "cluster": { "server": serverEndpoint, "certificate-authority-data": certificateAuthorityData, },
-          "name": "kubernetes" },
+      {
+        "cluster": {
+          "server": serverEndpoint,
+          "certificate-authority-data": certificateAuthorityData,
+        },
+        "name": "kubernetes",
+      },
     ],
-    "contexts": [ { "context": { "cluster": "kubernetes", "user": "aws" },
-            "name": "aws" }, ],
+    "contexts": [
+      {
+        "context": {
+          "cluster": "kubernetes",
+          "user": "aws",
+        },
+        "name": "aws",
+      },
+    ],
     "current-context": "aws",
     "kind": "Config",
     "preferences": {},
@@ -85,28 +101,39 @@ awsParameters.createConfigParam = (clusterName, serverEndpoint, certificateAutho
           "exec": {
             "apiVersion": "client.authentication.k8s.io/v1alpha1",
             "command": "aws-iam-authenticator",
-            "args": [ "token", "-i", clusterName ]
-            }
+            "args": ["token", "-i", clusterName],
+          },
         }
       },
-    ]
+    ],
   };
   return AWSClusterConfigFileParam;
 };
 
-/** --------- GENERATES PARAMETER FOR CREATE_WORKER_NODE_TECH_STACK --------------
+/** GENERATES PARAMETER FOR CREATE_WORKER_NODE_TECH_STACK
  * @param {String} iamRoleName
  * @param {String} workerNodeStackName
  * @param {String} stackTemplateforWorkerNode
  * @return {Object}
  */
-awsParameters.createWorkerNodeStackParam = (clusterName, workerNodeStackName, stackTemplateforWorkerNode) => {
+const createWorkerNodeStackParam = (clusterName, workerNodeStackName, stackTemplateforWorkerNode) => {
   console.log('CREATING STACK PARAM');
-  const awsMasterFileData = fs.readFileSync(`${process.env.AWS_STORAGE}AWS_Private/${clusterName}_MASTER_FILE.json`, 'utf-8');
+  const awsMasterFileData = fs.readFileSync(
+    `${process.env.AWS_STORAGE}AWS_Private/${clusterName}_MASTER_FILE.json`,
+    'utf-8',
+  );
   const parsedAWSMasterFileData = JSON.parse(awsMasterFileData);
 
-  console.log('Here is the current master file data in createWorkerNodeStackParams: ', parsedAWSMasterFileData);
-  const { subnetIdsString, vpcId, securityGroupIds, KeyName } = parsedAWSMasterFileData;
+  logWithLabel(
+    'Here is the current master file data in createWorkerNodeStackParams: ',
+    parsedAWSMasterFileData,
+  );
+  const {
+    subnetIdsString,
+    vpcId,
+    securityGroupIds,
+    KeyName,
+  } = parsedAWSMasterFileData;
 
   // TODO: find a way to continuously get the latest AMI values for eks instances
   // because right now we are hard coding it and the values will change periodically
@@ -134,4 +161,10 @@ awsParameters.createWorkerNodeStackParam = (clusterName, workerNodeStackName, st
   return workerNodeStackParam;
 };
 
-module.exports = awsParameters;
+module.exports = {
+  createIAMRoleParam,
+  createVPCStackParam,
+  createClusterParam,
+  createConfigParam,
+  createWorkerNodeStackParam,
+};

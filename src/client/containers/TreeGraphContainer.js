@@ -294,7 +294,7 @@ class TreeGraphContainer extends Component {
           toolTipOff={ this.toolTipOff }
           width={ dimensions.width }
           height={ dimensions.height }
-          treeData={ treeData }
+          treeData={ Object.keys(treeData).length ? treeData : dummyTreeData }
           margin={ margin }
         />
       </div>

@@ -13,13 +13,13 @@ const ClusterInfoComponent = (props) => {
   let serverEndPointBackHalf;
   let subnetIds;
 
-  if (Object.prototype.hasOwnProperty.call(clusterInfo, 'serverEndPoint')) {
+  if (clusterInfo && clusterInfo.serverEndPoint) {
     halfOfServerEndpoint = Math.floor(clusterInfo.serverEndPoint.length / 2);
     serverEndPointFrontHalf = clusterInfo.serverEndPoint.slice(0, halfOfServerEndpoint);
     serverEndPointBackHalf = clusterInfo.serverEndPoint.slice(halfOfServerEndpoint);
   }
 
-  if (Object.prototype.hasOwnProperty.call(clusterInfo, 'subnetIdsArray')) {
+  if (clusterInfo && clusterInfo.subnetIdsArray) {
     subnetIds = clusterInfo.subnetIdsArray.map((subnet) => (
       <div
         key={ subnet }

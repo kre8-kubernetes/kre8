@@ -67,7 +67,7 @@
     "babel-preset-airbnb": "^3.1.0",
     "chai": "^4.2.0",
     "css-loader": "^2.1.0",
-    "electron": "^8.5.2",
+    "electron": "^11.5.0",
     "electron-builder": "^20.39.0",
     "electron-devtools-installer": "^2.2.4",
     "eslint": "^5.10.0",
